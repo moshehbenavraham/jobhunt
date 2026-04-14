@@ -6,16 +6,17 @@
  * (archetype, seniority, remote, gaps, scores), classifies outcomes,
  * and outputs structured JSON with actionable patterns.
  *
- * Run: node analyze-patterns.mjs          (JSON to stdout)
- *      node analyze-patterns.mjs --summary (human-readable table)
- *      node analyze-patterns.mjs --min-threshold 3
+ * Run: node scripts/analyze-patterns.mjs          (JSON to stdout)
+ *      node scripts/analyze-patterns.mjs --summary (human-readable table)
+ *      node scripts/analyze-patterns.mjs --min-threshold 3
  */
 
 import { readFileSync, existsSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-const CAREER_OPS = dirname(fileURLToPath(import.meta.url));
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const CAREER_OPS = resolve(SCRIPT_DIR, '..');
 const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   ? join(CAREER_OPS, 'data/applications.md')
   : join(CAREER_OPS, 'applications.md');

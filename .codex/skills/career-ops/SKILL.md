@@ -12,8 +12,8 @@ Route work into the existing Career-Ops modes and scripts. Do not create a paral
 Read these files in this order when you need project context beyond the immediate mode:
 
 1. `docs/CODEX.md` for the Codex routing map and high-level behavioral rules.
-2. `CLAUDE.md` for the full repo operating model, onboarding expectations, and file responsibilities.
-3. `DATA_CONTRACT.md` when a change touches user data, reports, tracker entries, or update-safe boundaries.
+2. `docs/CLAUDE.md` for the full repo operating model, onboarding expectations, and file responsibilities.
+3. `docs/DATA_CONTRACT.md` when a change touches user data, reports, tracker entries, or update-safe boundaries.
 
 Read only the mode files needed for the current request.
 
@@ -22,7 +22,7 @@ Read only the mode files needed for the current request.
 On first use in a session, silently run:
 
 ```bash
-node update-system.mjs check
+node scripts/update-system.mjs check
 ```
 
 If an update is available, tell the user the exact local and remote versions and ask before applying it.
@@ -58,7 +58,7 @@ Treat these as system files unless the user explicitly wants to change shared de
 
 - `modes/_shared.md`
 - mode files other than `modes/_profile.md`
-- `*.mjs`
+- `scripts/*.mjs`
 - `templates/*`
 - `dashboard/*`
 - `batch/*`
@@ -111,7 +111,7 @@ If the role is in English, keep the English modes even if the company is in a no
 - Read the selected mode files before acting.
 - Prefer the checked-in scripts over rewriting their logic in prose.
 - Never auto-submit an application.
-- Never add rows directly to `data/applications.md`; use the batch TSV flow and `merge-tracker.mjs`.
+- Never add rows directly to `data/applications.md`; use the batch TSV flow and `scripts/merge-tracker.mjs`.
 - Use the Playwright-based liveness flow for job checks when available; do not replace it with a generic fetch.
 - Save new personalization or lessons learned to `config/profile.yml`, `modes/_profile.md`, or `article-digest.md`.
 - Append interview stories to `interview-prep/story-bank.md` only when the relevant mode calls for it.
@@ -124,11 +124,11 @@ Use the repo's existing commands for validation and maintenance:
 ```bash
 npm run doctor
 npm run verify
-node cv-sync-check.mjs
-node verify-pipeline.mjs
-node update-system.mjs check
-node update-system.mjs apply
-node update-system.mjs rollback
+node scripts/cv-sync-check.mjs
+node scripts/verify-pipeline.mjs
+node scripts/update-system.mjs check
+node scripts/update-system.mjs apply
+node scripts/update-system.mjs rollback
 ```
 
 Use the dashboard only when the environment has Go installed:

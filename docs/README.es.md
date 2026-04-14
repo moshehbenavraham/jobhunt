@@ -178,7 +178,7 @@ Features: 6 pestañas de filtro, 4 modos de ordenacion, vista agrupada/plana, pr
 
 ```
 career-ops/
-├── CLAUDE.md                    # Instrucciones del agente
+├── docs/CLAUDE.md                    # Instrucciones del agente
 ├── cv.md                        # Tu CV (crealo tu)
 ├── article-digest.md            # Tus proof points (opcional)
 ├── config/

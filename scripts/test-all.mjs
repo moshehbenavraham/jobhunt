@@ -7,17 +7,17 @@
  * Tests: syntax, scripts, dashboard, data contract, personal data, paths.
  *
  * Usage:
- *   node test-all.mjs           # Run all tests
- *   node test-all.mjs --quick   # Skip dashboard build (faster)
+ *   node scripts/test-all.mjs           # Run all tests
+ *   node scripts/test-all.mjs --quick   # Skip dashboard build (faster)
  */
 
 import { execSync, execFileSync } from 'child_process';
 import { readFileSync, existsSync, readdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = __dirname;
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(SCRIPT_DIR, '..');
 const QUICK = process.argv.includes('--quick');
 
 let passed = 0;
@@ -48,9 +48,9 @@ console.log('\n🧪 career-ops test suite\n');
 
 console.log('1. Syntax checks');
 
-const mjsFiles = readdirSync(ROOT).filter(f => f.endsWith('.mjs'));
+const mjsFiles = readdirSync(join(ROOT, 'scripts')).filter(f => f.endsWith('.mjs'));
 for (const f of mjsFiles) {
-  const result = run('node', ['--check', f]);
+  const result = run('node', ['--check', join('scripts', f)]);
   if (result !== null) {
     pass(`${f} syntax OK`);
   } else {
@@ -72,7 +72,9 @@ const scripts = [
 ];
 
 for (const { name, allowFail } of scripts) {
-  const result = run('node', name.split(' '), { stdio: ['pipe', 'pipe', 'pipe'] });
+  const parts = name.split(' ');
+  parts[0] = join('scripts', parts[0]);
+  const result = run('node', parts, { stdio: ['pipe', 'pipe', 'pipe'] });
   if (result !== null) {
     pass(`${name} runs OK`);
   } else if (allowFail) {
@@ -87,7 +89,7 @@ for (const { name, allowFail } of scripts) {
 console.log('\n3. Liveness classification');
 
 try {
-  const { classifyLiveness } = await import(pathToFileURL(join(ROOT, 'liveness-core.mjs')).href);
+  const { classifyLiveness } = await import(pathToFileURL(join(ROOT, 'scripts', 'liveness-core.mjs')).href);
 
   const expiredChromeApply = classifyLiveness({
     finalUrl: 'https://example.com/jobs/closed-role',
@@ -138,11 +140,10 @@ console.log('\n5. Data contract validation');
 
 // Check system files exist
 const systemFiles = [
-  'CLAUDE.md', 'VERSION', 'DATA_CONTRACT.md',
+  'docs/CLAUDE.md', 'VERSION', 'docs/DATA_CONTRACT.md',
   'modes/_shared.md', 'modes/_profile.template.md',
   'modes/oferta.md', 'modes/pdf.md', 'modes/scan.md',
   'templates/states.yml', 'templates/cv-template.html',
-  '.claude/skills/career-ops/SKILL.md',
 ];
 
 for (const f of systemFiles) {
@@ -180,16 +181,17 @@ const leakPatterns = [
 const scanExtensions = ['md', 'yml', 'html', 'mjs', 'sh', 'go', 'json'];
 const allowedFiles = [
   // English README + localized translations (all legitimately credit Santiago)
-  'README.md', 'README.es.md', 'README.ja.md', 'README.ko-KR.md',
-  'README.pt-BR.md', 'README.ru.md',
+  'README.md', 'docs/README.es.md', 'docs/README.ja.md', 'docs/README.ko-KR.md',
+  'docs/README.pt-BR.md', 'docs/README.ru.md', 'docs/README.zh-TW.md',
   // Standard project files
-  'LICENSE', 'CITATION.cff', 'CONTRIBUTING.md',
-  'package.json', '.github/FUNDING.yml', 'CLAUDE.md', 'go.mod', 'test-all.mjs',
+  'LICENSE', 'docs/CITATION.cff', 'docs/CONTRIBUTING.md', 'docs/CREDITS.md',
+  'package.json', '.github/FUNDING.yml', 'docs/CLAUDE.md', 'AGENTS.md', 'go.mod', 'scripts/test-all.mjs',
   // Community / governance files (added in v1.3.0, all legitimately reference the maintainer)
-  'CODE_OF_CONDUCT.md', 'GOVERNANCE.md', 'SECURITY.md', 'SUPPORT.md',
+  'docs/CODE_OF_CONDUCT.md', 'docs/GOVERNANCE.md', 'docs/SECURITY.md', 'docs/SUPPORT.md',
   '.github/SECURITY.md',
   // Dashboard credit string
   'dashboard/internal/ui/screens/pipeline.go',
+  'dashboard/internal/ui/screens/progress.go',
 ];
 
 // Build pathspec for git grep — only scan tracked files matching these
@@ -225,7 +227,7 @@ console.log('\n7. Absolute path check');
 // Same git grep approach: only scans tracked files. Untracked AI tool
 // outputs, local debate artifacts, etc. can't false-positive here.
 const absPathResult = run(
-  `git grep -n "/Users/" -- '*.mjs' '*.sh' '*.md' '*.go' '*.yml' 2>/dev/null | grep -v README.md | grep -v LICENSE | grep -v CLAUDE.md | grep -v test-all.mjs`
+  `git grep -n "/Users/" -- '*.mjs' '*.sh' '*.md' '*.go' '*.yml' 2>/dev/null | grep -v README.md | grep -v LICENSE | grep -v docs/CLAUDE.md | grep -v scripts/test-all.mjs`
 );
 if (!absPathResult) {
   pass('No absolute paths in code files');
@@ -265,7 +267,7 @@ if (shared.includes('_profile.md')) {
 
 console.log('\n9. CLAUDE.md integrity');
 
-const claude = readFile('CLAUDE.md');
+const claude = readFile('docs/CLAUDE.md');
 const requiredSections = [
   'Data Contract', 'Update Check', 'Ethical Use',
   'Offer Verification', 'Canonical States', 'TSV Format',

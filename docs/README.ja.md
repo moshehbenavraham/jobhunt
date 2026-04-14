@@ -181,7 +181,7 @@ go build -o career-dashboard .
 
 ```
 career-ops/
-├── CLAUDE.md                    # エージェントの指示
+├── docs/CLAUDE.md                    # エージェントの指示
 ├── cv.md                        # あなたのCV（自分で作成）
 ├── article-digest.md            # あなたの実績の裏付け（任意）
 ├── config/

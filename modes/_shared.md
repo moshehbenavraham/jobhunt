@@ -40,7 +40,7 @@ The evaluation uses 6 blocks (A-F) with a global score of 1-5:
 - 4.5+ → Strong match, recommend applying immediately
 - 4.0-4.4 → Good match, worth applying
 - 3.5-3.9 → Decent but not ideal, apply only if specific reason
-- Below 3.5 → Recommend against applying (see Ethical Use in CLAUDE.md)
+- Below 3.5 → Recommend against applying (see Ethical Use in docs/CLAUDE.md)
 
 ## Posting Legitimacy (Block G)
 
@@ -102,7 +102,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 
 0. **Cover letter:** If the form allows it, ALWAYS include one. Same visual design as CV. JD quotes mapped to proof points. 1 page max.
 1. Read cv.md, _profile.md, and article-digest.md (if exists) before evaluating
-1b. **First evaluation of each session:** Run `node cv-sync-check.mjs`. If warnings, notify user.
+1b. **First evaluation of each session:** Run `node scripts/cv-sync-check.mjs`. If warnings, notify user.
 2. Detect the role archetype and adapt framing per _profile.md
 3. Cite exact lines from CV when matching
 4. Use WebSearch for comp and company data
@@ -125,7 +125,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 | Write | Temporary HTML for PDF, applications.md, reports .md |
 | Edit | Update tracker |
 | Canva MCP | Optional visual CV generation. Duplicate base design, edit text, export PDF. Requires `canva_resume_design_id` in profile.yml. |
-| Bash | `node generate-pdf.mjs` |
+| Bash | `node scripts/generate-pdf.mjs` |
 
 ### Time-to-offer priority
 - Working demo + metrics > perfection
@@ -148,7 +148,7 @@ These rules apply to ALL generated text that ends up in candidate-facing documen
 - "demonstrated ability to" / "best practices" (name the practice)
 
 ### Unicode normalization for ATS
-`generate-pdf.mjs` automatically normalizes em-dashes, smart quotes, and zero-width characters to ASCII equivalents for maximum ATS compatibility. But avoid generating them in the first place.
+`scripts/generate-pdf.mjs` automatically normalizes em-dashes, smart quotes, and zero-width characters to ASCII equivalents for maximum ATS compatibility. But avoid generating them in the first place.
 
 ### Vary sentence structure
 - Don't start every bullet with the same verb

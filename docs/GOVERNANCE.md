@@ -8,7 +8,7 @@ The goal is to build a self-sustaining community where the project thrives even 
 
 ## Decision Making
 
-- **Architecture decisions** (CLAUDE.md, scoring system, data contract) — maintainer only
+- **Architecture decisions** (docs/CLAUDE.md, scoring system, data contract) — maintainer only
 - **New features** — require an approved issue before PR submission
 - **Bug fixes** — can be submitted directly with a clear description
 - **Documentation and translations** — welcome from anyone, low barrier
@@ -66,7 +66,7 @@ You don't apply for roles. They emerge naturally:
 1. **Start contributing** — fix a bug, translate a mode, improve docs
 2. **Be consistent** — one quality PR per month beats ten rushed ones
 3. **Help others** — answer questions in Discord, review PRs, triage issues
-4. **Understand the project** — read CLAUDE.md, DATA_CONTRACT.md, the architecture docs
+4. **Understand the project** — read docs/CLAUDE.md, docs/DATA_CONTRACT.md, the architecture docs
 5. **The maintainer will notice** — and reach out when the time is right
 
 ## Values

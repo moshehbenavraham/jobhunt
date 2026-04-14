@@ -45,9 +45,9 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/patterns.md` | Pattern analysis instructions |
 | `modes/followup.md` | Follow-up cadence instructions |
 | `modes/de/*` | German language modes |
-| `CLAUDE.md` | Agent instructions |
+| `docs/CLAUDE.md` | Agent instructions |
 | `AGENTS.md` | Codex instructions |
-| `*.mjs` | Utility scripts |
+| `scripts/*.mjs` | Utility scripts |
 | `batch/batch-prompt.md` | Batch worker prompt |
 | `batch/batch-runner.sh` | Batch orchestrator |
 | `dashboard/*` | Go TUI dashboard |
@@ -56,7 +56,7 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `.claude/skills/*` | Skill definitions |
 | `docs/*` | Documentation |
 | `VERSION` | Current version number |
-| `DATA_CONTRACT.md` | This file |
+| `docs/DATA_CONTRACT.md` | This file |
 
 ## The Rule
 

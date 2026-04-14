@@ -10,24 +10,29 @@
  * Zero Claude API tokens — pure HTTP + JSON.
  *
  * Usage:
- *   node scan.mjs                  # scan all enabled companies
- *   node scan.mjs --dry-run        # preview without writing files
- *   node scan.mjs --company Cohere # scan a single company
+ *   node scripts/scan.mjs                  # scan all enabled companies
+ *   node scripts/scan.mjs --dry-run        # preview without writing files
+ *   node scripts/scan.mjs --company Cohere # scan a single company
  */
 
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
 const parseYaml = yaml.load;
 
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const PROJECT_ROOT = resolve(SCRIPT_DIR, '..');
+
 // ── Config ──────────────────────────────────────────────────────────
 
-const PORTALS_PATH = 'portals.yml';
-const SCAN_HISTORY_PATH = 'data/scan-history.tsv';
-const PIPELINE_PATH = 'data/pipeline.md';
-const APPLICATIONS_PATH = 'data/applications.md';
+const PORTALS_PATH = resolve(PROJECT_ROOT, 'portals.yml');
+const SCAN_HISTORY_PATH = resolve(PROJECT_ROOT, 'data', 'scan-history.tsv');
+const PIPELINE_PATH = resolve(PROJECT_ROOT, 'data', 'pipeline.md');
+const APPLICATIONS_PATH = resolve(PROJECT_ROOT, 'data', 'applications.md');
 
 // Ensure required directories exist (fresh setup)
-mkdirSync('data', { recursive: true });
+mkdirSync(resolve(PROJECT_ROOT, 'data'), { recursive: true });
 
 const CONCURRENCY = 10;
 const FETCH_TIMEOUT_MS = 10_000;

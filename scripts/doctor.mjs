@@ -6,11 +6,11 @@
  */
 
 import { existsSync, mkdirSync, readdirSync } from 'fs';
-import { join, dirname } from 'path';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const projectRoot = __dirname;
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const projectRoot = resolve(SCRIPT_DIR, '..');
 
 // ANSI colors (only on TTY)
 const isTTY = process.stdout.isTTY;

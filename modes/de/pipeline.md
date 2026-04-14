@@ -57,7 +57,7 @@ Verarbeitet URLs von Stellenanzeigen, die in `data/pipeline.md` gesammelt wurden
 Vor dem Verarbeiten irgendeiner URL die Sync prüfen:
 
 ```bash
-node cv-sync-check.mjs
+node scripts/cv-sync-check.mjs
 ```
 
 Bei Abweichungen den Kandidaten warnen, bevor weitergearbeitet wird.

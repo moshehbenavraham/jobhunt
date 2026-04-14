@@ -53,6 +53,6 @@
 
 Перед обработкой URL:
 ```bash
-node cv-sync-check.mjs
+node scripts/cv-sync-check.mjs
 ```
 Если рассинхронизация — предупредить пользователя.

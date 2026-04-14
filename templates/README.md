@@ -1,14 +1,14 @@
 # Templates
 
-System-layer template files used by career-ops scripts and modes. These files are auto-updated when you run `npm run update` -- put user customizations in the user-layer files instead (see DATA_CONTRACT.md).
+System-layer template files used by career-ops scripts and modes. These files are auto-updated when you run `npm run update` -- put user customizations in the user-layer files instead (see `docs/DATA_CONTRACT.md`).
 
 ## Files
 
 | File | Used By | Purpose |
 |------|---------|---------|
-| `cv-template.html` | `generate-pdf.mjs` | HTML/CSS template for ATS-optimized CV PDFs |
+| `cv-template.html` | `scripts/generate-pdf.mjs` | HTML/CSS template for ATS-optimized CV PDFs |
 | `portals.example.yml` | Onboarding | Example portal scanner configuration (copy to `portals.yml` to activate) |
-| `states.yml` | `verify-pipeline.mjs`, `normalize-statuses.mjs`, `merge-tracker.mjs` | Canonical application states and their aliases |
+| `states.yml` | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases |
 
 ### cv-template.html
 

@@ -17,7 +17,7 @@ You will receive a response within 72 hours. We will work with you to understand
 
 Security issues in the following are in scope:
 
-- **Scripts** (`*.mjs`) — command injection, path traversal, SSRF
+- **Scripts** (`scripts/*.mjs`) — command injection, path traversal, SSRF
 - **Dashboard** (`dashboard/`) — any Go binary vulnerabilities
 - **Templates** (`templates/`) — XSS in generated HTML/PDF
 - **Configuration** — secrets exposure, unsafe defaults

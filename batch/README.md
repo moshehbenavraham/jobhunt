@@ -24,7 +24,7 @@ Process multiple job offers in parallel via `claude -p` workers. Each worker run
    ./batch/batch-runner.sh
    ```
 
-4. **Results** are automatically merged into `data/applications.md` and verified with `verify-pipeline.mjs` at the end of the run.
+4. **Results** are automatically merged into `data/applications.md` and verified with `scripts/verify-pipeline.mjs` at the end of the run.
 
 ## Options
 
@@ -54,7 +54,7 @@ batch/
 1. **batch-runner.sh** reads `batch-input.tsv` and `batch-state.tsv` to determine which offers need processing.
 2. For each pending offer, it assigns a report number and launches a `claude -p` worker with `batch-prompt.md` as the system prompt (placeholders like `{{URL}}`, `{{REPORT_NUM}}` are resolved).
 3. Each worker evaluates the offer, writes a report to `reports/`, generates a PDF to `output/`, and writes a tracker TSV to `tracker-additions/`.
-4. After all workers finish, batch-runner calls `merge-tracker.mjs` to merge TSVs into `data/applications.md` and runs `verify-pipeline.mjs` to check integrity.
+4. After all workers finish, batch-runner calls `scripts/merge-tracker.mjs` to merge TSVs into `data/applications.md` and runs `scripts/verify-pipeline.mjs` to check integrity.
 
 ## Tracker Merge
 

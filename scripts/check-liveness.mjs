@@ -8,8 +8,8 @@
  * Zero Claude API tokens — pure Playwright.
  *
  * Usage:
- *   node check-liveness.mjs <url1> [url2] ...
- *   node check-liveness.mjs --file urls.txt
+ *   node scripts/check-liveness.mjs <url1> [url2] ...
+ *   node scripts/check-liveness.mjs --file urls.txt
  *
  * Exit code: 0 if all active, 1 if any expired or uncertain
  */
@@ -73,8 +73,8 @@ async function main() {
   const args = process.argv.slice(2);
 
   if (args.length === 0) {
-    console.error('Usage: node check-liveness.mjs <url1> [url2] ...');
-    console.error('       node check-liveness.mjs --file urls.txt');
+    console.error('Usage: node scripts/check-liveness.mjs <url1> [url2] ...');
+    console.error('       node scripts/check-liveness.mjs --file urls.txt');
     process.exit(1);
   }
 

@@ -40,7 +40,7 @@ A avaliacao usa 6 blocos (A-F) com uma nota global de 1-5:
 - 4.5+ → Match forte, recomendado aplicar imediatamente
 - 4.0-4.4 → Bom match, vale a pena aplicar
 - 3.5-3.9 → Razoavel mas nao ideal, aplicar apenas se houver motivo especifico
-- Abaixo de 3.5 → Recomendado nao aplicar (veja Ethical Use no CLAUDE.md)
+- Abaixo de 3.5 → Recomendado nao aplicar (veja Ethical Use no docs/CLAUDE.md)
 
 ## North Star -- Vagas-Alvo
 
@@ -193,7 +193,7 @@ Em vagas e negociacoes brasileiras, existem termos e praticas que nao aparecem n
 
 0. **Carta de apresentacao:** Se o formulario permite anexar ou escrever uma carta, SEMPRE inclua uma. PDF no mesmo design visual do curriculo. Conteudo: citacoes da descricao da vaga mapeadas para proof points, links para case studies relevantes. Maximo 1 pagina.
 1. Ler `cv.md`, `_profile.md` e `article-digest.md` (se existir) antes de avaliar qualquer vaga
-1b. **Na primeira avaliacao de cada sessao:** Executar `node cv-sync-check.mjs` via Bash. Se houver avisos, informar o candidato antes de continuar
+1b. **Na primeira avaliacao de cada sessao:** Executar `node scripts/cv-sync-check.mjs` via Bash. Se houver avisos, informar o candidato antes de continuar
 2. Detectar o arquetipo da vaga e adaptar o framing conforme `_profile.md`
 3. Ao fazer matching, citar linhas exatas do curriculo
 4. Usar WebSearch para dados de remuneracao e empresa
@@ -202,7 +202,7 @@ Em vagas e negociacoes brasileiras, existem termos e praticas que nao aparecem n
 7. Ser direto e pratico — sem enrolacao
 8. Ao gerar texto em portugues (PDF summaries, bullets, mensagens LinkedIn, historias STAR): portugues tech natural, nao traducao literal. Frases curtas, verbos de acao, evitar voz passiva. Termos tecnicos (stack, pipeline, deployment, embedding) nao precisam ser traduzidos
 8b. **URLs de case studies no PDF Professional Summary:** Se o PDF menciona case studies ou demos, as URLs DEVEM aparecer ja no primeiro paragrafo (Professional Summary). Recrutadores frequentemente so leem o resumo. Todos os URLs no HTML com `white-space: nowrap`
-9. **Entradas no tracker como TSV** — NUNCA editar `applications.md` diretamente para novos registros. Escrever TSV em `batch/tracker-additions/`, `merge-tracker.mjs` cuida do merge
+9. **Entradas no tracker como TSV** — NUNCA editar `applications.md` diretamente para novos registros. Escrever TSV em `batch/tracker-additions/`, `scripts/merge-tracker.mjs` cuida do merge
 10. **Incluir `**URL:**` em todo header de report** — entre Score e PDF
 
 ### Tools
@@ -215,4 +215,4 @@ Em vagas e negociacoes brasileiras, existem termos e praticas que nao aparecem n
 | Read | cv.md, _profile.md, article-digest.md, cv-template.html |
 | Write | HTML temporario para PDF, applications.md, reports .md |
 | Edit | Atualizar tracker |
-| Bash | `node generate-pdf.mjs` |
+| Bash | `node scripts/generate-pdf.mjs` |

@@ -181,7 +181,7 @@ Recursos: 6 abas de filtro, 4 modos de ordenação, visualização agrupada/plan
 
 ```
 career-ops/
-├── CLAUDE.md                    # Instruções para o agente
+├── docs/CLAUDE.md                    # Instruções para o agente
 ├── cv.md                        # Seu CV (crie este arquivo)
 ├── article-digest.md            # Seus proof points (opcional)
 ├── config/

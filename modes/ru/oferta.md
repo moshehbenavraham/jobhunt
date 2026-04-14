@@ -160,6 +160,6 @@
 - `{pdf_emoji}` = `✅` или `❌`
 - `{note}` = краткий комментарий (опционально, колонку можно опустить)
 
-Затем выполнить `node merge-tracker.mjs` для слияния в `data/applications.md`.
+Затем выполнить `node scripts/merge-tracker.mjs` для слияния в `data/applications.md`.
 
 Для **существующей** записи допустимо прямое обновление в `data/applications.md` (статус, PDF, ссылка на отчёт).

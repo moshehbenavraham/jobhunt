@@ -59,7 +59,7 @@
 URL を処理する前に同期を確認：
 
 ```bash
-node cv-sync-check.mjs
+node scripts/cv-sync-check.mjs
 ```
 
 非同期がある場合、続行前に候補者に通知。

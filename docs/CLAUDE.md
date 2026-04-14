@@ -10,7 +10,7 @@ The portfolio that goes with this system is also open source: [cv-santiago](http
 
 ## Data Contract (CRITICAL)
 
-There are two layers. Read `DATA_CONTRACT.md` for the full list.
+There are two layers. Read `docs/DATA_CONTRACT.md` for the full list.
 
 **User Layer (NEVER auto-updated, personalization goes HERE):**
 - `cv.md`, `config/profile.yml`, `modes/_profile.md`, `article-digest.md`, `portals.yml`
@@ -18,7 +18,7 @@ There are two layers. Read `DATA_CONTRACT.md` for the full list.
 
 **System Layer (auto-updatable, DON'T put user data here):**
 - `modes/_shared.md`, `modes/oferta.md`, all other modes
-- `CLAUDE.md`, `*.mjs` scripts, `dashboard/*`, `templates/*`, `batch/*`
+- `docs/CLAUDE.md`, `scripts/*.mjs`, `dashboard/*`, `templates/*`, `batch/*`
 
 **THE RULE: When the user asks to customize anything (archetypes, narrative, negotiation scripts, proof points, location policy, comp targets), ALWAYS write to `modes/_profile.md` or `config/profile.yml`. NEVER edit `modes/_shared.md` for user-specific content.** This ensures system updates don't overwrite their customizations.
 
@@ -27,19 +27,19 @@ There are two layers. Read `DATA_CONTRACT.md` for the full list.
 On the first message of each session, run the update checker silently:
 
 ```bash
-node update-system.mjs check
+node scripts/update-system.mjs check
 ```
 
 Parse the JSON output:
 - `{"status": "update-available", "local": "1.0.0", "remote": "1.1.0", "changelog": "..."}` → tell the user:
   > "career-ops update available (v{local} → v{remote}). Your data (CV, profile, tracker, reports) will NOT be touched. Want me to update?"
-  If yes → run `node update-system.mjs apply`. If no → run `node update-system.mjs dismiss`.
+  If yes → run `node scripts/update-system.mjs apply`. If no → run `node scripts/update-system.mjs dismiss`.
 - `{"status": "up-to-date"}` → say nothing
 - `{"status": "dismissed"}` → say nothing
 - `{"status": "offline"}` → say nothing
 
 The user can also say "check for updates" or "update career-ops" at any time to force a check.
-To rollback: `node update-system.mjs rollback`
+To rollback: `node scripts/update-system.mjs rollback`
 
 ## What is career-ops
 
@@ -54,16 +54,16 @@ AI-powered job search automation built on Claude Code: pipeline tracking, offer 
 | `data/scan-history.tsv` | Scanner dedup history |
 | `portals.yml` | Query and company config |
 | `templates/cv-template.html` | HTML template for CVs |
-| `generate-pdf.mjs` | Playwright: HTML to PDF |
+| `scripts/generate-pdf.mjs` | Playwright: HTML to PDF |
 | `article-digest.md` | Compact proof points from portfolio (optional) |
 | `interview-prep/story-bank.md` | Accumulated STAR+R stories across evaluations |
 | `interview-prep/{company}-{role}.md` | Company-specific interview intel reports |
-| `analyze-patterns.mjs` | Pattern analysis script (JSON output) |
-| `followup-cadence.mjs` | Follow-up cadence calculator (JSON output) |
+| `scripts/analyze-patterns.mjs` | Pattern analysis script (JSON output) |
+| `scripts/followup-cadence.mjs` | Follow-up cadence calculator (JSON output) |
 | `data/follow-ups.md` | Follow-up history tracker |
-| `scan.mjs` | Zero-token portal scanner — hits Greenhouse/Ashby/Lever APIs directly, zero LLM cost |
-| `check-liveness.mjs` | Job posting liveness checker |
-| `liveness-core.mjs` | Shared liveness logic (expired signals win over generic Apply text) |
+| `scripts/scan.mjs` | Zero-token portal scanner — hits Greenhouse/Ashby/Lever APIs directly, zero LLM cost |
+| `scripts/check-liveness.mjs` | Job posting liveness checker |
+| `scripts/liveness-core.mjs` | Shared liveness logic (expired signals win over generic Apply text) |
 | `reports/` | Evaluation reports (format: `{###}-{company-slug}-{YYYY-MM-DD}.md`). Blocks A-F + G (Posting Legitimacy). Header includes `**Legitimacy:** {tier}`. |
 
 ### OpenCode Commands
@@ -264,7 +264,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 
 ## CI/CD and Quality
 
-- **GitHub Actions** run on every PR: `test-all.mjs` (63+ checks), auto-labeler (risk-based: 🔴 core-architecture, ⚠️ agent-behavior, 📄 docs), welcome bot for first-time contributors
+- **GitHub Actions** run on every PR: `scripts/test-all.mjs` (63+ checks), auto-labeler (risk-based: 🔴 core-architecture, ⚠️ agent-behavior, 📄 docs), welcome bot for first-time contributors
 - **Branch protection** on `main`: status checks must pass before merge. No direct pushes to main (except admin bypass).
 - **Dependabot** monitors npm, Go modules, and GitHub Actions for security updates
 - **Contributing process**: issue first → discussion → PR with linked issue → CI passes → maintainer review → merge
@@ -285,7 +285,7 @@ Default modes are in `modes/` (English). Additional language-specific modes are 
 - JDs in `jds/` (referenced as `local:jds/{file}` in pipeline.md)
 - Batch in `batch/` (gitignored except scripts and prompt)
 - Report numbering: sequential 3-digit zero-padded, max existing + 1
-- **RULE: After each batch of evaluations, run `node merge-tracker.mjs`** to merge tracker additions and avoid duplications.
+- **RULE: After each batch of evaluations, run `node scripts/merge-tracker.mjs`** to merge tracker additions and avoid duplications.
 - **RULE: NEVER create new entries in applications.md if company+role already exists.** Update the existing entry.
 
 ### TSV Format for Tracker Additions
@@ -311,13 +311,13 @@ Write one TSV file per evaluation to `batch/tracker-additions/{num}-{company-slu
 
 ### Pipeline Integrity
 
-1. **NEVER edit applications.md to ADD new entries** -- Write TSV in `batch/tracker-additions/` and `merge-tracker.mjs` handles the merge.
+1. **NEVER edit applications.md to ADD new entries** -- Write TSV in `batch/tracker-additions/` and `scripts/merge-tracker.mjs` handles the merge.
 2. **YES you can edit applications.md to UPDATE status/notes of existing entries.**
 3. All reports MUST include `**URL:**` in the header (between Score and PDF). Include `**Legitimacy:** {tier}` (see Block G in `modes/oferta.md`).
 4. All statuses MUST be canonical (see `templates/states.yml`).
-5. Health check: `node verify-pipeline.mjs`
-6. Normalize statuses: `node normalize-statuses.mjs`
-7. Dedup: `node dedup-tracker.mjs`
+5. Health check: `node scripts/verify-pipeline.mjs`
+6. Normalize statuses: `node scripts/normalize-statuses.mjs`
+7. Dedup: `node scripts/dedup-tracker.mjs`
 
 ### Canonical States (applications.md)
 
@@ -398,7 +398,7 @@ layer.
 - Keep all personalization in `config/profile.yml`, `modes/_profile.md`, `article-digest.md`, or `portals.yml`.
 - Never verify a job’s live status with generic web fetch when Playwright is available.
 - Never submit an application for the user.
-- Never add new tracker rows directly to `data/applications.md`; use the TSV addition flow and `merge-tracker.mjs`.
+- Never add new tracker rows directly to `data/applications.md`; use the TSV addition flow and `scripts/merge-tracker.mjs`.
 
 ## Verification
 

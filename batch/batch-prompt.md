@@ -19,7 +19,7 @@ Eres un worker de evaluación de ofertas de empleo for the candidate (read name 
 | article-digest.md | `article-digest.md (project root)` | SIEMPRE (proof points) |
 | i18n.ts | `i18n.ts (if exists, optional)` | Solo entrevistas/deep |
 | cv-template.html | `templates/cv-template.html` | Para PDF |
-| generate-pdf.mjs | `generate-pdf.mjs` | Para PDF |
+| scripts/generate-pdf.mjs | `scripts/generate-pdf.mjs` | Para PDF |
 
 **REGLA: NUNCA escribir en cv.md ni i18n.ts.** Son read-only.
 **REGLA: NUNCA hardcodear métricas.** Leerlas de cv.md + article-digest.md en el momento.
@@ -232,7 +232,7 @@ Donde `{company-slug}` es el nombre de empresa en lowercase, sin espacios, con g
 12. Escribe HTML a `/tmp/cv-candidate-{company-slug}.html`
 13. Ejecuta:
 ```bash
-node generate-pdf.mjs \
+node scripts/generate-pdf.mjs \
   /tmp/cv-candidate-{company-slug}.html \
   output/cv-candidate-{company-slug}-{{DATE}}.pdf \
   --format={letter|a4}
@@ -316,7 +316,7 @@ Formato TSV (una sola línea, sin header, 9 columnas tab-separated):
 | 8 | report | md link | `[647](reports/647-...)` | Link al report |
 | 9 | notes | string | `APPLY HIGH...` | Resumen 1 frase |
 
-**IMPORTANTE:** El orden TSV tiene status ANTES de score (col 5→status, col 6→score). En applications.md el orden es inverso (col 5→score, col 6→status). merge-tracker.mjs maneja la conversión.
+**IMPORTANTE:** El orden TSV tiene status ANTES de score (col 5→status, col 6→score). En applications.md el orden es inverso (col 5→score, col 6→status). scripts/merge-tracker.mjs maneja la conversión.
 
 **Estados canónicos válidos:** `Evaluada`, `Aplicado`, `Respondido`, `Entrevista`, `Oferta`, `Rechazado`, `Descartado`, `NO APLICAR`
 

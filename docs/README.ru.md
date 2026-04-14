@@ -169,7 +169,7 @@ go build -o career-dashboard .
 
 ```
 career-ops/
-├── CLAUDE.md                    # Инструкции для агента
+├── docs/CLAUDE.md                    # Инструкции для агента
 ├── cv.md                        # Ваше CV (создайте)
 ├── config/
 │   └── profile.example.yml      # Шаблон профиля

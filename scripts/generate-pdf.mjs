@@ -4,7 +4,7 @@
  * generate-pdf.mjs — HTML → PDF via Playwright
  *
  * Usage:
- *   node career-ops/generate-pdf.mjs <input.html> <output.pdf> [--format=letter|a4]
+ *   node scripts/generate-pdf.mjs <input.html> <output.pdf> [--format=letter|a4]
  *
  * Requires: @playwright/test (or playwright) installed.
  * Uses Chromium headless to render the HTML and produce a clean, ATS-parseable PDF.
@@ -16,10 +16,11 @@ import { readFile } from 'fs/promises';
 import { mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const projectRoot = resolve(SCRIPT_DIR, '..');
 
 // Ensure output directory exists (fresh setup)
-mkdirSync(resolve(__dirname, 'output'), { recursive: true });
+mkdirSync(resolve(projectRoot, 'output'), { recursive: true });
 
 /**
  * Normalize text for ATS compatibility by converting problematic Unicode.
@@ -91,7 +92,7 @@ async function generatePDF() {
   }
 
   if (!inputPath || !outputPath) {
-    console.error('Usage: node generate-pdf.mjs <input.html> <output.pdf> [--format=letter|a4]');
+    console.error('Usage: node scripts/generate-pdf.mjs <input.html> <output.pdf> [--format=letter|a4]');
     process.exit(1);
   }
 

@@ -7,21 +7,21 @@
  * NEVER touches user data (cv.md, profile.yml, _profile.md, data/, reports/).
  *
  * Usage:
- *   node update-system.mjs check      # Check if update available
- *   node update-system.mjs apply      # Apply update (after user confirms)
- *   node update-system.mjs rollback   # Rollback last update
- *   node update-system.mjs dismiss    # Dismiss update check
+ *   node scripts/update-system.mjs check      # Check if update available
+ *   node scripts/update-system.mjs apply      # Apply update (after user confirms)
+ *   node scripts/update-system.mjs rollback   # Rollback last update
+ *   node scripts/update-system.mjs dismiss    # Dismiss update check
  *
- * See DATA_CONTRACT.md for the full system/user layer definitions.
+ * See docs/DATA_CONTRACT.md for the full system/user layer definitions.
  */
 
 import { execFileSync, execSync } from 'child_process';
-import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'fs';
-import { join, dirname } from 'path';
+import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
+import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = __dirname;
+const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(SCRIPT_DIR, '..');
 
 const CANONICAL_REPO = 'https://github.com/santifer/career-ops.git';
 const RAW_VERSION_URL = 'https://raw.githubusercontent.com/santifer/career-ops/main/VERSION';
@@ -45,15 +45,7 @@ const SYSTEM_PATHS = [
   'modes/tracker.md',
   'modes/training.md',
   'modes/de/',
-  'CLAUDE.md',
   'AGENTS.md',
-  'generate-pdf.mjs',
-  'merge-tracker.mjs',
-  'verify-pipeline.mjs',
-  'dedup-tracker.mjs',
-  'normalize-statuses.mjs',
-  'cv-sync-check.mjs',
-  'update-system.mjs',
   'batch/batch-prompt.md',
   'batch/batch-runner.sh',
   'dashboard/',
@@ -62,13 +54,27 @@ const SYSTEM_PATHS = [
   '.claude/skills/',
   'docs/',
   'VERSION',
-  'DATA_CONTRACT.md',
-  'CONTRIBUTING.md',
   'README.md',
   'LICENSE',
-  'CITATION.cff',
   '.github/',
   'package.json',
+];
+
+const REMAPPED_SYSTEM_FILES = [
+  { source: 'analyze-patterns.mjs', dest: 'scripts/analyze-patterns.mjs' },
+  { source: 'check-liveness.mjs', dest: 'scripts/check-liveness.mjs' },
+  { source: 'cv-sync-check.mjs', dest: 'scripts/cv-sync-check.mjs' },
+  { source: 'dedup-tracker.mjs', dest: 'scripts/dedup-tracker.mjs' },
+  { source: 'doctor.mjs', dest: 'scripts/doctor.mjs' },
+  { source: 'followup-cadence.mjs', dest: 'scripts/followup-cadence.mjs' },
+  { source: 'generate-pdf.mjs', dest: 'scripts/generate-pdf.mjs' },
+  { source: 'liveness-core.mjs', dest: 'scripts/liveness-core.mjs' },
+  { source: 'merge-tracker.mjs', dest: 'scripts/merge-tracker.mjs' },
+  { source: 'normalize-statuses.mjs', dest: 'scripts/normalize-statuses.mjs' },
+  { source: 'scan.mjs', dest: 'scripts/scan.mjs' },
+  { source: 'test-all.mjs', dest: 'scripts/test-all.mjs' },
+  { source: 'update-system.mjs', dest: 'scripts/update-system.mjs' },
+  { source: 'verify-pipeline.mjs', dest: 'scripts/verify-pipeline.mjs' },
 ];
 
 // User layer paths — NEVER touch these (safety check)
@@ -216,6 +222,18 @@ async function apply() {
       }
     }
 
+    for (const { source, dest } of REMAPPED_SYSTEM_FILES) {
+      try {
+        const content = execFileSync('git', ['show', `FETCH_HEAD:${source}`], { cwd: ROOT });
+        const destination = join(ROOT, dest);
+        mkdirSync(dirname(destination), { recursive: true });
+        writeFileSync(destination, content);
+        updated.push(dest);
+      } catch {
+        // File may not exist in remote (new additions), skip
+      }
+    }
+
     // 4. Validate: check NO user files were touched
     let userFileTouched = false;
     try {
@@ -263,7 +281,7 @@ async function apply() {
 
     console.log(`\nUpdate complete: v${local} → v${remote}`);
     console.log(`Updated ${updated.length} system paths.`);
-    console.log(`Rollback available: node update-system.mjs rollback`);
+    console.log('Rollback available: node scripts/update-system.mjs rollback');
 
   } finally {
     // Remove lock
@@ -311,7 +329,7 @@ function rollback() {
 
 function dismiss() {
   writeFileSync(join(ROOT, '.update-dismissed'), new Date().toISOString());
-  console.log('Update check dismissed. Run "node update-system.mjs check" or say "check for updates" to re-enable.');
+  console.log('Update check dismissed. Run "node scripts/update-system.mjs check" or say "check for updates" to re-enable.');
 }
 
 // ── MAIN ────────────────────────────────────────────────────────
@@ -324,6 +342,6 @@ switch (cmd) {
   case 'rollback': rollback(); break;
   case 'dismiss': dismiss(); break;
   default:
-    console.log('Usage: node update-system.mjs [check|apply|rollback|dismiss]');
+    console.log('Usage: node scripts/update-system.mjs [check|apply|rollback|dismiss]');
     process.exit(1);
 }
