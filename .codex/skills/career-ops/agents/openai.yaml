@@ -1,0 +1,4 @@
+interface:
+  display_name: "Career Ops"
+  short_description: "Route Career-Ops tasks to the correct local mode"
+  default_prompt: "Use $career-ops to route this Career-Ops task to the correct checked-in mode and execute it locally."
