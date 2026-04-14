@@ -1,7 +1,7 @@
 {
   "name": "career-ops",
   "version": "1.5.3",
-  "description": "AI-powered job search pipeline built on Claude Code",
+  "description": "AI-powered job search pipeline",
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "verify": "node scripts/verify-pipeline.mjs",
@@ -23,15 +23,9 @@
     "career",
     "automation"
   ],
-  "author": "Santiago Fernández de Valderrama <hi@santifer.io> (https://santifer.io)",
-  "homepage": "https://santifer.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/santifer/career-ops"
-  },
   "license": "MIT",
   "dependencies": {
     "js-yaml": "^4.1.1",
-    "playwright": "^1.58.1"
+    "playwright": "^1.59.1"
   }
 }
