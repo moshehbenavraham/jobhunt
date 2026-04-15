@@ -1,10 +1,10 @@
 # PRD Phase 01: Docs and Entrypoints
 
-**Status**: Not Started
+**Status**: In Progress
 **Sessions**: 4
 **Estimated Duration**: 4-6 days
 
-**Progress**: 0/4 sessions (0%)
+**Progress**: 1/4 sessions (25%)
 
 ---
 
@@ -27,7 +27,7 @@ entrypoints only.
 
 | Session | Name | Status | Est. Tasks | Validated |
 |---------|------|--------|------------|-----------|
-| 01 | Public Quick Start Alignment | Not Started | ~12-25 | - |
+| 01 | Public Quick Start Alignment | Complete | ~12-25 | 2026-04-15 |
 | 02 | Contributor and Support Docs Alignment | Not Started | ~12-25 | - |
 | 03 | Customization and Policy Runtime Cleanup | Not Started | ~12-25 | - |
 | 04 | Docs Surface Validation and Phase Closeout | Not Started | ~12-25 | - |
@@ -36,13 +36,13 @@ entrypoints only.
 
 ## Completed Sessions
 
-None yet.
+- `phase01-session01-public-quick-start-alignment`
 
 ---
 
 ## Upcoming Sessions
 
-- Session 01: Public Quick Start Alignment
+- Session 02: Contributor and Support Docs Alignment
 
 ---
 
@@ -127,4 +127,3 @@ Phase complete when:
 ### Enables
 
 - Phase 02: Batch Runtime Conversion
-

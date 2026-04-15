@@ -17,13 +17,7 @@ npm install
 npx playwright install chromium
 ```
 
-### 2. Validate the environment
-
-```bash
-npm run doctor
-```
-
-### 3. Configure your profile
+### 2. Configure your profile and portals
 
 ```bash
 cp config/profile.example.yml config/profile.yml
@@ -37,9 +31,19 @@ Fill in:
 - salary target
 - portals you want scanned
 
-### 4. Add your CV
+### 3. Add your CV
 
 Create `cv.md` in the project root. If you have public proof points, add `article-digest.md` too.
+
+### 4. Validate the setup
+
+```bash
+npm run doctor
+```
+
+`npm run doctor` validates Node.js, installed dependencies, Playwright
+Chromium, `cv.md`, `config/profile.yml`, and `portals.yml`. If it reports an
+issue, fix the listed item and rerun the command.
 
 ### 5. Start the repo in Codex
 
@@ -49,7 +53,9 @@ codex
 
 From the repo root, paste a JD or URL and follow the workflow from the generated reports.
 
-## Verify Setup
+## Follow-up Verification
+
+Run these after the initial setup path is working:
 
 ```bash
 npm run sync-check

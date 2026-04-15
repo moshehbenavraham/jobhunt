@@ -7,11 +7,21 @@ AI-powered job search pipeline driven by `AGENTS.md` and checked-in Codex skills
 ```bash
 npm install
 npx playwright install chromium
+cp config/profile.example.yml config/profile.yml
+cp templates/portals.example.yml portals.yml
+# create cv.md in the project root
 npm run doctor
 codex
 ```
 
-Open the repo root in `codex`, then paste a job URL or JD text. The standard user-layer inputs are:
+Before `npm run doctor`, create `cv.md` in the project root. If you have
+public proof points, add `article-digest.md` too. See the
+[Setup Guide](docs/SETUP.md) for the detailed walkthrough.
+
+`npm run doctor` validates Node.js, installed dependencies, Playwright
+Chromium, `cv.md`, `config/profile.yml`, and `portals.yml`. After it passes,
+launch `codex` from the repo root and paste a job URL or JD text. The
+standard user-layer inputs are:
 
 - `cv.md`
 - `config/profile.yml`

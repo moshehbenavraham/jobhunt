@@ -1,7 +1,7 @@
 # Session 01: Public Quick Start Alignment
 
 **Session ID**: `phase01-session01-public-quick-start-alignment`
-**Status**: Not Started
+**Status**: Complete
 **Estimated Tasks**: ~12-25
 **Estimated Duration**: 2-4 hours
 
@@ -54,4 +54,3 @@ consistent Codex-primary flow.
 - [ ] First-run commands match live repo behavior and existing scripts
 - [ ] No Claude-first or "Codex later" wording remains in the public quick
       start path
-
