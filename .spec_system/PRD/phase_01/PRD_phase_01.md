@@ -4,7 +4,7 @@
 **Sessions**: 4
 **Estimated Duration**: 4-6 days
 
-**Progress**: 1/4 sessions (25%)
+**Progress**: 2/4 sessions (50%)
 
 ---
 
@@ -28,7 +28,7 @@ entrypoints only.
 | Session | Name | Status | Est. Tasks | Validated |
 |---------|------|--------|------------|-----------|
 | 01 | Public Quick Start Alignment | Complete | ~12-25 | 2026-04-15 |
-| 02 | Contributor and Support Docs Alignment | Not Started | ~12-25 | - |
+| 02 | Contributor and Support Docs Alignment | Complete | ~12-25 | 2026-04-15 |
 | 03 | Customization and Policy Runtime Cleanup | Not Started | ~12-25 | - |
 | 04 | Docs Surface Validation and Phase Closeout | Not Started | ~12-25 | - |
 
@@ -37,12 +37,14 @@ entrypoints only.
 ## Completed Sessions
 
 - `phase01-session01-public-quick-start-alignment`
+- `phase01-session02-contributor-support-docs-alignment`
 
 ---
 
 ## Upcoming Sessions
 
-- Session 02: Contributor and Support Docs Alignment
+- Session 03: Customization and Policy Runtime Cleanup
+- Session 04: Docs Surface Validation and Phase Closeout
 
 ---
 

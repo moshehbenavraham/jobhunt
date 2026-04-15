@@ -1,6 +1,6 @@
 {
   "name": "career-ops",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "description": "AI-powered job search pipeline",
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
