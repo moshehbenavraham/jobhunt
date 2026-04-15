@@ -4,8 +4,8 @@
 
 ```
                     ┌─────────────────────────────────┐
-                    │         Claude Code Agent        │
-                    │   (reads docs/CLAUDE.md + modes/*.md) │
+                    │          AI Agent CLI            │
+                    │    (reads AGENTS.md + modes/*.md)     │
                     └──────────┬──────────────────────┘
                                │
             ┌──────────────────┼──────────────────────┐

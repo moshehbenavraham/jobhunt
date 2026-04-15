@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * update-system.mjs — Safe auto-updater for career-ops
+ * update-system.mjs - Safe auto-updater for career-ops
  *
  * Updates ONLY system layer files (modes, scripts, dashboard, templates).
  * NEVER touches user data (cv.md, profile.yml, _profile.md, data/, reports/).
@@ -23,11 +23,13 @@ import { fileURLToPath } from 'url';
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
 
+const UPSTREAM_REMOTE = 'upstream';
 const CANONICAL_REPO = 'https://github.com/santifer/career-ops.git';
 const RAW_VERSION_URL = 'https://raw.githubusercontent.com/santifer/career-ops/main/VERSION';
 const RELEASES_API = 'https://api.github.com/repos/santifer/career-ops/releases/latest';
+const VERSION_PATH = 'VERSION';
 
-// System layer paths — ONLY these files get updated
+// System layer paths - ONLY these files get updated
 const SYSTEM_PATHS = [
   'modes/_shared.md',
   'modes/_profile.template.md',
@@ -77,7 +79,7 @@ const REMAPPED_SYSTEM_FILES = [
   { source: 'verify-pipeline.mjs', dest: 'scripts/verify-pipeline.mjs' },
 ];
 
-// User layer paths — NEVER touch these (safety check)
+// User layer paths - NEVER touch these (safety check)
 const USER_PATHS = [
   'cv.md',
   'config/profile.yml',
@@ -91,9 +93,34 @@ const USER_PATHS = [
   'jds/',
 ];
 
+function readText(path) {
+  return readFileSync(join(ROOT, path), 'utf-8').trim();
+}
+
+function isSemver(value) {
+  return /^\d+\.\d+\.\d+$/.test(value);
+}
+
+function readCanonicalVersion() {
+  if (!existsSync(join(ROOT, VERSION_PATH))) {
+    throw new Error(`Missing canonical version file: ${VERSION_PATH}`);
+  }
+
+  const version = readText(VERSION_PATH);
+  if (!isSemver(version)) {
+    throw new Error(`Invalid semver in ${VERSION_PATH}: "${version}"`);
+  }
+
+  return version;
+}
+
 function localVersion() {
-  const vPath = join(ROOT, 'VERSION');
-  return existsSync(vPath) ? readFileSync(vPath, 'utf-8').trim() : '0.0.0';
+  try {
+    return readCanonicalVersion();
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
 }
 
 function compareVersions(a, b) {
@@ -108,6 +135,14 @@ function compareVersions(a, b) {
 
 function git(...args) {
   return execFileSync('git', args, { cwd: ROOT, encoding: 'utf-8', timeout: 30000 }).trim();
+}
+
+function gitOrNull(...args) {
+  try {
+    return git(...args);
+  } catch {
+    return null;
+  }
 }
 
 function gitStatusEntries() {
@@ -132,7 +167,109 @@ function addPaths(paths) {
   git('add', '--', ...paths);
 }
 
-// ── CHECK ───────────────────────────────────────────────────────
+function resolveUpstreamTarget() {
+  const remoteUrl = gitOrNull('remote', 'get-url', UPSTREAM_REMOTE);
+  if (remoteUrl) {
+    return { ref: UPSTREAM_REMOTE, url: remoteUrl };
+  }
+
+  return { ref: CANONICAL_REPO, url: CANONICAL_REPO };
+}
+
+function extractTagVersion(ref) {
+  const match = ref.match(/refs\/tags\/v?(\d+\.\d+\.\d+)$/);
+  return match ? match[1] : null;
+}
+
+function latestRemoteTagVersion() {
+  const target = resolveUpstreamTarget();
+  const refs = gitOrNull('ls-remote', '--refs', '--tags', target.ref);
+  if (!refs) return null;
+
+  const versions = refs
+    .split('\n')
+    .map(line => line.trim().split(/\s+/)[1] || '')
+    .map(extractTagVersion)
+    .filter(Boolean);
+
+  if (versions.length === 0) return null;
+  return versions.sort(compareVersions).at(-1);
+}
+
+function readVersionFromGitRef(ref) {
+  const text = gitOrNull('show', `${ref}:${VERSION_PATH}`);
+  if (!text) return null;
+
+  const version = text.trim();
+  return isSemver(version) ? version : null;
+}
+
+function writeCanonicalVersion(version, updatedPaths) {
+  if (!version || !isSemver(version)) return;
+
+  const versionFile = join(ROOT, VERSION_PATH);
+  const current = existsSync(versionFile) ? readFileSync(versionFile, 'utf-8').trim() : null;
+  if (current !== version) {
+    writeFileSync(versionFile, `${version}\n`);
+  }
+  updatedPaths.add(VERSION_PATH);
+}
+
+function isUserPath(file) {
+  return USER_PATHS.some(path => file === path || file.startsWith(path));
+}
+
+function updateTargets() {
+  return new Set([
+    ...SYSTEM_PATHS,
+    ...REMAPPED_SYSTEM_FILES.map(({ dest }) => dest),
+  ]);
+}
+
+function isUpdateTargetPath(file) {
+  for (const target of updateTargets()) {
+    if (target.endsWith('/')) {
+      if (file.startsWith(target)) return true;
+      continue;
+    }
+
+    if (file === target) return true;
+  }
+
+  return false;
+}
+
+function dirtyUpdateTargets() {
+  return gitStatusEntries()
+    .map(entry => entry.path)
+    .filter(path => !isUserPath(path))
+    .filter(isUpdateTargetPath);
+}
+
+function checkoutSystemFilesFromRef(ref, updatedPaths) {
+  for (const path of SYSTEM_PATHS) {
+    try {
+      git('checkout', ref, '--', path);
+      updatedPaths.add(path);
+    } catch {
+      // File may not exist in the source ref.
+    }
+  }
+
+  for (const { source, dest } of REMAPPED_SYSTEM_FILES) {
+    try {
+      const content = execFileSync('git', ['show', `${ref}:${source}`], { cwd: ROOT });
+      const destination = join(ROOT, dest);
+      mkdirSync(dirname(destination), { recursive: true });
+      writeFileSync(destination, content);
+      updatedPaths.add(dest);
+    } catch {
+      // File may not exist in the source ref.
+    }
+  }
+}
+
+// -- CHECK -------------------------------------------------------
 
 async function check() {
   // Respect dismiss flag
@@ -145,9 +282,12 @@ async function check() {
   let remote;
 
   try {
-    const res = await fetch(RAW_VERSION_URL);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    remote = (await res.text()).trim();
+    remote = latestRemoteTagVersion();
+    if (!remote) {
+      const res = await fetch(RAW_VERSION_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      remote = (await res.text()).trim();
+    }
   } catch {
     console.log(JSON.stringify({ status: 'offline', local }));
     return;
@@ -180,11 +320,22 @@ async function check() {
   }));
 }
 
-// ── APPLY ───────────────────────────────────────────────────────
+// -- APPLY -------------------------------------------------------
 
 async function apply() {
   const local = localVersion();
+  const remote = latestRemoteTagVersion();
   const initialStatusPaths = new Set(gitStatusEntries().map(entry => entry.path));
+  const dirtyTargets = dirtyUpdateTargets();
+
+  if (dirtyTargets.length > 0) {
+    console.error('Refusing to update with local changes in update-managed files:');
+    for (const path of dirtyTargets) {
+      console.error(`- ${path}`);
+    }
+    console.error('Commit, stash, or clean those paths first.');
+    process.exit(1);
+  }
 
   // Check for lock
   const lockFile = join(ROOT, '.update-lock');
@@ -208,31 +359,13 @@ async function apply() {
 
     // 2. Fetch from canonical repo
     console.log('Fetching latest from upstream...');
-    git('fetch', CANONICAL_REPO, 'main');
+    git('fetch', resolveUpstreamTarget().ref, 'main');
 
     // 3. Checkout system files only
     console.log('Updating system files...');
-    const updated = [];
-    for (const path of SYSTEM_PATHS) {
-      try {
-        git('checkout', 'FETCH_HEAD', '--', path);
-        updated.push(path);
-      } catch {
-        // File may not exist in remote (new additions), skip
-      }
-    }
-
-    for (const { source, dest } of REMAPPED_SYSTEM_FILES) {
-      try {
-        const content = execFileSync('git', ['show', `FETCH_HEAD:${source}`], { cwd: ROOT });
-        const destination = join(ROOT, dest);
-        mkdirSync(dirname(destination), { recursive: true });
-        writeFileSync(destination, content);
-        updated.push(dest);
-      } catch {
-        // File may not exist in remote (new additions), skip
-      }
-    }
+    const updated = new Set();
+    checkoutSystemFilesFromRef('FETCH_HEAD', updated);
+    writeCanonicalVersion(remote || readVersionFromGitRef('FETCH_HEAD'), updated);
 
     // 4. Validate: check NO user files were touched
     let userFileTouched = false;
@@ -253,7 +386,7 @@ async function apply() {
 
     if (userFileTouched) {
       console.error('Aborting: user files were touched. Rolling back...');
-      revertPaths(updated);
+      revertPaths([...updated]);
       process.exit(1);
     }
 
@@ -265,7 +398,7 @@ async function apply() {
     }
 
     // 6. Commit the update
-    const remote = localVersion(); // Re-read after checkout updated VERSION
+    const updatedVersion = localVersion(); // Re-read after normalization
     try {
       const pathsToStage = [...updated];
       const dismissFile = join(ROOT, '.update-dismissed');
@@ -274,13 +407,13 @@ async function apply() {
         pathsToStage.push('.update-dismissed');
       }
       addPaths(pathsToStage);
-      git('commit', '-m', `chore: auto-update system files to v${remote}`);
+      git('commit', '-m', `chore: auto-update system files to v${updatedVersion}`);
     } catch {
       // Nothing to commit (already up to date)
     }
 
-    console.log(`\nUpdate complete: v${local} → v${remote}`);
-    console.log(`Updated ${updated.length} system paths.`);
+    console.log(`\nUpdate complete: v${local} -> v${updatedVersion}`);
+    console.log(`Updated ${updated.size} system paths.`);
     console.log('Rollback available: node scripts/update-system.mjs rollback');
 
   } finally {
@@ -289,7 +422,7 @@ async function apply() {
   }
 }
 
-// ── ROLLBACK ────────────────────────────────────────────────────
+// -- ROLLBACK ----------------------------------------------------
 
 function rollback() {
   // Find most recent backup branch
@@ -306,15 +439,11 @@ function rollback() {
     console.log(`Rolling back to: ${latest}`);
 
     // Checkout system files from backup branch
-    for (const path of SYSTEM_PATHS) {
-      try {
-        git('checkout', latest, '--', path);
-      } catch {
-        // File may not have existed in backup
-      }
-    }
+    const updated = new Set();
+    checkoutSystemFilesFromRef(latest, updated);
+    writeCanonicalVersion(readVersionFromGitRef(latest), updated);
 
-    addPaths(SYSTEM_PATHS);
+    addPaths([...updated]);
     git('commit', '-m', `chore: rollback system files from ${latest}`);
 
     console.log(`Rollback complete. System files restored from ${latest}.`);
@@ -325,14 +454,14 @@ function rollback() {
   }
 }
 
-// ── DISMISS ─────────────────────────────────────────────────────
+// -- DISMISS -----------------------------------------------------
 
 function dismiss() {
   writeFileSync(join(ROOT, '.update-dismissed'), new Date().toISOString());
   console.log('Update check dismissed. Run "node scripts/update-system.mjs check" or say "check for updates" to re-enable.');
 }
 
-// ── MAIN ────────────────────────────────────────────────────────
+// -- MAIN --------------------------------------------------------
 
 const cmd = process.argv[2] || 'check';
 

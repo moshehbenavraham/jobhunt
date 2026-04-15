@@ -37,10 +37,10 @@ The evaluation uses 6 blocks (A-F) with a global score of 1-5:
 | **Global** | Weighted average of above |
 
 **Score interpretation:**
-- 4.5+ → Strong match, recommend applying immediately
-- 4.0-4.4 → Good match, worth applying
-- 3.5-3.9 → Decent but not ideal, apply only if specific reason
-- Below 3.5 → Recommend against applying (see Ethical Use in docs/CLAUDE.md)
+- 4.5+ -> Strong match, recommend applying immediately
+- 4.0-4.4 -> Good match, worth applying
+- 3.5-3.9 -> Decent but not ideal, apply only if specific reason
+- Below 3.5 -> Recommend against applying; explain the blockers clearly
 
 ## Posting Legitimacy (Block G)
 
@@ -138,7 +138,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 
 These rules apply to ALL generated text that ends up in candidate-facing documents: PDF summaries, bullets, cover letters, form answers, LinkedIn messages. They do NOT apply to internal evaluation reports.
 
-### Avoid cliché phrases
+### Avoid cliche phrases
 - "passionate about" / "results-oriented" / "proven track record"
 - "leveraged" (use "used" or name the tool)
 - "spearheaded" (use "led" or "ran")
@@ -153,7 +153,7 @@ These rules apply to ALL generated text that ends up in candidate-facing documen
 ### Vary sentence structure
 - Don't start every bullet with the same verb
 - Mix sentence lengths (short. Then longer with context. Short again.)
-- Don't always use "X, Y, and Z" — sometimes two items, sometimes four
+- Don't always use "X, Y, and Z" -- sometimes two items, sometimes four
 
 ### Prefer specifics over abstractions
 - "Cut p95 latency from 2.1s to 380ms" beats "improved performance"

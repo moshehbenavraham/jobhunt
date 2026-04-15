@@ -1,0 +1,36 @@
+{
+  "version": "2.0",
+  "project_name": "career-ops",
+  "description": "AI-powered job search pipeline",
+  "current_phase": 0,
+  "current_session": "phase00-session02-version-ownership-normalization",
+  "monorepo": false,
+  "phases": {
+    "0": {
+      "name": "Contract and Drift Cleanup",
+      "description": "Establish the canonical Codex contract, normalize version ownership, and remove blocking metadata drift.",
+      "status": "in_progress",
+      "session_count": 4
+    }
+  },
+  "completed_sessions": [
+    "phase00-session01-canonical-instruction-surface"
+  ],
+  "next_session_history": [
+    {
+      "date": "2026-04-15",
+      "session": "phase00-session01-canonical-instruction-surface",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-15",
+      "session": "phase00-session01-canonical-instruction-surface",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-15",
+      "session": "phase00-session02-version-ownership-normalization",
+      "status": "planned"
+    }
+  ]
+}

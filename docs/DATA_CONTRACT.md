@@ -45,7 +45,6 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/patterns.md` | Pattern analysis instructions |
 | `modes/followup.md` | Follow-up cadence instructions |
 | `modes/de/*` | German language modes |
-| `docs/CLAUDE.md` | Agent instructions |
 | `AGENTS.md` | Codex instructions |
 | `scripts/*.mjs` | Utility scripts |
 | `batch/batch-prompt.md` | Batch worker prompt |

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * test-all.mjs — Comprehensive test suite for career-ops
+ * test-all.mjs - Comprehensive test suite for career-ops
  *
  * Run before merging any PR or pushing changes.
  * Tests: syntax, scripts, dashboard, data contract, personal data, paths.
@@ -24,9 +24,9 @@ let passed = 0;
 let failed = 0;
 let warnings = 0;
 
-function pass(msg) { console.log(`  ✅ ${msg}`); passed++; }
-function fail(msg) { console.log(`  ❌ ${msg}`); failed++; }
-function warn(msg) { console.log(`  ⚠️  ${msg}`); warnings++; }
+function pass(msg) { console.log(`  [PASS] ${msg}`); passed++; }
+function fail(msg) { console.log(`  [FAIL] ${msg}`); failed++; }
+function warn(msg) { console.log(`  [WARN] ${msg}`); warnings++; }
 
 function run(cmd, args = [], opts = {}) {
   try {
@@ -41,10 +41,11 @@ function run(cmd, args = [], opts = {}) {
 
 function fileExists(path) { return existsSync(join(ROOT, path)); }
 function readFile(path) { return readFileSync(join(ROOT, path), 'utf-8'); }
+function readJson(path) { return JSON.parse(readFile(path)); }
 
-console.log('\n🧪 career-ops test suite\n');
+console.log('\ncareer-ops test suite\n');
 
-// ── 1. SYNTAX CHECKS ────────────────────────────────────────────
+// -- 1. SYNTAX CHECKS --------------------------------------------
 
 console.log('1. Syntax checks');
 
@@ -58,7 +59,7 @@ for (const f of mjsFiles) {
   }
 }
 
-// ── 2. SCRIPT EXECUTION ─────────────────────────────────────────
+// -- 2. SCRIPT EXECUTION -----------------------------------------
 
 console.log('\n2. Script execution (graceful on empty data)');
 
@@ -84,7 +85,7 @@ for (const { name, allowFail } of scripts) {
   }
 }
 
-// ── 3. LIVENESS CLASSIFICATION ──────────────────────────────────
+// -- 3. LIVENESS CLASSIFICATION ----------------------------------
 
 console.log('\n3. Liveness classification');
 
@@ -120,7 +121,7 @@ try {
   fail(`Liveness classification tests crashed: ${e.message}`);
 }
 
-// ── 4. DASHBOARD BUILD ──────────────────────────────────────────
+// -- 4. DASHBOARD BUILD ------------------------------------------
 
 if (!QUICK) {
   console.log('\n4. Dashboard build');
@@ -134,13 +135,13 @@ if (!QUICK) {
   console.log('\n4. Dashboard build (skipped --quick)');
 }
 
-// ── 5. DATA CONTRACT ────────────────────────────────────────────
+// -- 5. DATA CONTRACT --------------------------------------------
 
 console.log('\n5. Data contract validation');
 
 // Check system files exist
 const systemFiles = [
-  'docs/CLAUDE.md', 'VERSION', 'docs/DATA_CONTRACT.md',
+  'AGENTS.md', '.codex/skills/career-ops/SKILL.md', 'VERSION', 'docs/DATA_CONTRACT.md',
   'modes/_shared.md', 'modes/_profile.template.md',
   'modes/oferta.md', 'modes/pdf.md', 'modes/scan.md',
   'templates/states.yml', 'templates/cv-template.html',
@@ -169,7 +170,7 @@ for (const f of userFiles) {
   }
 }
 
-// ── 6. PERSONAL DATA LEAK CHECK ─────────────────────────────────
+// -- 6. PERSONAL DATA LEAK CHECK ---------------------------------
 
 console.log('\n6. Personal data leak check');
 
@@ -185,7 +186,7 @@ const allowedFiles = [
   'docs/README.pt-BR.md', 'docs/README.ru.md', 'docs/README.zh-TW.md',
   // Standard project files
   'LICENSE', 'docs/CITATION.cff', 'docs/CONTRIBUTING.md', 'docs/CREDITS.md',
-  'package.json', '.github/FUNDING.yml', 'docs/CLAUDE.md', 'AGENTS.md', 'go.mod', 'scripts/test-all.mjs',
+  'package.json', '.github/FUNDING.yml', 'AGENTS.md', 'go.mod', 'scripts/test-all.mjs',
   // Community / governance files (added in v1.3.0, all legitimately reference the maintainer)
   'docs/CODE_OF_CONDUCT.md', 'docs/GOVERNANCE.md', 'docs/SECURITY.md', 'docs/SUPPORT.md',
   '.github/SECURITY.md',
@@ -194,7 +195,7 @@ const allowedFiles = [
   'dashboard/internal/ui/screens/progress.go',
 ];
 
-// Build pathspec for git grep — only scan tracked files matching these
+// Build pathspec for git grep - only scan tracked files matching these
 // extensions. This is what `grep -rn` was trying to do, but git-aware:
 // untracked files (debate artifacts, AI tool scratch, local plans/) and
 // gitignored files can't trigger false positives because they were never
@@ -220,14 +221,14 @@ if (!leakFound) {
   pass('No personal data leaks outside allowed files');
 }
 
-// ── 7. ABSOLUTE PATH CHECK ──────────────────────────────────────
+// -- 7. ABSOLUTE PATH CHECK --------------------------------------
 
 console.log('\n7. Absolute path check');
 
 // Same git grep approach: only scans tracked files. Untracked AI tool
 // outputs, local debate artifacts, etc. can't false-positive here.
 const absPathResult = run(
-  `git grep -n "/Users/" -- '*.mjs' '*.sh' '*.md' '*.go' '*.yml' 2>/dev/null | grep -v README.md | grep -v LICENSE | grep -v docs/CLAUDE.md | grep -v scripts/test-all.mjs`
+  `git grep -n "/Users/" -- '*.mjs' '*.sh' '*.md' '*.go' '*.yml' 2>/dev/null | grep -v README.md | grep -v LICENSE | grep -v scripts/test-all.mjs`
 );
 if (!absPathResult) {
   pass('No absolute paths in code files');
@@ -237,7 +238,7 @@ if (!absPathResult) {
   }
 }
 
-// ── 8. MODE FILE INTEGRITY ──────────────────────────────────────
+// -- 8. MODE FILE INTEGRITY --------------------------------------
 
 console.log('\n8. Mode file integrity');
 
@@ -263,52 +264,121 @@ if (shared.includes('_profile.md')) {
   fail('_shared.md does NOT reference _profile.md');
 }
 
-// ── 9. CLAUDE.md INTEGRITY ──────────────────────────────────────
+// -- 9. CODEX-PRIMARY INSTRUCTION SURFACE ------------------------
 
-console.log('\n9. CLAUDE.md integrity');
+console.log('\n9. Codex-primary instruction surface');
 
-const claude = readFile('docs/CLAUDE.md');
-const requiredSections = [
-  'Data Contract', 'Update Check', 'Ethical Use',
-  'Offer Verification', 'Canonical States', 'TSV Format',
-  'First Run', 'Onboarding',
-];
-
-for (const section of requiredSections) {
-  if (claude.includes(section)) {
-    pass(`CLAUDE.md has section: ${section}`);
-  } else {
-    fail(`CLAUDE.md missing section: ${section}`);
-  }
+if (fileExists('AGENTS.md')) {
+  pass('AGENTS.md exists');
+} else {
+  fail('AGENTS.md missing');
 }
 
-// ── 10. VERSION FILE ─────────────────────────────────────────────
+const agents = readFile('AGENTS.md');
+if (agents.includes('Startup Checklist (every session)')) {
+  pass('AGENTS.md includes the startup checklist');
+} else {
+  fail('AGENTS.md missing the startup checklist');
+}
+
+const skillPath = '.codex/skills/career-ops/SKILL.md';
+if (fileExists(skillPath)) {
+  pass('career-ops skill exists');
+  const careerOpsSkill = readFile(skillPath);
+
+  if (careerOpsSkill.includes('1. `AGENTS.md`')) {
+    pass('career-ops skill reads AGENTS.md first');
+  } else {
+    fail('career-ops skill does not read AGENTS.md first');
+  }
+
+  const bootstrapMarkers = [
+    'node scripts/update-system.mjs check',
+    '`cv.md`',
+    '`config/profile.yml`',
+    '`modes/_profile.md`',
+    '`portals.yml`',
+  ];
+  const missingBootstrapMarkers = bootstrapMarkers.filter((marker) => !careerOpsSkill.includes(marker));
+  if (missingBootstrapMarkers.length === 0) {
+    pass('career-ops skill bootstrap matches the startup checklist');
+  } else {
+    fail(`career-ops skill missing startup checklist markers: ${missingBootstrapMarkers.join(', ')}`);
+  }
+
+  if (!careerOpsSkill.includes('docs/CODEX.md') && !careerOpsSkill.includes('docs/CLAUDE.md')) {
+    pass('career-ops skill has no legacy instruction-doc dependency');
+  } else {
+    fail('career-ops skill still references legacy instruction docs');
+  }
+} else {
+  fail('career-ops skill missing');
+}
+
+if (!shared.includes('docs/CODEX.md') && !shared.includes('docs/CLAUDE.md')) {
+  pass('shared mode guidance has no legacy instruction-doc dependency');
+} else {
+  fail('shared mode guidance still references legacy instruction docs');
+}
+
+// -- 10. VERSION FILE --------------------------------------------
 
 console.log('\n10. Version file');
 
 if (fileExists('VERSION')) {
-  const version = readFile('VERSION').trim();
-  if (/^\d+\.\d+\.\d+$/.test(version)) {
-    pass(`VERSION is valid semver: ${version}`);
+  const canonicalVersion = readFile('VERSION').trim();
+  if (/^\d+\.\d+\.\d+$/.test(canonicalVersion)) {
+    pass(`VERSION is valid semver: ${canonicalVersion}`);
+
+    if (fileExists('package.json')) {
+      const packageVersion = readJson('package.json').version;
+      if (packageVersion === canonicalVersion) {
+        pass(`package.json version matches VERSION (${canonicalVersion})`);
+      } else {
+        fail(`package.json version mismatch: expected ${canonicalVersion} from VERSION, found ${packageVersion}`);
+      }
+    } else {
+      fail('package.json missing');
+    }
+
+    if (fileExists('package-lock.json')) {
+      const lockfile = readJson('package-lock.json');
+      const lockVersion = lockfile.version;
+      const lockRootVersion = lockfile.packages && lockfile.packages[''] ? lockfile.packages[''].version : null;
+
+      if (lockVersion === canonicalVersion) {
+        pass(`package-lock.json version matches VERSION (${canonicalVersion})`);
+      } else {
+        fail(`package-lock.json version mismatch: expected ${canonicalVersion} from VERSION, found ${lockVersion}`);
+      }
+
+      if (lockRootVersion === canonicalVersion) {
+        pass(`package-lock.json packages[""] version matches VERSION (${canonicalVersion})`);
+      } else {
+        fail(`package-lock.json packages[""] version mismatch: expected ${canonicalVersion} from VERSION, found ${lockRootVersion}`);
+      }
+    } else {
+      fail('package-lock.json missing');
+    }
   } else {
-    fail(`VERSION is not valid semver: "${version}"`);
+    fail(`VERSION is not valid semver: "${canonicalVersion}"`);
   }
 } else {
   fail('VERSION file missing');
 }
 
-// ── SUMMARY ─────────────────────────────────────────────────────
+// -- SUMMARY -----------------------------------------------------
 
 console.log('\n' + '='.repeat(50));
-console.log(`📊 Results: ${passed} passed, ${failed} failed, ${warnings} warnings`);
+console.log(`Results: ${passed} passed, ${failed} failed, ${warnings} warnings`);
 
 if (failed > 0) {
-  console.log('🔴 TESTS FAILED — do NOT push/merge until fixed\n');
+  console.log('TESTS FAILED - do NOT push/merge until fixed\n');
   process.exit(1);
 } else if (warnings > 0) {
-  console.log('🟡 Tests passed with warnings — review before pushing\n');
+  console.log('Tests passed with warnings - review before pushing\n');
   process.exit(0);
 } else {
-  console.log('🟢 All tests passed — safe to push/merge\n');
+  console.log('All tests passed - safe to push/merge\n');
   process.exit(0);
 }

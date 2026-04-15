@@ -11,15 +11,16 @@ Route work into the existing Career-Ops modes and scripts. Do not create a paral
 
 Read these files in this order when you need project context beyond the immediate mode:
 
-1. `docs/CODEX.md` for the Codex routing map and high-level behavioral rules.
-2. `docs/CLAUDE.md` for the full repo operating model, onboarding expectations, and file responsibilities.
-3. `docs/DATA_CONTRACT.md` when a change touches user data, reports, tracker entries, or update-safe boundaries.
+1. `AGENTS.md` for the startup checklist, onboarding rules, tracker integrity, and operating boundaries.
+2. `docs/DATA_CONTRACT.md` when a change touches user data, reports, tracker entries, or update-safe boundaries.
+3. `modes/_shared.md` for shared workflow rules, then `modes/_profile.md` for user-specific overrides when the selected mode depends on them.
 
 Read only the mode files needed for the current request.
+Use `docs/ARCHITECTURE.md`, `docs/SCRIPTS.md`, and `batch/README.md` only when the task needs repo mechanics.
 
 ## Bootstrap
 
-On first use in a session, silently run:
+On first use in a session, follow the `AGENTS.md` startup checklist and silently run:
 
 ```bash
 node scripts/update-system.mjs check
@@ -27,7 +28,7 @@ node scripts/update-system.mjs check
 
 If an update is available, tell the user the exact local and remote versions and ask before applying it.
 
-Before substantial Career-Ops work, check for these files:
+Before substantial Career-Ops work, verify these files:
 
 - `cv.md`
 - `config/profile.yml`
@@ -36,9 +37,11 @@ Before substantial Career-Ops work, check for these files:
 
 If `modes/_profile.md` is missing, copy `modes/_profile.template.md` into place silently.
 
-If `config/profile.yml` or `portals.yml` is missing and the user is asking to set up the system, bootstrap from the checked-in examples. Do not overwrite existing user files without consent.
+If any required file is missing, stop normal job-search work and onboard first. Do not run evaluations, scans, PDFs, or pipeline processing until onboarding is complete.
 
-If required files are missing for the requested task, stop and report the exact blockers instead of faking a personalized result.
+During onboarding, bootstrap from `config/profile.example.yml` and `templates/portals.example.yml`, and create `data/applications.md` from the standard tracker header if it is missing.
+
+If required files are missing for the requested task, report the exact blockers instead of faking a personalized result.
 
 ## Data Contract
 
