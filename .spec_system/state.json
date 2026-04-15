@@ -3,7 +3,7 @@
   "project_name": "career-ops",
   "description": "AI-powered job search pipeline",
   "current_phase": 0,
-  "current_session": "phase00-session02-version-ownership-normalization",
+  "current_session": null,
   "monorepo": false,
   "phases": {
     "0": {
@@ -14,7 +14,8 @@
     }
   },
   "completed_sessions": [
-    "phase00-session01-canonical-instruction-surface"
+    "phase00-session01-canonical-instruction-surface",
+    "phase00-session02-version-ownership-normalization"
   ],
   "next_session_history": [
     {
@@ -31,6 +32,11 @@
       "date": "2026-04-15",
       "session": "phase00-session02-version-ownership-normalization",
       "status": "planned"
+    },
+    {
+      "date": "2026-04-15",
+      "session": "phase00-session02-version-ownership-normalization",
+      "status": "completed"
     }
   ]
 }
