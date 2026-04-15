@@ -13,7 +13,7 @@ This session starts Phase 01 by aligning the repo's public first-run path with
 the setup validator that already defines what a usable local checkout requires.
 `README.md` and `docs/SETUP.md` are already Codex-primary in broad wording, but
 their command order still tells a new user to run `npm run doctor` before
-creating `cv.md`, `config/profile.yml`, and `portals.yml`. The live
+creating `profile/cv.md`, `config/profile.yml`, and `portals.yml`. The live
 `scripts/doctor.mjs` validator checks for those files, so the public quick
 start is still out of sync with the real prerequisite contract.
 
@@ -74,7 +74,7 @@ depend on Session 01 settling the public onboarding wording and command order.
 - New user can follow `README.md` from clone through `codex` using repo-owned
   commands in the same order enforced by the validator.
 - New user can use `docs/SETUP.md` to create `config/profile.yml`,
-  `portals.yml`, and `cv.md` before `npm run doctor`.
+  `portals.yml`, and `profile/cv.md` before `npm run doctor`.
 - Maintainer can verify public onboarding wording against `package.json` and
   `scripts/doctor.mjs` instead of relying on remembered setup steps.
 - Reader sees `codex` as the public entrypoint with no alternate-runtime
@@ -239,7 +239,7 @@ the same public onboarding contract.
 
 ### Edge Cases
 
-- Fresh clone with no `cv.md`, `config/profile.yml`, or `portals.yml` yet
+- Fresh clone with no `profile/cv.md`, `config/profile.yml`, or `portals.yml` yet
 - User has copied config files but has not installed Playwright Chromium
 - User already has required files and wants the fastest path to `codex`
 

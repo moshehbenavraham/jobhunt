@@ -37,7 +37,7 @@
   not part of the live Codex-primary repo contract
 - `docs/CUSTOMIZATION.md` needs a clearer source-of-truth split between
   user-layer files (`config/profile.yml`, `modes/_profile.md`, `portals.yml`,
-  `cv.md`, `article-digest.md`) and shared system files
+  `profile/cv.md`, `article-digest.md`) and shared system files
 
 ### Legal Disclaimer
 
@@ -60,7 +60,7 @@
 ## Final Wording Decisions
 
 - `docs/CUSTOMIZATION.md` now treats `config/profile.yml`,
-  `modes/_profile.md`, `cv.md`, `article-digest.md`, `portals.yml`, and
+  `modes/_profile.md`, `profile/cv.md`, `article-digest.md`, `portals.yml`, and
   `interview-prep/story-bank.md` as the primary user-layer customization
   surfaces
 - `docs/CUSTOMIZATION.md` now treats `modes/_shared.md`,
@@ -165,7 +165,7 @@ behavior belongs in system-layer files.
 **Duration**: 0 minutes
 
 Verified in `docs/DATA_CONTRACT.md` that personalization belongs in
-`cv.md`, `config/profile.yml`, `modes/_profile.md`, `article-digest.md`,
+`profile/cv.md`, `config/profile.yml`, `modes/_profile.md`, `article-digest.md`,
 `portals.yml`, and other user-layer outputs, while `modes/_shared.md`,
 `docs/*`, and shared scripts remain update-safe system files.
 

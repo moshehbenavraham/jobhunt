@@ -24,7 +24,7 @@ Tabla con:
 
 ## Bloque B — Match con CV
 
-Lee `cv.md`. Crea tabla con cada requisito del JD mapeado a líneas exactas del CV.
+Lee `profile/cv.md`. Crea tabla con cada requisito del JD mapeado a líneas exactas del CV.
 
 **Adaptado al arquetipo:**
 
@@ -76,7 +76,7 @@ Top 5 cambios al CV + Top 5 cambios a LinkedIn para maximizar match.
 
 The **Reflection** column captures what was learned or what would be done differently. This signals seniority — junior candidates describe what happened, senior candidates extract lessons.
 
-**Story Bank:** If `interview-prep/story-bank.md` exists, check if any of these stories are already there. If not, append new ones. Over time this builds a reusable bank of 5-10 master stories that can be adapted to any interview question.
+**Story Bank:** If `interview-prep/story-bank.md` exists, check if any of these stories are already there. If not, append new ones. If the user has not started one yet, they can bootstrap from `interview-prep/story-bank.example.md`. Over time this builds a reusable bank of 5-10 master stories that can be adapted to any interview question.
 
 **Seleccionadas y enmarcadas según el arquetipo:**
 

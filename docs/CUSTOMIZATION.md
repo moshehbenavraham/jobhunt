@@ -19,8 +19,8 @@ negotiation posture.
 | ------------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
 | Identity and constraints | `config/profile.yml`           | Name, email, location, timezone, target roles, compensation targets, work authorization, search constraints |
 | Archetypes and narrative | `modes/_profile.md`            | Role archetypes, adaptive framing, negotiation scripts, location policy, scoring preferences                |
-| CV content               | `cv.md`                        | Summary, experience, projects, education, skills                                                            |
-| Proof points             | `article-digest.md`            | Public metrics, portfolio evidence, proof-point wording that should override weaker CV phrasing             |
+| CV content               | `profile/cv.md`                | Summary, experience, projects, education, skills                                                            |
+| Proof points             | `profile/article-digest.md`    | Public metrics, portfolio evidence, proof-point wording that should override weaker CV phrasing             |
 | Job-search targeting     | `portals.yml`                  | Positive and negative title filters, search queries, tracked companies                                      |
 | Interview story bank     | `interview-prep/story-bank.md` | Accumulated STAR-style stories and interview examples                                                       |
 
@@ -29,14 +29,15 @@ negotiation posture.
 - Add or adjust identity, role targets, or salary policy in `config/profile.yml`
 - Update archetypes, negotiation language, or search narrative in
   `modes/_profile.md`
-- Refresh resume bullets in `cv.md`
-- Add stronger proof points in `article-digest.md`
+- Refresh resume bullets in `profile/cv.md`
+- Add stronger proof points in `profile/article-digest.md`
 - Tune `title_filter.positive`, `title_filter.negative`, `search_queries`, or
   `tracked_companies` in `portals.yml`
 
 If you are setting up from scratch, start from
-`config/profile.example.yml` and `templates/portals.example.yml`, then save
-your final settings in the root user-layer files above.
+`config/profile.example.yml`, `templates/portals.example.yml`,
+`profile/cv.example.md`, and optionally `profile/article-digest.example.md`,
+then save your final settings in the user-layer files above.
 
 ## Shared Defaults
 
@@ -55,7 +56,7 @@ change behavior for every user of the repo.
 
 - `templates/cv-template.html` owns the default HTML and CSS for generated
   PDFs. If you want a one-off PDF variant for yourself, prefer keeping the
-  underlying CV content in `cv.md` and changing the template only when the
+  underlying CV content in `profile/cv.md` and changing the template only when the
   repo default should change.
 - `templates/states.yml` is not a personalization file. If you add or rename
   a shared tracker state, also update `scripts/normalize-statuses.mjs` and any

@@ -12,8 +12,18 @@
  */
 
 import { execSync, execFileSync } from 'node:child_process';
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import {
+  readFileSync,
+  existsSync,
+  readdirSync,
+  mkdirSync,
+  mkdtempSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
@@ -95,7 +105,7 @@ for (const f of mjsFiles) {
 console.log('\n2. Script execution (graceful on empty data)');
 
 const scripts = [
-  { name: 'cv-sync-check.mjs', expectExit: 1, allowFail: true }, // fails without cv.md (normal in repo)
+  { name: 'cv-sync-check.mjs', expectExit: 1, allowFail: true }, // fails without any CV (normal in repo)
   { name: 'verify-pipeline.mjs', expectExit: 0 },
   { name: 'normalize-statuses.mjs', expectExit: 0 },
   { name: 'dedup-tracker.mjs', expectExit: 0 },
@@ -203,6 +213,110 @@ if (pdfNormalization !== null) {
   fail('PDF ATS normalization regression test failed');
 }
 
+// -- 3f. UPGRADE SAFETY REGRESSIONS ------------------------------
+
+console.log('\n3f. Upgrade safety regressions');
+
+try {
+  const updaterSource = readFile('scripts/update-system.mjs');
+  const updaterHarnessPath = join(
+    ROOT,
+    '.tmp-test-update-system-contract.mjs',
+  );
+  writeFileSync(
+    updaterHarnessPath,
+    `${updaterSource.split('// -- MAIN')[0]}\nexport { isUserPath, isUpdateTargetPath };\n`,
+  );
+  try {
+    const updaterHarness = await import(pathToFileURL(updaterHarnessPath).href);
+
+    if (updaterHarness.isUpdateTargetPath('data/follow-ups.example.md')) {
+      pass('Updater still treats data/follow-ups.example.md as a system target');
+    } else {
+      fail('Updater lost data/follow-ups.example.md as a system target');
+    }
+
+    if (!updaterHarness.isUserPath('data/follow-ups.example.md')) {
+      pass('Updater does not classify data/follow-ups.example.md as user data');
+    } else {
+      fail('Updater still classifies data/follow-ups.example.md as user data');
+    }
+
+    if (updaterHarness.isUserPath('data/applications.md')) {
+      pass('Updater still protects real user data under data/');
+    } else {
+      fail('Updater no longer protects real user data under data/');
+    }
+
+    if (updaterHarness.isUserPath('cv.md')) {
+      pass('Updater still protects legacy root cv.md');
+    } else {
+      fail('Updater does not protect legacy root cv.md');
+    }
+  } finally {
+    rmSync(updaterHarnessPath, { force: true });
+  }
+} catch (e) {
+  fail(`Updater regression tests crashed: ${e.message}`);
+}
+
+try {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'jobhunt-legacy-cv-'));
+  mkdirSync(join(tempRoot, 'scripts'), { recursive: true });
+  mkdirSync(join(tempRoot, 'config'), { recursive: true });
+  mkdirSync(join(tempRoot, 'fonts'), { recursive: true });
+  mkdirSync(join(tempRoot, 'profile'), { recursive: true });
+  symlinkSync(join(ROOT, 'node_modules'), join(tempRoot, 'node_modules'));
+  writeFileSync(
+    join(tempRoot, 'scripts', 'doctor.mjs'),
+    readFile('scripts/doctor.mjs'),
+  );
+  writeFileSync(
+    join(tempRoot, 'scripts', 'cv-sync-check.mjs'),
+    readFile('scripts/cv-sync-check.mjs'),
+  );
+  writeFileSync(join(tempRoot, 'cv.md'), '# Legacy CV\n\n' + 'Experience\n'.repeat(20));
+  writeFileSync(
+    join(tempRoot, 'config', 'profile.yml'),
+    'full_name: "Test User"\nemail: "test@example.com"\nlocation: "Remote"\n',
+  );
+  writeFileSync(join(tempRoot, 'portals.yml'), 'companies: []\n');
+  writeFileSync(join(tempRoot, 'fonts', 'dummy.txt'), 'font');
+
+  try {
+    const legacyDoctor = run('node', [join(tempRoot, 'scripts', 'doctor.mjs')], {
+      cwd: tempRoot,
+      stdio: ['pipe', 'pipe', 'pipe'],
+    });
+    if (legacyDoctor !== null && stripAnsi(legacyDoctor).includes('cv.md found')) {
+      pass('doctor accepts legacy root cv.md during migration');
+    } else {
+      fail('doctor rejects legacy root cv.md during migration');
+    }
+
+    const legacySync = run(
+      'node',
+      [join(tempRoot, 'scripts', 'cv-sync-check.mjs')],
+      {
+        cwd: tempRoot,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      },
+    );
+    if (
+      legacySync !== null &&
+      !stripAnsi(legacySync).includes('ERRORS (')
+    ) {
+      pass('cv-sync-check accepts legacy root cv.md during migration');
+    } else {
+      fail('cv-sync-check rejects legacy root cv.md during migration');
+    }
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+} catch (e) {
+  fail(`Legacy CV migration tests crashed: ${e.message}`);
+}
+
 // -- 4. DASHBOARD BUILD ------------------------------------------
 
 if (!QUICK) {
@@ -228,7 +342,12 @@ const systemFiles = [
   'AGENTS.md',
   '.codex/skills/career-ops/SKILL.md',
   'VERSION',
+  'data/follow-ups.example.md',
   'docs/DATA_CONTRACT.md',
+  'interview-prep/README-interview-prep.md',
+  'interview-prep/story-bank.example.md',
+  'profile/cv.example.md',
+  'profile/article-digest.example.md',
   'modes/_shared.md',
   'modes/_profile.template.md',
   'modes/oferta.md',
@@ -247,7 +366,17 @@ for (const f of systemFiles) {
 }
 
 // Check user files are NOT tracked (gitignored)
-const userFiles = ['config/profile.yml', 'modes/_profile.md', 'portals.yml'];
+const userFiles = [
+  'cv.md',
+  'profile/cv.md',
+  'profile/article-digest.md',
+  'article-digest.md',
+  'config/profile.yml',
+  'data/follow-ups.md',
+  'interview-prep/story-bank.md',
+  'modes/_profile.md',
+  'portals.yml',
+];
 for (const f of userFiles) {
   const tracked = run('git', ['ls-files', f]);
   if (tracked === '') {
@@ -405,7 +534,7 @@ if (fileExists(skillPath)) {
 
   const bootstrapMarkers = [
     'node scripts/update-system.mjs check',
-    '`cv.md`',
+    '`profile/cv.md`',
     '`config/profile.yml`',
     '`modes/_profile.md`',
     '`portals.yml`',

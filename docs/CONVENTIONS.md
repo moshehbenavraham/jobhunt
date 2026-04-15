@@ -106,6 +106,7 @@
 | Linter        | Biome                                         | biome.json   |
 | Type Safety   | not configured                                | -            |
 | Testing       | `node scripts/test-all.mjs`, `npm run doctor` | repo scripts |
+| Coverage      | `npm run coverage`                            | `c8`, `go test -cover` |
 | Observability | not configured                                | -            |
 | Git Hooks     | not configured                                | -            |
 | Database      | not configured                                | -            |
@@ -114,7 +115,8 @@
 
 | Surface   | Command                                                                          | Details                                                                              |
 | --------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Health    | `npm run doctor && node scripts/test-all.mjs --quick`                            | Repo health gate; validates setup, version consistency, and dashboard build coverage |
+| Health    | `npm run doctor && node scripts/test-all.mjs --quick`                            | Repo health gate; validates setup, version consistency, and dashboard build |
+| Coverage  | `npm run coverage`                                                                | Measures Node script coverage via `c8` and dashboard package coverage via `go test -cover` |
 | Security  | `docs/SECURITY.md`                                                               | Local-tool security policy and disclosure path; no hosted service or WAF surface     |
 | Local Dev | `cd dashboard && go build -o career-dashboard . && ./career-dashboard --path ..` | Manual launch path for the Go TUI dashboard; run from the `dashboard/` directory     |
 

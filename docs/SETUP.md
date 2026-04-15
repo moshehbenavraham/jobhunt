@@ -33,7 +33,20 @@ Fill in:
 
 ### 3. Add your CV
 
-Create `cv.md` in the project root. If you have public proof points, add `article-digest.md` too.
+```bash
+cp profile/cv.example.md profile/cv.md
+```
+
+Then edit `profile/cv.md` with your experience.
+
+If you have public proof points, optionally bootstrap a proof-point file:
+
+```bash
+cp profile/article-digest.example.md profile/article-digest.md
+```
+
+You only need `profile/article-digest.md` when you have public metrics or case
+studies you want reused across evaluations.
 
 ### 4. Validate the setup
 
@@ -42,7 +55,7 @@ npm run doctor
 ```
 
 `npm run doctor` validates Node.js, installed dependencies, Playwright
-Chromium, `cv.md`, `config/profile.yml`, and `portals.yml`. If it reports an
+Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml`. If it reports an
 issue, fix the listed item and rerun the command.
 
 ### 5. Start the repo in Codex

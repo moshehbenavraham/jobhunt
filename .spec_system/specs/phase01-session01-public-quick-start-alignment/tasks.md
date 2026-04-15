@@ -73,7 +73,7 @@ Update the public onboarding surfaces and record the final command contract.
 - [x] T010 [S0101] Normalize the README public entrypoint wording so it names
       `codex` and repo-owned commands only (`README.md`)
 - [x] T011 [S0101] Reorder `docs/SETUP.md` so profile setup, `portals.yml`, and
-      `cv.md` creation happen before environment validation (`docs/SETUP.md`)
+      `profile/cv.md` creation happen before environment validation (`docs/SETUP.md`)
 - [x] T012 [S0101] Refresh `docs/SETUP.md` so initial setup checks and
       follow-up verification commands are clearly separated (`docs/SETUP.md`)
 - [x] T013 [S0101] Record the final command matrix, deferred findings, and

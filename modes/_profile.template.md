@@ -31,17 +31,17 @@
 ## Your Adaptive Framing
 
 <!-- Map YOUR projects to each archetype. Example:
-     | Platform / LLMOps | My monitoring dashboard project | article-digest.md |
-     | Agentic | My chatbot with HITL escalation | cv.md section 3 | -->
+     | Platform / LLMOps | My monitoring dashboard project | profile/article-digest.md |
+     | Agentic | My chatbot with HITL escalation | profile/cv.md section 3 | -->
 
 | If the role is...         | Emphasize about you...                           | Proof point sources       |
 | ------------------------- | ------------------------------------------------ | ------------------------- |
-| Platform / LLMOps         | Production systems builder, observability, evals | article-digest.md + cv.md |
-| Agentic / Automation      | Multi-agent orchestration, HITL, reliability     | article-digest.md + cv.md |
-| Technical AI PM           | Product discovery, PRDs, metrics                 | cv.md + article-digest.md |
-| Solutions Architect       | System design, integrations, enterprise-ready    | article-digest.md + cv.md |
-| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod  | cv.md + article-digest.md |
-| AI Transformation Lead    | Change management, team enablement, adoption     | cv.md + article-digest.md |
+| Platform / LLMOps         | Production systems builder, observability, evals | profile/article-digest.md + profile/cv.md |
+| Agentic / Automation      | Multi-agent orchestration, HITL, reliability     | profile/article-digest.md + profile/cv.md |
+| Technical AI PM           | Product discovery, PRDs, metrics                 | profile/cv.md + profile/article-digest.md |
+| Solutions Architect       | System design, integrations, enterprise-ready    | profile/article-digest.md + profile/cv.md |
+| Forward Deployed Engineer | Fast delivery, client-facing, prototype to prod  | profile/cv.md + profile/article-digest.md |
+| AI Transformation Lead    | Change management, team enablement, adoption     | profile/cv.md + profile/article-digest.md |
 
 ## Your Exit Narrative
 
@@ -50,7 +50,7 @@
 Use the candidate's exit story from `config/profile.yml` to frame ALL content:
 
 - **In PDF Summaries:** Bridge from past to future
-- **In STAR stories:** Reference proof points from article-digest.md
+- **In STAR stories:** Reference proof points from profile/article-digest.md
 - **In Draft Answers:** The transition narrative appears in the first response
 
 ## Your Cross-cutting Advantage

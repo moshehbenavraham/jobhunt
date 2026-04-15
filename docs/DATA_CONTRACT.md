@@ -8,11 +8,12 @@ These files contain your personal data, customizations, and work product. Update
 
 | File                           | Purpose                                         |
 | ------------------------------ | ----------------------------------------------- |
-| `cv.md`                        | Your CV in markdown                             |
+| `profile/cv.md`                | Your CV in markdown                             |
+| `profile/article-digest.md`    | Your proof points from portfolio                |
 | `config/profile.yml`           | Your identity, targets, comp range              |
 | `modes/_profile.md`            | Your archetypes, narrative, negotiation scripts |
-| `article-digest.md`            | Your proof points from portfolio                |
 | `interview-prep/story-bank.md` | Your accumulated STAR+R stories                 |
+| `interview-prep/*.md`          | Saved company- or role-specific interview prep  |
 | `portals.yml`                  | Your customized company list                    |
 | `data/applications.md`         | Your application tracker                        |
 | `data/pipeline.md`             | Your URL inbox                                  |
@@ -50,6 +51,10 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `batch/batch-prompt.md`  | Batch worker prompt                 |
 | `batch/batch-runner.sh`  | Batch orchestrator                  |
 | `dashboard/*`            | Go TUI dashboard                    |
+| `data/follow-ups.example.md` | Optional follow-up history scaffold  |
+| `interview-prep/story-bank.example.md` | Optional story bank scaffold |
+| `profile/article-digest.example.md` | Optional proof-point scaffold    |
+| `profile/cv.example.md`  | Starter CV template                 |
 | `templates/*`            | Base templates                      |
 | `fonts/*`                | Self-hosted fonts                   |
 | `.codex/skills/*`        | Skill definitions                   |
@@ -62,3 +67,7 @@ These files contain system logic, scripts, templates, and instructions that impr
 **If a file is in the User Layer, no update process may read, modify, or delete it.**
 
 **If a file is in the System Layer, it can be safely replaced with the latest version from the upstream repo.**
+
+Legacy note: root-level `cv.md` and `article-digest.md` are still treated as
+user data if they exist from an older checkout, but the canonical paths are now
+`profile/cv.md` and `profile/article-digest.md`.

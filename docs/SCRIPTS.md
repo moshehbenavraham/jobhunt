@@ -13,6 +13,7 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 | `npm run merge`        | `scripts/merge-tracker.mjs`          | Merge batch TSVs into applications.md |
 | `npm run pdf`          | `scripts/generate-pdf.mjs`           | Convert HTML to ATS-optimized PDF     |
 | `npm run sync-check`   | `scripts/cv-sync-check.mjs`          | Validate CV/profile consistency       |
+| `npm run coverage`     | `c8` + `go test -cover`              | Measure Node script and dashboard coverage |
 | `npm run update:check` | `scripts/update-system.mjs check`    | Check for upstream updates            |
 | `npm run update`       | `scripts/update-system.mjs apply`    | Apply upstream update                 |
 | `npm run rollback`     | `scripts/update-system.mjs rollback` | Rollback last update                  |
@@ -23,7 +24,7 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 
 ## doctor
 
-Validates that all prerequisites are in place: Node.js >= 18, dependencies installed, Playwright chromium, required files (`cv.md`, `config/profile.yml`, `portals.yml`), fonts directory, and auto-creates `data/`, `output/`, `reports/` if missing.
+Validates that all prerequisites are in place: Node.js >= 18, dependencies installed, Playwright chromium, required files (`profile/cv.md`, `config/profile.yml`, `portals.yml`), fonts directory, and auto-creates `data/`, `output/`, `reports/` if missing.
 
 ```bash
 npm run doctor
@@ -109,13 +110,44 @@ The ATS normalization regression is covered by `scripts/test-generate-pdf-normal
 
 ## sync-check
 
-Validates that the jobhunt setup is internally consistent: `cv.md` exists and is not too short, `config/profile.yml` exists with required fields, no hardcoded metrics in `modes/_shared.md` or `batch/batch-prompt.md`, and `article-digest.md` freshness (warns if older than 30 days).
+Validates that the jobhunt setup is internally consistent: `profile/cv.md` exists and is not too short, `config/profile.yml` exists with required fields, no hardcoded metrics in `modes/_shared.md` or `batch/batch-prompt.md`, and `profile/article-digest.md` freshness (warns if older than 30 days).
 
 ```bash
 npm run sync-check
 ```
 
 **Exit codes:** `0` no errors (warnings allowed), `1` errors found.
+
+---
+
+## coverage
+
+Measures actual code coverage instead of only pass/fail health.
+
+```bash
+npm run coverage
+```
+
+This runs two coverage passes:
+
+- `npm run coverage:node` wraps `node scripts/test-all.mjs --quick` with `c8`
+  and writes reports to `coverage/node/`.
+- `npm run coverage:dashboard` runs `go test ./... -covermode=atomic
+  -coverprofile=coverage.out` inside `dashboard/` and prints the summary from
+  `go tool cover -func=coverage.out`.
+
+Useful variants:
+
+```bash
+npm run coverage:node
+npm run coverage:dashboard
+npm run coverage:dashboard:html
+```
+
+`coverage:dashboard:html` writes `dashboard/coverage.html` after
+`dashboard/coverage.out` already exists.
+
+**Exit codes:** `0` both coverage runs succeeded, `1` either coverage run failed.
 
 ---
 
@@ -142,7 +174,7 @@ Possible JSON responses:
 
 ## update
 
-Applies the upstream update. Creates a backup branch (`backup-pre-update-{version}`), fetches from the canonical repo, checks out only system-layer files, runs `npm install`, and commits. User-layer files (`cv.md`, `config/profile.yml`, `data/`, etc.) are never touched.
+Applies the upstream update. Creates a backup branch (`backup-pre-update-{version}`), fetches from the canonical repo, checks out only system-layer files, runs `npm install`, and commits. User-layer files (`profile/cv.md`, `config/profile.yml`, `data/`, etc.) are never touched.
 
 ```bash
 npm run update

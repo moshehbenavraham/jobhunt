@@ -327,7 +327,7 @@
 
 - Ran `npm run doctor` successfully after the docs edits.
 - Confirmed the setup and support guidance still matches the live validator
-  behavior for Node.js, dependencies, Playwright Chromium, `cv.md`,
+  behavior for Node.js, dependencies, Playwright Chromium, `profile/cv.md`,
   `config/profile.yml`, `portals.yml`, fonts, and the auto-created output
   directories.
 

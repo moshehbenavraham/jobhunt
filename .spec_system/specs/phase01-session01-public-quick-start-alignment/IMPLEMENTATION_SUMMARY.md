@@ -10,7 +10,7 @@
 
 This session aligned the public onboarding path with the live validator
 contract. `README.md` and `docs/SETUP.md` now place `config/profile.yml`,
-`portals.yml`, and `cv.md` before `npm run doctor`, and both surfaces keep
+`portals.yml`, and `profile/cv.md` before `npm run doctor`, and both surfaces keep
 `codex` as the primary entrypoint. The session notes capture the final command
 matrix and the deferred Phase 01 follow-up boundaries.
 

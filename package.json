@@ -1,18 +1,23 @@
 {
   "name": "jobhunt",
-  "version": "1.5.20",
+  "version": "1.5.21",
   "description": "AI-powered job search pipeline",
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "biome lint scripts",
+    "test:quick": "node scripts/test-all.mjs --quick",
     "verify": "node scripts/verify-pipeline.mjs",
     "normalize": "node scripts/normalize-statuses.mjs",
     "dedup": "node scripts/dedup-tracker.mjs",
     "merge": "node scripts/merge-tracker.mjs",
     "pdf": "node scripts/generate-pdf.mjs",
     "sync-check": "node scripts/cv-sync-check.mjs",
+    "coverage:node": "c8 --all --src=scripts --report-dir=coverage/node --reporter=text-summary --reporter=lcov --reporter=json-summary --exclude=scripts/test-*.mjs --exclude=scripts/test-all.mjs node scripts/test-all.mjs --quick",
+    "coverage:dashboard": "cd dashboard && go test ./... -covermode=atomic -coverprofile=coverage.out && go tool cover -func=coverage.out",
+    "coverage:dashboard:html": "cd dashboard && go tool cover -html=coverage.out -o coverage.html",
+    "coverage": "npm run coverage:node && npm run coverage:dashboard",
     "update:check": "node scripts/update-system.mjs check",
     "update": "node scripts/update-system.mjs apply",
     "rollback": "node scripts/update-system.mjs rollback",
@@ -33,6 +38,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",
+    "c8": "^11.0.0",
     "prettier": "^3.8.2"
   }
 }

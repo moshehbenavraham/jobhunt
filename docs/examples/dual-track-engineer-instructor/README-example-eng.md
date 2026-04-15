@@ -7,7 +7,7 @@ The default jobhunt examples assume one north-star archetype. Hybrid careers do 
 This folder shows how to:
 
 1. Configure `archetypes:` in `profile.yml` with two `fit: primary` entries instead of one.
-2. Write a `cv.md` that puts measurable wins on both sides in front of the recruiter without diluting either.
+2. Write a `profile/cv.md` that puts measurable wins on both sides in front of the recruiter without diluting either.
 3. Set two compensation ranges. Engineering and teaching pay differently, often by 20-40%, and the evaluator needs to know which range applies to a given offer.
 4. At evaluation time, decide which track to lead with for the specific JD on the desk.
 

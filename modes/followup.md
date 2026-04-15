@@ -10,7 +10,7 @@ Track follow-up cadence for active applications. Flag overdue follow-ups, extrac
 - `data/follow-ups.md` — Follow-up history (created on first use)
 - `reports/` — Evaluation reports (for context in drafts)
 - `config/profile.yml` — User profile (name, identity)
-- `cv.md` — CV for proof points in drafts
+- `profile/cv.md` — CV for proof points in drafts
 
 ## Step 1 — Run Cadence Script
 
@@ -55,7 +55,7 @@ Use visual indicators:
 For each **overdue** or **urgent** entry only:
 
 1. Read the linked report (`reportPath` from JSON) for company context
-2. Read `cv.md` for proof points
+2. Read `profile/cv.md` for proof points
 3. Read `config/profile.yml` for candidate name and identity
 
 ### Email Follow-up Framework (first follow-up, followupCount == 0)
@@ -63,7 +63,7 @@ For each **overdue** or **urgent** entry only:
 Generate a 3-4 sentence email:
 
 1. **Sentence 1:** Reference the specific role + when you applied. Be specific — mention the company name and role title.
-2. **Sentence 2:** One concrete value-add from the report's Block B match or a proof point from cv.md. Quantify if possible.
+2. **Sentence 2:** One concrete value-add from the report's Block B match or a proof point from profile/cv.md. Quantify if possible.
 3. **Sentence 3:** Soft ask + availability. Offer a specific time window ("this week" or "next Tuesday").
 4. **Sentence 4 (optional):** Brief mention of a relevant recent project or achievement.
 

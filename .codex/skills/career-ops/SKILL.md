@@ -30,7 +30,7 @@ If an update is available, tell the user the exact local and remote versions and
 
 Before substantial Job-Hunt work, verify these files:
 
-- `cv.md`
+- `profile/cv.md` (legacy root `cv.md` also accepted during migration)
 - `config/profile.yml`
 - `modes/_profile.md`
 - `portals.yml`
@@ -47,10 +47,10 @@ If required files are missing for the requested task, report the exact blockers 
 
 Keep user-specific changes in these files only:
 
-- `cv.md`
+- `profile/cv.md` (legacy root `cv.md` also accepted during migration)
 - `config/profile.yml`
 - `modes/_profile.md`
-- `article-digest.md`
+- `profile/article-digest.md`
 - `portals.yml`
 - `data/*`
 - `reports/*`
@@ -116,7 +116,7 @@ If the role is in English, keep the English modes even if the company is in a no
 - Never auto-submit an application.
 - Never add rows directly to `data/applications.md`; use the batch TSV flow and `scripts/merge-tracker.mjs`.
 - Use the Playwright-based liveness flow for job checks when available; do not replace it with a generic fetch.
-- Save new personalization or lessons learned to `config/profile.yml`, `modes/_profile.md`, or `article-digest.md`.
+- Save new personalization or lessons learned to `config/profile.yml`, `modes/_profile.md`, or `profile/article-digest.md`.
 - Append interview stories to `interview-prep/story-bank.md` only when the relevant mode calls for it.
 - Delegate multi-item work only when the runtime supports it and the user explicitly allows delegation.
 

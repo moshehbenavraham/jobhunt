@@ -6,8 +6,8 @@ Reference files that demonstrate jobhunt data formats and conventions. None of t
 
 | File                              | Demonstrates                                                                                                                                                                                      |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cv-example.md`                   | How to structure `cv.md` -- sections, metrics formatting, and proof-point style for a fictional AI engineer (Alex Chen)                                                                           |
-| `article-digest-example.md`       | How to write `article-digest.md` -- compact proof points with hero metrics, architecture summaries, and key decisions per project                                                                 |
+| `cv-example.md`                   | How to structure `profile/cv.md` -- sections, metrics formatting, and proof-point style for a fictional AI engineer (Alex Chen)                                                                   |
+| `article-digest-example.md`       | How to write `profile/article-digest.md` -- compact proof points with hero metrics, architecture summaries, and key decisions per project                                                         |
 | `sample-report.md`                | The A-F evaluation report format produced by the evaluation pipeline, with all six blocks (Role Summary through Interview Plan)                                                                   |
 | `dual-track-engineer-instructor/` | Complete profile config for a candidate with two primary archetypes (engineer + instructor), including `cv.md`, `profile.yml`, and a README explaining when and how to use the dual-track pattern |
 
@@ -17,7 +17,8 @@ These files are read-only references. Automated fixtures live under `scripts/tes
 
 To set up your own jobhunt instance:
 
-1. Run `npm run doctor` to check prerequisites.
-2. Use `cv-example.md` as a structural guide when writing your `cv.md`.
-3. Use `article-digest-example.md` as a template for your `article-digest.md` (optional but improves evaluation quality).
-4. See the `dual-track-engineer-instructor/` folder if your career spans two distinct archetypes.
+1. Copy `profile/cv.example.md` to `profile/cv.md`.
+2. Use `cv-example.md` as a richer structural guide when editing `profile/cv.md`.
+3. Use `article-digest-example.md` as a richer reference when editing `profile/article-digest.md` (optional but improves evaluation quality).
+4. Run `npm run doctor` after your required user-layer files are in place.
+5. See the `dual-track-engineer-instructor/` folder if your career spans two distinct archetypes.

@@ -19,7 +19,7 @@ Use the checked-in Job-Hunt modes, scripts, templates, and tracker flow. Do not 
    - Roll back with `node scripts/update-system.mjs rollback` if requested.
 
 2. Check setup silently:
-   - `cv.md`
+   - `profile/cv.md` (legacy root `cv.md` also accepted during migration)
    - `config/profile.yml`
    - `modes/_profile.md`
    - `portals.yml`
@@ -32,7 +32,7 @@ Use the checked-in Job-Hunt modes, scripts, templates, and tracker flow. Do not 
 
 If setup is incomplete, do not run evaluations, scans, PDFs, or pipeline processing until the basics exist.
 
-1. `cv.md`
+1. `profile/cv.md` (legacy root `cv.md` also accepted during migration)
    - Ask the user to either paste a CV, share a LinkedIn URL, or describe their experience.
    - Create clean markdown with standard sections: Summary, Experience, Projects, Education, Skills.
 
@@ -57,7 +57,7 @@ If setup is incomplete, do not run evaluations, scans, PDFs, or pipeline process
 
 5. Learn the user
    - Ask about superpowers, energizers/drains, deal-breakers, best achievement, and public proof points.
-   - Save user-specific material in `config/profile.yml`, `modes/_profile.md`, or `article-digest.md`.
+   - Save user-specific material in `config/profile.yml`, `modes/_profile.md`, or `profile/article-digest.md`.
 
 6. After onboarding
    - Confirm they can now paste a JD/URL, scan portals, or generate a tailored PDF.
@@ -67,7 +67,7 @@ If setup is incomplete, do not run evaluations, scans, PDFs, or pipeline process
 
 Read `docs/DATA_CONTRACT.md`.
 
-- User layer: `cv.md`, `config/profile.yml`, `modes/_profile.md`, `article-digest.md`, `portals.yml`, `data/*`, `reports/*`, `output/*`, `interview-prep/*`, `jds/*`
+- User layer: `profile/cv.md`, legacy root `cv.md`, `profile/article-digest.md`, `config/profile.yml`, `modes/_profile.md`, `portals.yml`, `data/*`, `reports/*`, `output/*`, `interview-prep/*`, `jds/*`
 - System layer: `modes/_shared.md`, `modes/**`, `scripts/**`, `templates/**`, `batch/**`, `dashboard/**`, `docs/**`, `AGENTS.md`
 
 Rule:
@@ -83,14 +83,14 @@ Read these before evaluation work:
 - `modes/_shared.md`
 - `modes/_profile.md`
 - `config/profile.yml`
-- `cv.md`
-- `article-digest.md` if present
+- `profile/cv.md` (legacy root `cv.md` also accepted during migration)
+- `profile/article-digest.md` if present (legacy root `article-digest.md` also accepted)
 
 Rules:
 
 - Never invent experience or metrics.
-- If `article-digest.md` conflicts with `cv.md` on proof-point metrics, prefer `article-digest.md`.
-- Learn from user feedback after evaluations by updating `config/profile.yml`, `modes/_profile.md`, or `article-digest.md`.
+- If `profile/article-digest.md` conflicts with `profile/cv.md` on proof-point metrics, prefer `profile/article-digest.md`.
+- Learn from user feedback after evaluations by updating `config/profile.yml`, `modes/_profile.md`, or `profile/article-digest.md`.
 
 ## Routing
 
@@ -165,8 +165,8 @@ Common user-specific changes belong here:
 
 - archetypes, narrative, negotiation, location policy, scoring preference: `modes/_profile.md` or `config/profile.yml`
 - target companies and queries: `portals.yml`
-- proof points and public metrics: `article-digest.md`
-- CV content: `cv.md`
+- proof points and public metrics: `profile/article-digest.md`
+- CV content: `profile/cv.md`
 
 Do not modify `modes/_shared.md` for user-specific customization.
 

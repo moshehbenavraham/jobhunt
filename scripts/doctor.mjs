@@ -63,15 +63,23 @@ async function checkPlaywright() {
 }
 
 function checkCv() {
-  if (existsSync(join(projectRoot, 'cv.md'))) {
-    return { pass: true, label: 'cv.md found' };
+  const preferred = join(projectRoot, 'profile', 'cv.md');
+  if (existsSync(preferred)) {
+    return { pass: true, label: 'profile/cv.md found' };
   }
+
+  const legacy = join(projectRoot, 'cv.md');
+  if (existsSync(legacy)) {
+    return { pass: true, label: 'cv.md found (legacy path)' };
+  }
+
   return {
     pass: false,
-    label: 'cv.md not found',
+    label: 'profile/cv.md not found (legacy root cv.md also accepted)',
     fix: [
-      'Create cv.md in the project root with your CV in markdown',
-      'See examples/ for reference CVs',
+      'Run: cp profile/cv.example.md profile/cv.md',
+      'Then edit profile/cv.md with your CV in markdown',
+      'If you already have a legacy root cv.md, you can keep using it during migration or move it to profile/cv.md',
     ],
   };
 }

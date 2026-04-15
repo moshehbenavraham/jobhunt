@@ -70,8 +70,8 @@ The repository is organized around a Codex-first agent contract, repo-owned scri
 ## Data Flow
 
 ```text
-cv.md
-article-digest.md
+profile/cv.md
+profile/article-digest.md
 config/profile.yml
 portals.yml
   -> evaluation and scan workflows

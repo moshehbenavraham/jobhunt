@@ -4,7 +4,7 @@
  * update-system.mjs - Safe auto-updater for jobhunt
  *
  * Updates ONLY system layer files (modes, scripts, dashboard, templates).
- * NEVER touches user data (cv.md, profile.yml, _profile.md, data/, reports/).
+ * NEVER touches user data (profile/cv.md, legacy cv.md, profile/article-digest.md, profile.yml, _profile.md, data/, reports/).
  *
  * Usage:
  *   node scripts/update-system.mjs check      # Check if update available
@@ -39,6 +39,7 @@ const VERSION_PATH = 'VERSION';
 
 // System layer paths - ONLY these files get updated
 const SYSTEM_PATHS = [
+  '.gitignore',
   'modes/_shared.md',
   'modes/_profile.template.md',
   'modes/oferta.md',
@@ -63,6 +64,11 @@ const SYSTEM_PATHS = [
   'fonts/',
   '.codex/skills/',
   'docs/',
+  'data/follow-ups.example.md',
+  'interview-prep/story-bank.example.md',
+  'interview-prep/README-interview-prep.md',
+  'profile/article-digest.example.md',
+  'profile/cv.example.md',
   'VERSION',
   'README.md',
   'LICENSE',
@@ -90,11 +96,14 @@ const REMAPPED_SYSTEM_FILES = [
 // User layer paths - NEVER touch these (safety check)
 const USER_PATHS = [
   'cv.md',
+  'profile/cv.md',
+  'profile/article-digest.md',
+  'article-digest.md',
   'config/profile.yml',
   'modes/_profile.md',
   'portals.yml',
-  'article-digest.md',
   'interview-prep/story-bank.md',
+  'data/follow-ups.md',
   'data/',
   'reports/',
   'output/',
@@ -231,6 +240,10 @@ function writeCanonicalVersion(version, updatedPaths) {
 }
 
 function isUserPath(file) {
+  // System-managed example files can live under otherwise user-owned prefixes
+  // such as data/ or interview-prep/. Treat explicit update targets as system
+  // paths first so the updater can ship them safely.
+  if (isUpdateTargetPath(file)) return false;
   return USER_PATHS.some((path) => file === path || file.startsWith(path));
 }
 
@@ -403,11 +416,9 @@ async function apply() {
       for (const entry of gitStatusEntries()) {
         const file = entry.path;
         if (initialStatusPaths.has(file)) continue;
-        for (const userPath of USER_PATHS) {
-          if (file.startsWith(userPath)) {
-            console.error(`SAFETY VIOLATION: User file was modified: ${file}`);
-            userFileTouched = true;
-          }
+        if (isUserPath(file)) {
+          console.error(`SAFETY VIOLATION: User file was modified: ${file}`);
+          userFileTouched = true;
         }
       }
     } catch {

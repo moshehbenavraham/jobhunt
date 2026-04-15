@@ -2,7 +2,7 @@
 /**
  * followup-cadence.mjs — Follow-up Cadence Tracker for jobhunt
  *
- * Parses applications.md + follow-ups.md, calculates follow-up cadence
+ * Parses data/applications.md + data/follow-ups.md, calculates follow-up cadence
  * for active applications, extracts contacts, and flags overdue entries.
  *
  * Run: node scripts/followup-cadence.mjs             (JSON to stdout)
@@ -125,7 +125,7 @@ function parseTracker() {
   return entries;
 }
 
-// --- Parse follow-ups.md ---
+// --- Parse data/follow-ups.md ---
 function parseFollowups() {
   if (!existsSync(FOLLOWUPS_FILE)) return [];
   const content = readFileSync(FOLLOWUPS_FILE, 'utf-8');

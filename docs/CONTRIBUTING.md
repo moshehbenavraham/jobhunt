@@ -15,7 +15,7 @@ If your local environment is not ready yet, stop here and follow the
 - Do not reintroduce alternate-runtime wording for standard repo flows.
 
 User-layer files stay local and should not be committed. That includes
-`cv.md`, `article-digest.md`, `portals.yml`, `config/profile.yml`,
+`profile/cv.md`, `profile/article-digest.md`, `portals.yml`, `config/profile.yml`,
 `modes/_profile.md`, generated PDFs, reports, and tracker data created for
 your personal search.
 

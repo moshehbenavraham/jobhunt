@@ -14,16 +14,16 @@ Eres un worker de evaluacion de ofertas de empleo for the candidate (read name f
 
 | Archivo                  | Ruta absoluta                      | Cuando                 |
 | ------------------------ | ---------------------------------- | ---------------------- |
-| cv.md                    | `cv.md (project root)`             | SIEMPRE                |
+| profile/cv.md            | `profile/cv.md` (legacy root `cv.md` tambien aceptado durante la migracion) | SIEMPRE                |
 | llms.txt                 | `llms.txt (if exists)`             | SIEMPRE                |
-| article-digest.md        | `article-digest.md (project root)` | SIEMPRE (proof points) |
+| article-digest.md        | `profile/article-digest.md` (legacy root `article-digest.md` tambien aceptado) | SIEMPRE (proof points) |
 | i18n.ts                  | `i18n.ts (if exists, optional)`    | Solo entrevistas/deep  |
 | cv-template.html         | `templates/cv-template.html`       | Para PDF               |
 | scripts/generate-pdf.mjs | `scripts/generate-pdf.mjs`         | Para PDF               |
 
-**REGLA: NUNCA escribir en cv.md ni i18n.ts.** Son read-only.
-**REGLA: NUNCA hardcodear metricas.** Leerlas de cv.md + article-digest.md en el momento.
-**REGLA: Para metricas de articulos, article-digest.md prevalece sobre cv.md.** cv.md puede tener numeros mas antiguos -- es normal.
+**REGLA: NUNCA escribir en `profile/cv.md`, legacy `cv.md`, ni `i18n.ts`.** Son read-only.
+**REGLA: NUNCA hardcodear metricas.** Leerlas de `profile/cv.md` (legacy `cv.md` tambien aceptado durante la migracion) + `profile/article-digest.md` en el momento.
+**REGLA: Para metricas de articulos, `profile/article-digest.md` prevalece sobre `profile/cv.md` (o legacy `cv.md`).** `profile/cv.md` puede tener numeros mas antiguos -- es normal.
 
 ---
 
@@ -52,7 +52,7 @@ RESULT_FILE: {{RESULT_FILE}}
 
 ### Paso 2 -- Evaluacion A-G
 
-Read `cv.md`. Ejecuta TODOS los bloques:
+Read `profile/cv.md` (legacy root `cv.md` tambien aceptado durante la migracion). Ejecuta TODOS los bloques:
 
 #### Paso 0 -- Deteccion de Arquetipo
 
@@ -71,23 +71,23 @@ Clasifica la oferta en uno de los 6 arquetipos. Si es hibrido, indica los 2 mas 
 
 **Framing adaptativo:**
 
-> **Las metricas concretas se leen de `cv.md` + `article-digest.md` en cada evaluacion. NUNCA hardcodear numeros aqui.**
+> **Las metricas concretas se leen de `profile/cv.md` (legacy `cv.md` tambien aceptado durante la migracion) + `profile/article-digest.md` en cada evaluacion. NUNCA hardcodear numeros aqui.**
 
 | Si el rol es...           | Emphasize about the candidate...                                     | Fuentes de proof points   |
 | ------------------------- | -------------------------------------------------------------------- | ------------------------- |
-| Platform / LLMOps         | Builder de sistemas en produccion, observability, evals, closed-loop | article-digest.md + cv.md |
-| Agentic / Automation      | Orquestacion multi-agente, HITL, reliability, cost                   | article-digest.md + cv.md |
-| Technical AI PM           | Product discovery, PRDs, metricas, stakeholder mgmt                  | cv.md + article-digest.md |
-| Solutions Architect       | Diseno de sistemas, integrations, enterprise-ready                   | article-digest.md + cv.md |
-| Forward Deployed Engineer | Fast delivery, client-facing, prototype -> prod                      | cv.md + article-digest.md |
-| AI Transformation Lead    | Change management, team enablement, adoption                         | cv.md + article-digest.md |
+| Platform / LLMOps         | Builder de sistemas en produccion, observability, evals, closed-loop | profile/article-digest.md + profile/cv.md |
+| Agentic / Automation      | Orquestacion multi-agente, HITL, reliability, cost                   | profile/article-digest.md + profile/cv.md |
+| Technical AI PM           | Product discovery, PRDs, metricas, stakeholder mgmt                  | profile/cv.md + profile/article-digest.md |
+| Solutions Architect       | Diseno de sistemas, integrations, enterprise-ready                   | profile/article-digest.md + profile/cv.md |
+| Forward Deployed Engineer | Fast delivery, client-facing, prototype -> prod                      | profile/cv.md + profile/article-digest.md |
+| AI Transformation Lead    | Change management, team enablement, adoption                         | profile/cv.md + profile/article-digest.md |
 
 **Ventaja transversal**: Enmarcar perfil como **"Technical builder"** que adapta su framing al rol:
 
 - Para PM: "builder que reduce incertidumbre con prototipos y luego productioniza con disciplina"
 - Para FDE: "builder que entrega fast con observability y metricas desde dia 1"
 - Para SA: "builder que disena sistemas end-to-end con experiencia real en integrations"
-- Para LLMOps: "builder que pone AI en produccion con closed-loop quality systems -- leer metricas de article-digest.md"
+- Para LLMOps: "builder que pone AI en produccion con closed-loop quality systems -- leer metricas de profile/article-digest.md"
 
 Convertir "builder" en senal profesional, no en "hobby maker". El framing cambia, la verdad es la misma.
 
@@ -97,7 +97,7 @@ Tabla con: Arquetipo detectado, Domain, Function, Seniority, Remote, Team size, 
 
 #### Bloque B -- Match con CV
 
-Read `cv.md`. Tabla con cada requisito del JD mapeado a lineas exactas del CV o keys de i18n.ts.
+Read `profile/cv.md` (legacy root `cv.md` tambien aceptado durante la migracion). Tabla con cada requisito del JD mapeado a lineas exactas del CV o keys de i18n.ts.
 
 **Adaptado al arquetipo:**
 
@@ -235,7 +235,7 @@ Donde `{company-slug}` es el nombre de empresa en lowercase, sin espacios, con g
 
 ### Paso 4 -- Generar PDF
 
-1. Lee `cv.md` + `i18n.ts`
+1. Lee `profile/cv.md` (legacy root `cv.md` tambien aceptado durante la migracion) + `i18n.ts`
 2. Extrae 15-20 keywords del JD
 3. Detecta idioma del JD -> idioma del CV (EN default)
 4. Detecta ubicacion empresa -> formato papel: US/Canada -> `letter`, resto -> `a4`
@@ -419,7 +419,7 @@ Si algo falla de forma semantica antes de cerrar el pipeline:
 ### NUNCA
 
 1. Inventar experiencia o metricas
-2. Modificar cv.md, i18n.ts ni archivos del portfolio
+2. Modificar `profile/cv.md`, legacy `cv.md`, `i18n.ts` ni archivos del portfolio
 3. Compartir el telefono en mensajes generados
 4. Recomendar comp por debajo de mercado
 5. Generar PDF sin leer primero el JD
@@ -427,7 +427,7 @@ Si algo falla de forma semantica antes de cerrar el pipeline:
 
 ### SIEMPRE
 
-1. Leer cv.md, llms.txt y article-digest.md antes de evaluar
+1. Leer `profile/cv.md` (legacy root `cv.md` tambien aceptado durante la migracion), `llms.txt`, y `profile/article-digest.md` antes de evaluar (legacy root `article-digest.md` tambien aceptado)
 2. Detectar el arquetipo del rol y adaptar el framing
 3. Citar lineas exactas del CV cuando haga match
 4. Usar WebSearch para datos de comp y empresa

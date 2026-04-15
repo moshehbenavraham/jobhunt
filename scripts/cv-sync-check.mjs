@@ -4,10 +4,10 @@
  * cv-sync-check.mjs — Validates that the jobhunt setup is consistent.
  *
  * Checks:
- * 1. cv.md exists
+ * 1. profile/cv.md exists (legacy root cv.md also accepted)
  * 2. config/profile.yml exists and has required fields
  * 3. No hardcoded metrics in _shared.md or batch/batch-prompt.md
- * 4. article-digest.md freshness (if exists)
+ * 4. profile/article-digest.md freshness (legacy root article-digest.md also accepted)
  */
 
 import { readFileSync, existsSync, statSync } from 'node:fs';
@@ -20,16 +20,41 @@ const projectRoot = resolve(SCRIPT_DIR, '..');
 const warnings = [];
 const errors = [];
 
-// 1. Check cv.md exists
-const cvPath = join(projectRoot, 'cv.md');
+function resolveArticleDigestPath() {
+  const preferred = join(projectRoot, 'profile', 'article-digest.md');
+  if (existsSync(preferred)) return preferred;
+
+  const legacy = join(projectRoot, 'article-digest.md');
+  if (existsSync(legacy)) return legacy;
+
+  return preferred;
+}
+
+function resolveCvPath() {
+  const preferred = join(projectRoot, 'profile', 'cv.md');
+  if (existsSync(preferred)) return preferred;
+
+  const legacy = join(projectRoot, 'cv.md');
+  if (existsSync(legacy)) return legacy;
+
+  return preferred;
+}
+
+// 1. Check profile/cv.md exists (legacy root cv.md also accepted)
+const cvPath = resolveCvPath();
 if (!existsSync(cvPath)) {
   errors.push(
-    'cv.md not found in project root. Create it with your CV in markdown format.',
+    'profile/cv.md not found. Copy profile/cv.example.md and fill it in with your CV in markdown format. Legacy root cv.md is also accepted during migration.',
   );
 } else {
   const cvContent = readFileSync(cvPath, 'utf-8');
   if (cvContent.trim().length < 100) {
-    warnings.push('cv.md seems too short. Make sure it contains your full CV.');
+    const cvLabel = cvPath.includes(join('profile', 'cv.md'))
+      ? 'profile/cv.md'
+      : 'cv.md';
+    warnings.push(
+      `${cvLabel} seems too short. Make sure it contains your full CV.`,
+    );
   }
 }
 
@@ -86,21 +111,24 @@ for (const { path, name } of filesToCheck) {
     const matches = line.match(metricPattern);
     if (matches) {
       warnings.push(
-        `${name}:${i + 1} — Possible hardcoded metric: "${matches[0]}". Should this be read from cv.md/article-digest.md?`,
+        `${name}:${i + 1} — Possible hardcoded metric: "${matches[0]}". Should this be read from profile/cv.md or profile/article-digest.md?`,
       );
     }
   }
 }
 
-// 4. Check article-digest.md freshness
-const digestPath = join(projectRoot, 'article-digest.md');
+// 4. Check profile/article-digest.md freshness (legacy root article-digest.md still accepted)
+const digestPath = resolveArticleDigestPath();
 if (existsSync(digestPath)) {
   const stats = statSync(digestPath);
   const daysSinceModified =
     (Date.now() - stats.mtimeMs) / (1000 * 60 * 60 * 24);
   if (daysSinceModified > 30) {
+    const digestLabel = digestPath.includes(join('profile', 'article-digest.md'))
+      ? 'profile/article-digest.md'
+      : 'article-digest.md';
     warnings.push(
-      `article-digest.md is ${Math.round(daysSinceModified)} days old. Consider updating if your projects have new metrics.`,
+      `${digestLabel} is ${Math.round(daysSinceModified)} days old. Consider updating if your projects have new metrics.`,
     );
   }
 }

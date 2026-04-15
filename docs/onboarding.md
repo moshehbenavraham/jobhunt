@@ -5,8 +5,8 @@ Use this checklist for a new checkout:
 1. Install dependencies.
 2. Copy `config/profile.example.yml` to `config/profile.yml`.
 3. Copy `templates/portals.example.yml` to `portals.yml`.
-4. Create `cv.md` in the repo root.
-5. Add `article-digest.md` if you have public proof points.
+4. Copy `profile/cv.example.md` to `profile/cv.md`, then edit it.
+5. If you have public proof points, optionally copy `profile/article-digest.example.md` to `profile/article-digest.md`.
 6. Run `npm run doctor`.
 7. Start `codex` from the repo root.
 8. Paste a JD or URL and follow the generated workflow.

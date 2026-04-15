@@ -203,7 +203,7 @@ instead of broadening this session into implementation cleanup.
 ### Key Considerations
 
 - `docs/onboarding.md` currently tells users to run `npm run doctor` before
-  creating `cv.md`, `config/profile.yml`, and `portals.yml`, which conflicts
+  creating `profile/cv.md`, `config/profile.yml`, and `portals.yml`, which conflicts
   with `README.md`, `docs/SETUP.md`, and the validator contract.
 - `docs/README-docs.md` does not yet surface the docs pages updated in
   Sessions 02 and 03, which weakens the final discoverability of the aligned

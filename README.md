@@ -1,6 +1,7 @@
 # Job-Hunt
 
-AI-powered job search pipeline driven by `AGENTS.md` and checked-in Codex skills.
+AI-powered job search pipeline driven by `AGENTS.md`, checked-in Codex skills, and the repo-owned scripts.
+It also includes a Go-based terminal dashboard for browsing and updating the job-search pipeline.
 
 ## Please Do Not Delete This Line.  This is a fork of: https://github.com/santifer/career-ops/
 
@@ -11,24 +12,26 @@ npm install
 npx playwright install chromium
 cp config/profile.example.yml config/profile.yml
 cp templates/portals.example.yml portals.yml
-# create cv.md in the project root
+cp profile/cv.example.md profile/cv.md
 npm run doctor
 codex
 ```
 
-Before `npm run doctor`, create `cv.md` in the project root. If you have
-public proof points, add `article-digest.md` too. See the
+Before `npm run doctor`, copy `profile/cv.example.md` to `profile/cv.md` and
+edit it with your experience. If you have
+public proof points, optionally copy `profile/article-digest.example.md` to
+`profile/article-digest.md` too. See the
 [Setup Guide](docs/SETUP.md) for the detailed walkthrough.
 
 `npm run doctor` validates Node.js, installed dependencies, Playwright
-Chromium, `cv.md`, `config/profile.yml`, and `portals.yml`. After it passes,
+Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml`. After it passes,
 launch `codex` from the repo root and paste a job URL or JD text. The
 standard user-layer inputs are:
 
-- `cv.md`
+- `profile/cv.md`
 - `config/profile.yml`
 - `portals.yml`
-- `article-digest.md` if you have proof points
+- `profile/article-digest.md` if you have proof points
 
 ## Core Commands
 
@@ -38,6 +41,7 @@ standard user-layer inputs are:
 - `npm run merge` - merge batch tracker additions
 - `npm run pdf` - generate an ATS-friendly PDF
 - `npm run scan` - scan portals for roles
+- `npm run coverage` - measure Node script and dashboard coverage
 - `npm run update:check` - check for updater changes
 
 ## Repository Layout
@@ -45,8 +49,8 @@ standard user-layer inputs are:
 ```text
 .
 |-- AGENTS.md
-|-- cv.md
 |-- config/
+|-- profile/
 |-- modes/
 |-- templates/
 |-- scripts/
@@ -67,6 +71,8 @@ standard user-layer inputs are:
 - [Contributing](CONTRIBUTING.md)
 - [Docs Index](docs/README-docs.md)
 
++ more in `docs/`
+
 Each significant folder has a `README_<folder-name>.md` with its own documentation.
 
 ## Tech Stack
@@ -75,7 +81,3 @@ Each significant folder has a `README_<folder-name>.md` with its own documentati
 - Go - dashboard TUI
 - Playwright - posting checks and PDF rendering
 - Markdown/YAML - prompts, modes, profiles, and tracker metadata
-
-## Project Status
-
-See [docs/prev-prd/PRD-codex-convert.md](docs/prev-prd/PRD-codex-convert.md) for the migration roadmap and phase history.

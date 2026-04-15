@@ -2,7 +2,7 @@
 
 ## Pipeline completo
 
-1. Lee `cv.md` como fuentes de verdad
+1. Lee `profile/cv.md` como fuentes de verdad
 2. Pide al usuario el JD si no está en contexto (texto o URL)
 3. Extrae 15-20 keywords del JD
 4. Detecta idioma del JD → idioma del CV (EN default)
@@ -117,7 +117,7 @@ b. Map text elements to CV sections by content matching:
 
 - Look for the candidate's name → header section
 - Look for "Summary" or "Professional Summary" → summary section
-- Look for company names from cv.md → experience sections
+- Look for company names from profile/cv.md → experience sections
 - Look for degree/school names → education section
 - Look for skill keywords → skills section
   c. If mapping fails, show the user what was found and ask for guidance

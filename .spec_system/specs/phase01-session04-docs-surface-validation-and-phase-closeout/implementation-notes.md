@@ -32,7 +32,7 @@
   the final Phase 01 surfaces for support, customization, or legal and policy
   guidance.
 - `docs/onboarding.md` still tells readers to run `npm run doctor` before
-  creating `cv.md`, `config/profile.yml`, and `portals.yml`, which conflicts
+  creating `profile/cv.md`, `config/profile.yml`, and `portals.yml`, which conflicts
   with `README.md` and `docs/SETUP.md`.
 - `docs/onboarding.md` links only to `SETUP.md` and `SCRIPTS.md`, leaving the
   user-layer data contract and customization guidance undiscoverable from this
@@ -44,7 +44,7 @@
 ### Reference Surface Used For Comparison
 
 - `README.md` defines the canonical first-run order: install, copy example
-  files, create `cv.md`, then run `npm run doctor`, then launch `codex`.
+  files, create `profile/cv.md`, then run `npm run doctor`, then launch `codex`.
 - `docs/SETUP.md` matches that order and names the required user-layer files.
 - `docs/CONTRIBUTING.md`, `docs/SUPPORT.md`, `docs/CUSTOMIZATION.md`, and
   `docs/LEGAL_DISCLAIMER.md` are the authoritative Phase 01 docs that the
@@ -83,7 +83,7 @@
 ### Corrected Secondary Routes
 
 - `docs/onboarding.md` now mirrors the canonical setup order from `README.md`
-  and `docs/SETUP.md`: install, copy example files, create `cv.md`, add
+  and `docs/SETUP.md`: install, copy example files, create `profile/cv.md`, add
   optional proof points, run `npm run doctor`, then launch `codex`.
 - `docs/onboarding.md` now routes readers directly to `docs/SETUP.md`,
   `docs/DATA_CONTRACT.md`, `docs/CUSTOMIZATION.md`, and `docs/SCRIPTS.md`.
@@ -108,7 +108,7 @@
 ## Validation Summary
 
 - Targeted `rg` checks show `docs/onboarding.md` now lists example-file copies
-  and `cv.md` creation before `npm run doctor`, matching `README.md` and
+  and `profile/cv.md` creation before `npm run doctor`, matching `README.md` and
   `docs/SETUP.md`.
 - A local markdown-link existence check passed for `README.md`,
   `docs/README-docs.md`, `docs/onboarding.md`, and `docs/development.md`.
@@ -289,7 +289,7 @@
 
 **Notes**:
 
-- Reordered `docs/onboarding.md` so the setup helper now mirrors `README.md` and `docs/SETUP.md`: copy examples, create `cv.md`, optionally add `article-digest.md`, then run `npm run doctor`.
+- Reordered `docs/onboarding.md` so the setup helper now mirrors `README.md` and `docs/SETUP.md`: copy examples, create `profile/cv.md`, optionally add `article-digest.md`, then run `npm run doctor`.
 - Kept the checklist lightweight while matching the live validator contract.
 
 **Files Changed**:
@@ -383,7 +383,7 @@
 **Notes**:
 
 - Ran targeted `rg` checks across `docs/onboarding.md`, `README.md`, and `docs/SETUP.md` for the setup-order terms.
-- Confirmed the touched onboarding helper now shows example-file copies and `cv.md` creation before `npm run doctor`.
+- Confirmed the touched onboarding helper now shows example-file copies and `profile/cv.md` creation before `npm run doctor`.
 
 **Files Changed**:
 

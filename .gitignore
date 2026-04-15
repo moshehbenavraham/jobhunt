@@ -2,10 +2,12 @@
 data/applications.md
 data/pipeline.md
 data/scan-history.tsv
+data/follow-ups.md
 reports/*.md
 !reports/.gitkeep
 output/*
 !output/.gitkeep
+coverage/
 batch/logs/*
 !batch/logs/.gitkeep
 batch/batch-state.tsv
@@ -16,9 +18,16 @@ jds/*
 !jds/.gitkeep
 
 # User config and customization (never auto-updated)
+cv.md
+profile/cv.md
+profile/article-digest.md
+article-digest.md
 config/profile.yml
 portals.yml
 modes/_profile.md
+interview-prep/*.md
+!interview-prep/README-interview-prep.md
+!interview-prep/story-bank.example.md
 .update-dismissed
 .update-lock
 
@@ -36,4 +45,6 @@ bun.lock
 .claude/settings.local.json
 .claude/memory/
 career-dashboard
+dashboard/coverage.out
+dashboard/coverage.html
 package-lock.json

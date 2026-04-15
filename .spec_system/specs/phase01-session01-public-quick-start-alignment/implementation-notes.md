@@ -52,8 +52,8 @@
 **Notes**:
 
 - Captured the live public sequence as `npm install`, `npx playwright install chromium`, `npm run doctor`, `codex` from `README.md`.
-- Captured the live setup guide sequence as clone/install, `npm run doctor`, copy profile and portals, create `cv.md`, then `codex`.
-- Confirmed `scripts/doctor.mjs` requires `cv.md`, `config/profile.yml`, and `portals.yml`, so both public docs currently validate too early.
+- Captured the live setup guide sequence as clone/install, `npm run doctor`, copy profile and portals, create `profile/cv.md`, then `codex`.
+- Confirmed `scripts/doctor.mjs` requires `profile/cv.md`, `config/profile.yml`, and `portals.yml`, so both public docs currently validate too early.
 - Confirmed `package.json` exposes the public validation commands `doctor`, `sync-check`, and `verify`.
 
 **Files Changed**:
@@ -83,8 +83,8 @@
 
 **Notes**:
 
-- Confirmed `scripts/doctor.mjs` checks for Node.js 18+, installed dependencies, Playwright Chromium, `cv.md`, `config/profile.yml`, `portals.yml`, a readable `fonts/` directory, and the `data/`, `output/`, and `reports/` directories.
-- Captured the user-facing fix hints that matter for public onboarding: `npm install`, `npx playwright install chromium`, `cp config/profile.example.yml config/profile.yml`, `cp templates/portals.example.yml portals.yml`, and creating `cv.md`.
+- Confirmed `scripts/doctor.mjs` checks for Node.js 18+, installed dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, `portals.yml`, a readable `fonts/` directory, and the `data/`, `output/`, and `reports/` directories.
+- Captured the user-facing fix hints that matter for public onboarding: `npm install`, `npx playwright install chromium`, `cp config/profile.example.yml config/profile.yml`, `cp templates/portals.example.yml portals.yml`, and creating `profile/cv.md`.
 - Noted that `data/`, `output/`, and `reports/` auto-create during doctor, so they do not need to be elevated into the first-run docs.
 
 **Files Changed**:
@@ -131,7 +131,7 @@
 
 **Notes**:
 
-- Mapped `docs/SETUP.md` to the target order: clone/install, copy and fill `config/profile.yml`, copy and tailor `portals.yml`, create `cv.md`, run `npm run doctor`, then launch `codex`.
+- Mapped `docs/SETUP.md` to the target order: clone/install, copy and fill `config/profile.yml`, copy and tailor `portals.yml`, create `profile/cv.md`, run `npm run doctor`, then launch `codex`.
 - Split follow-up repo checks from initial setup so `npm run sync-check` and `npm run verify` read as optional verification after the first successful launch path.
 - Preserved the optional dashboard section as out-of-band setup so it does not interrupt the main onboarding path.
 
@@ -147,8 +147,8 @@
 
 **Notes**:
 
-- Reordered the README quick start so `config/profile.yml`, `portals.yml`, and `cv.md` appear before `npm run doctor`.
-- Kept the README sequence short by using copy commands for the configurable files and a concise inline instruction for `cv.md`.
+- Reordered the README quick start so `config/profile.yml`, `portals.yml`, and `profile/cv.md` appear before `npm run doctor`.
+- Kept the README sequence short by using copy commands for the configurable files and a concise inline instruction for `profile/cv.md`.
 
 **Files Changed**:
 
@@ -162,7 +162,7 @@
 
 **Notes**:
 
-- Added README copy that explains `npm run doctor` validates Node.js, installed dependencies, Playwright Chromium, `cv.md`, `config/profile.yml`, and `portals.yml`.
+- Added README copy that explains `npm run doctor` validates Node.js, installed dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml`.
 - Clarified that the validation step belongs after the user-layer files exist and before launching `codex`.
 
 **Files Changed**:
@@ -184,7 +184,7 @@
 
 - `README.md` - normalized the public entrypoint wording around `codex` and repo-owned commands
 
-### Task T011 - Reorder docs/SETUP.md so profile setup, portals.yml, and cv.md creation happen before environment validation
+### Task T011 - Reorder docs/SETUP.md so profile setup, portals.yml, and profile/cv.md creation happen before environment validation
 
 **Started**: 2026-04-15 09:19
 **Completed**: 2026-04-15 09:19
@@ -192,7 +192,7 @@
 
 **Notes**:
 
-- Reordered the setup guide so profile configuration, `portals.yml`, and `cv.md` creation now happen before `npm run doctor`.
+- Reordered the setup guide so profile configuration, `portals.yml`, and `profile/cv.md` creation now happen before `npm run doctor`.
 - Preserved the existing clone/install and `codex` launch steps while correcting the prerequisite order enforced by the validator.
 
 **Files Changed**:
@@ -219,8 +219,8 @@
 | Stage     | Canonical Sequence                                                                                                     | Notes                                                                                                         |
 | --------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Install   | `npm install` -> `npx playwright install chromium`                                                                     | `docs/SETUP.md` also carries `git clone` and `cd jobhunt`                                                  |
-| Configure | `cp config/profile.example.yml config/profile.yml` -> `cp templates/portals.example.yml portals.yml` -> create `cv.md` | `article-digest.md` stays optional proof-point support                                                        |
-| Validate  | `npm run doctor`                                                                                                       | Doctor validates Node.js, dependencies, Playwright Chromium, `cv.md`, `config/profile.yml`, and `portals.yml` |
+| Configure | `cp config/profile.example.yml config/profile.yml` -> `cp templates/portals.example.yml portals.yml` -> create `profile/cv.md` | `article-digest.md` stays optional proof-point support                                                        |
+| Validate  | `npm run doctor`                                                                                                       | Doctor validates Node.js, dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml` |
 | Launch    | `codex`                                                                                                                | Primary interactive runtime from the repo root                                                                |
 | Follow-up | `npm run sync-check` -> `npm run verify`                                                                               | Follow-up verification after initial setup works                                                              |
 
@@ -256,7 +256,7 @@
 **Notes**:
 
 - Ran `npm run doctor` successfully after the docs changes.
-- Confirmed the live validator passes with the same prerequisites now documented in `README.md` and `docs/SETUP.md`: Node.js, dependencies, Playwright Chromium, `cv.md`, `config/profile.yml`, and `portals.yml`.
+- Confirmed the live validator passes with the same prerequisites now documented in `README.md` and `docs/SETUP.md`: Node.js, dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml`.
 
 **Files Changed**:
 
@@ -288,7 +288,7 @@
 
 - Ran targeted `rg` checks across `README.md` and `docs/SETUP.md` for `claude`, `opencode`, `npm run doctor`, and the required setup inputs.
 - Confirmed there were no `claude` or `opencode` hits in either public onboarding file.
-- Confirmed the remaining `npm run doctor` references appear after the profile, portals, and `cv.md` setup references in both docs.
+- Confirmed the remaining `npm run doctor` references appear after the profile, portals, and `profile/cv.md` setup references in both docs.
 
 **Files Changed**:
 
