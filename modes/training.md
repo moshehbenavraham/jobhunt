@@ -1,28 +1,28 @@
-# Modo: training — Evaluación de Formación
+# Mode: training -- Training and Certification Evaluation
 
-Para cada curso/cert que el candidato pregunte, evaluar 6 dimensiones:
+For each course or certification the candidate asks about, score 6 dimensions:
 
-| Dimensión             | Qué evalúa                                            |
-| --------------------- | ----------------------------------------------------- |
-| Alineación North Star | ¿Acerca o aleja del objetivo?                         |
-| Señal recruiter       | ¿Qué piensan HMs al ver esto en un CV?                |
-| Tiempo y esfuerzo     | Semanas × horas/semana                                |
-| Coste de oportunidad  | ¿Qué no puede hacer durante ese tiempo?               |
-| Riesgos               | ¿Contenido outdated? ¿Brand débil? ¿Demasiado básico? |
-| Entregable portfolio  | ¿Produce un artefacto demostrable?                    |
+| Dimension | What it evaluates |
+| --- | --- |
+| North Star alignment | does it move the candidate toward the target roles? |
+| Recruiter signal | how will hiring managers read it on the CV? |
+| Time and effort | weeks x hours per week |
+| Opportunity cost | what work will not get done while doing it? |
+| Risks | outdated content, weak brand, too basic, etc. |
+| Portfolio output | does it create a demonstrable artifact? |
 
-## Veredictos
+## Verdicts
 
-- **HACER** → plan de 4-12 semanas con entregables semanales y scoreboard
-- **NO HACER** → alternativa mejor con justificación
-- **HACER CON TIMEBOX** (máx X semanas) → plan condensado, solo lo esencial
+- **DO IT** -> provide a 4-12 week plan with weekly deliverables
+- **DO NOT DO IT** -> recommend a better alternative and explain why
+- **DO IT WITH A TIMEBOX** -> tightly scoped version, essentials only
 
-## Prioridad
+## Priority order
 
-Formación que mejore credibilidad en "production-grade AI":
+Training that improves credibility around production-grade AI should emphasize:
 
-1. Evals y testing de LLMs
-2. Observability y monitoring
-3. Cost/reliability trade-offs
-4. AI governance y safety
-5. Enterprise AI architecture
+1. evals and LLM testing
+2. observability and monitoring
+3. cost / reliability tradeoffs
+4. AI governance and safety
+5. enterprise AI architecture

@@ -1,54 +1,52 @@
-# Modo: contacto -- LinkedIn Power Move
+# Mode: contacto -- LinkedIn Outreach
 
-1. **Identificar targets** via WebSearch:
-   - Hiring manager del equipo
-   - Recruiter asignado
-   - 2-3 peers del equipo (gente con rol similar)
-   - Interviewer (si el candidato ya tiene entrevista programada)
+1. **Identify targets** via WebSearch:
+   - the hiring manager
+   - the recruiter
+   - 2-3 peers on the team
+   - the interviewer, if the candidate already has an interview scheduled
 
-2. **Clasificar tipo de contacto** -- preguntar al candidato o inferir del contexto:
-   - **Recruiter** -- persona cuyo rol es talent acquisition, sourcing, o recruiting
-   - **Hiring Manager** -- la persona que lidera el equipo que contrata
-   - **Peer** -- alguien con un rol similar en el equipo (referral indirecto)
-   - **Interviewer** -- alguien que va a entrevistar al candidato (fecha conocida)
+2. **Classify contact type** by asking the user or inferring from context:
+   - **Recruiter**
+   - **Hiring Manager**
+   - **Peer**
+   - **Interviewer**
 
-3. **Seleccionar target primario**: la persona que mas se beneficiaria de que el candidato estuviera alli
+3. **Select the primary target:** the person who would benefit most from the candidate being on the team.
 
-4. **Generar mensaje** con framework de 3 frases adaptado al tipo de contacto:
+4. **Generate the message** using a 3-sentence framework adapted to the contact type:
 
    ### Recruiter
-   - **Frase 1 (Fit)**: Criterios de match directo -- rol, experiencia relevante, disponibilidad o ubicacion
-   - **Frase 2 (Prueba)**: Dato que responda sus preguntas de screening antes de que las hagan (ej: "5 years building ML pipelines, currently in Berlin, available immediately")
-   - **Frase 3 (CTA)**: "Happy to share my CV if this aligns with what you're looking for"
+   - **Sentence 1 (Fit):** direct match criteria: role, relevant experience, availability, or location
+   - **Sentence 2 (Proof):** one fact that answers screening questions early
+   - **Sentence 3 (CTA):** "Happy to share my CV if this aligns with what you're looking for."
 
    ### Hiring Manager
-   - **Frase 1 (Gancho)**: Reto especifico que enfrenta su equipo (extraido del JD, company blog, o noticias)
-   - **Frase 2 (Prueba)**: Mayor logro cuantificable del candidato que demuestre que ha resuelto problemas similares
-   - **Frase 3 (CTA)**: "Would love to hear how your team is approaching [reto especifico]"
+   - **Sentence 1 (Hook):** a specific challenge the team is likely facing
+   - **Sentence 2 (Proof):** the strongest quantified achievement that shows similar problems were solved before
+   - **Sentence 3 (CTA):** "Would love to hear how your team is approaching [specific challenge]."
 
-   ### Peer (referral)
-   - **Frase 1 (Interes)**: Referencia genuina a su trabajo -- blog post, charla, proyecto open source, o publicacion
-   - **Frase 2 (Conexion)**: Algo que el candidato esta haciendo en el mismo espacio (NO un pitch de empleo)
-   - **Frase 3 (CTA)**: "I've been working on similar problems at [empresa], would love to hear your take on [tema]"
-   - **Nota**: NO pedir empleo. La referral ocurre naturalmente si la conversacion fluye.
+   ### Peer
+   - **Sentence 1 (Interest):** reference something real from their work
+   - **Sentence 2 (Connection):** mention overlapping work the candidate is doing
+   - **Sentence 3 (CTA):** ask for their take on a shared topic, not for a job
 
-   ### Interviewer (pre-entrevista)
-   - **Frase 1 (Research)**: Referencia a algo especifico de su trabajo o trayectoria
-   - **Frase 2 (Contexto)**: Conexion ligera con la experiencia del candidato en ese tema
-   - **Frase 3 (CTA)**: "Looking forward to our conversation on [fecha]"
-   - **Nota**: Tono ligero, no desesperado. El objetivo es que sepan que te preparaste.
+   ### Interviewer
+   - **Sentence 1 (Research):** reference something specific from their background
+   - **Sentence 2 (Context):** connect lightly to the candidate's experience
+   - **Sentence 3 (CTA):** "Looking forward to our conversation on [date]."
 
-5. **Versiones**:
-   - EN (default)
-   - ES (si empresa espanola)
+5. **Language versions:**
+   - English by default
+   - another language only when the company or the user clearly requests it
 
-6. **Targets alternativos** con justificacion de por que son buenos second choices
+6. **Alternative targets:** offer a few strong backups and explain why they are good second choices.
 
-**Reglas del mensaje:**
+## Message rules
 
-- Maximo 300 caracteres (LinkedIn connection request limit)
-- NO corporate-speak
-- NO "I'm passionate about..."
-- Algo que haga que quieran responder
-- NUNCA compartir telefono
-- El tipo de contacto cambia el ENFASIS, no la estructura
+- max 300 characters for connection requests
+- no corporate-speak
+- no "I'm passionate about..."
+- write something worth replying to
+- never share the candidate's phone number
+- adapt the emphasis to the contact type, not the structure

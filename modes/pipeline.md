@@ -1,62 +1,69 @@
-# Modo: pipeline — Inbox de URLs (Second Brain)
+# Mode: pipeline -- URL Inbox
 
-Procesa URLs de ofertas acumuladas en `data/pipeline.md`. El usuario agrega URLs cuando quiera y luego ejecuta `/jobhunt pipeline` para procesarlas todas.
+Process accumulated job URLs from `data/pipeline.md`. The user can add URLs whenever they want, then run the pipeline to process them in a batch.
 
 ## Workflow
 
-1. **Leer** `data/pipeline.md` → buscar items `- [ ]` en la sección "Pendientes"
-2. **Para cada URL pendiente**:
-   a. Calcular siguiente `REPORT_NUM` secuencial (leer `reports/`, tomar el número más alto + 1)
-   b. **Extraer JD** usando Playwright (browser_navigate + browser_snapshot) → WebFetch → WebSearch
-   c. Si la URL no es accesible → marcar como `- [!]` con nota y continuar
-   d. **Ejecutar auto-pipeline completo**: Evaluación A-F → Report .md → PDF (si score >= 3.0) → Tracker
-   e. **Mover de "Pendientes" a "Procesadas"**: `- [x] #NNN | URL | Empresa | Rol | Score/5 | PDF ✅/❌`
-3. **Si hay 3+ URLs pendientes**, lanzar agentes en paralelo (Agent tool con `run_in_background`) para maximizar velocidad.
-4. **Al terminar**, mostrar tabla resumen:
-
-```
-| # | Empresa | Rol | Score | PDF | Acción recomendada |
-```
-
-## Formato de pipeline.md
+1. Read `data/pipeline.md` and find unchecked items `- [ ]` under `## Pending`.
+2. For each pending URL:
+   a. Calculate the next sequential `REPORT_NUM` from `reports/`
+   b. Extract the JD using Playwright -> WebFetch -> WebSearch
+   c. If the URL is inaccessible, mark it as `- [!]` with a note and continue
+   d. Run the full auto-pipeline: evaluation A-F, legitimacy check G, report, PDF when eligible, tracker update
+   e. Move it from `## Pending` to `## Processed`:
 
 ```markdown
-## Pendientes
+- [x] #NNN | URL | Company | Role | Score/5 | PDF ✅/❌
+```
+
+3. If there are many pending URLs, process them in a controlled batch.
+4. At the end, show a summary table:
+
+```text
+| # | Company | Role | Score | PDF | Recommended action |
+```
+
+## Pipeline format
+
+```markdown
+# Pipeline
+
+## Pending
 
 - [ ] https://jobs.example.com/posting/123
 - [ ] https://boards.greenhouse.io/company/jobs/456 | Company Inc | Senior PM
-- [!] https://private.url/job — Error: login required
+- [!] https://private.url/job -- Error: login required
 
-## Procesadas
+## Processed
 
 - [x] #143 | https://jobs.example.com/posting/789 | Acme Corp | AI PM | 4.2/5 | PDF ✅
 - [x] #144 | https://boards.greenhouse.io/xyz/jobs/012 | BigCo | SA | 2.1/5 | PDF ❌
 ```
 
-## Detección inteligente de JD desde URL
+## Smart JD extraction
 
-1. **Playwright (preferido):** `browser_navigate` + `browser_snapshot`. Funciona con todas las SPAs.
-2. **WebFetch (fallback):** Para páginas estáticas o cuando Playwright no está disponible.
-3. **WebSearch (último recurso):** Buscar en portales secundarios que indexan el JD.
+1. **Playwright (preferred):** `browser_navigate` + `browser_snapshot`
+2. **WebFetch (fallback):** for static pages
+3. **WebSearch (last resort):** for secondary indexing sites
 
-**Casos especiales:**
+Special cases:
 
-- **LinkedIn**: Puede requerir login → marcar `[!]` y pedir al usuario que pegue el texto
-- **PDF**: Si la URL apunta a un PDF, leerlo directamente con Read tool
-- **`local:` prefix**: Leer el archivo local. Ejemplo: `local:jds/linkedin-pm-ai.md` → leer `jds/linkedin-pm-ai.md`
+- **LinkedIn:** may require login; ask the user to paste the JD text if needed
+- **PDF:** if the URL points directly to a PDF, read it directly
+- **`local:` prefix:** read the referenced local file
 
-## Numeración automática
+## Sequential numbering
 
-1. Listar todos los archivos en `reports/`
-2. Extraer el número del prefijo (e.g., `142-medispend...` → 142)
-3. Nuevo número = máximo encontrado + 1
+1. List files in `reports/`
+2. Extract the numeric prefix
+3. Use max + 1
 
-## Sincronización de fuentes
+## Source sync
 
-Antes de procesar cualquier URL, verificar sync:
+Before processing URLs, run:
 
 ```bash
 node scripts/cv-sync-check.mjs
 ```
 
-Si hay desincronización, advertir al usuario antes de continuar.
+If sync warnings appear, notify the user before continuing.

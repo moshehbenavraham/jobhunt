@@ -212,12 +212,12 @@ function appendToPipeline(offers) {
 
   let text = readFileSync(PIPELINE_PATH, 'utf-8');
 
-  // Find "## Pendientes" section and append after it
-  const marker = '## Pendientes';
+  // Find "## Pending" section and append after it
+  const marker = '## Pending';
   const idx = text.indexOf(marker);
   if (idx === -1) {
-    // No Pendientes section — append at end before Procesadas
-    const procIdx = text.indexOf('## Procesadas');
+    // No Pending section - append at end before Processed
+    const procIdx = text.indexOf('## Processed');
     const insertAt = procIdx === -1 ? text.length : procIdx;
     const block =
       `\n${marker}\n\n` +
@@ -227,7 +227,7 @@ function appendToPipeline(offers) {
       '\n\n';
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
   } else {
-    // Find the end of existing Pendientes content (next ## or end)
+    // Find the end of existing Pending content (next ## or end)
     const afterMarker = idx + marker.length;
     const nextSection = text.indexOf('\n## ', afterMarker);
     const insertAt = nextSection === -1 ? text.length : nextSection;

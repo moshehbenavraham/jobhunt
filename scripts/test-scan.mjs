@@ -120,11 +120,11 @@ writeFile(
   [
     '# Pipeline',
     '',
-    '## Pendientes',
+    '## Pending',
     '',
     '- [ ] https://jobs.example.com/pipeline-existing | GreenhouseCo | Existing Role',
     '',
-    '## Procesadas',
+    '## Processed',
     '',
   ].join('\n'),
 );
@@ -208,7 +208,7 @@ assert.deepEqual(order.sort(), ['a', 'b']);
 
 writeFile(
   join(sandbox, 'data', 'pipeline.md'),
-  ['# Pipeline', '', '## Procesadas', ''].join('\n'),
+  ['# Pipeline', '', '## Processed', ''].join('\n'),
 );
 scanModule.appendToPipeline([
   {
@@ -219,7 +219,7 @@ scanModule.appendToPipeline([
 ]);
 assert.match(
   readFileSync(join(sandbox, 'data', 'pipeline.md'), 'utf8'),
-  /## Pendientes[\s\S]*https:\/\/jobs\.example\.com\/manual/,
+  /## Pending[\s\S]*https:\/\/jobs\.example\.com\/manual/,
 );
 
 scanModule.appendToScanHistory(
