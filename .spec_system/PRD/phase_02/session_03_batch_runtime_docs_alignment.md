@@ -1,7 +1,7 @@
 # Session 03: Batch Runtime Docs Alignment
 
 **Session ID**: `phase02-session03-batch-runtime-docs-alignment`
-**Status**: Not Started
+**Status**: Complete
 **Estimated Tasks**: ~12-25
 **Estimated Duration**: 2-4 hours
 
@@ -35,8 +35,8 @@ the structured worker result contract.
 
 ## Prerequisites
 
-- [ ] Sessions 01 and 02 completed
-- [ ] The runtime contract and state semantics are settled
+- [x] Sessions 01 and 02 completed
+- [x] The runtime contract and state semantics are settled
 
 ---
 
@@ -50,8 +50,8 @@ the structured worker result contract.
 
 ## Success Criteria
 
-- [ ] Batch operators can follow the docs using `codex exec`, not `claude -p`
-- [ ] The worker result contract is documented where batch operators and
+- [x] Batch operators can follow the docs using `codex exec`, not `claude -p`
+- [x] The worker result contract is documented where batch operators and
       contributors expect to find it
-- [ ] Any remaining prompt or metadata cleanup is explicitly tagged for
+- [x] Any remaining prompt or metadata cleanup is explicitly tagged for
       Phase 03 rather than silently mixed into Phase 02

@@ -4,7 +4,7 @@
 **Sessions**: 4
 **Estimated Duration**: 4-6 days
 
-**Progress**: 2/4 sessions (50%)
+**Progress**: 3/4 sessions (75%)
 
 ---
 
@@ -28,7 +28,7 @@ language cleanup and metadata normalization that Phase 03 already owns.
 |---------|------|--------|------------|-----------|
 | 01 | Codex Exec Worker Contract | Complete | ~12-25 | 2026-04-15 |
 | 02 | Structured Batch Result Handling | Complete | ~12-25 | 2026-04-15 |
-| 03 | Batch Runtime Docs Alignment | Not Started | ~12-25 | - |
+| 03 | Batch Runtime Docs Alignment | Complete | ~12-25 | 2026-04-15 |
 | 04 | Batch Flow Validation and Closeout | Not Started | ~12-25 | - |
 
 ---
@@ -42,7 +42,7 @@ language cleanup and metadata normalization that Phase 03 already owns.
 
 ## Upcoming Sessions
 
-- Session 03: Batch Runtime Docs Alignment
+- Session 04: Batch Flow Validation and Closeout
 
 ---
 
