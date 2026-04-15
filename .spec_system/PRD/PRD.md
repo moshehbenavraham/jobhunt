@@ -483,12 +483,12 @@ Result:
 | Phase | Name                              | Sessions | Status   |
 | ----- | --------------------------------- | -------- | -------- |
 | 00    | Contract and Drift Cleanup        | 4        | Complete |
-| 01    | Docs and Entrypoints              | 4        | Not Started |
+| 01    | Docs and Entrypoints              | 4        | Complete |
 | 02    | Batch Runtime Conversion          | TBD      | Planned  |
 | 03    | Prompt and Metadata Normalization | TBD      | Planned  |
 
-Phase 00 is complete as of 2026-04-15. Phase 01 is scaffolded and ready for
-session planning. Phases 02 and 03 remain planned.
+Phase 00 is complete as of 2026-04-15. Phase 01 is complete as of 2026-04-15.
+Phases 02 and 03 remain planned.
 
 ## Suggested Migration Order
 

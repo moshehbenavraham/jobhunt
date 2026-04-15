@@ -112,10 +112,11 @@
 
 ## Infrastructure
 
-| Surface | Command | Details |
-| ------- | ------- | ------- |
-| Health  | `npm run doctor && node scripts/test-all.mjs --quick` | Repo health gate; validates setup, version consistency, and dashboard build coverage |
-| Local Dev | `cd dashboard && go build -o career-dashboard . && ./career-dashboard --path ..` | Manual launch path for the Go TUI dashboard; run from the `dashboard/` directory |
+| Surface   | Command                                                                          | Details                                                                              |
+| --------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Health    | `npm run doctor && node scripts/test-all.mjs --quick`                            | Repo health gate; validates setup, version consistency, and dashboard build coverage |
+| Security  | `docs/SECURITY.md`                                                               | Local-tool security policy and disclosure path; no hosted service or WAF surface     |
+| Local Dev | `cd dashboard && go build -o career-dashboard . && ./career-dashboard --path ..` | Manual launch path for the Go TUI dashboard; run from the `dashboard/` directory     |
 
 ## When In Doubt
 

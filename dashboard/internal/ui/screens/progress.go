@@ -120,22 +120,14 @@ func (m ProgressModel) View() string {
 }
 
 func (m ProgressModel) renderHeader() string {
-	style := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(m.theme.Text).
-		Background(m.theme.Surface).
-		Width(m.width).
-		Padding(0, 2)
+	style := m.theme.Shelf(m.width)
+	title := m.theme.Display(m.theme.Mauve).Render("SEARCH PROGRESS")
 
-	title := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Mauve).Render("SEARCH PROGRESS")
-
-	right := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-	total := len(m.metrics.FunnelStages)
 	totalCount := 0
-	if total > 0 {
+	if len(m.metrics.FunnelStages) > 0 {
 		totalCount = m.metrics.FunnelStages[0].Count
 	}
-	info := right.Render(fmt.Sprintf("%d evaluated | %.1f avg score", totalCount, m.metrics.AvgScore))
+	info := m.theme.Supporting().Render(fmt.Sprintf("%d evaluated | %.1f avg score", totalCount, m.metrics.AvgScore))
 
 	gap := m.width - lipgloss.Width(title) - lipgloss.Width(info) - 4
 	if gap < 1 {
@@ -146,19 +138,16 @@ func (m ProgressModel) renderHeader() string {
 }
 
 func (m ProgressModel) renderFunnel() string {
-	padStyle := lipgloss.NewStyle().Padding(0, 2)
-	sectionTitle := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Sky)
+	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	var lines []string
-	lines = append(lines, padStyle.Render(sectionTitle.Render("Pipeline Funnel")))
+	lines = append(lines, padStyle.Render(m.theme.Section().Render("Pipeline Funnel")))
 
 	if len(m.metrics.FunnelStages) == 0 {
-		dimStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-		lines = append(lines, padStyle.Render(dimStyle.Render("No data")))
+		lines = append(lines, padStyle.Render(m.theme.Supporting().Render("No data")))
 		return strings.Join(lines, "\n")
 	}
 
-	// Find max count for bar scaling
 	maxCount := 0
 	for _, s := range m.metrics.FunnelStages {
 		if s.Count > maxCount {
@@ -167,12 +156,15 @@ func (m ProgressModel) renderFunnel() string {
 	}
 
 	labelW := 10
-	barMaxW := m.width - labelW - 20 // room for label, count, pct
+	wc := theme.ClassifyWidth(m.width)
+	barMaxW := m.width - labelW - 20
+	if wc >= theme.WidthComfortable {
+		barMaxW = m.width - labelW - 16
+	}
 	if barMaxW < 10 {
 		barMaxW = 10
 	}
 
-	// Colors for funnel stages (gradient from cool to warm)
 	stageColors := []lipgloss.Color{
 		m.theme.Blue,
 		m.theme.Sky,
@@ -196,17 +188,14 @@ func (m ProgressModel) renderFunnel() string {
 		}
 
 		barStyle := lipgloss.NewStyle().Foreground(color)
-		labelStyle := lipgloss.NewStyle().Foreground(m.theme.Text).Width(labelW)
-		countStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-
-		bar := barStyle.Render(strings.Repeat("\u2588", barW))
-		label := labelStyle.Render(stage.Label)
+		label := m.theme.Body().Width(labelW).Render(stage.Label)
+		bar := barStyle.Render(strings.Repeat(theme.BlockLowerHalf, barW))
 
 		pctStr := ""
 		if i > 0 {
 			pctStr = fmt.Sprintf(" (%.0f%%)", stage.Pct)
 		}
-		count := countStyle.Render(fmt.Sprintf("  %d%s", stage.Count, pctStr))
+		count := m.theme.Supporting().Render(fmt.Sprintf("  %d%s", stage.Count, pctStr))
 
 		lines = append(lines, padStyle.Render(label+bar+count))
 	}
@@ -215,19 +204,16 @@ func (m ProgressModel) renderFunnel() string {
 }
 
 func (m ProgressModel) renderScoreDistribution() string {
-	padStyle := lipgloss.NewStyle().Padding(0, 2)
-	sectionTitle := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Sky)
+	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	var lines []string
-	lines = append(lines, padStyle.Render(sectionTitle.Render("Score Distribution")))
+	lines = append(lines, padStyle.Render(m.theme.Section().Render("Score Distribution")))
 
 	if len(m.metrics.ScoreBuckets) == 0 {
-		dimStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-		lines = append(lines, padStyle.Render(dimStyle.Render("No data")))
+		lines = append(lines, padStyle.Render(m.theme.Supporting().Render("No data")))
 		return strings.Join(lines, "\n")
 	}
 
-	// Find max count for bar scaling
 	maxCount := 0
 	for _, b := range m.metrics.ScoreBuckets {
 		if b.Count > maxCount {
@@ -236,12 +222,15 @@ func (m ProgressModel) renderScoreDistribution() string {
 	}
 
 	labelW := 8
+	wc := theme.ClassifyWidth(m.width)
 	barMaxW := m.width - labelW - 14
+	if wc >= theme.WidthComfortable {
+		barMaxW = m.width - labelW - 10
+	}
 	if barMaxW < 10 {
 		barMaxW = 10
 	}
 
-	// Colors for score ranges (green to red)
 	bucketColors := []lipgloss.Color{
 		m.theme.Green,
 		m.theme.Green,
@@ -265,12 +254,9 @@ func (m ProgressModel) renderScoreDistribution() string {
 		}
 
 		barStyle := lipgloss.NewStyle().Foreground(color)
-		labelStyle := lipgloss.NewStyle().Foreground(m.theme.Text).Width(labelW)
-		countStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-
-		bar := barStyle.Render(strings.Repeat("\u2588", barW))
-		label := labelStyle.Render(bucket.Label)
-		count := countStyle.Render(fmt.Sprintf("  %d", bucket.Count))
+		label := m.theme.Body().Width(labelW).Render(bucket.Label)
+		bar := barStyle.Render(strings.Repeat(theme.BlockFull, barW))
+		count := m.theme.Supporting().Render(fmt.Sprintf("  %d", bucket.Count))
 
 		lines = append(lines, padStyle.Render(label+bar+count))
 	}
@@ -279,36 +265,27 @@ func (m ProgressModel) renderScoreDistribution() string {
 }
 
 func (m ProgressModel) renderRates() string {
-	padStyle := lipgloss.NewStyle().Padding(0, 2)
-	sectionTitle := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Sky)
+	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	var lines []string
-	lines = append(lines, padStyle.Render(sectionTitle.Render("Conversion Rates")))
+	lines = append(lines, padStyle.Render(m.theme.Section().Render("Conversion Rates")))
 
-	labelStyle := lipgloss.NewStyle().Foreground(m.theme.Text)
+	labelStyle := m.theme.Body()
 	valueStyle := lipgloss.NewStyle().Bold(true)
-	sepStyle := lipgloss.NewStyle().Foreground(m.theme.Overlay)
-
-	responseColor := m.rateColor(m.metrics.ResponseRate)
-	interviewColor := m.rateColor(m.metrics.InterviewRate)
-	offerColor := m.rateColor(m.metrics.OfferRate)
-
-	sep := sepStyle.Render("  |  ")
+	sep := m.theme.Structural().Render("  |  ")
 
 	rates := labelStyle.Render("Response Rate: ") +
-		valueStyle.Foreground(responseColor).Render(fmt.Sprintf("%.1f%%", m.metrics.ResponseRate)) +
+		valueStyle.Foreground(m.rateColor(m.metrics.ResponseRate)).Render(fmt.Sprintf("%.1f%%", m.metrics.ResponseRate)) +
 		sep +
 		labelStyle.Render("Interview Rate: ") +
-		valueStyle.Foreground(interviewColor).Render(fmt.Sprintf("%.1f%%", m.metrics.InterviewRate)) +
+		valueStyle.Foreground(m.rateColor(m.metrics.InterviewRate)).Render(fmt.Sprintf("%.1f%%", m.metrics.InterviewRate)) +
 		sep +
 		labelStyle.Render("Offer Rate: ") +
-		valueStyle.Foreground(offerColor).Render(fmt.Sprintf("%.1f%%", m.metrics.OfferRate))
+		valueStyle.Foreground(m.rateColor(m.metrics.OfferRate)).Render(fmt.Sprintf("%.1f%%", m.metrics.OfferRate))
 
 	lines = append(lines, padStyle.Render(rates))
 
-	// Active summary
-	dimStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-	activeInfo := dimStyle.Render(fmt.Sprintf(
+	activeInfo := m.theme.Supporting().Render(fmt.Sprintf(
 		"%d active applications | %d total offers",
 		m.metrics.ActiveApps, m.metrics.TotalOffers,
 	))
@@ -318,28 +295,35 @@ func (m ProgressModel) renderRates() string {
 }
 
 func (m ProgressModel) renderWeeklyActivity() string {
-	padStyle := lipgloss.NewStyle().Padding(0, 2)
-	sectionTitle := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Sky)
+	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	var lines []string
-	lines = append(lines, padStyle.Render(sectionTitle.Render("Weekly Activity")))
+	lines = append(lines, padStyle.Render(m.theme.Section().Render("Weekly Activity")))
 
 	if len(m.metrics.WeeklyActivity) == 0 {
-		dimStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-		lines = append(lines, padStyle.Render(dimStyle.Render("No data")))
+		lines = append(lines, padStyle.Render(m.theme.Supporting().Render("No data")))
 		return strings.Join(lines, "\n")
 	}
 
-	// Find max count for bar scaling
 	maxCount := 0
+	total := 0
 	for _, w := range m.metrics.WeeklyActivity {
 		if w.Count > maxCount {
 			maxCount = w.Count
 		}
+		total += w.Count
 	}
+	avg := float64(total) / float64(len(m.metrics.WeeklyActivity))
 
+	wc := theme.ClassifyWidth(m.width)
 	labelW := 10
+	if wc >= theme.WidthCinematic {
+		labelW = 12
+	}
 	barMaxW := m.width - labelW - 12
+	if wc >= theme.WidthComfortable {
+		barMaxW = m.width - labelW - 8
+	}
 	if barMaxW < 10 {
 		barMaxW = 10
 	}
@@ -353,19 +337,29 @@ func (m ProgressModel) renderWeeklyActivity() string {
 			barW = 1
 		}
 
-		barStyle := lipgloss.NewStyle().Foreground(m.theme.Blue)
-		labelStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext).Width(labelW)
-		countStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-
-		// Show short week label (e.g., "W14" from "2026-W14")
-		shortWeek := week.Week
-		if idx := strings.Index(shortWeek, "-"); idx >= 0 {
-			shortWeek = shortWeek[idx+1:]
+		barColor := m.theme.Blue
+		if avg > 0 {
+			ratio := float64(week.Count) / avg
+			switch {
+			case ratio > 1.2:
+				barColor = m.theme.Green
+			case ratio < 0.8:
+				barColor = m.theme.Peach
+			}
 		}
 
-		bar := barStyle.Render(strings.Repeat("\u2588", barW))
-		label := labelStyle.Render(shortWeek)
-		count := countStyle.Render(fmt.Sprintf("  %d", week.Count))
+		barStyle := lipgloss.NewStyle().Foreground(barColor)
+
+		weekLabel := week.Week
+		if wc < theme.WidthCinematic {
+			if idx := strings.Index(weekLabel, "-"); idx >= 0 {
+				weekLabel = weekLabel[idx+1:]
+			}
+		}
+
+		label := m.theme.Supporting().Width(labelW).Render(weekLabel)
+		bar := barStyle.Render(strings.Repeat(theme.BlockFull, barW))
+		count := m.theme.Supporting().Render(fmt.Sprintf("  %d", week.Count))
 
 		lines = append(lines, padStyle.Render(label+bar+count))
 	}
@@ -374,16 +368,11 @@ func (m ProgressModel) renderWeeklyActivity() string {
 }
 
 func (m ProgressModel) renderHelp() string {
-	style := lipgloss.NewStyle().
-		Foreground(m.theme.Subtext).
-		Background(m.theme.Surface).
-		Width(m.width).
-		Padding(0, 1)
+	style := m.theme.Shelf(m.width).Padding(0, 1)
 
-	keyStyle := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Text)
-	descStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-
-	brand := lipgloss.NewStyle().Foreground(m.theme.Overlay).Render("career-ops by santifer.io")
+	keyStyle := m.theme.Body().Bold(true)
+	descStyle := m.theme.Supporting()
+	brand := m.theme.Supporting().Render("career-ops by santifer.io")
 
 	keys := keyStyle.Render("\u2191\u2193") + descStyle.Render(" scroll  ") +
 		keyStyle.Render("PgUp/Dn") + descStyle.Render(" page  ") +

@@ -94,7 +94,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case screens.PipelineOpenProgressMsg:
 		m.progress = screens.NewProgressModel(
-			theme.NewTheme("catppuccin-mocha"),
+			m.theme,
 			m.progressMetrics,
 			m.pipeline.Width(), m.pipeline.Height(),
 		)

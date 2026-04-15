@@ -130,17 +130,17 @@ GitHub and in local reading.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `.spec_system/specs/phase01-session02-contributor-support-docs-alignment/implementation-notes.md` | Capture the docs audit, wording decisions, corrected link map, and deferred findings during implementation | ~45 |
+| File                                                                                              | Purpose                                                                                                    | Est. Lines |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- |
+| `.spec_system/specs/phase01-session02-contributor-support-docs-alignment/implementation-notes.md` | Capture the docs audit, wording decisions, corrected link map, and deferred findings during implementation | ~45        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `CONTRIBUTING.md` | Keep the root contributor entrypoint concise while aligning it with the live docs flow and support path | ~10 |
-| `docs/CONTRIBUTING.md` | Refresh contributor workflow wording, validation expectations, and internal cross-links | ~35 |
-| `docs/SUPPORT.md` | Update help routing, requested diagnostics, and docs-local links for setup and security support | ~30 |
+| File                   | Changes                                                                                                 | Est. Lines |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- | ---------- |
+| `CONTRIBUTING.md`      | Keep the root contributor entrypoint concise while aligning it with the live docs flow and support path | ~10        |
+| `docs/CONTRIBUTING.md` | Refresh contributor workflow wording, validation expectations, and internal cross-links                 | ~35        |
+| `docs/SUPPORT.md`      | Update help routing, requested diagnostics, and docs-local links for setup and security support         | ~30        |
 
 ---
 

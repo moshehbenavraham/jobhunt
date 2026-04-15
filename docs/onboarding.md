@@ -3,10 +3,20 @@
 Use this checklist for a new checkout:
 
 1. Install dependencies.
-2. Run `npm run doctor`.
-3. Create `cv.md`, `config/profile.yml`, and `portals.yml`.
-4. Add `article-digest.md` if you have proof points.
-5. Start `codex` from the repo root.
-6. Paste a JD or URL and follow the generated workflow.
+2. Copy `config/profile.example.yml` to `config/profile.yml`.
+3. Copy `templates/portals.example.yml` to `portals.yml`.
+4. Create `cv.md` in the repo root.
+5. Add `article-digest.md` if you have public proof points.
+6. Run `npm run doctor`.
+7. Start `codex` from the repo root.
+8. Paste a JD or URL and follow the generated workflow.
 
-For details, see [Setup Guide](SETUP.md) and [Scripts Reference](SCRIPTS.md).
+For the full setup path, see [Setup Guide](SETUP.md).
+
+For file ownership and required user-layer inputs, see
+[Data Contract](DATA_CONTRACT.md).
+
+For profile, targeting, and repo-safe personalization, see
+[Customization Guide](CUSTOMIZATION.md).
+
+For command details, see [Scripts Reference](SCRIPTS.md).

@@ -20,23 +20,25 @@ human-review boundary without reintroducing stale runtime defaults.
 ## Deliverables
 
 ### Files Created
-| File | Purpose | Lines |
-|------|---------|-------|
-| `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/IMPLEMENTATION_SUMMARY.md` | Session closeout summary | ~85 |
+
+| File                                                                                                      | Purpose                  | Lines |
+| --------------------------------------------------------------------------------------------------------- | ------------------------ | ----- |
+| `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/IMPLEMENTATION_SUMMARY.md` | Session closeout summary | ~85   |
 
 ### Files Modified
-| File | Changes |
-|------|---------|
-| `docs/CUSTOMIZATION.md` | Replaced stale `.claude` and shared-file guidance with live customization surfaces and ownership boundaries |
-| `docs/LEGAL_DISCLAIMER.md` | Refreshed runtime, provider, privacy, and acceptable-use wording plus docs-local links |
-| `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/implementation-notes.md` | Recorded drift inventory, wording decisions, removed references, and deferred follow-ups |
-| `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/spec.md` | Marked the session complete |
-| `.spec_system/PRD/phase_01/session_03_customization_and_policy_runtime_cleanup.md` | Marked the phase session stub complete |
-| `.spec_system/PRD/phase_01/PRD_phase_01.md` | Updated phase progress and tracker state |
-| `.spec_system/state.json` | Recorded Session 03 as completed and cleared the active session |
-| `VERSION` | Bumped the patch version to `1.5.10` |
-| `package.json` | Aligned the manifest version with `VERSION` |
-| `package-lock.json` | Aligned the lockfile version metadata with `VERSION` |
+
+| File                                                                                                    | Changes                                                                                                     |
+| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `docs/CUSTOMIZATION.md`                                                                                 | Replaced stale `.claude` and shared-file guidance with live customization surfaces and ownership boundaries |
+| `docs/LEGAL_DISCLAIMER.md`                                                                              | Refreshed runtime, provider, privacy, and acceptable-use wording plus docs-local links                      |
+| `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/implementation-notes.md` | Recorded drift inventory, wording decisions, removed references, and deferred follow-ups                    |
+| `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/spec.md`                 | Marked the session complete                                                                                 |
+| `.spec_system/PRD/phase_01/session_03_customization_and_policy_runtime_cleanup.md`                      | Marked the phase session stub complete                                                                      |
+| `.spec_system/PRD/phase_01/PRD_phase_01.md`                                                             | Updated phase progress and tracker state                                                                    |
+| `.spec_system/state.json`                                                                               | Recorded Session 03 as completed and cleared the active session                                             |
+| `VERSION`                                                                                               | Bumped the patch version to `1.5.10`                                                                        |
+| `package.json`                                                                                          | Aligned the manifest version with `VERSION`                                                                 |
+| `package-lock.json`                                                                                     | Aligned the lockfile version metadata with `VERSION`                                                        |
 
 ---
 
@@ -52,10 +54,10 @@ human-review boundary without reintroducing stale runtime defaults.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 74 |
-| Passed | 74 |
+| Metric   | Value        |
+| -------- | ------------ |
+| Tests    | 74           |
+| Passed   | 74           |
 | Coverage | Not reported |
 
 ---
@@ -72,6 +74,7 @@ human-review boundary without reintroducing stale runtime defaults.
 ## Future Considerations
 
 Items for future sessions:
+
 1. Keep Phase 02 batch runtime wording isolated from the docs surfaces fixed
    in this session.
 2. Continue the phase-closeout validation sweep in Session 04.

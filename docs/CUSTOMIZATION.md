@@ -15,14 +15,14 @@ content in user-layer files and keep shared defaults generic.
 Use the user layer for anything specific to you, your search, or your
 negotiation posture.
 
-| Goal | File | What belongs there |
-| ---- | ---- | ------------------ |
-| Identity and constraints | `config/profile.yml` | Name, email, location, timezone, target roles, compensation targets, work authorization, search constraints |
-| Archetypes and narrative | `modes/_profile.md` | Role archetypes, adaptive framing, negotiation scripts, location policy, scoring preferences |
-| CV content | `cv.md` | Summary, experience, projects, education, skills |
-| Proof points | `article-digest.md` | Public metrics, portfolio evidence, proof-point wording that should override weaker CV phrasing |
-| Job-search targeting | `portals.yml` | Positive and negative title filters, search queries, tracked companies |
-| Interview story bank | `interview-prep/story-bank.md` | Accumulated STAR-style stories and interview examples |
+| Goal                     | File                           | What belongs there                                                                                          |
+| ------------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Identity and constraints | `config/profile.yml`           | Name, email, location, timezone, target roles, compensation targets, work authorization, search constraints |
+| Archetypes and narrative | `modes/_profile.md`            | Role archetypes, adaptive framing, negotiation scripts, location policy, scoring preferences                |
+| CV content               | `cv.md`                        | Summary, experience, projects, education, skills                                                            |
+| Proof points             | `article-digest.md`            | Public metrics, portfolio evidence, proof-point wording that should override weaker CV phrasing             |
+| Job-search targeting     | `portals.yml`                  | Positive and negative title filters, search queries, tracked companies                                      |
+| Interview story bank     | `interview-prep/story-bank.md` | Accumulated STAR-style stories and interview examples                                                       |
 
 ### Common User-Layer Changes
 
@@ -43,13 +43,13 @@ your final settings in the root user-layer files above.
 These files are update-safe system files. Change them only when you intend to
 change behavior for every user of the repo.
 
-| Shared surface | Purpose | When to edit |
-| -------------- | ------- | ------------ |
-| `modes/_shared.md` | Shared scoring rules, workflow constraints, and global prompts | Only when changing repo-wide defaults. Do not place personal negotiation, targeting, or proof points here. |
-| `templates/cv-template.html` | Shared ATS PDF layout and styling | Only when changing the default template for all generated PDFs |
-| `templates/states.yml` | Canonical tracker statuses | Only when intentionally changing the shared status model |
-| `scripts/normalize-statuses.mjs` | Status alias normalization | Update alongside `templates/states.yml` if shared statuses change |
-| `docs/*`, `AGENTS.md`, `.codex/skills/*` | Runtime contract and contributor guidance | Edit only when the shared docs or checked-in instructions need correction |
+| Shared surface                           | Purpose                                                        | When to edit                                                                                               |
+| ---------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `modes/_shared.md`                       | Shared scoring rules, workflow constraints, and global prompts | Only when changing repo-wide defaults. Do not place personal negotiation, targeting, or proof points here. |
+| `templates/cv-template.html`             | Shared ATS PDF layout and styling                              | Only when changing the default template for all generated PDFs                                             |
+| `templates/states.yml`                   | Canonical tracker statuses                                     | Only when intentionally changing the shared status model                                                   |
+| `scripts/normalize-statuses.mjs`         | Status alias normalization                                     | Update alongside `templates/states.yml` if shared statuses change                                          |
+| `docs/*`, `AGENTS.md`, `.codex/skills/*` | Runtime contract and contributor guidance                      | Edit only when the shared docs or checked-in instructions need correction                                  |
 
 ### Shared Template Notes
 

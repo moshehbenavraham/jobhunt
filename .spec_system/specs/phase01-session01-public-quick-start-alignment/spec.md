@@ -129,16 +129,16 @@ the same public onboarding contract.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `.spec_system/specs/phase01-session01-public-quick-start-alignment/implementation-notes.md` | Capture the verified command matrix, doc decisions, and deferred findings during implementation | ~40 |
+| File                                                                                        | Purpose                                                                                         | Est. Lines |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------- |
+| `.spec_system/specs/phase01-session01-public-quick-start-alignment/implementation-notes.md` | Capture the verified command matrix, doc decisions, and deferred findings during implementation | ~40        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `README.md` | Reorder the public quick start and entrypoint wording so it matches validator prerequisites and the Codex launch path | ~20 |
-| `docs/SETUP.md` | Reorder setup steps, separate initial setup from follow-up verification, and mirror the same public command sequence as `README.md` | ~35 |
+| File            | Changes                                                                                                                             | Est. Lines |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| `README.md`     | Reorder the public quick start and entrypoint wording so it matches validator prerequisites and the Codex launch path               | ~20        |
+| `docs/SETUP.md` | Reorder setup steps, separate initial setup from follow-up verification, and mirror the same public command sequence as `README.md` | ~35        |
 
 ---
 

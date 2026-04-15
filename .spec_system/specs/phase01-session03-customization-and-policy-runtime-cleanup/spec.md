@@ -136,16 +136,16 @@ as the primary path.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/implementation-notes.md` | Capture the drift audit, wording decisions, removed stale references, and deferred follow-up items during implementation | ~45 |
+| File                                                                                                    | Purpose                                                                                                                  | Est. Lines |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/implementation-notes.md` | Capture the drift audit, wording decisions, removed stale references, and deferred follow-up items during implementation | ~45        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `docs/CUSTOMIZATION.md` | Replace stale `.claude` and shared-file guidance with the live customization surfaces and ownership boundaries | ~45 |
-| `docs/LEGAL_DISCLAIMER.md` | Refresh runtime, provider, privacy, and acceptable-use wording plus fix docs-local cross-links | ~35 |
+| File                       | Changes                                                                                                        | Est. Lines |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- | ---------- |
+| `docs/CUSTOMIZATION.md`    | Replace stale `.claude` and shared-file guidance with the live customization surfaces and ownership boundaries | ~45        |
+| `docs/LEGAL_DISCLAIMER.md` | Refresh runtime, provider, privacy, and acceptable-use wording plus fix docs-local cross-links                 | ~35        |
 
 ---
 

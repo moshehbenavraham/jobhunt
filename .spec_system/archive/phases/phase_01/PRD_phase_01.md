@@ -1,10 +1,10 @@
 # PRD Phase 01: Docs and Entrypoints
 
-**Status**: In Progress
+**Status**: Complete
 **Sessions**: 4
 **Estimated Duration**: 4-6 days
 
-**Progress**: 3/4 sessions (75%)
+**Progress**: 4/4 sessions (100%)
 
 ---
 
@@ -30,7 +30,7 @@ entrypoints only.
 | 01 | Public Quick Start Alignment | Complete | ~12-25 | 2026-04-15 |
 | 02 | Contributor and Support Docs Alignment | Complete | ~12-25 | 2026-04-15 |
 | 03 | Customization and Policy Runtime Cleanup | Complete | ~12-25 | 2026-04-15 |
-| 04 | Docs Surface Validation and Phase Closeout | Not Started | ~12-25 | - |
+| 04 | Docs Surface Validation and Phase Closeout | Complete | ~12-25 | 2026-04-15 |
 
 ---
 
@@ -39,13 +39,13 @@ entrypoints only.
 - `phase01-session01-public-quick-start-alignment`
 - `phase01-session02-contributor-support-docs-alignment`
 - `phase01-session03-customization-and-policy-runtime-cleanup`
+- `phase01-session04-docs-surface-validation-and-phase-closeout`
 
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Customization and Policy Runtime Cleanup
-- Session 04: Docs Surface Validation and Phase Closeout
+None. Phase 01 is complete.
 
 ---
 
@@ -111,12 +111,12 @@ orchestration behavior, or prompt semantics here.
 ## Success Criteria
 
 Phase complete when:
-- [ ] All 4 sessions completed
-- [ ] `README.md`, setup docs, contributing docs, and support docs no longer
+- [x] All 4 sessions completed
+- [x] `README.md`, setup docs, contributing docs, and support docs no longer
       position Claude or OpenCode as the default runtime
-- [ ] Customization and policy docs reflect the active `.codex` surface and
+- [x] Customization and policy docs reflect the active `.codex` surface and
       local-execution model
-- [ ] Remaining batch, prompt, and metadata drift is explicitly deferred to
+- [x] Remaining batch, prompt, and metadata drift is explicitly deferred to
       Phase 02 or Phase 03 rather than mixed into docs work
 
 ---

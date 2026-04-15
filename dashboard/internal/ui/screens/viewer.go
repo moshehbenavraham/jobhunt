@@ -1,6 +1,7 @@
 package screens
 
 import (
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -124,65 +125,9 @@ func (m ViewerModel) View() string {
 }
 
 func (m ViewerModel) renderHeader() string {
-	style := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(m.theme.Text).
-		Background(m.theme.Surface).
-		Width(m.width).
-		Padding(0, 2)
-
-	title := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Blue).Render(m.title)
-
-	right := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-	pos := right.Render(strings.TrimRight(
-		strings.Repeat(" ", max(0, m.width-lipgloss.Width(m.title)-30)),
-		" ",
-	))
-
-	lineInfo := right.Render(
-		strings.Join([]string{
-			"L",
-			strings.TrimSpace(lipgloss.NewStyle().Render(
-				strings.Join([]string{
-					func() string {
-						s := m.scrollOffset + 1
-						if s > len(m.lines) {
-							s = len(m.lines)
-						}
-						return string(rune('0'+s/100%10)) + string(rune('0'+s/10%10)) + string(rune('0'+s%10))
-					}(),
-				}, ""),
-			)),
-			"/",
-			func() string {
-				t := len(m.lines)
-				return string(rune('0'+t/100%10)) + string(rune('0'+t/10%10)) + string(rune('0'+t%10))
-			}(),
-		}, ""),
-	)
-	_ = pos
-	_ = lineInfo
-
-	scroll := right.Render(func() string {
-		if len(m.lines) == 0 {
-			return ""
-		}
-		pct := 0
-		maxScroll := len(m.lines) - m.bodyHeight()
-		if maxScroll > 0 {
-			pct = m.scrollOffset * 100 / maxScroll
-		}
-		if m.scrollOffset == 0 {
-			return "Top"
-		}
-		if m.scrollOffset >= maxScroll {
-			return "End"
-		}
-		return func() string {
-			s := pct
-			return string(rune('0'+s/10%10)) + string(rune('0'+s%10)) + "%"
-		}()
-	}())
+	style := m.theme.Shelf(m.width)
+	title := m.theme.Display(m.theme.Blue).Render(m.title)
+	scroll := m.theme.Supporting().Render(m.scrollIndicator())
 
 	gap := m.width - lipgloss.Width(m.title) - lipgloss.Width(scroll) - 4
 	if gap < 1 {
@@ -192,13 +137,29 @@ func (m ViewerModel) renderHeader() string {
 	return style.Render(title + strings.Repeat(" ", gap) + scroll)
 }
 
+func (m ViewerModel) scrollIndicator() string {
+	if len(m.lines) == 0 {
+		return ""
+	}
+	maxScroll := len(m.lines) - m.bodyHeight()
+	if maxScroll <= 0 {
+		return "Top"
+	}
+	if m.scrollOffset == 0 {
+		return "Top"
+	}
+	if m.scrollOffset >= maxScroll {
+		return "End"
+	}
+	return fmt.Sprintf("%d%%", m.scrollOffset*100/maxScroll)
+}
+
 func (m ViewerModel) renderBody() string {
 	bh := m.bodyHeight()
-	padStyle := lipgloss.NewStyle().Padding(0, 2)
+	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	if len(m.lines) == 0 {
-		emptyStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
-		return padStyle.Render(emptyStyle.Render("(empty file)"))
+		return padStyle.Render(m.theme.Supporting().Render("(empty file)"))
 	}
 
 	end := m.scrollOffset + bh
@@ -368,9 +329,9 @@ func (m ViewerModel) renderTableBlock(lines []string, colWidths []int, firstLine
 	}
 
 	maxCols := len(colWidths)
-	borderStyle := lipgloss.NewStyle().Foreground(m.theme.Overlay)
-	headerStyle := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Sky)
-	dataStyle := lipgloss.NewStyle().Foreground(m.theme.Text)
+	borderStyle := m.theme.Structural()
+	headerStyle := m.theme.Section()
+	dataStyle := m.theme.Body()
 
 	// Build top border
 	var result []string
@@ -451,69 +412,44 @@ var reBold = regexp.MustCompile(`\*\*([^*]+)\*\*`)
 func (m ViewerModel) styleLine(line string) string {
 	trimmed := strings.TrimSpace(line)
 
-	// H1 — render without the "# " prefix
 	if strings.HasPrefix(trimmed, "# ") && !strings.HasPrefix(trimmed, "## ") {
-		content := strings.TrimPrefix(trimmed, "# ")
-		return lipgloss.NewStyle().
-			Bold(true).
-			Foreground(m.theme.Blue).
-			Render("  " + content)
+		return m.theme.Display(m.theme.Blue).Render("  " + strings.TrimPrefix(trimmed, "# "))
 	}
-	// H2 — render without the "## " prefix
 	if strings.HasPrefix(trimmed, "## ") && !strings.HasPrefix(trimmed, "### ") {
-		content := strings.TrimPrefix(trimmed, "## ")
-		return lipgloss.NewStyle().
-			Bold(true).
-			Foreground(m.theme.Mauve).
-			Render("  " + content)
+		return m.theme.Display(m.theme.Mauve).Render("  " + strings.TrimPrefix(trimmed, "## "))
 	}
-	// H3 — render without the "### " prefix
 	if strings.HasPrefix(trimmed, "### ") {
-		content := strings.TrimPrefix(trimmed, "### ")
-		return lipgloss.NewStyle().
-			Bold(true).
-			Foreground(m.theme.Sky).
-			Render("  " + content)
+		return m.theme.Display(m.theme.Sky).Render("  " + strings.TrimPrefix(trimmed, "### "))
 	}
-	// Horizontal rule
 	if trimmed == "---" || trimmed == "***" {
-		return lipgloss.NewStyle().
-			Foreground(m.theme.Overlay).
-			Render(strings.Repeat("─", m.width-4))
+		return m.theme.Structural().Render(strings.Repeat(theme.ThinHoriz, m.width-4))
 	}
-	// Blockquote
 	if strings.HasPrefix(trimmed, "> ") {
 		content := strings.TrimPrefix(trimmed, "> ")
-		border := lipgloss.NewStyle().Foreground(m.theme.Overlay).Render("▎ ")
-		text := lipgloss.NewStyle().Foreground(m.theme.Subtext).Italic(true).Render(content)
+		border := m.theme.Structural().Render(theme.Block1_4 + " ")
+		text := m.theme.Supporting().Italic(true).Render(content)
 		return border + text
 	}
-	// Bold fields like **Score:** 4.0/5 — render with bold label, strip asterisks
 	if strings.HasPrefix(trimmed, "**") && strings.Contains(trimmed, ":**") {
 		return m.renderInlineBold(line, m.theme.Yellow)
 	}
-	// Bullet points and numbered lists
 	if strings.HasPrefix(trimmed, "- ") || strings.HasPrefix(trimmed, "* ") {
 		return m.renderInlineBold(line, m.theme.Text)
 	}
 	if len(trimmed) > 2 && trimmed[0] >= '0' && trimmed[0] <= '9' && strings.Contains(trimmed[:3], ".") {
 		return m.renderInlineBold(line, m.theme.Text)
 	}
-
-	// Default — still check for inline bold
 	if strings.Contains(trimmed, "**") {
-		return m.renderInlineBold(line, m.theme.Subtext)
+		return m.renderInlineBold(line, m.theme.Text)
 	}
 
-	return lipgloss.NewStyle().
-		Foreground(m.theme.Subtext).
-		Render(line)
+	return m.theme.Body().Render(line)
 }
 
 // renderInlineBold renders a line with **bold** segments highlighted.
 func (m ViewerModel) renderInlineBold(line string, baseColor lipgloss.Color) string {
 	baseStyle := lipgloss.NewStyle().Foreground(baseColor)
-	boldStyle := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Yellow)
+	boldStyle := m.theme.Label()
 
 	matches := reBold.FindAllStringIndex(line, -1)
 	if len(matches) == 0 {
@@ -541,14 +477,9 @@ func (m ViewerModel) renderInlineBold(line string, baseColor lipgloss.Color) str
 }
 
 func (m ViewerModel) renderFooter() string {
-	style := lipgloss.NewStyle().
-		Foreground(m.theme.Subtext).
-		Background(m.theme.Surface).
-		Width(m.width).
-		Padding(0, 1)
-
-	keyStyle := lipgloss.NewStyle().Bold(true).Foreground(m.theme.Text)
-	descStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
+	style := m.theme.Shelf(m.width)
+	keyStyle := m.theme.Body().Bold(true)
+	descStyle := m.theme.Supporting()
 
 	return style.Render(
 		keyStyle.Render("↑↓") + descStyle.Render(" scroll  ") +

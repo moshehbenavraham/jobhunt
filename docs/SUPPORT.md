@@ -6,13 +6,13 @@ the diagnostics needed to reproduce the problem.
 
 ## Where to Ask
 
-| Need | Best path |
-| ---- | --------- |
-| **Setup or validation issue** | Read [SETUP.md](SETUP.md), rerun `npm run doctor`, then ask in [GitHub Discussions](https://github.com/santifer/career-ops/discussions) or [Discord](https://discord.gg/8pRpHETxa4) with the failing step |
-| **Reproducible bug** | Open a [GitHub Issue](https://github.com/santifer/career-ops/issues) with steps, expected behavior, actual behavior, and validation notes |
-| **Feature idea or docs gap** | Open a [GitHub Issue](https://github.com/santifer/career-ops/issues) or start in [GitHub Discussions](https://github.com/santifer/career-ops/discussions) |
-| **Contributor workflow question** | Start with [CONTRIBUTING.md](CONTRIBUTING.md), then ask in [GitHub Discussions](https://github.com/santifer/career-ops/discussions) or [Discord](https://discord.gg/8pRpHETxa4) |
-| **Security vulnerability** | Email `hi@santifer.io` and follow [SECURITY.md](SECURITY.md); do not open a public issue |
+| Need                              | Best path                                                                                                                                                                                                 |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Setup or validation issue**     | Read [SETUP.md](SETUP.md), rerun `npm run doctor`, then ask in [GitHub Discussions](https://github.com/santifer/career-ops/discussions) or [Discord](https://discord.gg/8pRpHETxa4) with the failing step |
+| **Reproducible bug**              | Open a [GitHub Issue](https://github.com/santifer/career-ops/issues) with steps, expected behavior, actual behavior, and validation notes                                                                 |
+| **Feature idea or docs gap**      | Open a [GitHub Issue](https://github.com/santifer/career-ops/issues) or start in [GitHub Discussions](https://github.com/santifer/career-ops/discussions)                                                 |
+| **Contributor workflow question** | Start with [CONTRIBUTING.md](CONTRIBUTING.md), then ask in [GitHub Discussions](https://github.com/santifer/career-ops/discussions) or [Discord](https://discord.gg/8pRpHETxa4)                           |
+| **Security vulnerability**        | Email `hi@santifer.io` and follow [SECURITY.md](SECURITY.md); do not open a public issue                                                                                                                  |
 
 ## Before Opening an Issue
 

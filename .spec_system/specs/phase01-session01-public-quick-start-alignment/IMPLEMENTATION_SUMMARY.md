@@ -19,23 +19,25 @@ matrix and the deferred Phase 01 follow-up boundaries.
 ## Deliverables
 
 ### Files Created
-| File | Purpose | Lines |
-|------|---------|-------|
-| `.spec_system/specs/phase01-session01-public-quick-start-alignment/IMPLEMENTATION_SUMMARY.md` | Session closeout summary | ~55 |
+
+| File                                                                                          | Purpose                  | Lines |
+| --------------------------------------------------------------------------------------------- | ------------------------ | ----- |
+| `.spec_system/specs/phase01-session01-public-quick-start-alignment/IMPLEMENTATION_SUMMARY.md` | Session closeout summary | ~55   |
 
 ### Files Modified
-| File | Changes |
-|------|---------|
-| `README.md` | Reordered the public quick start to put required user-layer files before validation and kept `codex` as the launch path |
-| `docs/SETUP.md` | Reordered setup steps and separated initial setup from follow-up verification |
-| `.spec_system/specs/phase01-session01-public-quick-start-alignment/implementation-notes.md` | Recorded the live command matrix, decisions, and deferred items |
-| `.spec_system/specs/phase01-session01-public-quick-start-alignment/spec.md` | Marked the session complete |
-| `.spec_system/specs/phase01-session01-public-quick-start-alignment/tasks.md` | Marked all tasks complete in the progress summary |
-| `.spec_system/state.json` | Recorded Session 01 as completed and advanced Phase 01 to in progress |
-| `.spec_system/PRD/phase_01/PRD_phase_01.md` | Updated the phase tracker to show Session 01 complete |
-| `.spec_system/PRD/phase_01/session_01_public_quick_start_alignment.md` | Marked the session stub complete |
-| `package.json` | Bumped the patch version to `1.5.8` |
-| `VERSION` | Bumped the canonical patch version to `1.5.8` |
+
+| File                                                                                        | Changes                                                                                                                 |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `README.md`                                                                                 | Reordered the public quick start to put required user-layer files before validation and kept `codex` as the launch path |
+| `docs/SETUP.md`                                                                             | Reordered setup steps and separated initial setup from follow-up verification                                           |
+| `.spec_system/specs/phase01-session01-public-quick-start-alignment/implementation-notes.md` | Recorded the live command matrix, decisions, and deferred items                                                         |
+| `.spec_system/specs/phase01-session01-public-quick-start-alignment/spec.md`                 | Marked the session complete                                                                                             |
+| `.spec_system/specs/phase01-session01-public-quick-start-alignment/tasks.md`                | Marked all tasks complete in the progress summary                                                                       |
+| `.spec_system/state.json`                                                                   | Recorded Session 01 as completed and advanced Phase 01 to in progress                                                   |
+| `.spec_system/PRD/phase_01/PRD_phase_01.md`                                                 | Updated the phase tracker to show Session 01 complete                                                                   |
+| `.spec_system/PRD/phase_01/session_01_public_quick_start_alignment.md`                      | Marked the session stub complete                                                                                        |
+| `package.json`                                                                              | Bumped the patch version to `1.5.8`                                                                                     |
+| `VERSION`                                                                                   | Bumped the canonical patch version to `1.5.8`                                                                           |
 
 ---
 
@@ -50,10 +52,10 @@ matrix and the deferred Phase 01 follow-up boundaries.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 74 |
-| Passed | 74 |
+| Metric   | Value        |
+| -------- | ------------ |
+| Tests    | 74           |
+| Passed   | 74           |
 | Coverage | Not reported |
 
 ---
@@ -69,6 +71,7 @@ matrix and the deferred Phase 01 follow-up boundaries.
 ## Future Considerations
 
 Items for future sessions:
+
 1. Continue with Session 02 for contributor and support docs.
 2. Keep `README.md` concise while deeper setup detail lives in `docs/SETUP.md`.
 

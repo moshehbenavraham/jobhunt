@@ -1,7 +1,7 @@
 # Considerations
 
 > Institutional memory for AI assistants. Updated between phases via carryforward.
-> **Line budget**: 600 max | **Last updated**: Phase 00 (2026-04-15)
+> **Line budget**: 600 max | **Last updated**: Phase 01 (2026-04-15)
 
 ---
 
@@ -11,20 +11,22 @@ Items requiring attention in upcoming phases. Review before each session.
 
 ### Technical Debt <!-- Max 5 items -->
 
-- [P00] **Residual legacy references**: Phase 01 and Phase 02 still own the non-blocking Claude-first docs and batch-runtime references listed in the Phase 00 exit report. Keep Phase 00 cleanup out of those later scopes.
+- [P00] **Residual legacy references**: The remaining non-blocking batch-runtime and prompt references are still deferred to later phases. Keep them out of general docs maintenance.
 - [P00] **Validator surface drift**: `scripts/test-all.mjs`, `scripts/doctor.mjs`, and `VERSION` now act as a coupled contract. Any change to one should be checked against the others immediately.
+- [P01] **Deferred runtime-reference cleanup**: Phase 01 closed the docs surface, but batch-runtime and prompt wording still need their own scoped follow-up. Keep that work isolated from general docs maintenance.
 
 ### External Dependencies <!-- Max 5 items -->
 
-_None yet - no external API or service risk surfaced in Phase 00._
+_None yet - no external API or service risk surfaced in Phases 00-01._
 
 ### Performance / Security <!-- Max 5 items -->
 
-- [P00] **No data collection surface**: Phase 00 remained clean for PII and secrets. Preserve that baseline when adding new docs, validation output, or onboarding guidance.
+- [P00] **No data collection surface**: Phases 00-01 remained clean for PII and secrets. Preserve that baseline when adding new docs, validation output, or onboarding guidance.
 
 ### Architecture <!-- Max 5 items -->
 
 - [P00] **Canonical live surface**: Treat `AGENTS.md`, `.codex/skills/`, and `docs/` as the live instruction and metadata sources. Avoid reintroducing `.claude` or root-doc aliases.
+- [P01] **Docs-local links matter**: Keep links and routing relative to the file's own directory, especially inside `docs/`. Root-level assumptions caused avoidable churn in Phase 01.
 
 ---
 
@@ -37,12 +39,17 @@ Proven patterns and anti-patterns. Reference during implementation.
 - [P00] **Validator-first closeout**: Updating the runtime contract and the repo gate in the same phase prevented silent drift.
 - [P00] **Explicit deferral ledger**: Keeping residual Phase 01 and Phase 02 references visible let Phase 00 stay narrow without losing future work.
 - [P00] **Canonical version anchoring**: Using root `VERSION` as the source of truth and mirroring it in validation checks made version drift easy to catch.
+- [P01] **Docs-first routing**: Keeping root entrypoints concise and pushing detail into `docs/` kept onboarding and contributor guidance manageable.
+- [P01] **Live-contract alignment**: Anchoring setup and support docs to the validator and `docs/DATA_CONTRACT.md` kept the public surface consistent.
+- [P01] **Phase-closeout bookkeeping**: Once validation evidence was in place, closeout was mostly tracker and PRD synchronization.
 
 ### What to Avoid <!-- Max 10 items -->
 
 - [P00] **Legacy path fallbacks**: Do not re-add `.claude` or `docs/VERSION` fallback logic once the live surface is known.
 - [P00] **Split closeout state**: Do not update implementation changes without the matching validation artifact and tracker/state update.
 - [P00] **Unscoped metadata churn**: Keep docs and labeler edits targeted to the live path that actually matters.
+- [P01] **Root-relative docs assumptions**: Do not assume links from the repo root will resolve correctly inside nested docs.
+- [P01] **Mixed-scope docs edits**: Avoid bundling runtime cleanup, policy wording, and onboarding routing into one docs pass.
 
 ### Tool/Library Notes <!-- Max 5 items -->
 
@@ -56,10 +63,10 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 Recently closed items (buffer - rotates out after 2 phases).
 
-| Phase | Item | Resolution |
-| ----- | ---- | ---------- |
-| P00 | Version ownership drift | Root `VERSION` was made canonical and mirrored by package metadata plus validation checks. |
-| P00 | Codex metadata path drift | Updater, data contract, and GitHub metadata were realigned to `.codex/skills/` and live `docs/` paths. |
-| P00 | Validator runtime footer drift | `npm run doctor` now ends with Codex-primary guidance and the repo gate asserts that output. |
+| Phase | Item                           | Resolution                                                                                             |
+| ----- | ------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| P00   | Version ownership drift        | Root `VERSION` was made canonical and mirrored by package metadata plus validation checks.             |
+| P00   | Codex metadata path drift      | Updater, data contract, and GitHub metadata were realigned to `.codex/skills/` and live `docs/` paths. |
+| P00   | Validator runtime footer drift | `npm run doctor` now ends with Codex-primary guidance and the repo gate asserts that output.           |
 
 _Auto-generated by carryforward. Manual edits allowed but may be overwritten._

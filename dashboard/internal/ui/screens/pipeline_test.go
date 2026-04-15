@@ -94,3 +94,62 @@ func TestRenderAppLineIncludesDateColumn(t *testing.T) {
 		t.Fatalf("expected rendered line to include date column, got %q", line)
 	}
 }
+
+func TestScoreGaugeRendering(t *testing.T) {
+	th := theme.NewTheme("catppuccin-mocha")
+
+	tests := []struct {
+		score    float64
+		wantChar string
+		wantBold bool
+	}{
+		{4.8, theme.BlockFull, true},
+		{4.5, theme.BlockFull, true},
+		{4.2, theme.Block3_4, false},
+		{4.0, theme.Block3_4, false},
+		{3.7, theme.BlockHalf, false},
+		{3.5, theme.BlockHalf, false},
+		{3.2, theme.Block1_4, false},
+		{3.0, theme.Block1_4, false},
+		{2.5, theme.Block1_8, false},
+	}
+
+	for _, tc := range tests {
+		g := th.ScoreToGauge(tc.score)
+		if g.Char != tc.wantChar {
+			t.Errorf("ScoreToGauge(%.1f): char = %q, want %q", tc.score, g.Char, tc.wantChar)
+		}
+		if g.Bold != tc.wantBold {
+			t.Errorf("ScoreToGauge(%.1f): bold = %v, want %v", tc.score, g.Bold, tc.wantBold)
+		}
+	}
+}
+
+func TestResponsiveColumnWidths(t *testing.T) {
+	app := model.CareerApplication{
+		Date:       "2026-04-13",
+		Company:    "Anthropic",
+		Role:       "Forward Deployed Engineer",
+		Status:     "Applied",
+		Score:      4.5,
+		ReportPath: "reports/001.md",
+	}
+
+	th := theme.NewTheme("catppuccin-mocha")
+
+	narrow := NewPipelineModel(th, nil, model.PipelineMetrics{}, "..", 70, 40)
+	narrow.reportCache["reports/001.md"] = reportSummary{comp: "$200k-$250k"}
+	narrowLine := narrow.renderAppLine(app, false)
+
+	if strings.Contains(narrowLine, "$200k") {
+		t.Errorf("narrow (70 cols): comp column should be hidden, but found comp data in %q", narrowLine)
+	}
+
+	wide := NewPipelineModel(th, nil, model.PipelineMetrics{}, "..", 120, 40)
+	wide.reportCache["reports/001.md"] = reportSummary{comp: "$200k-$250k"}
+	wideLine := wide.renderAppLine(app, false)
+
+	if !strings.Contains(wideLine, "$200k") {
+		t.Errorf("wide (120 cols): comp column should be visible, but comp data missing from %q", wideLine)
+	}
+}
