@@ -53,7 +53,7 @@ const SYSTEM_PATHS = [
   'dashboard/',
   'templates/',
   'fonts/',
-  '.claude/skills/',
+  '.codex/skills/',
   'docs/',
   'VERSION',
   'README.md',

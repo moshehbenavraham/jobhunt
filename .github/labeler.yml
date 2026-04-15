@@ -1,35 +1,35 @@
-"🔴 core-architecture":
+"core-architecture":
   - changed-files:
       - any-glob-to-any-file:
-          - CLAUDE.md
-          - DATA_CONTRACT.md
+          - AGENTS.md
+          - docs/DATA_CONTRACT.md
           - modes/_shared.md
 
-"⚠️ agent-behavior":
+"agent-behavior":
   - changed-files:
       - any-glob-to-any-file:
           - modes/*.md
           - modes/**/*.md
-          - .claude/skills/**
+          - .codex/skills/**
 
-"🔧 scripts":
+"scripts":
   - changed-files:
       - any-glob-to-any-file:
           - "*.mjs"
           - batch/**
 
-"📄 docs":
+"docs":
   - changed-files:
       - any-glob-to-any-file:
           - docs/**
           - "README*.md"
-          - CONTRIBUTING.md
-          - GOVERNANCE.md
-          - CODE_OF_CONDUCT.md
-          - SECURITY.md
-          - SUPPORT.md
+          - docs/CONTRIBUTING.md
+          - docs/GOVERNANCE.md
+          - docs/CODE_OF_CONDUCT.md
+          - docs/SECURITY.md
+          - docs/SUPPORT.md
 
-"🌐 i18n":
+"i18n":
   - changed-files:
       - any-glob-to-any-file:
           - "README.*.md"
@@ -38,18 +38,18 @@
           - modes/ja/**
           - modes/ru/**
 
-"📊 dashboard":
+"dashboard":
   - changed-files:
       - any-glob-to-any-file:
           - dashboard/**
 
-"📦 dependencies":
+"dependencies":
   - changed-files:
       - any-glob-to-any-file:
           - package.json
           - package-lock.json
 
-"⚙️ ci":
+"ci":
   - changed-files:
       - any-glob-to-any-file:
           - .github/**

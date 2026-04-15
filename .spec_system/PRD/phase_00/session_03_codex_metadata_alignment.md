@@ -1,7 +1,7 @@
 # Session 03: Codex Metadata Alignment
 
 **Session ID**: `phase00-session03-codex-metadata-alignment`
-**Status**: Not Started
+**Status**: Complete
 **Estimated Tasks**: ~12-16
 **Estimated Duration**: 2-4 hours
 
@@ -33,8 +33,8 @@ checked-in skill surface.
 
 ## Prerequisites
 
-- [ ] Session 01 completed
-- [ ] Session 02 completed
+- [x] Session 01 completed
+- [x] Session 02 completed
 
 ---
 
@@ -47,6 +47,6 @@ checked-in skill surface.
 
 ## Success Criteria
 
-- [ ] Blocking metadata points at `.codex` rather than `.claude`
-- [ ] Core system docs reflect the actual checked-in skill surface
-- [ ] Residual legacy references are explicit and phase-scoped
+- [x] Blocking metadata points at `.codex` rather than `.claude`
+- [x] Core system docs reflect the actual checked-in skill surface
+- [x] Residual legacy references are explicit and phase-scoped

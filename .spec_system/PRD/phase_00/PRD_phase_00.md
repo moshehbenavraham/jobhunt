@@ -4,7 +4,7 @@
 **Sessions**: 4
 **Estimated Duration**: 4-8 days
 
-**Progress**: 2/4 sessions (50%)
+**Progress**: 3/4 sessions (75%)
 
 ---
 
@@ -25,7 +25,7 @@ planned for Phase 01.
 |---------|------|--------|------------|-----------|
 | 01 | Canonical instruction surface | Complete | ~12-16 | PASS |
 | 02 | Version ownership normalization | Complete | ~12-16 | PASS |
-| 03 | Codex metadata alignment | Not Started | ~12-16 | - |
+| 03 | Codex metadata alignment | Complete | ~12-16 | PASS |
 | 04 | Validation drift closeout | Not Started | ~12-18 | - |
 
 ---
@@ -34,12 +34,13 @@ planned for Phase 01.
 
 - Session 01: Canonical instruction surface
 - Session 02: Version ownership normalization
+- Session 03: Codex metadata alignment
 
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Codex metadata alignment
+- Session 04: Validation drift closeout
 
 ---
 

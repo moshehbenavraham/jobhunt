@@ -321,9 +321,108 @@ if (!shared.includes('docs/CODEX.md') && !shared.includes('docs/CLAUDE.md')) {
   fail('shared mode guidance still references legacy instruction docs');
 }
 
-// -- 10. VERSION FILE --------------------------------------------
+// -- 10. METADATA PATH ALIGNMENT ---------------------------------
 
-console.log('\n10. Version file');
+console.log('\n10. Metadata path alignment');
+
+const updaterScript = readFile('scripts/update-system.mjs');
+if (updaterScript.includes("'.codex/skills/'") && !updaterScript.includes("'.claude/skills/'")) {
+  pass('Updater system paths use .codex/skills/');
+} else {
+  fail('Updater system paths are not aligned to .codex/skills/');
+}
+
+const dataContract = readFile('docs/DATA_CONTRACT.md');
+if (dataContract.includes('| `.codex/skills/*` | Skill definitions |') && !dataContract.includes('.claude/skills/*')) {
+  pass('Data contract names .codex/skills/* as the system skill surface');
+} else {
+  fail('Data contract skill surface is not aligned to .codex/skills/*');
+}
+
+const labeler = readFile('.github/labeler.yml');
+const labelerLines = labeler.split('\n').map((line) => line.trim());
+const requiredLabelerLines = [
+  '- AGENTS.md',
+  '- docs/DATA_CONTRACT.md',
+  '- .codex/skills/**',
+  '- docs/CONTRIBUTING.md',
+  '- docs/GOVERNANCE.md',
+  '- docs/CODE_OF_CONDUCT.md',
+  '- docs/SECURITY.md',
+  '- docs/SUPPORT.md',
+];
+const missingLabelerLines = requiredLabelerLines.filter((line) => !labelerLines.includes(line));
+if (missingLabelerLines.length === 0) {
+  pass('Labeler targets the live metadata and docs paths');
+} else {
+  fail(`Labeler missing live path globs: ${missingLabelerLines.join(', ')}`);
+}
+
+const forbiddenLabelerLines = [
+  '- CLAUDE.md',
+  '- DATA_CONTRACT.md',
+  '- .claude/skills/**',
+  '- CONTRIBUTING.md',
+  '- GOVERNANCE.md',
+  '- CODE_OF_CONDUCT.md',
+  '- SECURITY.md',
+  '- SUPPORT.md',
+];
+const forbiddenLabelerMatches = forbiddenLabelerLines.filter((line) => labelerLines.includes(line));
+if (forbiddenLabelerMatches.length === 0) {
+  pass('Labeler has no dead metadata or root-doc globs');
+} else {
+  fail(`Labeler still includes dead path globs: ${forbiddenLabelerMatches.join(', ')}`);
+}
+
+const contributorMetadataChecks = [
+  {
+    path: '.github/PULL_REQUEST_TEMPLATE.md',
+    required: ['https://github.com/santifer/career-ops/blob/main/docs/CONTRIBUTING.md'],
+    forbidden: ['https://github.com/santifer/career-ops/blob/main/CONTRIBUTING.md'],
+  },
+  {
+    path: '.github/workflows/welcome.yml',
+    required: [
+      'https://github.com/santifer/career-ops/blob/main/docs/CONTRIBUTING.md',
+      'https://github.com/santifer/career-ops/blob/main/docs/SUPPORT.md',
+    ],
+    forbidden: [
+      'https://github.com/santifer/career-ops/blob/main/CONTRIBUTING.md',
+      'https://github.com/santifer/career-ops/blob/main/SUPPORT.md',
+    ],
+  },
+  {
+    path: '.github/ISSUE_TEMPLATE/bug_report.yml',
+    required: ['https://github.com/santifer/career-ops/blob/main/docs/CODE_OF_CONDUCT.md'],
+    forbidden: ['https://github.com/santifer/career-ops/blob/main/CODE_OF_CONDUCT.md'],
+  },
+  {
+    path: '.github/ISSUE_TEMPLATE/feature_request.yml',
+    required: ['https://github.com/santifer/career-ops/blob/main/docs/CODE_OF_CONDUCT.md'],
+    forbidden: ['https://github.com/santifer/career-ops/blob/main/CODE_OF_CONDUCT.md'],
+  },
+];
+
+for (const check of contributorMetadataChecks) {
+  const fileText = readFile(check.path);
+  const missingRequired = check.required.filter((marker) => !fileText.includes(marker));
+  const forbiddenPresent = check.forbidden.filter((marker) => fileText.includes(marker));
+
+  if (missingRequired.length === 0 && forbiddenPresent.length === 0) {
+    pass(`${check.path} points at live contributor docs`);
+  } else {
+    const details = [
+      missingRequired.length > 0 ? `missing ${missingRequired.join(', ')}` : null,
+      forbiddenPresent.length > 0 ? `contains ${forbiddenPresent.join(', ')}` : null,
+    ].filter(Boolean).join('; ');
+    fail(`${check.path} has metadata path drift: ${details}`);
+  }
+}
+
+// -- 11. VERSION FILE --------------------------------------------
+
+console.log('\n11. Version file');
 
 if (fileExists('VERSION')) {
   const canonicalVersion = readFile('VERSION').trim();
