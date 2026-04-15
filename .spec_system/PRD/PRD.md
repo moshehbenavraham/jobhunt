@@ -484,11 +484,11 @@ Result:
 | ----- | --------------------------------- | -------- | -------- |
 | 00    | Contract and Drift Cleanup        | 4        | Complete |
 | 01    | Docs and Entrypoints              | 4        | Complete |
-| 02    | Batch Runtime Conversion          | TBD      | Planned  |
+| 02    | Batch Runtime Conversion          | 4        | In Progress |
 | 03    | Prompt and Metadata Normalization | TBD      | Planned  |
 
 Phase 00 is complete as of 2026-04-15. Phase 01 is complete as of 2026-04-15.
-Phases 02 and 03 remain planned.
+Phase 02 is in progress with 4 defined sessions. Phase 03 remains planned.
 
 ## Suggested Migration Order
 

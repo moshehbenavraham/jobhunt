@@ -65,6 +65,8 @@ standard user-layer inputs are:
 - [Contributing](CONTRIBUTING.md)
 - [Docs Index](docs/README-docs.md)
 
+Each sensicle folder has a `README-<folder-name>.md` with its own documentation.
+
 ## Tech Stack
 
 - Node.js - core scripts and pipelines

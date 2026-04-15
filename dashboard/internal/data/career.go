@@ -109,7 +109,7 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 	// Enrich with job URLs using 5-tier strategy:
 	// 1. **URL:** field in report header (newest reports)
 	// 2. **Batch ID:** in report -> batch-input.tsv URL lookup
-	// 3. report_num -> batch-state completed mapping (legacy)
+	// 3. report_num -> batch-state completed/partial mapping
 	// 4. scan-history.tsv (pipeline scan entries matched by company+role)
 	// 5. company name fallback from batch-input.tsv
 	batchURLs := loadBatchInputURLs(careerOpsPath)
@@ -144,7 +144,7 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 			}
 		}
 
-		// Strategy 3: report_num -> batch-state completed mapping
+		// Strategy 3: report_num -> batch-state completed/partial mapping
 		if reportNumURLs != nil {
 			if url, ok := reportNumURLs[apps[i].ReportNumber]; ok {
 				apps[i].JobURL = url
@@ -202,8 +202,8 @@ type batchEntry struct {
 }
 
 // loadJobURLs reads batch TSV files and returns a map of report_num -> job URL.
-// Uses two strategies: (1) report_num mapping for completed jobs, (2) company name
-// matching as fallback for failed/missing jobs.
+// Uses two strategies: (1) report_num mapping for report-bearing completed or
+// partial jobs, (2) company name matching as fallback for failed or missing jobs.
 func loadJobURLs(careerOpsPath string) map[string]string {
 	// Read batch-input.tsv: id \t url \t source \t notes
 	inputPath := filepath.Join(careerOpsPath, "batch", "batch-input.tsv")
@@ -256,7 +256,7 @@ func loadJobURLs(careerOpsPath string) map[string]string {
 		return nil
 	}
 
-	// Strategy 1: map report_num -> URL only for COMPLETED jobs
+	// Strategy 1: map report_num -> URL for report-bearing completed/partial jobs
 	reportToURL := make(map[string]string)
 	for _, line := range strings.Split(string(stateData), "\n") {
 		fields := strings.Split(line, "\t")
@@ -266,7 +266,7 @@ func loadJobURLs(careerOpsPath string) map[string]string {
 		id := fields[0]
 		status := fields[2]
 		reportNum := fields[5]
-		if status != "completed" || reportNum == "" || reportNum == "-" {
+		if (status != "completed" && status != "partial") || reportNum == "" || reportNum == "-" {
 			continue
 		}
 		if e, ok := entries[id]; ok {
@@ -476,7 +476,7 @@ func NormalizeStatus(raw string) string {
 	}
 
 	switch {
-	// Most restrictive first — accepts both English and Spanish
+	// Most restrictive first - accepts both English and Spanish
 	case strings.Contains(s, "no aplicar") || strings.Contains(s, "no_aplicar") || s == "skip" || strings.Contains(s, "geo blocker"):
 		return "skip"
 	case strings.Contains(s, "interview") || strings.Contains(s, "entrevista"):

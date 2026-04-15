@@ -1,0 +1,14 @@
+{
+  "status": "completed",
+  "id": "1",
+  "report_num": "001",
+  "company": "Example AI",
+  "role": "Senior AI Engineer",
+  "score": 4.6,
+  "legitimacy": "High Confidence",
+  "pdf": "output/cv-candidate-example-ai-2026-04-15.pdf",
+  "report": "reports/001-example-ai-2026-04-15.md",
+  "tracker": "batch/tracker-additions/1.tsv",
+  "warnings": [],
+  "error": null
+}

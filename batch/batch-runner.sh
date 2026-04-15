@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# career-ops batch runner — standalone orchestrator for claude -p workers
-# Reads batch-input.tsv, delegates each offer to a claude -p worker,
+# career-ops batch runner - standalone orchestrator for codex exec workers
+# Reads batch-input.tsv, delegates each offer to a codex exec worker,
 # tracks state in batch-state.tsv for resumability.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,6 +11,7 @@ BATCH_DIR="$SCRIPT_DIR"
 INPUT_FILE="$BATCH_DIR/batch-input.tsv"
 STATE_FILE="$BATCH_DIR/batch-state.tsv"
 PROMPT_FILE="$BATCH_DIR/batch-prompt.md"
+RESULT_SCHEMA_FILE="$BATCH_DIR/worker-result.schema.json"
 LOGS_DIR="$BATCH_DIR/logs"
 TRACKER_DIR="$BATCH_DIR/tracker-additions"
 REPORTS_DIR="$PROJECT_DIR/reports"
@@ -31,15 +32,15 @@ MIN_SCORE=0
 
 usage() {
   cat <<'USAGE'
-career-ops batch runner — process job offers in batch via claude -p workers
-Uses your default Claude model (Claude Max subscription).
+career-ops batch runner - process job offers in batch via codex exec workers
+Uses your default Codex CLI configuration.
 
 Usage: batch-runner.sh [OPTIONS]
 
 Options:
   --parallel N         Number of parallel workers (default: 1)
   --dry-run            Show what would be processed, don't execute
-  --retry-failed       Only retry offers marked as "failed" in state
+  --retry-failed       Only retry retryable infrastructure failures
   --start-from N       Start from offer ID N (skip earlier IDs)
   --max-retries N      Max retry attempts per offer (default: 2)
   --min-score N        Skip PDF/tracker for offers scoring below N (default: 0 = off)
@@ -119,8 +120,23 @@ check_prerequisites() {
     exit 1
   fi
 
-  if ! command -v claude &>/dev/null; then
-    echo "ERROR: 'claude' CLI not found in PATH."
+  if [[ ! -f "$RESULT_SCHEMA_FILE" ]]; then
+    echo "ERROR: $RESULT_SCHEMA_FILE not found."
+    exit 1
+  fi
+
+  if ! command -v codex &>/dev/null; then
+    echo "ERROR: 'codex' CLI not found in PATH."
+    exit 1
+  fi
+
+  if ! command -v jq &>/dev/null; then
+    echo "ERROR: 'jq' is required to validate worker results."
+    exit 1
+  fi
+
+  if ! jq empty "$RESULT_SCHEMA_FILE" >/dev/null 2>&1; then
+    echo "ERROR: $RESULT_SCHEMA_FILE is not valid JSON."
     exit 1
   fi
 
@@ -220,6 +236,17 @@ get_retries() {
   echo "${retries:-0}"
 }
 
+get_error() {
+  local id="$1"
+  if [[ ! -f "$STATE_FILE" ]]; then
+    echo "-"
+    return
+  fi
+  local error
+  error=$(awk -F'\t' -v id="$id" '$1 == id { print $8 }' "$STATE_FILE")
+  echo "${error:--}"
+}
+
 # Calculate next report number.
 # Caller must hold STATE_LOCK_DIR while this runs.
 next_report_num_unlocked() {
@@ -304,6 +331,265 @@ reserve_report_num() {
   run_with_state_lock reserve_report_num_unlocked "$@"
 }
 
+escape_sed_replacement() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//|/\\|}"
+  printf '%s' "$value"
+}
+
+normalize_state_message_text() {
+  local value="$1"
+  value="${value//$'\r'/ }"
+  value="${value//$'\n'/ }"
+  value="${value//$'\t'/ }"
+  value=$(printf '%s' "$value" | awk '{$1=$1; print}')
+  printf '%.200s\n' "$value"
+}
+
+structured_result_status() {
+  local result_file="$1"
+  jq -r '.status' "$result_file"
+}
+
+structured_result_score() {
+  local result_file="$1"
+  jq -r 'if .score == null then "-" else (.score | tostring) end' "$result_file"
+}
+
+structured_result_warning_count() {
+  local result_file="$1"
+  jq -r '(.warnings // []) | length' "$result_file"
+}
+
+structured_result_warning_summary() {
+  local result_file="$1"
+  local summary
+  summary=$(jq -r '
+    [(.warnings // [])[] | select(type == "string") | gsub("\\s+"; " ")
+      | gsub("^ +| +$"; "") | select(length > 0)]
+    | unique
+    | join("; ")
+  ' "$result_file")
+  summary=$(normalize_state_message_text "$summary")
+  if [[ -z "$summary" ]]; then
+    summary="warning details unavailable"
+  fi
+  printf '%s\n' "$summary"
+}
+
+structured_result_error_summary() {
+  local result_file="$1"
+  local summary
+  summary=$(jq -r '.error // ""' "$result_file")
+  summary=$(normalize_state_message_text "$summary")
+  if [[ -z "$summary" ]]; then
+    summary="worker reported failure without an error summary"
+  fi
+  printf '%s\n' "$summary"
+}
+
+classify_structured_result() {
+  local result_file="$1"
+  local worker_status
+  worker_status=$(structured_result_status "$result_file")
+
+  case "$worker_status" in
+    completed|partial|failed)
+      printf '%s\n' "$worker_status"
+      ;;
+    *)
+      echo "Unknown worker status in result file: $worker_status"
+      return 1
+      ;;
+  esac
+}
+
+structured_result_state_summary() {
+  local result_file="$1" worker_status="$2"
+
+  case "$worker_status" in
+    completed)
+      printf '%s\n' "-"
+      ;;
+    partial)
+      printf 'warnings: %s\n' "$(structured_result_warning_summary "$result_file")"
+      ;;
+    failed)
+      printf 'semantic: %s\n' "$(structured_result_error_summary "$result_file")"
+      ;;
+    *)
+      echo "Unhandled structured result status for state summary: $worker_status"
+      return 1
+      ;;
+  esac
+}
+
+infrastructure_failure_summary() {
+  local exit_code="$1" contract_error="$2" event_log_file="$3"
+  local detail=""
+
+  if [[ -n "$contract_error" ]]; then
+    detail=$(normalize_state_message_text "$contract_error")
+  else
+    detail=$(tail -5 "$event_log_file" 2>/dev/null || true)
+    detail=$(normalize_state_message_text "$detail")
+  fi
+
+  if [[ -z "$detail" ]]; then
+    detail="worker exited without a usable result artifact"
+  fi
+
+  printf 'infrastructure: exit %s; %s\n' "$exit_code" "$detail"
+}
+
+is_retryable_failed_row() {
+  local error="$1" retries="$2"
+
+  if [[ ! "$retries" =~ ^[0-9]+$ ]]; then
+    retries=0
+  fi
+
+  if [[ "$error" == infrastructure:* ]] && (( retries < MAX_RETRIES )); then
+    return 0
+  fi
+
+  return 1
+}
+
+state_summary_bucket() {
+  local status="$1" error="$2" retries="$3"
+
+  case "$status" in
+    completed)
+      printf '%s\n' "completed"
+      ;;
+    partial)
+      printf '%s\n' "partial"
+      ;;
+    skipped)
+      printf '%s\n' "skipped"
+      ;;
+    failed)
+      if is_retryable_failed_row "$error" "$retries"; then
+        printf '%s\n' "retryable-failed"
+      else
+        printf '%s\n' "failed"
+      fi
+      ;;
+    *)
+      printf '%s\n' "pending"
+      ;;
+  esac
+}
+
+validate_worker_result_contract() {
+  local result_file="$1" expected_id="$2" expected_report_num="$3"
+
+  if [[ ! -s "$result_file" ]]; then
+    echo "Missing or empty worker result file: $result_file"
+    return 1
+  fi
+
+  if ! jq empty "$result_file" >/dev/null 2>&1; then
+    echo "Worker result file is not valid JSON: $result_file"
+    return 1
+  fi
+
+  if ! jq -e \
+    --arg expected_id "$expected_id" \
+    --arg expected_report_num "$expected_report_num" '
+      def nonEmptyString: type == "string" and length > 0;
+      def legitimacy:
+        . == "High Confidence"
+        or . == "Proceed with Caution"
+        or . == "Suspicious";
+      def reportPath: type == "string" and test("^reports/.+\\.md$");
+      def pdfPath: type == "string" and test("^output/.+\\.pdf$");
+      def trackerPath:
+        type == "string" and test("^batch/tracker-additions/.+\\.tsv$");
+      def warningArray:
+        type == "array"
+        and all(.[]; nonEmptyString)
+        and ((unique | length) == length);
+      def emptyWarnings:
+        warningArray and length == 0;
+      def nonEmptyWarnings:
+        warningArray and length > 0;
+      def hasRequiredFields:
+        has("status")
+        and has("id")
+        and has("report_num")
+        and has("company")
+        and has("role")
+        and has("score")
+        and has("legitimacy")
+        and has("pdf")
+        and has("report")
+        and has("tracker")
+        and has("warnings")
+        and has("error");
+      def onlyExpectedFields:
+        (keys | sort)
+        == [
+          "company",
+          "error",
+          "id",
+          "legitimacy",
+          "pdf",
+          "report",
+          "report_num",
+          "role",
+          "score",
+          "status",
+          "tracker",
+          "warnings"
+        ];
+      hasRequiredFields
+      and onlyExpectedFields
+      and (.id == $expected_id)
+      and (.report_num == $expected_report_num)
+      and (.company | nonEmptyString)
+      and (.role | nonEmptyString)
+      and (
+        (
+          .status == "completed"
+          and (.score | type) == "number"
+          and (.legitimacy | legitimacy)
+          and (.pdf | pdfPath)
+          and (.report | reportPath)
+          and (.tracker | trackerPath)
+          and (.warnings | emptyWarnings)
+          and .error == null
+        )
+        or (
+          .status == "partial"
+          and (.score | type) == "number"
+          and (.legitimacy | legitimacy)
+          and ((.pdf == null) or (.pdf | pdfPath))
+          and (.report | reportPath)
+          and ((.tracker == null) or (.tracker | trackerPath))
+          and (.warnings | nonEmptyWarnings)
+          and (.pdf == null or .tracker == null)
+          and .error == null
+        )
+        or (
+          .status == "failed"
+          and .score == null
+          and .legitimacy == null
+          and .pdf == null
+          and ((.report == null) or (.report | reportPath))
+          and .tracker == null
+          and (.warnings | emptyWarnings)
+          and (.error | nonEmptyString)
+        )
+      )
+    ' "$result_file" >/dev/null 2>&1; then
+    echo "Worker result file failed contract validation: $result_file"
+    return 1
+  fi
+}
+
 # Process a single offer
 process_offer() {
   local id="$1" url="$2" source="$3" notes="$4"
@@ -317,46 +603,43 @@ process_offer() {
   local date
   date=$(date +%Y-%m-%d)
   local jd_file="/tmp/batch-jd-${id}.txt"
+  local result_file="$LOGS_DIR/${report_num}-${id}.result.json"
+  local last_message_file="$LOGS_DIR/${report_num}-${id}.last-message.json"
+  local event_log_file="$LOGS_DIR/${report_num}-${id}.log"
+  local resolved_prompt
+  resolved_prompt=$(mktemp "$BATCH_DIR/.resolved-prompt-${id}-${report_num}-XXXXXX.md")
 
   echo "--- Processing offer #$id: $url (report $report_num, attempt $((retries + 1)))"
 
-  # Build the prompt with placeholders replaced
-  local prompt
-  prompt="Procesa esta oferta de empleo. Ejecuta el pipeline completo: evaluación A-F + report .md + PDF + tracker line."
-  prompt="$prompt URL: $url"
-  prompt="$prompt JD file: $jd_file"
-  prompt="$prompt Report number: $report_num"
-  prompt="$prompt Date: $date"
-  prompt="$prompt Batch ID: $id"
-
-  local log_file="$LOGS_DIR/${report_num}-${id}.log"
+  rm -f "$result_file" "$last_message_file" "$event_log_file"
 
   # Prepare system prompt with placeholders resolved
-  local resolved_prompt="$BATCH_DIR/.resolved-prompt-${id}.md"
   # Escape sed delimiter characters in variables to prevent substitution breakage
-  local esc_url esc_jd_file esc_report_num esc_date esc_id
-  esc_url="${url//\\/\\\\}"
-  esc_url="${esc_url//|/\\|}"
-  esc_jd_file="${jd_file//\\/\\\\}"
-  esc_jd_file="${esc_jd_file//|/\\|}"
-  esc_report_num="${report_num//|/\\|}"
-  esc_date="${date//|/\\|}"
-  esc_id="${id//|/\\|}"
+  local esc_url esc_jd_file esc_report_num esc_date esc_id esc_result_file
+  esc_url="$(escape_sed_replacement "$url")"
+  esc_jd_file="$(escape_sed_replacement "$jd_file")"
+  esc_report_num="$(escape_sed_replacement "$report_num")"
+  esc_date="$(escape_sed_replacement "$date")"
+  esc_id="$(escape_sed_replacement "$id")"
+  esc_result_file="$(escape_sed_replacement "$result_file")"
   sed \
     -e "s|{{URL}}|${esc_url}|g" \
     -e "s|{{JD_FILE}}|${esc_jd_file}|g" \
     -e "s|{{REPORT_NUM}}|${esc_report_num}|g" \
     -e "s|{{DATE}}|${esc_date}|g" \
     -e "s|{{ID}}|${esc_id}|g" \
+    -e "s|{{RESULT_FILE}}|${esc_result_file}|g" \
     "$PROMPT_FILE" > "$resolved_prompt"
 
-  # Launch claude -p worker (uses default model from Claude Max subscription)
+  # Launch codex exec worker from the repo root with an explicit result contract.
   local exit_code=0
-  claude -p \
-    --dangerously-skip-permissions \
-    --append-system-prompt-file "$resolved_prompt" \
-    "$prompt" \
-    > "$log_file" 2>&1 || exit_code=$?
+  codex exec \
+    -C "$PROJECT_DIR" \
+    --dangerously-bypass-approvals-and-sandbox \
+    --output-schema "$RESULT_SCHEMA_FILE" \
+    --output-last-message "$last_message_file" \
+    --json \
+    - < "$resolved_prompt" > "$event_log_file" 2>&1 || exit_code=$?
 
   # Cleanup resolved prompt
   rm -f "$resolved_prompt"
@@ -365,31 +648,67 @@ process_offer() {
   completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
   if [[ $exit_code -eq 0 ]]; then
-    # Try to extract score from worker output
-    local score="-"
-    local score_match
-   score_match=$(sed -nE 's/.*"score":[[:space:]]*([0-9.]+).*/\1/p' "$log_file" 2>/dev/null | head -1 || true)
-    if [[ -n "$score_match" ]]; then
-      score="$score_match"
+    local contract_error=""
+    if ! contract_error=$(validate_worker_result_contract "$result_file" "$id" "$report_num"); then
+      exit_code=1
     fi
+  fi
+
+  if [[ $exit_code -eq 0 ]]; then
+    local worker_status
+    if ! worker_status=$(classify_structured_result "$result_file"); then
+      contract_error="$worker_status"
+      exit_code=1
+    fi
+  fi
+
+  if [[ $exit_code -eq 0 ]]; then
+    local score="-"
+    score=$(structured_result_score "$result_file")
 
     # Check min-score gate
     if [[ "$score" != "-" && -n "$score" ]] && (( $(echo "$MIN_SCORE > 0" | bc -l) )); then
       if (( $(echo "$score < $MIN_SCORE" | bc -l) )); then
         update_state "$id" "$url" "skipped" "$started_at" "$completed_at" "$report_num" "$score" "below-min-score" "$retries"
-        echo "    ⏭️  Skipped (score: $score < min-score: $MIN_SCORE)"
-        continue
+        echo "    Skipped (score: $score < min-score: $MIN_SCORE)"
+        return
       fi
     fi
 
-    update_state "$id" "$url" "completed" "$started_at" "$completed_at" "$report_num" "$score" "-" "$retries"
-    echo "    ✅ Completed (score: $score, report: $report_num)"
+    local final_status
+    final_status="$worker_status"
+    local state_error
+    state_error=$(structured_result_state_summary "$result_file" "$worker_status")
+
+    update_state "$id" "$url" "$final_status" "$started_at" "$completed_at" "$report_num" "$score" "$state_error" "$retries"
+
+    case "$final_status" in
+      completed)
+        echo "    Completed (worker status: $worker_status, score: $score, report: $report_num)"
+        ;;
+      partial)
+        local warning_count
+        warning_count=$(structured_result_warning_count "$result_file")
+        echo "    Partial (worker status: $worker_status, score: $score, report: $report_num, warnings: $warning_count)"
+        ;;
+      failed)
+        echo "    Failed (worker status: $worker_status, report: $report_num)"
+        ;;
+      *)
+        echo "    ERROR: Unhandled final state $final_status"
+        return 1
+        ;;
+    esac
   else
     retries=$((retries + 1))
     local error_msg
-    error_msg=$(tail -5 "$log_file" 2>/dev/null | tr '\n' ' ' | cut -c1-200 || echo "Unknown error (exit code $exit_code)")
+    error_msg=$(infrastructure_failure_summary "$exit_code" "${contract_error:-}" "$event_log_file")
     update_state "$id" "$url" "failed" "$started_at" "$completed_at" "$report_num" "-" "$error_msg" "$retries"
-    echo "    ❌ Failed (attempt $retries, exit code $exit_code)"
+    if is_retryable_failed_row "$error_msg" "$retries"; then
+      echo "    Failed (retryable infrastructure failure, attempt $retries, exit code $exit_code)"
+    else
+      echo "    Failed (terminal infrastructure failure, attempt $retries, exit code $exit_code)"
+    fi
   fi
 }
 
@@ -400,7 +719,7 @@ merge_tracker() {
   node "$PROJECT_DIR/scripts/merge-tracker.mjs"
   echo ""
   echo "=== Verifying pipeline integrity ==="
-  node "$PROJECT_DIR/scripts/verify-pipeline.mjs" || echo "⚠️  Verification found issues (see above)"
+  node "$PROJECT_DIR/scripts/verify-pipeline.mjs" || echo "Warning: Verification found issues (see above)"
 }
 
 # Print summary
@@ -413,25 +732,41 @@ print_summary() {
     return
   fi
 
-  local total=0 completed=0 failed=0 pending=0
+  local total=0 completed=0 partial=0 failed=0 retryable_failed=0 skipped=0 pending=0
   local score_sum=0 score_count=0
 
-  while IFS=$'\t' read -r sid _ sstatus _ _ _ sscore _ _; do
+  while IFS=$'\t' read -r sid _ sstatus _ _ _ sscore serror sretries; do
     [[ "$sid" == "id" ]] && continue
     total=$((total + 1))
-    case "$sstatus" in
-      completed) completed=$((completed + 1))
-        if [[ "$sscore" != "-" && -n "$sscore" ]]; then
-          score_sum=$(echo "$score_sum + $sscore" | bc 2>/dev/null || echo "$score_sum")
-          score_count=$((score_count + 1))
-        fi
+
+    case "$(state_summary_bucket "$sstatus" "$serror" "$sretries")" in
+      completed)
+        completed=$((completed + 1))
         ;;
-      failed) failed=$((failed + 1)) ;;
-      *) pending=$((pending + 1)) ;;
+      partial)
+        partial=$((partial + 1))
+        ;;
+      failed)
+        failed=$((failed + 1))
+        ;;
+      retryable-failed)
+        retryable_failed=$((retryable_failed + 1))
+        ;;
+      skipped)
+        skipped=$((skipped + 1))
+        ;;
+      *)
+        pending=$((pending + 1))
+        ;;
     esac
+
+    if [[ "$sscore" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+      score_sum=$(echo "$score_sum + $sscore" | bc 2>/dev/null || echo "$score_sum")
+      score_count=$((score_count + 1))
+    fi
   done < "$STATE_FILE"
 
-  echo "Total: $total | Completed: $completed | Failed: $failed | Pending: $pending"
+  echo "Total: $total | Completed: $completed | Partial: $partial | Failed: $failed | Retryable Failed: $retryable_failed | Skipped: $skipped | Pending: $pending"
 
   if (( score_count > 0 )); then
     local avg
@@ -485,30 +820,29 @@ main() {
 
     local status
     status=$(get_status "$id")
+    local retries
+    retries=$(get_retries "$id")
+    local error
+    error=$(get_error "$id")
 
     if [[ "$RETRY_FAILED" == "true" ]]; then
-      # Only process failed offers
       if [[ "$status" != "failed" ]]; then
         continue
       fi
-      # Check retry limit
-      local retries
-      retries=$(get_retries "$id")
-      if (( retries >= MAX_RETRIES )); then
-        echo "SKIP #$id: max retries ($MAX_RETRIES) reached"
+      if ! is_retryable_failed_row "$error" "$retries"; then
         continue
       fi
     else
-      # Skip completed offers
-      if [[ "$status" == "completed" ]]; then
+      if [[ "$status" == "completed" || "$status" == "partial" || "$status" == "skipped" ]]; then
         continue
       fi
-      # Skip failed offers that hit retry limit (unless --retry-failed)
       if [[ "$status" == "failed" ]]; then
-        local retries
-        retries=$(get_retries "$id")
-        if (( retries >= MAX_RETRIES )); then
-          echo "SKIP #$id: failed and max retries reached (use --retry-failed to force)"
+        if ! is_retryable_failed_row "$error" "$retries"; then
+          if [[ "$error" == infrastructure:* ]]; then
+            echo "SKIP #$id: infrastructure failure exhausted max retries"
+          else
+            echo "SKIP #$id: semantic failure is terminal"
+          fi
           continue
         fi
       fi

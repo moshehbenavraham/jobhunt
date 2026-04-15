@@ -154,6 +154,28 @@ try {
   fail(`Liveness classification tests crashed: ${e.message}`);
 }
 
+// -- 3b. BATCH RUNNER CONTRACT ----------------------------------
+
+console.log('\n3b. Batch runner contract');
+
+const batchContract = run('node', ['scripts/test-batch-runner-contract.mjs']);
+if (batchContract !== null) {
+  pass('Batch runner contract tests pass');
+} else {
+  fail('Batch runner contract tests failed');
+}
+
+// -- 3c. BATCH RUNNER STATE SEMANTICS ---------------------------
+
+console.log('\n3c. Batch runner state semantics');
+
+const batchStateSemantics = run('node', ['scripts/test-batch-runner-state-semantics.mjs']);
+if (batchStateSemantics !== null) {
+  pass('Batch runner state-semantics tests pass');
+} else {
+  fail('Batch runner state-semantics tests failed');
+}
+
 // -- 4. DASHBOARD BUILD ------------------------------------------
 
 if (!QUICK) {

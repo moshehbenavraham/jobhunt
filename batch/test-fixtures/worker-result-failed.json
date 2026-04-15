@@ -1,0 +1,14 @@
+{
+  "status": "failed",
+  "id": "1",
+  "report_num": "001",
+  "company": "Example AI",
+  "role": "Senior AI Engineer",
+  "score": null,
+  "legitimacy": null,
+  "pdf": null,
+  "report": null,
+  "tracker": null,
+  "warnings": [],
+  "error": "The worker could not complete the evaluation pipeline"
+}

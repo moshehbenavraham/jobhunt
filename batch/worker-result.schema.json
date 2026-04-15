@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://career-ops.local/batch/worker-result.schema.json",
+  "title": "career-ops batch worker result",
+  "description": "Structured contract emitted by batch workers.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/completedResult"
+    },
+    {
+      "$ref": "#/$defs/partialResult"
+    },
+    {
+      "$ref": "#/$defs/failedResult"
+    }
+  ],
+  "$defs": {
+    "legitimacy": {
+      "type": "string",
+      "enum": [
+        "High Confidence",
+        "Proceed with Caution",
+        "Suspicious"
+      ]
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "reportNum": {
+      "type": "string",
+      "pattern": "^[0-9]{3}$"
+    },
+    "reportPath": {
+      "type": "string",
+      "pattern": "^reports/.+\\.md$"
+    },
+    "pdfPath": {
+      "type": "string",
+      "pattern": "^output/.+\\.pdf$"
+    },
+    "trackerPath": {
+      "type": "string",
+      "pattern": "^batch/tracker-additions/.+\\.tsv$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nonEmptyString"
+      },
+      "uniqueItems": true
+    },
+    "completedResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "id",
+        "report_num",
+        "company",
+        "role",
+        "score",
+        "legitimacy",
+        "pdf",
+        "report",
+        "tracker",
+        "warnings",
+        "error"
+      ],
+      "properties": {
+        "status": {
+          "const": "completed"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "report_num": {
+          "$ref": "#/$defs/reportNum"
+        },
+        "company": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "role": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "score": {
+          "type": "number"
+        },
+        "legitimacy": {
+          "$ref": "#/$defs/legitimacy"
+        },
+        "pdf": {
+          "$ref": "#/$defs/pdfPath"
+        },
+        "report": {
+          "$ref": "#/$defs/reportPath"
+        },
+        "tracker": {
+          "$ref": "#/$defs/trackerPath"
+        },
+        "warnings": {
+          "$ref": "#/$defs/warnings",
+          "maxItems": 0
+        },
+        "error": {
+          "type": "null"
+        }
+      }
+    },
+    "partialResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "id",
+        "report_num",
+        "company",
+        "role",
+        "score",
+        "legitimacy",
+        "pdf",
+        "report",
+        "tracker",
+        "warnings",
+        "error"
+      ],
+      "properties": {
+        "status": {
+          "const": "partial"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "report_num": {
+          "$ref": "#/$defs/reportNum"
+        },
+        "company": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "role": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "score": {
+          "type": "number"
+        },
+        "legitimacy": {
+          "$ref": "#/$defs/legitimacy"
+        },
+        "pdf": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/pdfPath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "report": {
+          "$ref": "#/$defs/reportPath"
+        },
+        "tracker": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/trackerPath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "warnings": {
+          "$ref": "#/$defs/warnings",
+          "minItems": 1
+        },
+        "error": {
+          "type": "null"
+        }
+      },
+      "allOf": [
+        {
+          "anyOf": [
+            {
+              "properties": {
+                "pdf": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "properties": {
+                "tracker": {
+                  "type": "null"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "failedResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "id",
+        "report_num",
+        "company",
+        "role",
+        "score",
+        "legitimacy",
+        "pdf",
+        "report",
+        "tracker",
+        "warnings",
+        "error"
+      ],
+      "properties": {
+        "status": {
+          "const": "failed"
+        },
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "report_num": {
+          "$ref": "#/$defs/reportNum"
+        },
+        "company": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "role": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "score": {
+          "type": "null"
+        },
+        "legitimacy": {
+          "type": "null"
+        },
+        "pdf": {
+          "type": "null"
+        },
+        "report": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/reportPath"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tracker": {
+          "type": "null"
+        },
+        "warnings": {
+          "$ref": "#/$defs/warnings",
+          "maxItems": 0
+        },
+        "error": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    }
+  }
+}
