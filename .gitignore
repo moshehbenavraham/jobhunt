@@ -34,6 +34,7 @@ interview-prep/*.md
 
 # Generated
 .resolved-prompt-*
+.spec_system/
 node_modules/
 bun.lock
 
