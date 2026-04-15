@@ -2,71 +2,114 @@
 
 ## 1. Nature of the Project
 
-`career-ops` is a collection of Markdown prompts, Node.js scripts, and HTML templates. It is strictly a local execution tool. The maintainers do not host, deploy, or operate an AI system, nor do we provide API access to Large Language Models (LLMs).
+`career-ops` is a local repository of Markdown instructions, Node.js scripts,
+templates, and documentation. The checked-in workflow is documented for local,
+Codex-primary use, but the maintainers do not host models, proxy prompts, run
+a managed backend, or operate a hosted career service on your behalf.
 
-Users download the code, run it on their own machines, and connect it to their own AI provider (Anthropic, OpenAI, or any other). The maintainers have no visibility into, control over, or responsibility for how the tool is used after download.
+You download or clone the repo, run it on your own machine, and choose your
+own AI provider, local runtime, browser automation, and third-party platforms.
+The maintainers do not control those services and have no visibility into your
+local environment beyond what you choose to publish yourself.
 
-## 2. Data Privacy (GDPR)
+## 2. Data Privacy
 
-The maintainers do not act as a Data Controller or Data Processor under GDPR or any other data protection regulation.
+The maintainers do not act as your data controller or processor for your local
+use of this repository.
 
-- All Personal Identifiable Information (PII) you input — CVs, contact details, career history — is processed locally on your machine.
-- When you use an AI CLI tool (Claude Code, Codex, OpenCode), your data is sent directly to the AI provider you chose. Review their privacy policies.
-- We do not collect analytics, telemetry, or usage data of any kind.
-- API keys, credentials, and personal files are gitignored by default. Never commit them to a public fork.
+- The project does not collect analytics, telemetry, or usage data.
+- Your CV, profile, tracker data, and other personal files stay on your
+  machine unless you choose to send them to an AI provider or external
+  platform.
+- If you connect the repo to an AI provider, browser automation tool, or job
+  platform, data handling is governed by that third party's own terms and
+  privacy policy.
+- API keys, credentials, exported reports, and personal data remain your
+  responsibility. Keep them out of public commits and public forks.
 
-## 3. AI Model Behavior
+## 3. AI Model Behavior and Human Review
 
-This tool interfaces with AI models via third-party CLI tools. The maintainers do not control these models and cannot guarantee their behavior.
+This project can help you analyze roles, tailor documents, and organize your
+search, but AI outputs remain fallible.
 
-- **Hallucinations:** AI models may fabricate skills, job history, qualifications, or company information. You must manually verify all generated documents before submitting them to an employer.
-- **Safety guardrails:** The default prompts instruct the AI never to auto-submit applications and to stop before the final send/apply action. However, AI compliance is not guaranteed. If you use different models, modify the system prompts, or override the safety instructions, you accept full responsibility for the AI's actions.
-- **Evaluation accuracy:** Job offer scores and recommendations are AI-generated opinions based on pattern matching, not professional career advice. They should inform your judgment, not replace it.
+- Models may hallucinate skills, metrics, company details, or requirements.
+- Scores, recommendations, and drafts are heuristic outputs, not legal,
+  financial, immigration, or career advice.
+- The checked-in instructions require human review and explicitly avoid
+  automatic application submission.
+- If you modify prompts, scripts, runtime behavior, or safety boundaries, you
+  accept full responsibility for the resulting automation and outputs.
 
-## 4. Third-Party Platforms
+You must manually review every CV, message, report, and application artifact
+before using it with an employer or platform.
 
-career-ops interacts with career portals and job boards (Greenhouse, Lever, Ashby, Workday, and others).
+## 4. Third-Party Platforms and Terms
 
-- Users must comply with the Terms of Service of every platform they interact with.
-- Do not use this tool to scrape platforms that prohibit automated access.
-- Do not use this tool to spam employers, overwhelm ATS systems, or submit mass applications.
-- Any consequences from ToS violations — including IP bans, account restrictions, or legal action from platforms — are solely the responsibility of the user.
-- The maintainers actively reject contributions that facilitate ToS violations (see CONTRIBUTING.md).
+`career-ops` may interact with AI providers, career sites, ATS platforms, and
+browser automation tooling. You are responsible for complying with the Terms
+of Service, robots rules, rate limits, and account policies that apply to the
+services you use.
+
+- Do not scrape platforms that prohibit automated access.
+- Do not spam employers, overload ATS systems, or mass-submit applications.
+- Do not use the repo to deceive, impersonate, or misrepresent your
+  qualifications.
+- The maintainers reject contributions that facilitate Terms-of-Service
+  violations. See [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+Any account restrictions, bans, charges, or legal consequences arising from
+your use of third-party services are solely your responsibility.
 
 ## 5. Acceptable Use
 
-career-ops is designed to help individuals make better career decisions, not to automate away human judgment. Acceptable use includes:
+Acceptable use includes:
 
-- Evaluating job offers to prioritize your time
-- Generating tailored CVs that you review and edit before submitting
-- Scanning public career pages for open positions
-- Tracking your application pipeline
+- Evaluating jobs so you can prioritize your time
+- Generating tailored materials that you review before sending
+- Scanning public career pages when that access is allowed
+- Tracking your pipeline and follow-up work
 
 Unacceptable use includes:
 
 - Auto-submitting applications without human review
-- Scraping platforms that prohibit automated access
-- Submitting AI-generated content without verifying its accuracy
-- Using the tool to discriminate, deceive, or misrepresent qualifications
+- Using the repo where platform terms prohibit the relevant automation
+- Sending unverified AI-generated content to employers
+- Discriminating, deceiving, or fabricating qualifications
 
 ## 6. EU AI Act
 
-Because this tool runs locally, is free, and is open-source, the maintainers are not placing an AI system on the market or putting one into service under the EU AI Act. Users who deploy the tool in a commercial or organizational context should assess their own obligations under the AI Act.
+Because this repository is distributed as local software and documentation,
+the maintainers are not placing a hosted AI system on the market or operating
+one for you as a managed service. If you deploy or integrate the repo in a
+commercial, organizational, or regulated context, you are responsible for
+assessing your own obligations under the EU AI Act and any related law.
 
 ## 7. Indemnification
 
-By using career-ops, you agree to indemnify, defend, and hold harmless the authors, contributors, and any affiliated parties from and against any and all claims, damages, losses, liabilities, costs, and expenses (including reasonable attorneys' fees) arising from your use of this software, your violation of these terms, or your violation of any third-party terms of service.
+By using `career-ops`, you agree to indemnify, defend, and hold harmless the
+authors, contributors, and affiliated parties from claims, damages, losses,
+liabilities, costs, and expenses arising from your use of the software, your
+violation of these terms, or your violation of third-party terms.
 
 ## 8. Cost Responsibility
 
-If you use paid AI providers (Anthropic API, OpenAI API, etc.), you are solely responsible for monitoring and managing your own token usage and associated costs. The maintainers are not responsible for unexpected charges.
+If you use paid AI providers, browser automation services, or other paid
+tools, you are solely responsible for monitoring usage and paying any
+associated costs. The maintainers are not responsible for unexpected charges.
 
 ## 9. MIT License
 
-As stated in the [LICENSE](LICENSE) file:
+As stated in the [LICENSE](../LICENSE) file:
 
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+> FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+> DEALINGS IN THE SOFTWARE.
 
 ## 10. Changes
 
-This disclaimer may be updated as the project evolves. Users are encouraged to review it periodically.
+This disclaimer may be updated as the repo evolves. Review it periodically,
+especially before using new workflows, providers, or automation patterns.

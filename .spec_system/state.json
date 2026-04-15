@@ -25,7 +25,8 @@
     "phase00-session03-codex-metadata-alignment",
     "phase00-session04-validation-drift-closeout",
     "phase01-session01-public-quick-start-alignment",
-    "phase01-session02-contributor-support-docs-alignment"
+    "phase01-session02-contributor-support-docs-alignment",
+    "phase01-session03-customization-and-policy-runtime-cleanup"
   ],
   "next_session_history": [
     {
@@ -81,6 +82,16 @@
     {
       "date": "2026-04-15",
       "session": "phase01-session02-contributor-support-docs-alignment",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-15",
+      "session": "phase01-session03-customization-and-policy-runtime-cleanup",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-15",
+      "session": "phase01-session03-customization-and-policy-runtime-cleanup",
       "status": "completed"
     }
   ]

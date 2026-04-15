@@ -1,7 +1,7 @@
 # Session 03: Customization and Policy Runtime Cleanup
 
 **Session ID**: `phase01-session03-customization-and-policy-runtime-cleanup`
-**Status**: Not Started
+**Status**: Complete
 **Estimated Tasks**: ~12-25
 **Estimated Duration**: 2-4 hours
 
@@ -35,8 +35,8 @@ the active `.codex` runtime surface and the repo's local-execution model.
 
 ## Prerequisites
 
-- [ ] Session 01 completed
-- [ ] Canonical runtime wording established for user-facing docs
+- [x] Session 01 completed
+- [x] Canonical runtime wording established for user-facing docs
 
 ---
 
@@ -51,10 +51,9 @@ the active `.codex` runtime surface and the repo's local-execution model.
 
 ## Success Criteria
 
-- [ ] `docs/CUSTOMIZATION.md` no longer points users at `.claude` settings or
+- [x] `docs/CUSTOMIZATION.md` no longer points users at `.claude` settings or
       other inactive runtime surfaces
-- [ ] `docs/LEGAL_DISCLAIMER.md` describes provider responsibility without
+- [x] `docs/LEGAL_DISCLAIMER.md` describes provider responsibility without
       presenting Claude or OpenCode as required defaults
-- [ ] Phase 01 policy docs preserve the repo's no-telemetry, local-first
+- [x] Phase 01 policy docs preserve the repo's no-telemetry, local-first
       contract
-
