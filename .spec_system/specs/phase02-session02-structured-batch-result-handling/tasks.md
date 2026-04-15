@@ -50,9 +50,9 @@ editing runtime behavior.
 
 - [x] T003 [S0202] [P] Verify the master PRD contract and Session 02 scope,
       including warning and failure-classification requirements
-      (`.spec_system/PRD/PRD.md`)
+      (`docs/prev-prd/PRD-codex-convert.md`)
 - [x] T004 [S0202] [P] Verify conventions, active concerns, and validator
-      coupling for batch-state edits (`.spec_system/CONVENTIONS.md`)
+      coupling for batch-state edits (`docs/CONVENTIONS.md`)
 - [x] T005 [S0202] [P] Audit the runner's current state transitions, retry
       gating, and summary math (`batch/batch-runner.sh`)
 - [x] T006 [S0202] [P] Audit the checked-in worker schema, prompt, fixtures,

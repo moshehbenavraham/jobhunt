@@ -53,13 +53,13 @@
 
 ### PRD And Convention Boundaries
 
-- `.spec_system/PRD/PRD.md` confirms that Phase 02 owns the migration from
+- `docs/prev-prd/PRD-codex-convert.md` confirms that Phase 02 owns the migration from
   `claude -p` to `codex exec` and that Session 01 is limited to the worker
   contract boundary, not downstream state semantics or docs cleanup.
-- `.spec_system/CONVENTIONS.md` requires live-path verification, deterministic
+- `docs/CONVENTIONS.md` requires live-path verification, deterministic
   machine-readable outputs, fast failure on missing prerequisites, and
   `node scripts/test-all.mjs --quick` as the baseline regression gate.
-- `.spec_system/CONSIDERATIONS.md` flags validator coupling, no new telemetry
+- `docs/CONSIDERATIONS.md` flags validator coupling, no new telemetry
   or PII surfaces, and the need to keep runtime-reference cleanup narrowly
   scoped to the batch contract workstream.
 
@@ -105,13 +105,13 @@
 
 ## Contract Sources Reviewed
 
-- `.spec_system/PRD/PRD.md`
+- `docs/prev-prd/PRD-codex-convert.md`
 - `.spec_system/PRD/phase_02/PRD_phase_02.md`
 - `.spec_system/PRD/phase_02/session_01_codex_exec_worker_contract.md`
 - `.spec_system/specs/phase02-session01-codex-exec-worker-contract/spec.md`
 - `.spec_system/specs/phase02-session01-codex-exec-worker-contract/tasks.md`
-- `.spec_system/CONVENTIONS.md`
-- `.spec_system/CONSIDERATIONS.md`
+- `docs/CONVENTIONS.md`
+- `docs/CONSIDERATIONS.md`
 - `batch/batch-runner.sh`
 - `batch/batch-prompt.md`
 - `scripts/test-all.mjs`
@@ -190,7 +190,7 @@
 
 **Notes**:
 
-- Verified in `.spec_system/PRD/PRD.md` that batch execution must move to
+- Verified in `docs/prev-prd/PRD-codex-convert.md` that batch execution must move to
   `codex exec`, use an explicit structured output contract, and preserve the
   existing business logic and user outputs.
 - Confirmed again that Session 01 must not absorb Session 02 result semantics
@@ -208,10 +208,10 @@
 
 **Notes**:
 
-- Verified in `.spec_system/CONVENTIONS.md` that the runner changes must fail
+- Verified in `docs/CONVENTIONS.md` that the runner changes must fail
   fast on missing prerequisites, keep machine-readable output explicit, and
   validate through `node scripts/test-all.mjs --quick`.
-- Verified in `.spec_system/CONSIDERATIONS.md` that validator coupling, no new
+- Verified in `docs/CONSIDERATIONS.md` that validator coupling, no new
   telemetry or PII surfaces, and explicit deferral boundaries remain active
   concerns during this session.
 

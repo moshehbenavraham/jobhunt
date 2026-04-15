@@ -67,7 +67,7 @@ The active, checked-in runtime surface for this repo is:
 
 - `AGENTS.md` for startup rules, routing, tracker integrity, and operating
   boundaries
-- `.codex/skills/jobhunt/SKILL.md` for the repo skill bootstrap and mode
+- `.codex/skills/career-ops/SKILL.md` for the repo skill bootstrap and mode
   routing summary
 - `scripts/*.mjs`, `npm run doctor`, and `node scripts/test-all.mjs --quick`
   for validation and maintenance

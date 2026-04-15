@@ -27,7 +27,7 @@
 
 ### Session Scope And Handoff
 
-- `.spec_system/PRD/PRD.md` and the Session 02 stub both confirm this session
+- `docs/prev-prd/PRD-codex-convert.md` and the Session 02 stub both confirm this session
   owns runtime state semantics, not the `codex exec` invocation surface or the
   later docs-alignment work.
 - Session 01 already settled the worker-launch contract, result artifact
@@ -76,12 +76,12 @@
 
 ## Sources Reviewed
 
-- `.spec_system/PRD/PRD.md`
+- `docs/prev-prd/PRD-codex-convert.md`
 - `.spec_system/PRD/phase_02/session_02_structured_batch_result_handling.md`
 - `.spec_system/specs/phase02-session01-codex-exec-worker-contract/spec.md`
 - `.spec_system/specs/phase02-session01-codex-exec-worker-contract/implementation-notes.md`
-- `.spec_system/CONVENTIONS.md`
-- `.spec_system/CONSIDERATIONS.md`
+- `docs/CONVENTIONS.md`
+- `docs/CONSIDERATIONS.md`
 - `batch/batch-runner.sh`
 - `batch/worker-result.schema.json`
 - `batch/batch-prompt.md`
@@ -151,7 +151,7 @@
 
 **Notes**:
 
-- Verified in `.spec_system/PRD/PRD.md` that the final structured JSON must be
+- Verified in `docs/prev-prd/PRD-codex-convert.md` that the final structured JSON must be
   the source of truth for batch state and that non-zero CLI exits remain
   infrastructure failures, not semantic worker outcomes.
 - Verified the Session 02 stub focuses on structured result handling, degraded
@@ -171,10 +171,10 @@
 
 **Notes**:
 
-- Verified in `.spec_system/CONVENTIONS.md` that the changes must keep command
+- Verified in `docs/CONVENTIONS.md` that the changes must keep command
   output deterministic, fail fast on missing prerequisites, and validate
   through `node scripts/test-all.mjs --quick`.
-- Verified in `.spec_system/CONSIDERATIONS.md` that validator coupling and the
+- Verified in `docs/CONSIDERATIONS.md` that validator coupling and the
   no-new-PII baseline remain active concerns for this runtime session.
 
 **Files Changed**:

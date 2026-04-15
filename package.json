@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.19",
+  "version": "1.5.20",
   "description": "AI-powered job search pipeline",
   "scripts": {
     "doctor": "node scripts/doctor.mjs",

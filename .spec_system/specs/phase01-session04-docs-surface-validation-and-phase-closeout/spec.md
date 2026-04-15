@@ -132,7 +132,7 @@ instead of broadening this session into implementation cleanup.
 ### Technology Stack
 
 - Markdown docs under `docs/`
-- Repo contract files: `AGENTS.md`, `.spec_system/PRD/PRD.md`, and
+- Repo contract files: `AGENTS.md`, `docs/prev-prd/PRD-codex-convert.md`, and
   `.spec_system/PRD/phase_01/PRD_phase_01.md`
 - Existing repo validation command: `node scripts/test-all.mjs --quick`
 

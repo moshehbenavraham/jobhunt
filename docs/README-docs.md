@@ -30,6 +30,11 @@ runtime policy, and repo reference material.
 - [Environments](environments.md)
 - [Deployment](deployment.md)
 - [Credits](CREDITS.md)
+- [Conventions](CONVENTIONS.md)
+- [Considerations](CONSIDERATIONS.md)
+- [Security and Compliance](SECURITY-COMPLIANCE.md)
+- [UX PRD](PRD_UX.md)
+- [Migration PRD](prev-prd/PRD-codex-convert.md)
 
 ## Notes
 

@@ -124,12 +124,12 @@
 
 ## Contract Sources Reviewed
 
-- `.spec_system/PRD/PRD.md`
+- `docs/prev-prd/PRD-codex-convert.md`
 - `.spec_system/PRD/phase_01/PRD_phase_01.md`
 - `.spec_system/PRD/phase_01/session_04_docs_surface_validation_and_phase_closeout.md`
 - `.spec_system/specs/phase01-session04-docs-surface-validation-and-phase-closeout/spec.md`
-- `.spec_system/CONVENTIONS.md`
-- `.spec_system/CONSIDERATIONS.md`
+- `docs/CONVENTIONS.md`
+- `docs/CONSIDERATIONS.md`
 - `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/IMPLEMENTATION_SUMMARY.md`
 
 ---
@@ -198,7 +198,7 @@
 
 **Notes**:
 
-- Verified in `.spec_system/PRD/PRD.md` and `.spec_system/PRD/phase_01/PRD_phase_01.md` that Phase 01 owns docs and entrypoint alignment only.
+- Verified in `docs/prev-prd/PRD-codex-convert.md` and `.spec_system/PRD/phase_01/PRD_phase_01.md` that Phase 01 owns docs and entrypoint alignment only.
 - Confirmed batch-runtime conversion remains Phase 02 work and prompt and metadata normalization remains Phase 03 work.
 
 **Files Changed**:
@@ -213,8 +213,8 @@
 
 **Notes**:
 
-- Verified in `.spec_system/CONVENTIONS.md` that docs changes should stay anchored to live repo paths, remove drift, and validate with `node scripts/test-all.mjs --quick`.
-- Verified in `.spec_system/CONSIDERATIONS.md` that residual legacy references must remain explicitly deferred and that the validator surface and no-telemetry posture must stay intact.
+- Verified in `docs/CONVENTIONS.md` that docs changes should stay anchored to live repo paths, remove drift, and validate with `node scripts/test-all.mjs --quick`.
+- Verified in `docs/CONSIDERATIONS.md` that residual legacy references must remain explicitly deferred and that the validator surface and no-telemetry posture must stay intact.
 
 **Files Changed**:
 

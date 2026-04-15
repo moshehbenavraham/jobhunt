@@ -1,6 +1,6 @@
-# Contributing to Career-Ops
+# Contributing to Job-Hunt
 
-Career-Ops is a Codex-primary repo. The live contributor workflow runs through
+Job-Hunt is a Codex-primary repo. The live contributor workflow runs through
 `codex`, `AGENTS.md`, the checked-in skills, and the repo-owned scripts. Keep
 changes small, factual, and aligned with the existing data contract.
 

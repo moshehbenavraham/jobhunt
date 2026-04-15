@@ -339,7 +339,7 @@ Required changes:
 - Replace those checks with validation that:
   - `AGENTS.md` exists
   - `.codex/skills/jobhunt/SKILL.md` exists
-  - required Career-Ops sections are present in `AGENTS.md`
+  - required Job-Hunt sections are present in `AGENTS.md`
 
 Result:
 

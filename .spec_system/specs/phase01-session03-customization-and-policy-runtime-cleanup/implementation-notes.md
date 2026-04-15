@@ -100,7 +100,7 @@
 - `.spec_system/PRD/phase_01/PRD_phase_01.md`
 - `.spec_system/PRD/phase_01/session_03_customization_and_policy_runtime_cleanup.md`
 - `.spec_system/specs/phase01-session03-customization-and-policy-runtime-cleanup/spec.md`
-- `.spec_system/CONVENTIONS.md`
+- `docs/CONVENTIONS.md`
 - `AGENTS.md`
 - `docs/DATA_CONTRACT.md`
 - `.codex/skills/jobhunt/SKILL.md`

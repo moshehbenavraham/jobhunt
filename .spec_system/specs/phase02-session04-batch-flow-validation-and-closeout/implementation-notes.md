@@ -124,7 +124,7 @@
 **Completed**: 2026-04-15 13:51
 **Duration**: 1 minute
 
-Reviewed the Phase 02 section of `.spec_system/PRD/PRD.md`, the Session 04
+Reviewed the Phase 02 section of `docs/prev-prd/PRD-codex-convert.md`, the Session 04
 stub, and the Session 03 implementation notes. Confirmed this session is
 evidence-first: validate the converted runtime and closeout path, fix only
 drift exposed by that evidence, and defer broader wording cleanup to Phase 03.

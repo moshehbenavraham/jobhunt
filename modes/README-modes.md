@@ -1,6 +1,6 @@
 # Modes
 
-This directory contains the prompt-mode files that drive Career-Ops behavior.
+This directory contains the prompt-mode files that drive Job-Hunt behavior.
 
 - `_shared.md` defines shared system rules.
 - `_profile.md` contains user-specific overrides.

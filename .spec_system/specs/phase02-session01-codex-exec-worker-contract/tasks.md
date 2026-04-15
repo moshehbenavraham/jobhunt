@@ -51,9 +51,9 @@ Verify the governing rules and define the reusable contract assets before
 editing the runtime path.
 
 - [x] T004 [S0201] [P] Verify the `codex exec` contract requirements and
-      phase boundaries against the master PRD (`.spec_system/PRD/PRD.md`)
+      phase boundaries against the master PRD (`docs/prev-prd/PRD-codex-convert.md`)
 - [x] T005 [S0201] [P] Verify conventions, validator expectations, and active
-      concerns governing batch-runtime edits (`.spec_system/CONVENTIONS.md`)
+      concerns governing batch-runtime edits (`docs/CONVENTIONS.md`)
 - [x] T006 [S0201] [P] Audit the current `claude -p` runner launch path,
       temp files, and state touchpoints (`batch/batch-runner.sh`)
 - [x] T007 [S0201] [P] Audit the worker prompt placeholders and stdout JSON

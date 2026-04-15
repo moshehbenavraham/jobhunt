@@ -1,7 +1,7 @@
 # Credits CREDITS.md
 
 ORIGINAL CODE:
-https://github.com/santifer/career-ops
+https://github.com/santifer/Job-Hunt
 
 AUTHOR:
 Santiago Fernández de Valderrama

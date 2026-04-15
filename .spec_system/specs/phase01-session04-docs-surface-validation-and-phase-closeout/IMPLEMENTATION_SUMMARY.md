@@ -28,7 +28,7 @@ complete.
 | File                                                   | Changes                                                                                           |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
 | `.spec_system/state.json`                              | Marked the session complete, cleared `current_session`, and recorded the completion history entry |
-| `.spec_system/PRD/PRD.md`                              | Marked Phase 01 complete in the master phase table and closeout note                              |
+| `docs/prev-prd/PRD-codex-convert.md`                  | Marked Phase 01 complete in the master phase table and closeout note                              |
 | `.spec_system/archive/phases/phase_01/PRD_phase_01.md` | Marked the phase complete, updated the tracker, and closed the session list                       |
 | `VERSION`                                              | Bumped the patch version from `1.5.10` to `1.5.11`                                                |
 | `package.json`                                         | Mirrored the patch version bump to `1.5.11`                                                       |

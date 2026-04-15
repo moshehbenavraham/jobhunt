@@ -1,6 +1,6 @@
-# Career-Ops Agent Guide
+# Job-Hunt Agent Guide
 
-Use the checked-in Career-Ops modes, scripts, templates, and tracker flow. Do not invent a parallel workflow.
+Use the checked-in Job-Hunt modes, scripts, templates, and tracker flow. Do not invent a parallel workflow.
 
 ## Startup Checklist (every session)
 

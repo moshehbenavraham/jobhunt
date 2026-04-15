@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ATS normalization input fixture</title>
+    <style>
+      .hero::before {
+        content: "Keep — curly “quotes” and nbsp in CSS";
+      }
+    </style>
+    <script>
+      window.fixture = "Do not touch — script “quotes”";
+    </script>
+  </head>
+  <body>
+    <main>
+      <p id="summary">Built and sold a SaaS — now shipping AI in production.</p>
+      <p id="tenure">2020–2024 at Acme Corp.</p>
+      <p id="double">“Led the migration” was a real bullet.</p>
+      <p id="single">The team’s velocity tripled.</p>
+      <p id="ellipsis">And so on…</p>
+      <p id="zero-width">Hello​world</p>
+      <p id="nbsp">5 years experience</p>
+      <a href="https://example.com/search?q=one—two&note=smart“quotes”">
+        Reference link
+      </a>
+      <div data-note="Keep smart “quotes” and nbsp here">
+        Attribute text should stay untouched.
+      </div>
+    </main>
+  </body>
+</html>

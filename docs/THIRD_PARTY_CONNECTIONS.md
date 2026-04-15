@@ -12,7 +12,7 @@ It does not try to catalog every other external dependency in the repo.
 
 ## Why These Connections Exist
 
-Career Ops needs third-party recruiting pages for four core workflows:
+Job Hunt needs third-party recruiting pages for four core workflows:
 
 1. A user pastes a live job URL and the system extracts the JD.
 2. Portal scan reads company career pages and ATS feeds to discover roles.
@@ -32,7 +32,7 @@ The repo treats these as in-scope third-party surfaces:
 
 These are the recruiting platforms and patterns explicitly handled or documented by the repo.
 
-| Family               | Common domains / patterns                                                             | Typical use in Career Ops                       |
+| Family               | Common domains / patterns                                                             | Typical use in Job Hunt                       |
 | -------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | Greenhouse           | `job-boards.greenhouse.io`, `job-boards.eu.greenhouse.io`, `boards-api.greenhouse.io` | direct scan, JD extraction, liveness            |
 | Ashby                | `jobs.ashbyhq.com`, `api.ashbyhq.com`                                                 | direct scan, JD extraction, liveness            |

@@ -49,9 +49,9 @@ Verify the governing rules and audit the live runtime surfaces before editing
 the docs.
 
 - [x] T003 [S0203] [P] Verify the master PRD and Phase 02 success criteria for
-      batch-owned docs (`.spec_system/PRD/PRD.md`)
+      batch-owned docs (`docs/prev-prd/PRD-codex-convert.md`)
 - [x] T004 [S0203] [P] Verify conventions, active concerns, validator coupling,
-      and docs-local link rules for this session (`.spec_system/CONVENTIONS.md`)
+      and docs-local link rules for this session (`docs/CONVENTIONS.md`)
 - [x] T005 [S0203] Audit the live worker launch path, flags, artifact
       locations, and merge or verify flow that the docs must describe
       (`batch/batch-runner.sh`)

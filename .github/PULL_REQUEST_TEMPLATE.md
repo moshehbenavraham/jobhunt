@@ -20,3 +20,4 @@
 - [ ] I linked a related issue above (required for features and architecture changes)
 - [ ] My PR does not include personal data (CV, email, real names)
 - [ ] I ran `node scripts/test-all.mjs` and all tests pass
+- [ ] I reviewed [docs/CONTRIBUTING.md](https://github.com/moshehbenavraham/jobhunt/blob/main/docs/CONTRIBUTING.md) when the change affects contributor workflow or docs

@@ -5,7 +5,7 @@
 ```text
 Codex CLI
   -> AGENTS.md
-  -> .codex/skills/jobhunt/SKILL.md
+  -> .codex/skills/career-ops/SKILL.md
   -> modes/*.md
   -> batch/batch-runner.sh
      -> batch/batch-prompt.md
@@ -24,7 +24,7 @@ The repository is organized around a Codex-first agent contract, repo-owned scri
 ### Agent surface
 
 - `AGENTS.md` is the canonical instruction entry point.
-- `.codex/skills/jobhunt/SKILL.md` is the checked-in skill surface.
+- `.codex/skills/career-ops/SKILL.md` is the checked-in skill surface.
 - `modes/` contains the task-specific workflow files used by the repo.
 
 ### Job evaluation pipeline

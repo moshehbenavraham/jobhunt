@@ -1,4 +1,4 @@
-# Career-Ops
+# Job-Hunt
 
 AI-powered job search pipeline driven by `AGENTS.md` and checked-in Codex skills.
 
@@ -76,4 +76,4 @@ Each significant folder has a `README_<folder-name>.md` with its own documentati
 
 ## Project Status
 
-See [.spec_system/PRD/PRD.md](.spec_system/PRD/PRD.md) for the current migration roadmap and remaining phases.
+See [docs/prev-prd/PRD-codex-convert.md](docs/prev-prd/PRD-codex-convert.md) for the migration roadmap and phase history.

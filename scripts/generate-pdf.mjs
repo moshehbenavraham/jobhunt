@@ -16,11 +16,9 @@ import { readFile } from 'node:fs/promises';
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
+const SCRIPT_PATH = fileURLToPath(import.meta.url);
+const SCRIPT_DIR = dirname(SCRIPT_PATH);
 const projectRoot = resolve(SCRIPT_DIR, '..');
-
-// Ensure output directory exists (fresh setup)
-mkdirSync(resolve(projectRoot, 'output'), { recursive: true });
 
 /**
  * Normalize text for ATS compatibility by converting problematic Unicode.
@@ -32,7 +30,7 @@ mkdirSync(resolve(projectRoot, 'output'), { recursive: true });
  * Only touches body text — preserves CSS, JS, tag attributes, and URLs.
  * Returns { html, replacements } so the caller can log what was changed.
  */
-function normalizeTextForATS(html) {
+export function normalizeTextForATS(html) {
   const replacements = {};
   const bump = (key, n) => {
     replacements[key] = (replacements[key] || 0) + n;
@@ -107,9 +105,7 @@ function normalizeTextForATS(html) {
   }
 }
 
-async function generatePDF() {
-  const args = process.argv.slice(2);
-
+export async function generatePDF(args = process.argv.slice(2)) {
   // Parse arguments
   let inputPath,
     outputPath,
@@ -134,6 +130,7 @@ async function generatePDF() {
 
   inputPath = resolve(inputPath);
   outputPath = resolve(outputPath);
+  mkdirSync(dirname(outputPath), { recursive: true });
 
   // Validate format
   const validFormats = ['a4', 'letter'];
@@ -152,7 +149,7 @@ async function generatePDF() {
   let html = await readFile(inputPath, 'utf-8');
 
   // Resolve font paths relative to jobhunt/fonts/
-  const fontsDir = resolve(__dirname, 'fonts');
+  const fontsDir = resolve(projectRoot, 'fonts');
   html = html.replace(/url\(['"]?\.\/fonts\//g, `url('file://${fontsDir}/`);
   // Close any unclosed quotes from the replacement (handles all font formats)
   html = html.replace(
@@ -220,7 +217,9 @@ async function generatePDF() {
   }
 }
 
-generatePDF().catch((err) => {
-  console.error('❌ PDF generation failed:', err.message);
-  process.exit(1);
-});
+if (process.argv[1] && resolve(process.argv[1]) === SCRIPT_PATH) {
+  generatePDF().catch((err) => {
+    console.error('❌ PDF generation failed:', err.message);
+    process.exit(1);
+  });
+}

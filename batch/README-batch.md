@@ -50,7 +50,7 @@ Failed, Retryable Failed, Skipped, and Pending.
 
 ## Prerequisites
 
-- Repo root checkout with the normal Career-Ops setup completed
+- Repo root checkout with the normal Job-Hunt setup completed
 - `codex` in `PATH`
 - `jq` in `PATH`
 - Node.js for the merge, verify, and validation scripts

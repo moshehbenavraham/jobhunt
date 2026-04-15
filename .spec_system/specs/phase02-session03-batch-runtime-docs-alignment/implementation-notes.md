@@ -91,7 +91,7 @@ contract without pulling broader cleanup into Phase 02.
 **Completed**: 2026-04-15 13:31
 **Duration**: 1 minute
 
-Re-read `.spec_system/CONVENTIONS.md` to anchor the work on repo-owned
+Re-read `docs/CONVENTIONS.md` to anchor the work on repo-owned
 scripts, exact path references, validator-first closeout, and docs-local link
 integrity.
 

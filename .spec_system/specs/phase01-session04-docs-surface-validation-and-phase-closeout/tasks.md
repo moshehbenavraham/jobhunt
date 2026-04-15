@@ -52,10 +52,10 @@ Verify the closeout rules and map the exact remaining docs and residual-drift
 surface before editing.
 
 - [x] T004 [S0104] [P] Verify the Phase 01 closeout objectives and later-phase
-      ownership boundaries against the master PRD (`.spec_system/PRD/PRD.md`)
+      ownership boundaries against the master PRD (`docs/prev-prd/PRD-codex-convert.md`)
 - [x] T005 [S0104] [P] Verify the conventions and considerations that govern
       docs closeout, validator alignment, and explicit deferrals
-      (`.spec_system/CONVENTIONS.md`)
+      (`docs/CONVENTIONS.md`)
 - [x] T006 [S0104] [P] Audit the docs index surface for missing Phase 01 pages
       and weak routing paths (`docs/README-docs.md`)
 - [x] T007 [S0104] [P] Audit secondary docs surfaces for stale onboarding

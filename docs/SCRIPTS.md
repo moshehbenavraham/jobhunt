@@ -103,6 +103,8 @@ npm run pdf -- input.html output.pdf --format=a4        # A4 (default)
 
 **Exit codes:** `0` PDF generated, `1` missing arguments or generation failure.
 
+The ATS normalization regression is covered by `scripts/test-generate-pdf-normalization.mjs` with checked-in HTML fixtures under `scripts/test-fixtures/`. It runs as part of `node scripts/test-all.mjs --quick`.
+
 ---
 
 ## sync-check

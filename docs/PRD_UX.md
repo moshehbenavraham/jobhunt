@@ -1,6 +1,6 @@
 # jobhunt Dashboard - UX Requirements Document
 
-**Companion to**: [PRD.md](PRD.md)
+**Companion to**: [Migration PRD](prev-prd/PRD-codex-convert.md)
 **Created**: 2026-04-15
 
 ---
@@ -9,7 +9,7 @@
 
 This UX PRD governs only the terminal dashboard in `dashboard/`. It is a
 companion execution guide for UI-focused sessions and does not redefine the
-core migration requirements in `PRD.md`.
+core migration requirements in the migration PRD.
 
 Scope guardrails:
 

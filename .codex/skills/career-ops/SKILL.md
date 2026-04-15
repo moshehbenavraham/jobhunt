@@ -1,11 +1,11 @@
 ---
 name: jobhunt
-description: Route Career-Ops job-search tasks in this repository to the correct checked-in mode files and scripts. Use when Codex needs to evaluate a job URL or JD, run the full pipeline, scan portals, generate ATS PDFs, process inbox URLs, review tracker status, compare offers, draft application help, run deep company research, prepare interviews, analyze rejection patterns, or manage follow-up cadence inside this project.
+description: Route Job-Hunt job-search tasks in this repository to the correct checked-in mode files and scripts. Use when Codex needs to evaluate a job URL or JD, run the full pipeline, scan portals, generate ATS PDFs, process inbox URLs, review tracker status, compare offers, draft application help, run deep company research, prepare interviews, analyze rejection patterns, or manage follow-up cadence inside this project.
 ---
 
-# Career Ops
+# Job Hunt
 
-Route work into the existing Career-Ops modes and scripts. Do not create a parallel workflow when the repository already contains a mode, script, or template for the task.
+Route work into the existing Job-Hunt modes and scripts. Do not create a parallel workflow when the repository already contains a mode, script, or template for the task.
 
 ## Read Order
 
@@ -28,7 +28,7 @@ node scripts/update-system.mjs check
 
 If an update is available, tell the user the exact local and remote versions and ask before applying it.
 
-Before substantial Career-Ops work, verify these files:
+Before substantial Job-Hunt work, verify these files:
 
 - `cv.md`
 - `config/profile.yml`

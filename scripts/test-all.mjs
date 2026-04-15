@@ -190,6 +190,19 @@ if (batchCloseout !== null) {
   fail('Batch runner closeout tests failed');
 }
 
+// -- 3e. PDF ATS NORMALIZATION ----------------------------------
+
+console.log('\n3e. PDF ATS normalization');
+
+const pdfNormalization = run('node', [
+  'scripts/test-generate-pdf-normalization.mjs',
+]);
+if (pdfNormalization !== null) {
+  pass('PDF ATS normalization regression test passes');
+} else {
+  fail('PDF ATS normalization regression test failed');
+}
+
 // -- 4. DASHBOARD BUILD ------------------------------------------
 
 if (!QUICK) {
@@ -213,7 +226,7 @@ console.log('\n5. Data contract validation');
 // Check system files exist
 const systemFiles = [
   'AGENTS.md',
-  '.codex/skills/jobhunt/SKILL.md',
+  '.codex/skills/career-ops/SKILL.md',
   'VERSION',
   'docs/DATA_CONTRACT.md',
   'modes/_shared.md',
@@ -379,15 +392,15 @@ if (agents.includes('Startup Checklist (every session)')) {
   fail('AGENTS.md missing the startup checklist');
 }
 
-const skillPath = '.codex/skills/jobhunt/SKILL.md';
+const skillPath = '.codex/skills/career-ops/SKILL.md';
 if (fileExists(skillPath)) {
-  pass('jobhunt skill exists');
+  pass('career-ops skill exists');
   const careerOpsSkill = readFile(skillPath);
 
   if (careerOpsSkill.includes('1. `AGENTS.md`')) {
-    pass('jobhunt skill reads AGENTS.md first');
+    pass('career-ops skill reads AGENTS.md first');
   } else {
-    fail('jobhunt skill does not read AGENTS.md first');
+    fail('career-ops skill does not read AGENTS.md first');
   }
 
   const bootstrapMarkers = [
@@ -401,10 +414,10 @@ if (fileExists(skillPath)) {
     (marker) => !careerOpsSkill.includes(marker),
   );
   if (missingBootstrapMarkers.length === 0) {
-    pass('jobhunt skill bootstrap matches the startup checklist');
+    pass('career-ops skill bootstrap matches the startup checklist');
   } else {
     fail(
-      `jobhunt skill missing startup checklist markers: ${missingBootstrapMarkers.join(', ')}`,
+      `career-ops skill missing startup checklist markers: ${missingBootstrapMarkers.join(', ')}`,
     );
   }
 
@@ -412,12 +425,12 @@ if (fileExists(skillPath)) {
     !careerOpsSkill.includes('docs/CODEX.md') &&
     !careerOpsSkill.includes('docs/CLAUDE.md')
   ) {
-    pass('jobhunt skill has no legacy instruction-doc dependency');
+    pass('career-ops skill has no legacy instruction-doc dependency');
   } else {
-    fail('jobhunt skill still references legacy instruction docs');
+    fail('career-ops skill still references legacy instruction docs');
   }
 } else {
-  fail('jobhunt skill missing');
+  fail('career-ops skill missing');
 }
 
 if (!shared.includes('docs/CODEX.md') && !shared.includes('docs/CLAUDE.md')) {

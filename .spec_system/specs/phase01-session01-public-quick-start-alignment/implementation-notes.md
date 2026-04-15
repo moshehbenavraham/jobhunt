@@ -36,7 +36,7 @@
 
 **Notes**:
 
-- Reviewed `.spec_system/PRD/PRD.md`, the Session 01 stub, and the session spec to confirm the session stays limited to public onboarding docs.
+- Reviewed `docs/prev-prd/PRD-codex-convert.md`, the Session 01 stub, and the session spec to confirm the session stays limited to public onboarding docs.
 - Confirmed contributor/support docs, customization/legal docs, and batch/runtime docs remain deferred to later sessions and phases.
 
 **Files Changed**:
