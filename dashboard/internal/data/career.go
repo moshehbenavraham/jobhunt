@@ -693,7 +693,13 @@ func ComputeProgressMetrics(apps []model.CareerApplication) model.ProgressMetric
 	}
 
 	// Weekly activity: group by ISO week from Date field, show last 8 weeks.
+	// Also track per-stage weekly counts for funnel sparklines.
 	weekCounts := make(map[string]int)
+	stageWeekCounts := [5]map[string]int{}
+	for i := range stageWeekCounts {
+		stageWeekCounts[i] = make(map[string]int)
+	}
+
 	for _, app := range apps {
 		if app.Date == "" {
 			continue
@@ -705,6 +711,24 @@ func ComputeProgressMetrics(apps []model.CareerApplication) model.ProgressMetric
 		year, week := t.ISOWeek()
 		key := fmt.Sprintf("%d-W%02d", year, week)
 		weekCounts[key]++
+
+		norm := NormalizeStatus(app.Status)
+		var highestStage int
+		switch norm {
+		case "offer":
+			highestStage = 4
+		case "interview":
+			highestStage = 3
+		case "responded":
+			highestStage = 2
+		case "applied", "rejected":
+			highestStage = 1
+		default:
+			highestStage = 0
+		}
+		for s := 0; s <= highestStage; s++ {
+			stageWeekCounts[s][key]++
+		}
 	}
 
 	// Sort weeks and take last 8
@@ -722,6 +746,14 @@ func ComputeProgressMetrics(apps []model.CareerApplication) model.ProgressMetric
 			Week:  w,
 			Count: weekCounts[w],
 		})
+	}
+
+	for i := range pm.FunnelStages {
+		breakdown := make([]int, len(weeks))
+		for j, w := range weeks {
+			breakdown[j] = stageWeekCounts[i][w]
+		}
+		pm.FunnelStages[i].WeeklyBreakdown = breakdown
 	}
 
 	return pm

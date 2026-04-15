@@ -56,9 +56,10 @@ type ProgressMetrics struct {
 
 // FunnelStage represents one stage of the application funnel.
 type FunnelStage struct {
-	Label string
-	Count int
-	Pct   float64 // percentage of total
+	Label           string
+	Count           int
+	Pct             float64 // percentage of total
+	WeeklyBreakdown []int   // per-week counts over the same window as WeeklyActivity
 }
 
 // ScoreBucket represents a score range and its count.

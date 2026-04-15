@@ -52,13 +52,18 @@ func (m ProgressModel) Update(msg tea.Msg) (ProgressModel, tea.Cmd) {
 		case "q", "esc":
 			return m, func() tea.Msg { return ProgressClosedMsg{} }
 		case "down", "j":
-			m.scrollOffset++
+			if max := m.maxScrollOffset(); m.scrollOffset < max {
+				m.scrollOffset++
+			}
 		case "up", "k":
 			if m.scrollOffset > 0 {
 				m.scrollOffset--
 			}
 		case "pgdown", "ctrl+d":
 			m.scrollOffset += m.height / 2
+			if max := m.maxScrollOffset(); m.scrollOffset > max {
+				m.scrollOffset = max
+			}
 		case "pgup", "ctrl+u":
 			m.scrollOffset -= m.height / 2
 			if m.scrollOffset < 0 {
@@ -68,8 +73,49 @@ func (m ProgressModel) Update(msg tea.Msg) (ProgressModel, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+		if max := m.maxScrollOffset(); m.scrollOffset > max {
+			m.scrollOffset = max
+		}
 	}
 	return m, nil
+}
+
+// maxScrollOffset returns the largest valid scroll offset based on content
+// and visible area, preventing the scroll position from drifting past the end.
+func (m ProgressModel) maxScrollOffset() int {
+	lines := 0
+	lines++ // funnel header
+	if n := len(m.metrics.FunnelStages); n > 0 {
+		lines += n
+	} else {
+		lines++ // "No data"
+	}
+	lines++ // blank separator
+	lines++ // score distribution header
+	if n := len(m.metrics.ScoreBuckets); n > 0 {
+		lines += n
+	} else {
+		lines++ // "No data"
+	}
+	lines++ // blank separator
+	lines += 3 // rates header + rate line + active info
+	lines++ // blank separator
+	lines++ // weekly activity header
+	if n := len(m.metrics.WeeklyActivity); n > 0 {
+		lines += n
+	} else {
+		lines++ // "No data"
+	}
+
+	available := m.height - 4
+	if available < 3 {
+		available = 3
+	}
+	max := lines - available
+	if max < 0 {
+		return 0
+	}
+	return max
 }
 
 // View renders the progress screen.
@@ -197,7 +243,13 @@ func (m ProgressModel) renderFunnel() string {
 		}
 		count := m.theme.Supporting().Render(fmt.Sprintf("  %d%s", stage.Count, pctStr))
 
-		lines = append(lines, padStyle.Render(label+bar+count))
+		sparkline := ""
+		if m.width > 140 && len(stage.WeeklyBreakdown) > 0 {
+			spark := brailleSparkline(stage.WeeklyBreakdown, 4)
+			sparkline = " " + lipgloss.NewStyle().Foreground(color).Render(spark)
+		}
+
+		lines = append(lines, padStyle.Render(label+bar+count+sparkline))
 	}
 
 	return strings.Join(lines, "\n")
@@ -384,6 +436,57 @@ func (m ProgressModel) renderHelp() string {
 	}
 
 	return style.Render(keys + strings.Repeat(" ", gap) + brand)
+}
+
+// brailleSparkline encodes data into a fixed-width Braille sparkline string.
+// Each character uses left-column dots (1,2,3,7) for 0-4 height levels.
+func brailleSparkline(data []int, width int) string {
+	if width <= 0 {
+		return ""
+	}
+	if len(data) == 0 {
+		return strings.Repeat(string(theme.BrailleBase), width)
+	}
+	maxVal := 0
+	for _, v := range data {
+		if v > maxVal {
+			maxVal = v
+		}
+	}
+	if maxVal == 0 {
+		return strings.Repeat(string(theme.BrailleBase), width)
+	}
+
+	// Left-column dot patterns, bottom-to-top: dot7(bit6), dot3(bit2), dot2(bit1), dot1(bit0)
+	heights := [5]rune{
+		theme.BrailleBase,        // 0 dots
+		theme.BrailleBase | 0x40, // dot 7
+		theme.BrailleBase | 0x44, // dots 3, 7
+		theme.BrailleBase | 0x46, // dots 2, 3, 7
+		theme.BrailleBase | 0x47, // dots 1, 2, 3, 7
+	}
+
+	var buf strings.Builder
+	for i := 0; i < width; i++ {
+		start := i * len(data) / width
+		end := (i + 1) * len(data) / width
+		if end <= start {
+			end = start + 1
+		}
+		if end > len(data) {
+			end = len(data)
+		}
+		sum := 0
+		for j := start; j < end; j++ {
+			sum += data[j]
+		}
+		h := sum * 4 / ((end - start) * maxVal)
+		if h > 4 {
+			h = 4
+		}
+		buf.WriteRune(heights[h])
+	}
+	return buf.String()
 }
 
 // rateColor returns a color based on the rate value.
