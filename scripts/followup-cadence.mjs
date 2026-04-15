@@ -15,8 +15,11 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const CAREER_OPS = resolve(SCRIPT_DIR, '..');
+const SCRIPT_PATH = fileURLToPath(import.meta.url);
+const SCRIPT_DIR = dirname(SCRIPT_PATH);
+const CAREER_OPS = process.env.JOBHUNT_ROOT
+  ? resolve(process.env.JOBHUNT_ROOT)
+  : resolve(SCRIPT_DIR, '..');
 const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   ? join(CAREER_OPS, 'data/applications.md')
   : join(CAREER_OPS, 'applications.md');
@@ -183,26 +186,27 @@ function computeUrgency(
   daysSinceApp,
   daysSinceLastFollowup,
   followupCount,
+  cadence = CADENCE,
 ) {
   if (status === 'applied') {
-    if (followupCount >= CADENCE.applied_max_followups) return 'cold';
-    if (followupCount === 0 && daysSinceApp >= CADENCE.applied_first)
+    if (followupCount >= cadence.applied_max_followups) return 'cold';
+    if (followupCount === 0 && daysSinceApp >= cadence.applied_first)
       return 'overdue';
     if (
       followupCount > 0 &&
       daysSinceLastFollowup !== null &&
-      daysSinceLastFollowup >= CADENCE.applied_subsequent
+      daysSinceLastFollowup >= cadence.applied_subsequent
     )
       return 'overdue';
     return 'waiting';
   }
   if (status === 'responded') {
-    if (daysSinceApp < CADENCE.responded_initial) return 'urgent';
-    if (daysSinceApp >= CADENCE.responded_subsequent) return 'overdue';
+    if (daysSinceApp < cadence.responded_initial) return 'urgent';
+    if (daysSinceApp >= cadence.responded_subsequent) return 'overdue';
     return 'waiting';
   }
   if (status === 'interview') {
-    if (daysSinceApp >= CADENCE.interview_thankyou) return 'overdue';
+    if (daysSinceApp >= cadence.interview_thankyou) return 'overdue';
     return 'waiting';
   }
   return 'waiting';
@@ -214,28 +218,39 @@ function computeNextFollowupDate(
   appDate,
   lastFollowupDate,
   followupCount,
+  cadence = CADENCE,
 ) {
   if (status === 'applied') {
-    if (followupCount >= CADENCE.applied_max_followups) return null; // cold
+    if (followupCount >= cadence.applied_max_followups) return null; // cold
     if (followupCount === 0)
-      return addDays(parseDate(appDate), CADENCE.applied_first);
+      return addDays(parseDate(appDate), cadence.applied_first);
     if (lastFollowupDate)
-      return addDays(parseDate(lastFollowupDate), CADENCE.applied_subsequent);
-    return addDays(parseDate(appDate), CADENCE.applied_first);
+      return addDays(parseDate(lastFollowupDate), cadence.applied_subsequent);
+    return addDays(parseDate(appDate), cadence.applied_first);
   }
   if (status === 'responded') {
     if (lastFollowupDate)
-      return addDays(parseDate(lastFollowupDate), CADENCE.responded_subsequent);
-    return addDays(parseDate(appDate), CADENCE.responded_subsequent);
+      return addDays(parseDate(lastFollowupDate), cadence.responded_subsequent);
+    return addDays(parseDate(appDate), cadence.responded_subsequent);
   }
   if (status === 'interview') {
-    return addDays(parseDate(appDate), CADENCE.interview_thankyou);
+    return addDays(parseDate(appDate), cadence.interview_thankyou);
   }
   return null;
 }
 
 // --- Main analysis ---
-function analyze() {
+function analyze(
+  {
+    appliedFirst = APPLIED_FIRST,
+    overdueOnlyFilter = overdueOnly,
+    now = today(),
+  } = {},
+) {
+  const cadence = {
+    ...CADENCE,
+    applied_first: appliedFirst,
+  };
   const apps = parseTracker();
   if (apps.length === 0) {
     return { error: 'No applications found in tracker.' };
@@ -250,7 +265,6 @@ function analyze() {
     followupsByApp.get(fu.appNum).push(fu);
   }
 
-  const now = today();
   const entries = [];
 
   for (const app of apps) {
@@ -279,12 +293,14 @@ function analyze() {
       daysSinceApp,
       daysSinceLastFollowup,
       followupCount,
+      cadence,
     );
     const nextFollowupDate = computeNextFollowupDate(
       normalized,
       app.date,
       lastFollowupDate,
       followupCount,
+      cadence,
     );
     const nextDate = nextFollowupDate ? parseDate(nextFollowupDate) : null;
     const daysUntilNext = nextDate ? daysBetween(now, nextDate) : null;
@@ -317,7 +333,7 @@ function analyze() {
     (a, b) => (urgencyOrder[a.urgency] ?? 9) - (urgencyOrder[b.urgency] ?? 9),
   );
 
-  const filtered = overdueOnly
+  const filtered = overdueOnlyFilter
     ? entries.filter((e) => e.urgency === 'overdue' || e.urgency === 'urgent')
     : entries;
 
@@ -332,7 +348,7 @@ function analyze() {
       waiting: entries.filter((e) => e.urgency === 'waiting').length,
     },
     entries: filtered,
-    cadenceConfig: CADENCE,
+    cadenceConfig: cadence,
   };
 }
 
@@ -405,12 +421,47 @@ function printSummary(result) {
 }
 
 // --- Run ---
-const result = analyze();
+export function runFollowupCli(cliArgs = args) {
+  const cliSummaryMode = cliArgs.includes('--summary');
+  const cliOverdueOnly = cliArgs.includes('--overdue-only');
+  const appliedDaysIdx = cliArgs.indexOf('--applied-days');
+  const appliedFirst =
+    appliedDaysIdx !== -1
+      ? parseInt(cliArgs[appliedDaysIdx + 1], 10) || 7
+      : 7;
 
-if (summaryMode) {
-  printSummary(result);
-} else {
-  console.log(JSON.stringify(result, null, 2));
+  const result = analyze({
+    appliedFirst,
+    overdueOnlyFilter: cliOverdueOnly,
+  });
+
+  if (cliSummaryMode) {
+    printSummary(result);
+  } else {
+    console.log(JSON.stringify(result, null, 2));
+  }
+
+  return result;
 }
 
-if (result.error) process.exit(1);
+export {
+  ACTIONABLE_STATUSES,
+  addDays,
+  analyze,
+  computeNextFollowupDate,
+  computeUrgency,
+  daysBetween,
+  extractContacts,
+  normalizeStatus,
+  parseDate,
+  parseFollowups,
+  parseTracker,
+  printSummary,
+  resolveReportPath,
+  today,
+};
+
+if (process.argv[1] && resolve(process.argv[1]) === SCRIPT_PATH) {
+  const result = runFollowupCli();
+  if (result.error) process.exit(1);
+}

@@ -15,8 +15,11 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const CAREER_OPS = resolve(SCRIPT_DIR, '..');
+const SCRIPT_PATH = fileURLToPath(import.meta.url);
+const SCRIPT_DIR = dirname(SCRIPT_PATH);
+const CAREER_OPS = process.env.JOBHUNT_ROOT
+  ? resolve(process.env.JOBHUNT_ROOT)
+  : resolve(SCRIPT_DIR, '..');
 const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   ? join(CAREER_OPS, 'data/applications.md')
   : join(CAREER_OPS, 'applications.md');
@@ -270,7 +273,7 @@ function extractBlockerType(gap) {
 }
 
 // --- Main analysis ---
-function analyze() {
+function analyze(minThreshold = MIN_THRESHOLD) {
   const entries = parseTracker();
 
   if (entries.length === 0) {
@@ -304,11 +307,11 @@ function analyze() {
   const beyondEvaluated = enriched.filter(
     (e) => e.normalizedStatus !== 'evaluated',
   );
-  if (beyondEvaluated.length < MIN_THRESHOLD) {
+  if (beyondEvaluated.length < minThreshold) {
     return {
-      error: `Not enough data: ${beyondEvaluated.length}/${MIN_THRESHOLD} applications beyond "Evaluated". Keep applying and come back later.`,
+      error: `Not enough data: ${beyondEvaluated.length}/${minThreshold} applications beyond "Evaluated". Keep applying and come back later.`,
       current: beyondEvaluated.length,
-      threshold: MIN_THRESHOLD,
+      threshold: minThreshold,
     };
   }
 
@@ -689,12 +692,40 @@ function printSummary(result) {
 }
 
 // --- Run ---
-const result = analyze();
+export function runAnalysisCli(cliArgs = args) {
+  const cliSummaryMode = cliArgs.includes('--summary');
+  const thresholdIdx = cliArgs.indexOf('--min-threshold');
+  const minThreshold =
+    thresholdIdx !== -1 && cliArgs[thresholdIdx + 1] !== undefined
+      ? Number.isNaN(parseInt(cliArgs[thresholdIdx + 1], 10))
+        ? 5
+        : parseInt(cliArgs[thresholdIdx + 1], 10)
+      : 5;
 
-if (summaryMode) {
-  printSummary(result);
-} else {
-  console.log(JSON.stringify(result, null, 2));
+  const result = analyze(minThreshold);
+
+  if (cliSummaryMode) {
+    printSummary(result);
+  } else {
+    console.log(JSON.stringify(result, null, 2));
+  }
+
+  return result;
 }
 
-if (result.error) process.exit(1);
+export {
+  analyze,
+  classifyCompanySize,
+  classifyOutcome,
+  classifyRemote,
+  extractBlockerType,
+  normalizeStatus,
+  parseReport,
+  parseTracker,
+  printSummary,
+};
+
+if (process.argv[1] && resolve(process.argv[1]) === SCRIPT_PATH) {
+  const result = runAnalysisCli();
+  if (result.error) process.exit(1);
+}

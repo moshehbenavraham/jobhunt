@@ -27,8 +27,11 @@ import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 const parseYaml = yaml.load;
 
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const PROJECT_ROOT = resolve(SCRIPT_DIR, '..');
+const SCRIPT_PATH = fileURLToPath(import.meta.url);
+const SCRIPT_DIR = dirname(SCRIPT_PATH);
+const PROJECT_ROOT = process.env.JOBHUNT_ROOT
+  ? resolve(process.env.JOBHUNT_ROOT)
+  : resolve(SCRIPT_DIR, '..');
 
 // ── Config ──────────────────────────────────────────────────────────
 
@@ -282,8 +285,7 @@ async function parallelFetch(tasks, limit) {
 
 // ── Main ────────────────────────────────────────────────────────────
 
-async function main() {
-  const args = process.argv.slice(2);
+export async function runScan(args = process.argv.slice(2)) {
   const dryRun = args.includes('--dry-run');
   const companyFlag = args.indexOf('--company');
   const filterCompany =
@@ -402,7 +404,23 @@ async function main() {
   console.log('→ Share results and get help: https://discord.gg/8pRpHETxa4');
 }
 
-main().catch((err) => {
-  console.error('Fatal:', err.message);
-  process.exit(1);
-});
+export {
+  appendToPipeline,
+  appendToScanHistory,
+  buildTitleFilter,
+  detectApi,
+  fetchJson,
+  loadSeenCompanyRoles,
+  loadSeenUrls,
+  parallelFetch,
+  parseAshby,
+  parseGreenhouse,
+  parseLever,
+};
+
+if (process.argv[1] && resolve(process.argv[1]) === SCRIPT_PATH) {
+  runScan().catch((err) => {
+    console.error('Fatal:', err.message);
+    process.exit(1);
+  });
+}

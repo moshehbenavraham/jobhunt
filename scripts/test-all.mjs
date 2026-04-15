@@ -213,9 +213,75 @@ if (pdfNormalization !== null) {
   fail('PDF ATS normalization regression test failed');
 }
 
-// -- 3f. UPGRADE SAFETY REGRESSIONS ------------------------------
+// -- 3f. Pattern analysis regressions ----------------------------
 
-console.log('\n3f. Upgrade safety regressions');
+console.log('\n3f. Pattern analysis regressions');
+
+const analyzePatterns = run('node', ['scripts/test-analyze-patterns.mjs']);
+if (analyzePatterns !== null) {
+  pass('Pattern analysis regression tests pass');
+} else {
+  fail('Pattern analysis regression tests failed');
+}
+
+// -- 3g. Follow-up cadence regressions ---------------------------
+
+console.log('\n3g. Follow-up cadence regressions');
+
+const followupCadence = run('node', ['scripts/test-followup-cadence.mjs']);
+if (followupCadence !== null) {
+  pass('Follow-up cadence regression tests pass');
+} else {
+  fail('Follow-up cadence regression tests failed');
+}
+
+// -- 3h. Portal scan regressions --------------------------------
+
+console.log('\n3h. Portal scan regressions');
+
+const scanRegressions = run('node', ['scripts/test-scan.mjs']);
+if (scanRegressions !== null) {
+  pass('Portal scan regression tests pass');
+} else {
+  fail('Portal scan regression tests failed');
+}
+
+// -- 3i. Job liveness regressions -------------------------------
+
+console.log('\n3i. Job liveness regressions');
+
+const checkLiveness = run('node', ['scripts/test-check-liveness.mjs']);
+if (checkLiveness !== null) {
+  pass('Job liveness regression tests pass');
+} else {
+  fail('Job liveness regression tests failed');
+}
+
+// -- 3j. Maintenance script regressions -------------------------
+
+console.log('\n3j. Maintenance script regressions');
+
+const maintenanceScripts = run('node', ['scripts/test-maintenance-scripts.mjs']);
+if (maintenanceScripts !== null) {
+  pass('Maintenance script regression tests pass');
+} else {
+  fail('Maintenance script regression tests failed');
+}
+
+// -- 3k. Updater regressions ------------------------------------
+
+console.log('\n3k. Updater regressions');
+
+const updateSystem = run('node', ['scripts/test-update-system-cli.mjs']);
+if (updateSystem !== null) {
+  pass('Updater regression tests pass');
+} else {
+  fail('Updater regression tests failed');
+}
+
+// -- 3l. UPGRADE SAFETY REGRESSIONS ------------------------------
+
+console.log('\n3l. Upgrade safety regressions');
 
 try {
   const updaterSource = readFile('scripts/update-system.mjs');

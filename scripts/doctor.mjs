@@ -9,8 +9,11 @@ import { existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const projectRoot = resolve(SCRIPT_DIR, '..');
+const SCRIPT_PATH = fileURLToPath(import.meta.url);
+const SCRIPT_DIR = dirname(SCRIPT_PATH);
+const projectRoot = process.env.JOBHUNT_ROOT
+  ? resolve(process.env.JOBHUNT_ROOT)
+  : resolve(SCRIPT_DIR, '..');
 
 // ANSI colors (only on TTY)
 const isTTY = process.stdout.isTTY;

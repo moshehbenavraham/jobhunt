@@ -26,8 +26,11 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 
-const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const CAREER_OPS = resolve(SCRIPT_DIR, '..');
+const SCRIPT_PATH = fileURLToPath(import.meta.url);
+const SCRIPT_DIR = dirname(SCRIPT_PATH);
+const CAREER_OPS = process.env.JOBHUNT_ROOT
+  ? resolve(process.env.JOBHUNT_ROOT)
+  : resolve(SCRIPT_DIR, '..');
 // Support both layouts: data/applications.md (boilerplate) and applications.md (original)
 const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   ? join(CAREER_OPS, 'data/applications.md')

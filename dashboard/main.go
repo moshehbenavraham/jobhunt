@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -14,6 +15,14 @@ import (
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/theme"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/ui/screens"
 )
+
+type teaProgram interface {
+	Run() (tea.Model, error)
+}
+
+var newTeaProgram = func(model tea.Model, opts ...tea.ProgramOption) teaProgram {
+	return tea.NewProgram(model, opts...)
+}
 
 type viewState int
 
@@ -151,17 +160,15 @@ func (m appModel) View() string {
 	}
 }
 
-func main() {
-	pathFlag := flag.String("path", ".", "Path to jobhunt directory")
-	flag.Parse()
-
-	careerOpsPath := *pathFlag
-
+func run(careerOpsPath string) error {
 	// Load applications
 	apps := data.ParseApplications(careerOpsPath)
 	if apps == nil {
-		fmt.Fprintf(os.Stderr, "Error: could not find applications.md in %s or %s/data/\n", careerOpsPath, careerOpsPath)
-		os.Exit(1)
+		return fmt.Errorf(
+			"could not find applications.md in %s or %s/data/",
+			careerOpsPath,
+			careerOpsPath,
+		)
 	}
 
 	// Compute metrics
@@ -189,9 +196,21 @@ func main() {
 		progressMetrics: progressMetrics,
 	}
 
-	p := tea.NewProgram(m, tea.WithAltScreen())
+	p := newTeaProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func main() {
+	pathFlag := flag.String("path", ".", "Path to jobhunt directory")
+	flag.Parse()
+
+	if err := run(*pathFlag); err != nil {
+		if !errors.Is(err, flag.ErrHelp) {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+		}
 		os.Exit(1)
 	}
 }

@@ -1,6 +1,7 @@
 # Job-Hunt
 
 AI-powered job search pipeline driven by `AGENTS.md`, checked-in Codex skills, and the repo-owned scripts.
+
 It also includes a Go-based terminal dashboard for browsing and updating the job-search pipeline.
 
 ## Please Do Not Delete This Line.  This is a fork of: https://github.com/santifer/career-ops/
@@ -17,16 +18,17 @@ npm run doctor
 codex
 ```
 
-Before `npm run doctor`, copy `profile/cv.example.md` to `profile/cv.md` and
-edit it with your experience. If you have
-public proof points, optionally copy `profile/article-digest.example.md` to
-`profile/article-digest.md` too. See the
-[Setup Guide](docs/SETUP.md) for the detailed walkthrough.
+Before `npm run doctor`, copy `profile/cv.example.md` to `profile/cv.md` and edit it with your experience.
 
-`npm run doctor` validates Node.js, installed dependencies, Playwright
-Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml`. After it passes,
-launch `codex` from the repo root and paste a job URL or JD text. The
-standard user-layer inputs are:
+If you have public proof points, optionally copy `profile/article-digest.example.md` to `profile/article-digest.md` too.
+
+See the [Setup Guide](docs/SETUP.md) for the detailed walkthrough.
+
+`npm run doctor` validates Node.js, installed dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml`.
+
+After it passes, launch `codex` from the repo root and paste a job URL or JD text.
+
+The standard user-layer inputs are:
 
 - `profile/cv.md`
 - `config/profile.yml`
