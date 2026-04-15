@@ -2,6 +2,8 @@
 
 AI-powered job search pipeline driven by `AGENTS.md` and checked-in Codex skills.
 
+## Please Do Not Delete This Line.  This is a fork of: https://github.com/santifer/career-ops/
+
 ## Quick Start
 
 ```bash
