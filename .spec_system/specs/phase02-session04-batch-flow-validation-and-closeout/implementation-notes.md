@@ -8,22 +8,24 @@
 
 ## Session Progress
 
-| Metric | Value |
-|--------|-------|
-| Tasks Completed | 20 / 20 |
+| Metric              | Value   |
+| ------------------- | ------- |
+| Tasks Completed     | 20 / 20 |
 | Estimated Remaining | 0 hours |
-| Blockers | 0 |
+| Blockers            | 0       |
 
 ---
 
 ## Session Start Audit
 
 **Environment verified**:
+
 - [x] Prerequisites confirmed
 - [x] Tools available
 - [x] Directory structure ready
 
 **Phase 02 boundary confirmed**:
+
 - Session 04 owns validation evidence, closeout proof, and residual drift
   classification only.
 - Session 03 already aligned operator-facing docs with the live `codex exec`
@@ -33,15 +35,15 @@
 
 ## Validation Matrix
 
-| Surface | Evidence Needed | Source of Truth | Planned Validation |
-|--------|-----------------|-----------------|--------------------|
-| Dry run gating | Pending IDs respect `--dry-run`, `--start-from`, completed rows, and retry-only filters | `batch/batch-runner.sh` | Extend the state-semantics harness and run manual temp-sandbox walkthroughs |
-| Retry gating | `--retry-failed` only retries infrastructure failures within budget | `batch/batch-runner.sh`, `scripts/test-batch-runner-state-semantics.mjs` | Add exhausted-retry and resumability edge cases |
-| Report numbering | Reserved report numbers stay deterministic across reruns and existing reports | `batch/batch-runner.sh` | Add closeout harness assertions for pre-existing reports and reruns |
-| Worker contract | Result artifacts and last-message capture stay schema-aligned | `batch/worker-result.schema.json`, `scripts/test-batch-runner-contract.mjs` | Re-run contract harness after closeout coverage lands |
-| Merge closeout | Tracker additions merge once and archive cleanly | `scripts/merge-tracker.mjs` | Exercise merge in a temp sandbox from runner output |
-| Verify closeout | Pipeline verification reports pending TSVs, duplicates, and broken report links accurately | `scripts/verify-pipeline.mjs` | Exercise verify in the same temp sandbox after merge |
-| Quick repo gate | Clean checkout can reproduce Session 04 evidence | `scripts/test-all.mjs` | Add closeout harness to `--quick` coverage |
+| Surface          | Evidence Needed                                                                            | Source of Truth                                                             | Planned Validation                                                          |
+| ---------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Dry run gating   | Pending IDs respect `--dry-run`, `--start-from`, completed rows, and retry-only filters    | `batch/batch-runner.sh`                                                     | Extend the state-semantics harness and run manual temp-sandbox walkthroughs |
+| Retry gating     | `--retry-failed` only retries infrastructure failures within budget                        | `batch/batch-runner.sh`, `scripts/test-batch-runner-state-semantics.mjs`    | Add exhausted-retry and resumability edge cases                             |
+| Report numbering | Reserved report numbers stay deterministic across reruns and existing reports              | `batch/batch-runner.sh`                                                     | Add closeout harness assertions for pre-existing reports and reruns         |
+| Worker contract  | Result artifacts and last-message capture stay schema-aligned                              | `batch/worker-result.schema.json`, `scripts/test-batch-runner-contract.mjs` | Re-run contract harness after closeout coverage lands                       |
+| Merge closeout   | Tracker additions merge once and archive cleanly                                           | `scripts/merge-tracker.mjs`                                                 | Exercise merge in a temp sandbox from runner output                         |
+| Verify closeout  | Pipeline verification reports pending TSVs, duplicates, and broken report links accurately | `scripts/verify-pipeline.mjs`                                               | Exercise verify in the same temp sandbox after merge                        |
+| Quick repo gate  | Clean checkout can reproduce Session 04 evidence                                           | `scripts/test-all.mjs`                                                      | Add closeout harness to `--quick` coverage                                  |
 
 ## Fixture Plan
 
@@ -325,6 +327,7 @@ All touched files are ASCII-only and LF-terminated.
 
 Ran an explicit temp-sandbox walkthrough outside the test harness. The manual
 flow showed:
+
 - `--dry-run` listed the pending offer without mutating processing rows
 - a normal run completed with report `001`, merged the tracker TSV, and
   produced the expected summary

@@ -153,24 +153,24 @@ state in `batch-state.tsv`, any downstream consumer that assumes only
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `scripts/test-batch-runner-state-semantics.mjs` | Deterministic harness for rerun gating, retry counters, and summary behavior | ~220 |
-| `.spec_system/specs/phase02-session02-structured-batch-result-handling/implementation-notes.md` | State-matrix decisions, downstream consumer audit, and validation evidence | ~90 |
+| File                                                                                            | Purpose                                                                      | Est. Lines |
+| ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------- |
+| `scripts/test-batch-runner-state-semantics.mjs`                                                 | Deterministic harness for rerun gating, retry counters, and summary behavior | ~220       |
+| `.spec_system/specs/phase02-session02-structured-batch-result-handling/implementation-notes.md` | State-matrix decisions, downstream consumer audit, and validation evidence   | ~90        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `batch/batch-runner.sh` | Make structured outcomes authoritative for state persistence, retry gating, and summaries | ~170 |
-| `batch/worker-result.schema.json` | Tighten the warning and failure fields required by settled state semantics | ~40 |
-| `batch/batch-prompt.md` | Align partial and failed result instructions with the settled schema fields | ~30 |
-| `batch/test-fixtures/worker-result-completed.json` | Keep the completed fixture aligned with the settled result contract | ~20 |
-| `batch/test-fixtures/worker-result-partial.json` | Represent degraded-artifact behavior with the settled warning semantics | ~20 |
-| `batch/test-fixtures/worker-result-failed.json` | Represent semantic failure behavior under the settled contract | ~20 |
-| `scripts/test-batch-runner-contract.mjs` | Update contract assertions for the new runner state expectations | ~80 |
-| `scripts/test-all.mjs` | Add the new state-semantics harness to the quick regression surface | ~20 |
-| `dashboard/internal/data/career.go` | Keep report-number URL fallback aligned with report-bearing partial outcomes | ~20 |
+| File                                               | Changes                                                                                   | Est. Lines |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------- | ---------- |
+| `batch/batch-runner.sh`                            | Make structured outcomes authoritative for state persistence, retry gating, and summaries | ~170       |
+| `batch/worker-result.schema.json`                  | Tighten the warning and failure fields required by settled state semantics                | ~40        |
+| `batch/batch-prompt.md`                            | Align partial and failed result instructions with the settled schema fields               | ~30        |
+| `batch/test-fixtures/worker-result-completed.json` | Keep the completed fixture aligned with the settled result contract                       | ~20        |
+| `batch/test-fixtures/worker-result-partial.json`   | Represent degraded-artifact behavior with the settled warning semantics                   | ~20        |
+| `batch/test-fixtures/worker-result-failed.json`    | Represent semantic failure behavior under the settled contract                            | ~20        |
+| `scripts/test-batch-runner-contract.mjs`           | Update contract assertions for the new runner state expectations                          | ~80        |
+| `scripts/test-all.mjs`                             | Add the new state-semantics harness to the quick regression surface                       | ~20        |
+| `dashboard/internal/data/career.go`                | Keep report-number URL fallback aligned with report-bearing partial outcomes              | ~20        |
 
 ---
 

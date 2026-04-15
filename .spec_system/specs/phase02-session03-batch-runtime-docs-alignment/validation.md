@@ -8,17 +8,17 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Task Completion | PASS | 21/21 tasks complete |
-| Deliverables | PASS | All spec deliverables present |
-| ASCII Encoding | PASS | Reviewed session files are ASCII with LF endings |
-| Tests Passing | PASS | `node scripts/test-all.mjs --quick` passed with `78 passed, 0 failed, 0 warnings` |
-| Database/Schema Alignment | N/A | No DB-layer changes in this session |
-| Success Criteria | PASS | Docs, runtime facts, and deferral ledger align with the spec |
-| Conventions | PASS | No obvious convention violations in the reviewed deliverables |
-| Security & GDPR | PASS/N/A | No security issues found; GDPR is N/A because no new personal data handling was introduced |
-| Behavioral Quality | N/A | Docs-only session, so no application-code BQC applies |
+| Check                     | Status   | Notes                                                                                      |
+| ------------------------- | -------- | ------------------------------------------------------------------------------------------ |
+| Task Completion           | PASS     | 21/21 tasks complete                                                                       |
+| Deliverables              | PASS     | All spec deliverables present                                                              |
+| ASCII Encoding            | PASS     | Reviewed session files are ASCII with LF endings                                           |
+| Tests Passing             | PASS     | `node scripts/test-all.mjs --quick` passed with `78 passed, 0 failed, 0 warnings`          |
+| Database/Schema Alignment | N/A      | No DB-layer changes in this session                                                        |
+| Success Criteria          | PASS     | Docs, runtime facts, and deferral ledger align with the spec                               |
+| Conventions               | PASS     | No obvious convention violations in the reviewed deliverables                              |
+| Security & GDPR           | PASS/N/A | No security issues found; GDPR is N/A because no new personal data handling was introduced |
+| Behavioral Quality        | N/A      | Docs-only session, so no application-code BQC applies                                      |
 
 **Overall**: PASS
 
@@ -28,12 +28,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-|----------|----------|-----------|--------|
-| Setup | 2 | 2 | PASS |
-| Foundation | 7 | 7 | PASS |
-| Implementation | 8 | 8 | PASS |
-| Testing | 4 | 4 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 2        | 2         | PASS   |
+| Foundation     | 7        | 7         | PASS   |
+| Implementation | 8        | 8         | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -45,12 +45,12 @@ None.
 
 ### Status: PASS
 
-| File | Found | Status |
-|------|-------|--------|
-| `batch/README-batch.md` | Yes | PASS |
-| `docs/ARCHITECTURE.md` | Yes | PASS |
-| `modes/batch.md` | Yes | PASS |
-| `.spec_system/specs/phase02-session03-batch-runtime-docs-alignment/implementation-notes.md` | Yes | PASS |
+| File                                                                                        | Found | Status |
+| ------------------------------------------------------------------------------------------- | ----- | ------ |
+| `batch/README-batch.md`                                                                     | Yes   | PASS   |
+| `docs/ARCHITECTURE.md`                                                                      | Yes   | PASS   |
+| `modes/batch.md`                                                                            | Yes   | PASS   |
+| `.spec_system/specs/phase02-session03-batch-runtime-docs-alignment/implementation-notes.md` | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -62,12 +62,12 @@ None.
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-|------|----------|--------------|--------|
-| `batch/README-batch.md` | ASCII | LF | PASS |
-| `docs/ARCHITECTURE.md` | ASCII | LF | PASS |
-| `modes/batch.md` | ASCII | LF | PASS |
-| `.spec_system/specs/phase02-session03-batch-runtime-docs-alignment/implementation-notes.md` | ASCII | LF | PASS |
+| File                                                                                        | Encoding | Line Endings | Status |
+| ------------------------------------------------------------------------------------------- | -------- | ------------ | ------ |
+| `batch/README-batch.md`                                                                     | ASCII    | LF           | PASS   |
+| `docs/ARCHITECTURE.md`                                                                      | ASCII    | LF           | PASS   |
+| `modes/batch.md`                                                                            | ASCII    | LF           | PASS   |
+| `.spec_system/specs/phase02-session03-batch-runtime-docs-alignment/implementation-notes.md` | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -79,12 +79,12 @@ None.
 
 ### Status: PASS
 
-| Metric | Value |
-|--------|-------|
+| Metric      | Value                 |
+| ----------- | --------------------- |
 | Total Tests | 78 quick-suite checks |
-| Passed | 78 |
-| Failed | 0 |
-| Coverage | N/A |
+| Passed      | 78                    |
+| Failed      | 0                     |
+| Coverage    | N/A                   |
 
 ### Failed Tests
 
@@ -134,4 +134,3 @@ From `spec.md`:
 - [x] All files ASCII-encoded
 - [x] Unix LF line endings
 - [x] Docs follow project conventions and the existing data contract boundary
-

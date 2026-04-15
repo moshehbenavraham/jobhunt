@@ -21,9 +21,9 @@ import {
   appendFileSync,
   existsSync,
   mkdirSync,
-} from 'fs';
-import { dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+} from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
 const parseYaml = yaml.load;
 
@@ -47,7 +47,7 @@ const FETCH_TIMEOUT_MS = 10_000;
 
 function detectApi(company) {
   // Greenhouse: explicit api field
-  if (company.api && company.api.includes('greenhouse')) {
+  if (company.api?.includes('greenhouse')) {
     return { type: 'greenhouse', url: company.api };
   }
 
@@ -251,13 +251,11 @@ function appendToScanHistory(offers, date) {
     );
   }
 
-  const lines =
-    offers
-      .map(
-        (o) =>
-          `${o.url}\t${date}\t${o.source}\t${o.title}\t${o.company}\tadded`,
-      )
-      .join('\n') + '\n';
+  const lines = `${offers
+    .map(
+      (o) => `${o.url}\t${date}\t${o.source}\t${o.title}\t${o.company}\tadded`,
+    )
+    .join('\n')}\n`;
 
   appendFileSync(SCAN_HISTORY_PATH, lines, 'utf-8');
 }

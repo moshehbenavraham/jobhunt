@@ -17,9 +17,9 @@ import {
   copyFileSync,
   existsSync,
   mkdirSync,
-} from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+} from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const CAREER_OPS = resolve(SCRIPT_DIR, '..');
@@ -35,7 +35,7 @@ mkdirSync(join(CAREER_OPS, 'data'), { recursive: true });
 // Canonical status mapping
 function normalizeStatus(raw) {
   // Strip markdown bold
-  let s = raw.replace(/\*\*/g, '').trim();
+  const s = raw.replace(/\*\*/g, '').trim();
   const lower = s.toLowerCase();
 
   // DUPLICADO variants → Discarded
@@ -112,7 +112,7 @@ const content = readFileSync(APPS_FILE, 'utf-8');
 const lines = content.split('\n');
 
 let changes = 0;
-let unknowns = [];
+const unknowns = [];
 
 for (let i = 0; i < lines.length; i++) {
   const line = lines[i];
@@ -123,8 +123,8 @@ for (let i = 0; i < lines.length; i++) {
   if (parts.length < 9) continue;
   if (parts[1] === '#' || parts[1] === '---' || parts[1] === '') continue;
 
-  const num = parseInt(parts[1]);
-  if (isNaN(num)) continue;
+  const num = parseInt(parts[1], 10);
+  if (Number.isNaN(num)) continue;
 
   const rawStatus = parts[6];
   const result = normalizeStatus(rawStatus);
@@ -144,7 +144,7 @@ for (let i = 0; i < lines.length; i++) {
   if (result.moveToNotes && parts[9]) {
     const existing = parts[9] || '';
     if (!existing.includes(result.moveToNotes)) {
-      parts[9] = result.moveToNotes + (existing ? '. ' + existing : '');
+      parts[9] = result.moveToNotes + (existing ? `. ${existing}` : '');
     }
   } else if (result.moveToNotes && !parts[9]) {
     parts[9] = result.moveToNotes;
@@ -156,7 +156,7 @@ for (let i = 0; i < lines.length; i++) {
   }
 
   // Reconstruct line
-  const newLine = '| ' + parts.slice(1, -1).join(' | ') + ' |';
+  const newLine = `| ${parts.slice(1, -1).join(' | ')} |`;
   lines[i] = newLine;
   changes++;
 
@@ -174,7 +174,7 @@ console.log(`\n📊 ${changes} statuses normalized`);
 
 if (!DRY_RUN && changes > 0) {
   // Backup first
-  copyFileSync(APPS_FILE, APPS_FILE + '.bak');
+  copyFileSync(APPS_FILE, `${APPS_FILE}.bak`);
   writeFileSync(APPS_FILE, lines.join('\n'));
   console.log('✅ Written to applications.md (backup: applications.md.bak)');
 } else if (DRY_RUN) {

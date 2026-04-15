@@ -19,29 +19,31 @@ repo stays internally consistent after validation.
 ## Deliverables
 
 ### Files Created
-| File | Purpose | Lines |
-|------|---------|-------|
-| `batch/worker-result.schema.json` | Canonical worker result schema for completed, partial, and failed outcomes | ~80 |
-| `batch/test-fixtures/mock-codex-exec.sh` | Stub `codex` executable for deterministic runner contract tests | ~60 |
-| `batch/test-fixtures/worker-result-completed.json` | Fixture for full success contract validation | ~20 |
-| `batch/test-fixtures/worker-result-partial.json` | Fixture for degraded-artifact contract validation | ~20 |
-| `batch/test-fixtures/worker-result-failed.json` | Fixture for semantic failure contract validation | ~20 |
-| `scripts/test-batch-runner-contract.mjs` | Regression harness for CLI args, schema wiring, and result-file behavior | ~180 |
-| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/IMPLEMENTATION_SUMMARY.md` | Session closeout summary | ~80 |
+
+| File                                                                                        | Purpose                                                                    | Lines |
+| ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----- |
+| `batch/worker-result.schema.json`                                                           | Canonical worker result schema for completed, partial, and failed outcomes | ~80   |
+| `batch/test-fixtures/mock-codex-exec.sh`                                                    | Stub `codex` executable for deterministic runner contract tests            | ~60   |
+| `batch/test-fixtures/worker-result-completed.json`                                          | Fixture for full success contract validation                               | ~20   |
+| `batch/test-fixtures/worker-result-partial.json`                                            | Fixture for degraded-artifact contract validation                          | ~20   |
+| `batch/test-fixtures/worker-result-failed.json`                                             | Fixture for semantic failure contract validation                           | ~20   |
+| `scripts/test-batch-runner-contract.mjs`                                                    | Regression harness for CLI args, schema wiring, and result-file behavior   | ~180  |
+| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/IMPLEMENTATION_SUMMARY.md` | Session closeout summary                                                   | ~80   |
 
 ### Files Modified
-| File | Changes |
-|------|---------|
-| `batch/batch-runner.sh` | Swapped the worker launch boundary to `codex exec` and wired result-file handling |
-| `batch/batch-prompt.md` | Added explicit result-file contract instructions and placeholder usage |
-| `scripts/test-all.mjs` | Added the batch runner contract harness to the quick regression surface |
-| `.spec_system/state.json` | Marked Session 01 complete and advanced Phase 02 state |
-| `.spec_system/PRD/phase_02/PRD_phase_02.md` | Marked Session 01 complete in the phase tracker and updated progress |
-| `.spec_system/PRD/phase_02/session_01_codex_exec_worker_contract.md` | Marked the session stub complete |
-| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/spec.md` | Marked the session spec complete |
-| `VERSION` | Bumped the patch version to `1.5.14` |
-| `package.json` | Kept package metadata aligned with the canonical version |
-| `package-lock.json` | Kept lockfile version metadata aligned with the canonical version |
+
+| File                                                                      | Changes                                                                           |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `batch/batch-runner.sh`                                                   | Swapped the worker launch boundary to `codex exec` and wired result-file handling |
+| `batch/batch-prompt.md`                                                   | Added explicit result-file contract instructions and placeholder usage            |
+| `scripts/test-all.mjs`                                                    | Added the batch runner contract harness to the quick regression surface           |
+| `.spec_system/state.json`                                                 | Marked Session 01 complete and advanced Phase 02 state                            |
+| `.spec_system/PRD/phase_02/PRD_phase_02.md`                               | Marked Session 01 complete in the phase tracker and updated progress              |
+| `.spec_system/PRD/phase_02/session_01_codex_exec_worker_contract.md`      | Marked the session stub complete                                                  |
+| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/spec.md` | Marked the session spec complete                                                  |
+| `VERSION`                                                                 | Bumped the patch version to `1.5.14`                                              |
+| `package.json`                                                            | Kept package metadata aligned with the canonical version                          |
+| `package-lock.json`                                                       | Kept lockfile version metadata aligned with the canonical version                 |
 
 ---
 
@@ -56,11 +58,11 @@ repo stays internally consistent after validation.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 76 quick-suite checks |
-| Passed | 76 |
-| Coverage | N/A |
+| Metric   | Value                 |
+| -------- | --------------------- |
+| Tests    | 76 quick-suite checks |
+| Passed   | 76                    |
+| Coverage | N/A                   |
 
 ---
 
@@ -76,10 +78,10 @@ repo stays internally consistent after validation.
 ## Future Considerations
 
 Items for future sessions:
+
 1. Make structured worker outcomes authoritative for state, retry, and score
    handling in Session 02.
-2. Align the batch runtime docs with the new `codex exec` contract in Session
-   03.
+2. Align the batch runtime docs with the new `codex exec` contract in Session 03.
 
 ---
 

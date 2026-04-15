@@ -14,9 +14,9 @@
  * Run: node scripts/verify-pipeline.mjs
  */
 
-import { readFileSync, readdirSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const CAREER_OPS = resolve(SCRIPT_DIR, '..');
@@ -26,7 +26,7 @@ const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   : join(CAREER_OPS, 'applications.md');
 const ADDITIONS_DIR = join(CAREER_OPS, 'batch/tracker-additions');
 const REPORTS_DIR = join(CAREER_OPS, 'reports');
-const STATES_FILE = existsSync(join(CAREER_OPS, 'templates/states.yml'))
+const _STATES_FILE = existsSync(join(CAREER_OPS, 'templates/states.yml'))
   ? join(CAREER_OPS, 'templates/states.yml')
   : join(CAREER_OPS, 'states.yml');
 
@@ -104,8 +104,8 @@ for (const line of lines) {
   if (!line.startsWith('|')) continue;
   const parts = line.split('|').map((s) => s.trim());
   if (parts.length < 9) continue;
-  const num = parseInt(parts[1]);
-  if (isNaN(num)) continue;
+  const num = parseInt(parts[1], 10);
+  if (Number.isNaN(num)) continue;
   entries.push({
     num,
     date: parts[2],
@@ -160,7 +160,7 @@ for (const e of entries) {
   if (!companyRoleMap.has(key)) companyRoleMap.set(key, []);
   companyRoleMap.get(key).push(e);
 }
-for (const [key, group] of companyRoleMap) {
+for (const [_key, group] of companyRoleMap) {
   if (group.length > 1) {
     warn(
       `Possible duplicates: ${group.map((e) => `#${e.num}`).join(', ')} (${group[0].company} — ${group[0].role})`,
@@ -229,7 +229,7 @@ for (const e of entries) {
 if (boldScores === 0) ok('No bold in scores');
 
 // --- Summary ---
-console.log('\n' + '='.repeat(50));
+console.log(`\n${'='.repeat(50)}`);
 console.log(`📊 Pipeline Health: ${errors} errors, ${warnings} warnings`);
 if (errors === 0 && warnings === 0) {
   console.log('🟢 Pipeline is clean!');

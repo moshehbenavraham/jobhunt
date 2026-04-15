@@ -11,10 +11,10 @@
  *   node scripts/test-all.mjs --quick   # Skip dashboard build (faster)
  */
 
-import { execSync, execFileSync } from 'child_process';
-import { readFileSync, existsSync, readdirSync } from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { execSync, execFileSync } from 'node:child_process';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
@@ -53,7 +53,7 @@ function run(cmd, args = [], opts = {}) {
       timeout: 30000,
       ...opts,
     }).trim();
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 }
@@ -68,7 +68,8 @@ function readJson(path) {
   return JSON.parse(readFile(path));
 }
 function stripAnsi(text) {
-  return text.replace(/\x1b\[[0-9;]*m/g, '');
+  const ESC = String.fromCharCode(0x1b);
+  return text.replace(new RegExp(`${ESC}\\[[0-9;]*m`, 'g'), '');
 }
 
 console.log('\ncareer-ops test suite\n');
@@ -169,7 +170,9 @@ if (batchContract !== null) {
 
 console.log('\n3c. Batch runner state semantics');
 
-const batchStateSemantics = run('node', ['scripts/test-batch-runner-state-semantics.mjs']);
+const batchStateSemantics = run('node', [
+  'scripts/test-batch-runner-state-semantics.mjs',
+]);
 if (batchStateSemantics !== null) {
   pass('Batch runner state-semantics tests pass');
 } else {
@@ -621,10 +624,9 @@ if (fileExists('VERSION')) {
     if (fileExists('package-lock.json')) {
       const lockfile = readJson('package-lock.json');
       const lockVersion = lockfile.version;
-      const lockRootVersion =
-        lockfile.packages && lockfile.packages['']
-          ? lockfile.packages[''].version
-          : null;
+      const lockRootVersion = lockfile.packages?.['']
+        ? lockfile.packages[''].version
+        : null;
 
       if (lockVersion === canonicalVersion) {
         pass(`package-lock.json version matches VERSION (${canonicalVersion})`);
@@ -655,7 +657,7 @@ if (fileExists('VERSION')) {
 
 // -- SUMMARY -----------------------------------------------------
 
-console.log('\n' + '='.repeat(50));
+console.log(`\n${'='.repeat(50)}`);
 console.log(
   `Results: ${passed} passed, ${failed} failed, ${warnings} warnings`,
 );

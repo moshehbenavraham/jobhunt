@@ -152,20 +152,20 @@ extra runtime churn.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/implementation-notes.md` | Record validation evidence, residual drift, and Phase 02 closeout handoff notes | ~100 |
-| `scripts/test-batch-runner-closeout.mjs` | Deterministic closeout harness for runner, merge, and verify behavior in a temp sandbox | ~220 |
+| File                                                                                              | Purpose                                                                                 | Est. Lines |
+| ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ---------- |
+| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/implementation-notes.md` | Record validation evidence, residual drift, and Phase 02 closeout handoff notes         | ~100       |
+| `scripts/test-batch-runner-closeout.mjs`                                                          | Deterministic closeout harness for runner, merge, and verify behavior in a temp sandbox | ~220       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `scripts/test-batch-runner-state-semantics.mjs` | Extend rerun, retry-budget, and report-number coverage needed for closeout | ~90 |
-| `scripts/test-all.mjs` | Add the closeout harness to the quick regression gate | ~20 |
-| `batch/batch-runner.sh` | Tighten closeout sequencing or failure reporting if controlled validation exposes drift | ~40 |
-| `scripts/merge-tracker.mjs` | Fix merge-path behavior only if closeout validation reveals tracker-merge drift | ~40 |
-| `scripts/verify-pipeline.mjs` | Tighten validation assertions only if closeout evidence reveals a contract gap | ~30 |
+| File                                            | Changes                                                                                 | Est. Lines |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------- | ---------- |
+| `scripts/test-batch-runner-state-semantics.mjs` | Extend rerun, retry-budget, and report-number coverage needed for closeout              | ~90        |
+| `scripts/test-all.mjs`                          | Add the closeout harness to the quick regression gate                                   | ~20        |
+| `batch/batch-runner.sh`                         | Tighten closeout sequencing or failure reporting if controlled validation exposes drift | ~40        |
+| `scripts/merge-tracker.mjs`                     | Fix merge-path behavior only if closeout validation reveals tracker-merge drift         | ~40        |
+| `scripts/verify-pipeline.mjs`                   | Tighten validation assertions only if closeout evidence reveals a contract gap          | ~30        |
 
 ---
 

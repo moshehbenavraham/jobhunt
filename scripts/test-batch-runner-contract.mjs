@@ -74,16 +74,22 @@ function createSandbox() {
   mkdirSync(binDir, { recursive: true });
 
   copyExecutable(RUNNER_SOURCE, join(batchDir, 'batch-runner.sh'));
-  writeFile(join(batchDir, 'batch-prompt.md'), readFileSync(PROMPT_SOURCE, 'utf8'));
-  writeFile(join(batchDir, 'worker-result.schema.json'), readFileSync(SCHEMA_SOURCE, 'utf8'));
+  writeFile(
+    join(batchDir, 'batch-prompt.md'),
+    readFileSync(PROMPT_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(batchDir, 'worker-result.schema.json'),
+    readFileSync(SCHEMA_SOURCE, 'utf8'),
+  );
   copyExecutable(MOCK_CODEX_SOURCE, join(binDir, 'codex'));
 
   writeFile(
     join(batchDir, 'batch-input.tsv'),
-    [
+    `${[
       'id\turl\tsource\tnotes',
       '1\thttps://example.com/jobs/1\tfixture\tcontract test',
-    ].join('\n') + '\n',
+    ].join('\n')}\n`,
   );
 
   writeFile(
@@ -134,8 +140,8 @@ function assertValidWorkerResult(result) {
       assert.ok(result.pdf === null || /^output\/.+\.pdf$/.test(result.pdf));
       assert.match(result.report, /^reports\/.+\.md$/);
       assert.ok(
-        result.tracker === null
-          || /^batch\/tracker-additions\/.+\.tsv$/.test(result.tracker),
+        result.tracker === null ||
+          /^batch\/tracker-additions\/.+\.tsv$/.test(result.tracker),
       );
       assert.equal(Array.isArray(result.warnings), true);
       assert.ok(result.warnings.length > 0);
@@ -146,7 +152,9 @@ function assertValidWorkerResult(result) {
       assert.equal(result.score, null);
       assert.equal(result.legitimacy, null);
       assert.equal(result.pdf, null);
-      assert.ok(result.report === null || /^reports\/.+\.md$/.test(result.report));
+      assert.ok(
+        result.report === null || /^reports\/.+\.md$/.test(result.report),
+      );
       assert.equal(result.tracker, null);
       assert.deepEqual(result.warnings, []);
       assert.equal(typeof result.error, 'string');
@@ -175,21 +183,32 @@ function readStateRow(statePath) {
 }
 
 function assertInvocation(invocation, sandboxRoot) {
-  const expectedSchemaPath = join(sandboxRoot, 'batch', 'worker-result.schema.json');
+  const expectedSchemaPath = join(
+    sandboxRoot,
+    'batch',
+    'worker-result.schema.json',
+  );
   const expectedLastMessagePath = join(
     sandboxRoot,
     'batch',
     'logs',
     '001-1.last-message.json',
   );
-  const expectedResultPath = join(sandboxRoot, 'batch', 'logs', '001-1.result.json');
+  const expectedResultPath = join(
+    sandboxRoot,
+    'batch',
+    'logs',
+    '001-1.result.json',
+  );
 
   assert.equal(invocation.cwd, sandboxRoot);
   assert.equal(invocation.schema, expectedSchemaPath);
   assert.equal(invocation.lastMessage, expectedLastMessagePath);
   assert.equal(invocation.resultFile, expectedResultPath);
   assert.equal(invocation.json, true);
-  assert.ok(invocation.args.includes('--dangerously-bypass-approvals-and-sandbox'));
+  assert.ok(
+    invocation.args.includes('--dangerously-bypass-approvals-and-sandbox'),
+  );
   assert.ok(invocation.args.includes('--json'));
   assert.ok(invocation.args.includes('-'));
   assert.ok(invocation.prompt.includes(`RESULT_FILE: ${expectedResultPath}`));
@@ -241,17 +260,37 @@ function runScenario({
     const invocation = readJson(invocationPath);
     assertInvocation(invocation, sandboxRoot);
 
-    const schema = readJson(join(sandboxRoot, 'batch', 'worker-result.schema.json'));
+    const schema = readJson(
+      join(sandboxRoot, 'batch', 'worker-result.schema.json'),
+    );
     assert.equal(Array.isArray(schema.oneOf), true);
     assert.equal(schema.oneOf.length, 3);
 
-    const stateRow = readStateRow(join(sandboxRoot, 'batch', 'batch-state.tsv'));
-    assert.equal(stateRow.status, expectedStateStatus, `${name}: unexpected state status`);
-    assert.equal(stateRow.score, expectedStateScore, `${name}: unexpected score`);
-    assert.equal(stateRow.retries, expectedRetries, `${name}: unexpected retries`);
+    const stateRow = readStateRow(
+      join(sandboxRoot, 'batch', 'batch-state.tsv'),
+    );
+    assert.equal(
+      stateRow.status,
+      expectedStateStatus,
+      `${name}: unexpected state status`,
+    );
+    assert.equal(
+      stateRow.score,
+      expectedStateScore,
+      `${name}: unexpected score`,
+    );
+    assert.equal(
+      stateRow.retries,
+      expectedRetries,
+      `${name}: unexpected retries`,
+    );
     assert.equal(stateRow.reportNum, '001');
     if (expectedStateError !== undefined) {
-      assert.equal(stateRow.error, expectedStateError, `${name}: unexpected state error`);
+      assert.equal(
+        stateRow.error,
+        expectedStateError,
+        `${name}: unexpected state error`,
+      );
     }
     if (expectedStateErrorPrefix !== undefined) {
       assert.ok(
@@ -265,12 +304,25 @@ function runScenario({
     const eventLog = readFileSync(eventLogPath, 'utf8');
     assert.ok(eventLog.includes('"type":"session.started"'));
 
-    const lastMessagePath = join(sandboxRoot, 'batch', 'logs', '001-1.last-message.json');
+    const lastMessagePath = join(
+      sandboxRoot,
+      'batch',
+      'logs',
+      '001-1.last-message.json',
+    );
     const resultPath = join(sandboxRoot, 'batch', 'logs', '001-1.result.json');
 
     if (expectResultArtifact) {
-      assert.equal(existsSync(lastMessagePath), true, `${name}: missing last message file`);
-      assert.equal(existsSync(resultPath), true, `${name}: missing result file`);
+      assert.equal(
+        existsSync(lastMessagePath),
+        true,
+        `${name}: missing last message file`,
+      );
+      assert.equal(
+        existsSync(resultPath),
+        true,
+        `${name}: missing result file`,
+      );
 
       const expectedFixture = readJson(fixturePath);
       const lastMessage = readJson(lastMessagePath);
@@ -287,9 +339,20 @@ function runScenario({
         );
       }
     } else {
-      assert.equal(existsSync(lastMessagePath), false, `${name}: unexpected last message file`);
-      assert.equal(existsSync(resultPath), false, `${name}: unexpected result file`);
-      assert.ok(stateRow.error.length > 0, `${name}: expected a stored error message`);
+      assert.equal(
+        existsSync(lastMessagePath),
+        false,
+        `${name}: unexpected last message file`,
+      );
+      assert.equal(
+        existsSync(resultPath),
+        false,
+        `${name}: unexpected result file`,
+      );
+      assert.ok(
+        stateRow.error.length > 0,
+        `${name}: expected a stored error message`,
+      );
     }
   } finally {
     rmSync(sandboxRoot, { recursive: true, force: true });
@@ -346,7 +409,8 @@ runScenario({
   fixturePath: failedFixture,
   expectedStateStatus: 'failed',
   expectedStateScore: '-',
-  expectedStateError: 'semantic: The worker could not complete the evaluation pipeline',
+  expectedStateError:
+    'semantic: The worker could not complete the evaluation pipeline',
   expectedRetries: '0',
   expectedWorkerStatus: 'failed',
   expectResultArtifact: true,

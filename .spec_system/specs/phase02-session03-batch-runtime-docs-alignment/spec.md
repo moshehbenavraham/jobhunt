@@ -148,17 +148,17 @@ than silently pulled into scope.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `.spec_system/specs/phase02-session03-batch-runtime-docs-alignment/implementation-notes.md` | Record the stale-doc audit, Phase 03 deferrals, and docs-to-code validation evidence | ~90 |
+| File                                                                                        | Purpose                                                                              | Est. Lines |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------- |
+| `.spec_system/specs/phase02-session03-batch-runtime-docs-alignment/implementation-notes.md` | Record the stale-doc audit, Phase 03 deferrals, and docs-to-code validation evidence | ~90        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `batch/README-batch.md` | Rewrite the batch operator guide around the live `codex exec` runtime, structured results, state semantics, and validation path | ~180 |
-| `docs/ARCHITECTURE.md` | Update the batch-processing and data-flow overview to reflect the settled runtime contract and point readers to the batch-owned docs | ~60 |
-| `modes/batch.md` | Apply only the runtime corrections needed to remove contradictory `claude -p` guidance before Session 04 validation | ~60 |
+| File                    | Changes                                                                                                                              | Est. Lines |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
+| `batch/README-batch.md` | Rewrite the batch operator guide around the live `codex exec` runtime, structured results, state semantics, and validation path      | ~180       |
+| `docs/ARCHITECTURE.md`  | Update the batch-processing and data-flow overview to reflect the settled runtime contract and point readers to the batch-owned docs | ~60        |
+| `modes/batch.md`        | Apply only the runtime corrections needed to remove contradictory `claude -p` guidance before Session 04 validation                  | ~60        |
 
 ---
 

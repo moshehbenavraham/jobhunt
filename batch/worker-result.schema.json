@@ -17,11 +17,7 @@
   "$defs": {
     "legitimacy": {
       "type": "string",
-      "enum": [
-        "High Confidence",
-        "Proceed with Caution",
-        "Suspicious"
-      ]
+      "enum": ["High Confidence", "Proceed with Caution", "Suspicious"]
     },
     "id": {
       "type": "string",

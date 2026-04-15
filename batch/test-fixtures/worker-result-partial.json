@@ -9,9 +9,6 @@
   "pdf": null,
   "report": "reports/001-example-ai-2026-04-15.md",
   "tracker": null,
-  "warnings": [
-    "pdf-not-generated",
-    "tracker-not-written"
-  ],
+  "warnings": ["pdf-not-generated", "tracker-not-written"],
   "error": null
 }

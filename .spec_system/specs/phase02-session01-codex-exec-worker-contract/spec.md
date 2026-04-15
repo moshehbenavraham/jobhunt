@@ -143,23 +143,23 @@ boundary deterministic and easy to revalidate as later sessions touch it.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `batch/worker-result.schema.json` | Canonical worker result schema for completed, partial, and failed outcomes | ~80 |
-| `batch/test-fixtures/mock-codex-exec.sh` | Stub Codex executable for deterministic runner contract tests | ~60 |
-| `batch/test-fixtures/worker-result-completed.json` | Fixture for full success contract validation | ~20 |
-| `batch/test-fixtures/worker-result-partial.json` | Fixture for degraded-artifact contract validation | ~20 |
-| `batch/test-fixtures/worker-result-failed.json` | Fixture for semantic failure contract validation | ~20 |
-| `scripts/test-batch-runner-contract.mjs` | Regression harness for CLI args, schema wiring, and result-file behavior | ~180 |
-| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/implementation-notes.md` | Contract decisions, test evidence, and Session 02 handoff notes | ~80 |
+| File                                                                                      | Purpose                                                                    | Est. Lines |
+| ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ---------- |
+| `batch/worker-result.schema.json`                                                         | Canonical worker result schema for completed, partial, and failed outcomes | ~80        |
+| `batch/test-fixtures/mock-codex-exec.sh`                                                  | Stub Codex executable for deterministic runner contract tests              | ~60        |
+| `batch/test-fixtures/worker-result-completed.json`                                        | Fixture for full success contract validation                               | ~20        |
+| `batch/test-fixtures/worker-result-partial.json`                                          | Fixture for degraded-artifact contract validation                          | ~20        |
+| `batch/test-fixtures/worker-result-failed.json`                                           | Fixture for semantic failure contract validation                           | ~20        |
+| `scripts/test-batch-runner-contract.mjs`                                                  | Regression harness for CLI args, schema wiring, and result-file behavior   | ~180       |
+| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/implementation-notes.md` | Contract decisions, test evidence, and Session 02 handoff notes            | ~80        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `batch/batch-runner.sh` | Replace Claude worker invocation with Codex contract plumbing, explicit result paths, and prerequisite checks | ~140 |
-| `batch/batch-prompt.md` | Add minimal result-file contract instructions and placeholder usage for the worker | ~40 |
-| `scripts/test-all.mjs` | Add the batch runner contract harness to the quick regression surface | ~20 |
+| File                    | Changes                                                                                                       | Est. Lines |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------- | ---------- |
+| `batch/batch-runner.sh` | Replace Claude worker invocation with Codex contract plumbing, explicit result paths, and prerequisite checks | ~140       |
+| `batch/batch-prompt.md` | Add minimal result-file contract instructions and placeholder usage for the worker                            | ~40        |
+| `scripts/test-all.mjs`  | Add the batch runner contract harness to the quick regression surface                                         | ~20        |
 
 ---
 

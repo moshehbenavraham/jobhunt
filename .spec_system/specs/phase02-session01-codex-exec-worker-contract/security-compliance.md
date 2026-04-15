@@ -9,6 +9,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `batch/batch-runner.sh` - batch worker orchestration and contract plumbing
 - `batch/batch-prompt.md` - worker instructions and result-file contract
 - `batch/worker-result.schema.json` - checked-in worker result schema
@@ -28,13 +29,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No untrusted shell interpolation or query construction was introduced in the reviewed session files |
-| Hardcoded Secrets | PASS | -- | No secrets, tokens, or credentials were added |
-| Sensitive Data Exposure | PASS | -- | Fixtures and reports contain only contract metadata; no PII or secrets observed |
-| Insecure Dependencies | PASS | -- | No dependency changes in this session |
-| Misconfiguration | PASS | -- | Runner uses explicit paths and prerequisite checks; no unsafe debug surface introduced |
+| Category                      | Status | Severity | Details                                                                                             |
+| ----------------------------- | ------ | -------- | --------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No untrusted shell interpolation or query construction was introduced in the reviewed session files |
+| Hardcoded Secrets             | PASS   | --       | No secrets, tokens, or credentials were added                                                       |
+| Sensitive Data Exposure       | PASS   | --       | Fixtures and reports contain only contract metadata; no PII or secrets observed                     |
+| Insecure Dependencies         | PASS   | --       | No dependency changes in this session                                                               |
+| Misconfiguration              | PASS   | --       | Runner uses explicit paths and prerequisite checks; no unsafe debug surface introduced              |
 
 ### Notes
 
@@ -48,14 +49,14 @@
 
 ### Overall: N/A
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection | N/A | No new collection of personal data introduced |
-| Consent | N/A | No new user-data persistence path added |
-| Data Minimization | N/A | No new user data fields added |
-| Right to Erasure | N/A | No new personal-data storage path added |
-| Data Logging | N/A | No PII logging surface introduced |
-| Third-Party Sharing | N/A | No new external transfer of personal data added |
+| Category            | Status | Details                                         |
+| ------------------- | ------ | ----------------------------------------------- |
+| Data Collection     | N/A    | No new collection of personal data introduced   |
+| Consent             | N/A    | No new user-data persistence path added         |
+| Data Minimization   | N/A    | No new user data fields added                   |
+| Right to Erasure    | N/A    | No new personal-data storage path added         |
+| Data Logging        | N/A    | No PII logging surface introduced               |
+| Third-Party Sharing | N/A    | No new external transfer of personal data added |
 
 ### Notes
 

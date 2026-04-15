@@ -101,22 +101,28 @@ function createSandbox({ inputRows, stateRows = [] }) {
   mkdirSync(binDir, { recursive: true });
 
   copyExecutable(RUNNER_SOURCE, join(batchDir, 'batch-runner.sh'));
-  writeFile(join(batchDir, 'batch-prompt.md'), readFileSync(PROMPT_SOURCE, 'utf8'));
-  writeFile(join(batchDir, 'worker-result.schema.json'), readFileSync(SCHEMA_SOURCE, 'utf8'));
+  writeFile(
+    join(batchDir, 'batch-prompt.md'),
+    readFileSync(PROMPT_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(batchDir, 'worker-result.schema.json'),
+    readFileSync(SCHEMA_SOURCE, 'utf8'),
+  );
   copyExecutable(MOCK_CODEX_SOURCE, join(binDir, 'codex'));
 
   writeFile(
     join(batchDir, 'batch-input.tsv'),
-    ['id\turl\tsource\tnotes', ...inputRows].join('\n') + '\n',
+    `${['id\turl\tsource\tnotes', ...inputRows].join('\n')}\n`,
   );
 
   if (stateRows.length > 0) {
     writeFile(
       join(batchDir, 'batch-state.tsv'),
-      [
+      `${[
         'id\turl\tstatus\tstarted_at\tcompleted_at\treport_num\tscore\terror\tretries',
         ...stateRows,
-      ].join('\n') + '\n',
+      ].join('\n')}\n`,
     );
   }
 
@@ -168,9 +174,7 @@ function readStateRow(statePath) {
 }
 
 function summaryLine(stdout) {
-  return stdout
-    .split('\n')
-    .find((line) => line.startsWith('Total: '));
+  return stdout.split('\n').find((line) => line.startsWith('Total: '));
 }
 
 function dryRunIds(stdout) {
@@ -178,7 +182,7 @@ function dryRunIds(stdout) {
     .split('\n')
     .filter((line) => line.startsWith('  #'))
     .map((line) => {
-      const match = /^  #(\d+):/.exec(line);
+      const match = /^ {2}#(\d+):/.exec(line);
       return match ? match[1] : null;
     })
     .filter(Boolean);
@@ -218,11 +222,25 @@ function runSingleOfferScenario({
 
     assertRunSucceeded(result, name);
 
-    const stateRow = readStateRow(join(sandboxRoot, 'batch', 'batch-state.tsv'));
-    assert.equal(stateRow.status, expectedStatus, `${name}: unexpected state status`);
-    assert.equal(stateRow.score, expectedScore, `${name}: unexpected state score`);
+    const stateRow = readStateRow(
+      join(sandboxRoot, 'batch', 'batch-state.tsv'),
+    );
+    assert.equal(
+      stateRow.status,
+      expectedStatus,
+      `${name}: unexpected state status`,
+    );
+    assert.equal(
+      stateRow.score,
+      expectedScore,
+      `${name}: unexpected state score`,
+    );
     if (expectedError !== undefined) {
-      assert.equal(stateRow.error, expectedError, `${name}: unexpected state error`);
+      assert.equal(
+        stateRow.error,
+        expectedError,
+        `${name}: unexpected state error`,
+      );
     }
     if (expectedErrorPrefix !== undefined) {
       assert.ok(
@@ -230,8 +248,16 @@ function runSingleOfferScenario({
         `${name}: state error did not start with "${expectedErrorPrefix}"`,
       );
     }
-    assert.equal(stateRow.retries, expectedRetries, `${name}: unexpected retries`);
-    assert.equal(summaryLine(result.stdout), expectedSummary, `${name}: unexpected summary line`);
+    assert.equal(
+      stateRow.retries,
+      expectedRetries,
+      `${name}: unexpected retries`,
+    );
+    assert.equal(
+      summaryLine(result.stdout),
+      expectedSummary,
+      `${name}: unexpected summary line`,
+    );
     assert.ok(
       result.stdout.includes(expectedStdoutFragment),
       `${name}: stdout did not include "${expectedStdoutFragment}"`,
@@ -248,8 +274,10 @@ runSingleOfferScenario({
   expectedScore: '4.6',
   expectedError: '-',
   expectedRetries: '0',
-  expectedSummary: 'Total: 1 | Completed: 1 | Partial: 0 | Failed: 0 | Retryable Failed: 0 | Skipped: 0 | Pending: 0',
-  expectedStdoutFragment: 'Completed (worker status: completed, score: 4.6, report: 001)',
+  expectedSummary:
+    'Total: 1 | Completed: 1 | Partial: 0 | Failed: 0 | Retryable Failed: 0 | Skipped: 0 | Pending: 0',
+  expectedStdoutFragment:
+    'Completed (worker status: completed, score: 4.6, report: 001)',
 });
 
 runSingleOfferScenario({
@@ -259,8 +287,10 @@ runSingleOfferScenario({
   expectedScore: '4.2',
   expectedError: 'warnings: pdf-not-generated; tracker-not-written',
   expectedRetries: '0',
-  expectedSummary: 'Total: 1 | Completed: 0 | Partial: 1 | Failed: 0 | Retryable Failed: 0 | Skipped: 0 | Pending: 0',
-  expectedStdoutFragment: 'Partial (worker status: partial, score: 4.2, report: 001, warnings: 2)',
+  expectedSummary:
+    'Total: 1 | Completed: 0 | Partial: 1 | Failed: 0 | Retryable Failed: 0 | Skipped: 0 | Pending: 0',
+  expectedStdoutFragment:
+    'Partial (worker status: partial, score: 4.2, report: 001, warnings: 2)',
 });
 
 runSingleOfferScenario({
@@ -268,9 +298,11 @@ runSingleOfferScenario({
   fixturePath: FAILED_FIXTURE,
   expectedStatus: 'failed',
   expectedScore: '-',
-  expectedError: 'semantic: The worker could not complete the evaluation pipeline',
+  expectedError:
+    'semantic: The worker could not complete the evaluation pipeline',
   expectedRetries: '0',
-  expectedSummary: 'Total: 1 | Completed: 0 | Partial: 0 | Failed: 1 | Retryable Failed: 0 | Skipped: 0 | Pending: 0',
+  expectedSummary:
+    'Total: 1 | Completed: 0 | Partial: 0 | Failed: 1 | Retryable Failed: 0 | Skipped: 0 | Pending: 0',
   expectedStdoutFragment: 'Failed (worker status: failed, report: 001)',
 });
 
@@ -283,8 +315,10 @@ runSingleOfferScenario({
   expectedScore: '-',
   expectedErrorPrefix: 'infrastructure: exit 17;',
   expectedRetries: '1',
-  expectedSummary: 'Total: 1 | Completed: 0 | Partial: 0 | Failed: 0 | Retryable Failed: 1 | Skipped: 0 | Pending: 0',
-  expectedStdoutFragment: 'Failed (retryable infrastructure failure, attempt 1, exit code 17)',
+  expectedSummary:
+    'Total: 1 | Completed: 0 | Partial: 0 | Failed: 0 | Retryable Failed: 1 | Skipped: 0 | Pending: 0',
+  expectedStdoutFragment:
+    'Failed (retryable infrastructure failure, attempt 1, exit code 17)',
 });
 
 {

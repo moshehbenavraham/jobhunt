@@ -9,6 +9,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `batch/batch-runner.sh` - structured-result classification, retry gating, and summary handling
 - `batch/worker-result.schema.json` - settled worker result contract
 - `batch/batch-prompt.md` - worker prompt contract for completed, partial, and failed outcomes
@@ -29,13 +30,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No new injection surface in the touched batch or dashboard paths. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or secrets introduced. |
-| Sensitive Data Exposure | PASS | -- | Structured result warnings and errors do not add new PII exposure. |
-| Insecure Dependencies | PASS | -- | No dependency changes were introduced in this session. |
-| Security Misconfiguration | PASS | -- | No insecure debug or permissive runtime settings added. |
+| Category                      | Status | Severity | Details                                                            |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------ |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No new injection surface in the touched batch or dashboard paths.  |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or secrets introduced.                     |
+| Sensitive Data Exposure       | PASS   | --       | Structured result warnings and errors do not add new PII exposure. |
+| Insecure Dependencies         | PASS   | --       | No dependency changes were introduced in this session.             |
+| Security Misconfiguration     | PASS   | --       | No insecure debug or permissive runtime settings added.            |
 
 ### Findings
 
@@ -56,6 +57,7 @@ No new personal data collection, persistence, or external sharing was introduced
 ### Overall: PASS
 
 The session changes keep runner behavior deterministic and explicit:
+
 - structured results now drive terminal batch-state classification
 - terminal `partial` and semantic `failed` rows are handled distinctly
 - rerun gating and summary output are covered by regression tests

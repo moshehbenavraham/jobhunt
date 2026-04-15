@@ -8,17 +8,17 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Tasks Complete | PASS | 23/23 tasks complete |
-| Files Exist | PASS | 10/10 session deliverables found |
-| ASCII Encoding | PASS | All reviewed session files are ASCII with LF endings |
-| Tests Passing | PASS | 76/76 quick-suite checks passed; standalone runner syntax and contract harness also passed |
-| Database/Schema Alignment | N/A | No DB-layer changes |
-| Quality Gates | PASS | Spec success criteria met; runner contract validated |
-| Conventions | PASS | No obvious convention violations in reviewed deliverables |
-| Security & GDPR | PASS/N/A | Security pass; GDPR N/A because no new personal data handling |
-| Behavioral Quality | PASS | Batch runtime changes were spot-checked and contract-aligned |
+| Check                     | Status   | Notes                                                                                      |
+| ------------------------- | -------- | ------------------------------------------------------------------------------------------ |
+| Tasks Complete            | PASS     | 23/23 tasks complete                                                                       |
+| Files Exist               | PASS     | 10/10 session deliverables found                                                           |
+| ASCII Encoding            | PASS     | All reviewed session files are ASCII with LF endings                                       |
+| Tests Passing             | PASS     | 76/76 quick-suite checks passed; standalone runner syntax and contract harness also passed |
+| Database/Schema Alignment | N/A      | No DB-layer changes                                                                        |
+| Quality Gates             | PASS     | Spec success criteria met; runner contract validated                                       |
+| Conventions               | PASS     | No obvious convention violations in reviewed deliverables                                  |
+| Security & GDPR           | PASS/N/A | Security pass; GDPR N/A because no new personal data handling                              |
+| Behavioral Quality        | PASS     | Batch runtime changes were spot-checked and contract-aligned                               |
 
 **Overall**: PASS
 
@@ -28,12 +28,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-|----------|----------|-----------|--------|
-| Setup | 3 | 3 | PASS |
-| Foundation | 6 | 6 | PASS |
-| Implementation | 10 | 10 | PASS |
-| Testing | 4 | 4 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 3        | 3         | PASS   |
+| Foundation     | 6        | 6         | PASS   |
+| Implementation | 10       | 10        | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -46,18 +46,19 @@ None.
 ### Status: PASS
 
 #### Files Created or Modified for the Session
-| File | Found | Status |
-|------|-------|--------|
-| `batch/worker-result.schema.json` | Yes | PASS |
-| `batch/test-fixtures/mock-codex-exec.sh` | Yes | PASS |
-| `batch/test-fixtures/worker-result-completed.json` | Yes | PASS |
-| `batch/test-fixtures/worker-result-partial.json` | Yes | PASS |
-| `batch/test-fixtures/worker-result-failed.json` | Yes | PASS |
-| `scripts/test-batch-runner-contract.mjs` | Yes | PASS |
-| `batch/batch-runner.sh` | Yes | PASS |
-| `batch/batch-prompt.md` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
-| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/implementation-notes.md` | Yes | PASS |
+
+| File                                                                                      | Found | Status |
+| ----------------------------------------------------------------------------------------- | ----- | ------ |
+| `batch/worker-result.schema.json`                                                         | Yes   | PASS   |
+| `batch/test-fixtures/mock-codex-exec.sh`                                                  | Yes   | PASS   |
+| `batch/test-fixtures/worker-result-completed.json`                                        | Yes   | PASS   |
+| `batch/test-fixtures/worker-result-partial.json`                                          | Yes   | PASS   |
+| `batch/test-fixtures/worker-result-failed.json`                                           | Yes   | PASS   |
+| `scripts/test-batch-runner-contract.mjs`                                                  | Yes   | PASS   |
+| `batch/batch-runner.sh`                                                                   | Yes   | PASS   |
+| `batch/batch-prompt.md`                                                                   | Yes   | PASS   |
+| `scripts/test-all.mjs`                                                                    | Yes   | PASS   |
+| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/implementation-notes.md` | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -69,18 +70,18 @@ None.
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-|------|----------|--------------|--------|
-| `batch/batch-runner.sh` | ASCII | LF | PASS |
-| `batch/batch-prompt.md` | ASCII | LF | PASS |
-| `batch/worker-result.schema.json` | ASCII | LF | PASS |
-| `batch/test-fixtures/mock-codex-exec.sh` | ASCII | LF | PASS |
-| `batch/test-fixtures/worker-result-completed.json` | ASCII | LF | PASS |
-| `batch/test-fixtures/worker-result-partial.json` | ASCII | LF | PASS |
-| `batch/test-fixtures/worker-result-failed.json` | ASCII | LF | PASS |
-| `scripts/test-batch-runner-contract.mjs` | ASCII | LF | PASS |
-| `scripts/test-all.mjs` | ASCII | LF | PASS |
-| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/implementation-notes.md` | ASCII | LF | PASS |
+| File                                                                                      | Encoding | Line Endings | Status |
+| ----------------------------------------------------------------------------------------- | -------- | ------------ | ------ |
+| `batch/batch-runner.sh`                                                                   | ASCII    | LF           | PASS   |
+| `batch/batch-prompt.md`                                                                   | ASCII    | LF           | PASS   |
+| `batch/worker-result.schema.json`                                                         | ASCII    | LF           | PASS   |
+| `batch/test-fixtures/mock-codex-exec.sh`                                                  | ASCII    | LF           | PASS   |
+| `batch/test-fixtures/worker-result-completed.json`                                        | ASCII    | LF           | PASS   |
+| `batch/test-fixtures/worker-result-partial.json`                                          | ASCII    | LF           | PASS   |
+| `batch/test-fixtures/worker-result-failed.json`                                           | ASCII    | LF           | PASS   |
+| `scripts/test-batch-runner-contract.mjs`                                                  | ASCII    | LF           | PASS   |
+| `scripts/test-all.mjs`                                                                    | ASCII    | LF           | PASS   |
+| `.spec_system/specs/phase02-session01-codex-exec-worker-contract/implementation-notes.md` | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -92,12 +93,12 @@ None.
 
 ### Status: PASS
 
-| Metric | Value |
-|--------|-------|
+| Metric      | Value                 |
+| ----------- | --------------------- |
 | Total Tests | 76 quick-suite checks |
-| Passed | 76 |
-| Failed | 0 |
-| Coverage | N/A |
+| Passed      | 76                    |
+| Failed      | 0                     |
+| Coverage    | N/A                   |
 
 ### Failed Tests
 
@@ -148,13 +149,13 @@ From `spec.md`:
 
 ### Status: PASS
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| Naming | PASS | File and script names follow repo conventions |
-| File Structure | PASS | Batch assets, scripts, and session notes are in the expected locations |
-| Error Handling | PASS | Runner contract surfaces explicit failure paths and prerequisite checks |
-| Comments | PASS | Comments are brief and explain intent where needed |
-| Testing | PASS | Contract harness and quick-suite integration are in place |
+| Category       | Status | Notes                                                                   |
+| -------------- | ------ | ----------------------------------------------------------------------- |
+| Naming         | PASS   | File and script names follow repo conventions                           |
+| File Structure | PASS   | Batch assets, scripts, and session notes are in the expected locations  |
+| Error Handling | PASS   | Runner contract surfaces explicit failure paths and prerequisite checks |
+| Comments       | PASS   | Comments are brief and explain intent where needed                      |
+| Testing        | PASS   | Contract harness and quick-suite integration are in place               |
 
 ### Convention Violations
 
@@ -170,10 +171,10 @@ None.
 
 #### Summary
 
-| Area | Status | Findings |
-|------|--------|----------|
-| Security | PASS | 0 issues |
-| GDPR | N/A | No new personal data handling |
+| Area     | Status | Findings                      |
+| -------- | ------ | ----------------------------- |
+| Security | PASS   | 0 issues                      |
+| GDPR     | N/A    | No new personal data handling |
 
 ### Critical Violations
 
@@ -187,19 +188,20 @@ None.
 
 **Checklist applied**: Yes
 **Files spot-checked**:
+
 - `batch/batch-runner.sh`
 - `batch/batch-prompt.md`
 - `scripts/test-batch-runner-contract.mjs`
 - `batch/worker-result.schema.json`
 - `batch/test-fixtures/mock-codex-exec.sh`
 
-| Category | Status | File | Details |
-|----------|--------|------|---------|
-| Trust boundaries | PASS | `batch/batch-runner.sh` | Runner validates the worker contract through explicit schema and result-file paths |
-| Resource cleanup | PASS | `batch/batch-runner.sh` | Lock, temp-file, and result artifacts are managed by the runner contract |
-| Mutation safety | PASS | `batch/batch-runner.sh` | Launch flow is deterministic; contract tests cover the worker invocation surface |
-| Failure paths | PASS | `batch/batch-runner.sh` | Non-zero exit and semantic failure cases are covered by the harness |
-| Contract alignment | PASS | `scripts/test-batch-runner-contract.mjs` | Harness asserts repo-root execution, schema wiring, and fixture-backed results |
+| Category           | Status | File                                     | Details                                                                            |
+| ------------------ | ------ | ---------------------------------------- | ---------------------------------------------------------------------------------- |
+| Trust boundaries   | PASS   | `batch/batch-runner.sh`                  | Runner validates the worker contract through explicit schema and result-file paths |
+| Resource cleanup   | PASS   | `batch/batch-runner.sh`                  | Lock, temp-file, and result artifacts are managed by the runner contract           |
+| Mutation safety    | PASS   | `batch/batch-runner.sh`                  | Launch flow is deterministic; contract tests cover the worker invocation surface   |
+| Failure paths      | PASS   | `batch/batch-runner.sh`                  | Non-zero exit and semantic failure cases are covered by the harness                |
+| Contract alignment | PASS   | `scripts/test-batch-runner-contract.mjs` | Harness asserts repo-root execution, schema wiring, and fixture-backed results     |
 
 ### Violations Found
 

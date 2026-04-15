@@ -46,7 +46,7 @@ batch/
    b. Guardar JD a `/tmp/batch-jd-{id}.txt`
    c. Calcular siguiente REPORT_NUM secuencial
    d. Resolver `batch/batch-prompt.md` con `URL`, `JD_FILE`, `REPORT_NUM`,
-      `DATE`, `ID` y `RESULT_FILE`
+   `DATE`, `ID` y `RESULT_FILE`
    e. Ejecutar via Bash:
    ```bash
    codex exec \
@@ -58,7 +58,7 @@ batch/
      - < /tmp/resolved-batch-prompt-{id}.md > batch/logs/{report_num}-{id}.log 2>&1
    ```
    f. Leer `batch/logs/{report_num}-{id}.result.json` y actualizar
-      `batch-state.tsv` (`completed`, `partial`, `failed` o `skipped`)
+   `batch-state.tsv` (`completed`, `partial`, `failed` o `skipped`)
    g. Chrome: volver atras -> siguiente oferta
 5. **Paginacion**: Si no hay mas ofertas -> click "Next" -> repetir
 6. **Fin**: Merge `tracker-additions/` -> `applications.md` + resumen
@@ -110,11 +110,11 @@ El worker produce:
 
 ## Gestion de errores
 
-| Error                | Recovery                                                        |
-| -------------------- | --------------------------------------------------------------- |
-| URL inaccesible      | Worker falla semanticamente o por infraestructura segun el caso |
-| JD detras de login   | Conductor intenta leer DOM. Si falla -> `failed`               |
-| Portal cambia layout | Conductor razona sobre HTML, se adapta                          |
+| Error                | Recovery                                                                        |
+| -------------------- | ------------------------------------------------------------------------------- |
+| URL inaccesible      | Worker falla semanticamente o por infraestructura segun el caso                 |
+| JD detras de login   | Conductor intenta leer DOM. Si falla -> `failed`                                |
+| Portal cambia layout | Conductor razona sobre HTML, se adapta                                          |
 | Worker crashea       | Runner marca `failed` con prefijo `infrastructure:`. Retry con `--retry-failed` |
-| Conductor muere      | Re-ejecutar -> lee state -> skip terminales y retoma pendientes |
-| PDF falla            | Resultado `partial`: el report puede quedar util aunque el PDF no |
+| Conductor muere      | Re-ejecutar -> lee state -> skip terminales y retoma pendientes                 |
+| PDF falla            | Resultado `partial`: el report puede quedar util aunque el PDF no               |

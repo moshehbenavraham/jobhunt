@@ -103,7 +103,7 @@
 | Category      | Tool                                          | Config       |
 | ------------- | --------------------------------------------- | ------------ |
 | Formatter     | Prettier                                      | .prettierrc  |
-| Linter        | not configured                                | -            |
+| Linter        | Biome                                         | biome.json   |
 | Type Safety   | not configured                                | -            |
 | Testing       | `node scripts/test-all.mjs`, `npm run doctor` | repo scripts |
 | Observability | not configured                                | -            |

@@ -8,11 +8,11 @@
 
 ## Session Progress
 
-| Metric              | Value     |
-| ------------------- | --------- |
-| Tasks Completed     | 23 / 23   |
-| Estimated Remaining | 0 hours   |
-| Blockers            | 0         |
+| Metric              | Value   |
+| ------------------- | ------- |
+| Tasks Completed     | 23 / 23 |
+| Estimated Remaining | 0 hours |
+| Blockers            | 0       |
 
 ---
 

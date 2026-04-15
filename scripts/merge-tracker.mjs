@@ -21,10 +21,10 @@ import {
   mkdirSync,
   renameSync,
   existsSync,
-} from 'fs';
-import { join, basename, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
-import { execFileSync } from 'child_process';
+} from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const CAREER_OPS = resolve(SCRIPT_DIR, '..');
@@ -125,7 +125,7 @@ function roleFuzzyMatch(a, b) {
 
 function extractReportNum(reportStr) {
   const m = reportStr.match(/\[(\d+)\]/);
-  return m ? parseInt(m[1]) : null;
+  return m ? parseInt(m[1], 10) : null;
 }
 
 function parseScore(s) {
@@ -136,8 +136,8 @@ function parseScore(s) {
 function parseAppLine(line) {
   const parts = line.split('|').map((s) => s.trim());
   if (parts.length < 9) return null;
-  const num = parseInt(parts[1]);
-  if (isNaN(num) || num === 0) return null;
+  const num = parseInt(parts[1], 10);
+  if (Number.isNaN(num) || num === 0) return null;
   return {
     num,
     date: parts[2],
@@ -177,7 +177,7 @@ function parseTsvContent(content, filename) {
     }
     // Format: num | date | company | role | score | status | pdf | report | notes
     addition = {
-      num: parseInt(parts[0]),
+      num: parseInt(parts[0], 10),
       date: parts[1],
       company: parts[2],
       role: parts[3],
@@ -234,7 +234,7 @@ function parseTsvContent(content, filename) {
     }
 
     addition = {
-      num: parseInt(parts[0]),
+      num: parseInt(parts[0], 10),
       date: parts[1],
       company: parts[2],
       role: parts[3],
@@ -246,7 +246,7 @@ function parseTsvContent(content, filename) {
     };
   }
 
-  if (isNaN(addition.num) || addition.num === 0) {
+  if (Number.isNaN(addition.num) || addition.num === 0) {
     console.warn(`⚠️  Skipping ${filename}: invalid entry number`);
     return null;
   }
@@ -296,8 +296,8 @@ if (tsvFiles.length === 0) {
 
 // Sort files numerically for deterministic processing
 tsvFiles.sort((a, b) => {
-  const numA = parseInt(a.replace(/\D/g, '')) || 0;
-  const numB = parseInt(b.replace(/\D/g, '')) || 0;
+  const numA = parseInt(a.replace(/\D/g, ''), 10) || 0;
+  const numB = parseInt(b.replace(/\D/g, ''), 10) || 0;
   return numA - numB;
 });
 
@@ -417,7 +417,7 @@ if (VERIFY && !DRY_RUN) {
     execFileSync('node', [join(CAREER_OPS, 'scripts', 'verify-pipeline.mjs')], {
       stdio: 'inherit',
     });
-  } catch (e) {
+  } catch (_e) {
     process.exit(1);
   }
 }

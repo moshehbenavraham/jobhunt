@@ -796,18 +796,18 @@ All P0, P1, and P2 items are implemented.
 
 ### Files Modified
 
-| File | Changes |
-| ---- | ------- |
-| `dashboard/internal/theme/theme.go` | Elevation helpers (`Ground`, `Shelf`, `Focus`), typography helpers (`Display`, `Section`, `Label`, `Body`, `Supporting`, `Structural`), spacing constants, Unicode glyph constants, `WidthClass` + `ClassifyWidth`, `ScoreGauge` + `ScoreToGauge` + `ScoreGaugeStyle`, `StatusColor` |
-| `dashboard/internal/theme/catppuccin_latte.go` | Fixed Subtext: `#5c5f77` (Subtext1) -> `#6c6f85` (Subtext0) |
-| `dashboard/internal/ui/screens/pipeline.go` | Selection highlight (accent bar + Overlay bg), score gauge prepend, score thresholds aligned to PRD, responsive columns/tabs/preview, empty state, scroll indicator, theme helper migration |
-| `dashboard/internal/ui/screens/progress.go` | Half-block funnel bars, graduated weekly activity colors, Braille sparklines on >140 cols, `brailleSparkline` helper, theme helper migration, responsive bar widths and week labels |
-| `dashboard/internal/ui/screens/viewer.go` | Removed dead `pos`/`lineInfo` variables, extracted `scrollIndicator()`, simplified percentage rendering, theme helper migration, body copy color changed to Text (Tier 4) |
-| `dashboard/main.go` | Fixed hardcoded theme in progress screen constructor -> uses auto-detected `m.theme` |
-| `dashboard/internal/model/career.go` | Added `WeeklyBreakdown []int` field to `FunnelStage` |
-| `dashboard/internal/data/career.go` | Extended `ComputeProgressMetrics` to derive per-stage weekly counts using cumulative funnel logic |
-| `dashboard/internal/ui/screens/pipeline_test.go` | Added `TestScoreGaugeRendering` (5 threshold brackets), `TestResponsiveColumnWidths` (comp hidden at 70, visible at 120) |
-| `dashboard/internal/ui/screens/progress_test.go` | Added `TestBrailleSparkline` (8 cases: empty, zeros, single, ascending, descending, flat, downsample, spread), `TestFunnelSparklineVisibility` (hidden at 130, visible at 150) |
+| File                                             | Changes                                                                                                                                                                                                                                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `dashboard/internal/theme/theme.go`              | Elevation helpers (`Ground`, `Shelf`, `Focus`), typography helpers (`Display`, `Section`, `Label`, `Body`, `Supporting`, `Structural`), spacing constants, Unicode glyph constants, `WidthClass` + `ClassifyWidth`, `ScoreGauge` + `ScoreToGauge` + `ScoreGaugeStyle`, `StatusColor` |
+| `dashboard/internal/theme/catppuccin_latte.go`   | Fixed Subtext: `#5c5f77` (Subtext1) -> `#6c6f85` (Subtext0)                                                                                                                                                                                                                          |
+| `dashboard/internal/ui/screens/pipeline.go`      | Selection highlight (accent bar + Overlay bg), score gauge prepend, score thresholds aligned to PRD, responsive columns/tabs/preview, empty state, scroll indicator, theme helper migration                                                                                          |
+| `dashboard/internal/ui/screens/progress.go`      | Half-block funnel bars, graduated weekly activity colors, Braille sparklines on >140 cols, `brailleSparkline` helper, theme helper migration, responsive bar widths and week labels                                                                                                  |
+| `dashboard/internal/ui/screens/viewer.go`        | Removed dead `pos`/`lineInfo` variables, extracted `scrollIndicator()`, simplified percentage rendering, theme helper migration, body copy color changed to Text (Tier 4)                                                                                                            |
+| `dashboard/main.go`                              | Fixed hardcoded theme in progress screen constructor -> uses auto-detected `m.theme`                                                                                                                                                                                                 |
+| `dashboard/internal/model/career.go`             | Added `WeeklyBreakdown []int` field to `FunnelStage`                                                                                                                                                                                                                                 |
+| `dashboard/internal/data/career.go`              | Extended `ComputeProgressMetrics` to derive per-stage weekly counts using cumulative funnel logic                                                                                                                                                                                    |
+| `dashboard/internal/ui/screens/pipeline_test.go` | Added `TestScoreGaugeRendering` (5 threshold brackets), `TestResponsiveColumnWidths` (comp hidden at 70, visible at 120)                                                                                                                                                             |
+| `dashboard/internal/ui/screens/progress_test.go` | Added `TestBrailleSparkline` (8 cases: empty, zeros, single, ascending, descending, flat, downsample, spread), `TestFunnelSparklineVisibility` (hidden at 130, visible at 150)                                                                                                       |
 
 ### Key Architectural Decisions
 
@@ -861,11 +861,11 @@ All P0, P1, and P2 items are implemented.
 
 ### Acceptance Evidence (PRD Section 15)
 
-| Criterion | Status | Evidence |
-| --------- | ------ | -------- |
-| 15.1 Launch and navigation | Pass | All three screens reachable via `p`/`Enter`/`Esc`; j/k/PgDn/PgUp navigation works on all |
-| 15.2 Command surface completeness | Pass | Help bars on pipeline, progress, and viewer expose all mode-valid keys |
-| 15.3 Data and state integrity | Pass | `TestWithReloadedDataPreservesStateAndSelection` passes; status updates write then reload |
-| 15.4 Rendering correctness | Pass | Responsive columns verified by `TestResponsiveColumnWidths`; table truncation with ellipsis verified |
-| 15.5 Performance budget | Pass | Bubble Tea view-diffing + lipgloss ops are O(visible_rows); no full-dataset rendering loops; p95 <= 16ms structurally guaranteed |
-| 15.6 Accessibility baseline | Pass | Score gauge always adjacent to numeric score; status conveyed by text label + color; Mocha Subtext-on-Surface ~5.4:1; no Overlay-on-Surface text |
+| Criterion                         | Status | Evidence                                                                                                                                         |
+| --------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 15.1 Launch and navigation        | Pass   | All three screens reachable via `p`/`Enter`/`Esc`; j/k/PgDn/PgUp navigation works on all                                                         |
+| 15.2 Command surface completeness | Pass   | Help bars on pipeline, progress, and viewer expose all mode-valid keys                                                                           |
+| 15.3 Data and state integrity     | Pass   | `TestWithReloadedDataPreservesStateAndSelection` passes; status updates write then reload                                                        |
+| 15.4 Rendering correctness        | Pass   | Responsive columns verified by `TestResponsiveColumnWidths`; table truncation with ellipsis verified                                             |
+| 15.5 Performance budget           | Pass   | Bubble Tea view-diffing + lipgloss ops are O(visible_rows); no full-dataset rendering loops; p95 <= 16ms structurally guaranteed                 |
+| 15.6 Accessibility baseline       | Pass   | Score gauge always adjacent to numeric score; status conveyed by text label + color; Mocha Subtext-on-Surface ~5.4:1; no Overlay-on-Surface text |

@@ -9,6 +9,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `batch/README-batch.md` - batch operator guide alignment
 - `docs/ARCHITECTURE.md` - repo architecture and batch contract overview
 - `modes/batch.md` - routed batch mode runtime-fact corrections
@@ -22,13 +23,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No new executable input handling or query construction was introduced. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or secrets were added. |
-| Sensitive Data Exposure | PASS | -- | The docs do not add PII-bearing examples or leak data in logs or notes. |
-| Insecure Dependencies | PASS | -- | No dependency changes were introduced in this session. |
-| Security Misconfiguration | PASS | -- | No insecure runtime settings or permissive defaults were added. |
+| Category                      | Status | Severity | Details                                                                 |
+| ----------------------------- | ------ | -------- | ----------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No new executable input handling or query construction was introduced.  |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or secrets were added.                          |
+| Sensitive Data Exposure       | PASS   | --       | The docs do not add PII-bearing examples or leak data in logs or notes. |
+| Insecure Dependencies         | PASS   | --       | No dependency changes were introduced in this session.                  |
+| Security Misconfiguration     | PASS   | --       | No insecure runtime settings or permissive defaults were added.         |
 
 ### Findings
 
@@ -49,4 +50,3 @@ No new personal data collection, persistence, or external sharing was introduced
 ### Overall: N/A
 
 This session only updated documentation and session notes. No application code was changed, so behavioral quality checks do not apply.
-

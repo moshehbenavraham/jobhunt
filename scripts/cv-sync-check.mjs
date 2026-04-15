@@ -10,9 +10,9 @@
  * 4. article-digest.md freshness (if exists)
  */
 
-import { readFileSync, existsSync, statSync } from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, existsSync, statSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(SCRIPT_DIR, '..');
@@ -113,11 +113,15 @@ if (errors.length === 0 && warnings.length === 0) {
 } else {
   if (errors.length > 0) {
     console.log(`ERRORS (${errors.length}):`);
-    errors.forEach((e) => console.log(`  ERROR: ${e}`));
+    errors.forEach((e) => {
+      console.log(`  ERROR: ${e}`);
+    });
   }
   if (warnings.length > 0) {
     console.log(`\nWARNINGS (${warnings.length}):`);
-    warnings.forEach((w) => console.log(`  WARN: ${w}`));
+    warnings.forEach((w) => {
+      console.log(`  WARN: ${w}`);
+    });
   }
 }
 

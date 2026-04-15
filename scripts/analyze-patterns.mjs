@@ -11,16 +11,16 @@
  *      node scripts/analyze-patterns.mjs --min-threshold 3
  */
 
-import { readFileSync, existsSync } from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, existsSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const CAREER_OPS = resolve(SCRIPT_DIR, '..');
 const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   ? join(CAREER_OPS, 'data/applications.md')
   : join(CAREER_OPS, 'applications.md');
-const REPORTS_DIR = join(CAREER_OPS, 'reports');
+const _REPORTS_DIR = join(CAREER_OPS, 'reports');
 
 // --- CLI args ---
 const args = process.argv.slice(2);
@@ -28,9 +28,9 @@ const summaryMode = args.includes('--summary');
 const minThresholdIdx = args.indexOf('--min-threshold');
 const MIN_THRESHOLD =
   minThresholdIdx !== -1 && args[minThresholdIdx + 1] !== undefined
-    ? Number.isNaN(parseInt(args[minThresholdIdx + 1]))
+    ? Number.isNaN(parseInt(args[minThresholdIdx + 1], 10))
       ? 5
-      : parseInt(args[minThresholdIdx + 1])
+      : parseInt(args[minThresholdIdx + 1], 10)
     : 5;
 
 // --- Status normalization (mirrors verify-pipeline.mjs) ---
@@ -88,8 +88,8 @@ function parseTracker() {
     if (!line.startsWith('|')) continue;
     const parts = line.split('|').map((s) => s.trim());
     if (parts.length < 9) continue;
-    const num = parseInt(parts[1]);
-    if (isNaN(num)) continue;
+    const num = parseInt(parts[1], 10);
+    if (Number.isNaN(num)) continue;
     entries.push({
       num,
       date: parts[2],
@@ -235,7 +235,7 @@ function classifyCompanySize(teamSize) {
   // Extract numbers
   const nums = lower.match(/[\d,]+/g);
   if (nums) {
-    const max = Math.max(...nums.map((n) => parseInt(n.replace(/,/g, ''))));
+    const max = Math.max(...nums.map((n) => parseInt(n.replace(/,/g, ''), 10)));
     if (max <= 50) return 'startup';
     if (max <= 500) return 'scaleup';
     return 'enterprise';
@@ -375,7 +375,7 @@ function analyze() {
 
   // --- Blocker analysis ---
   const blockerCounts = new Map();
-  const totalWithGaps = enriched.filter((e) => e.report?.gaps?.length > 0);
+  const _totalWithGaps = enriched.filter((e) => e.report?.gaps?.length > 0);
   for (const e of enriched) {
     if (!e.report?.gaps) continue;
     for (const gap of e.report.gaps) {
@@ -538,7 +538,7 @@ function analyze() {
   }
 
   // Remote policy recommendation
-  const bestRemote = remotePolicy
+  const _bestRemote = remotePolicy
     .filter((r) => r.total >= 2)
     .sort((a, b) => b.conversionRate - a.conversionRate)[0];
   const worstRemote = remotePolicy.filter(
@@ -594,7 +594,6 @@ function printSummary(result) {
     metadata,
     funnel,
     scoreComparison,
-    archetypeBreakdown,
     blockerAnalysis,
     remotePolicy,
     scoreThreshold,

@@ -5,9 +5,9 @@
  * Checks all prerequisites and prints a pass/fail checklist.
  */
 
-import { existsSync, mkdirSync, readdirSync } from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { existsSync, mkdirSync, readdirSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(SCRIPT_DIR, '..');
@@ -19,7 +19,7 @@ const red = (s) => (isTTY ? `\x1b[31m${s}\x1b[0m` : s);
 const dim = (s) => (isTTY ? `\x1b[2m${s}\x1b[0m` : s);
 
 function checkNodeVersion() {
-  const major = parseInt(process.versions.node.split('.')[0]);
+  const major = parseInt(process.versions.node.split('.')[0], 10);
   if (major >= 18) {
     return { pass: true, label: `Node.js >= 18 (v${process.versions.node})` };
   }
@@ -176,7 +176,7 @@ async function main() {
       console.log(`${red('[FAIL]')} ${result.label}`);
       const fixes = Array.isArray(result.fix) ? result.fix : [result.fix];
       for (const hint of fixes) {
-        console.log(`  ${dim('-> ' + hint)}`);
+        console.log(`  ${dim(`-> ${hint}`)}`);
       }
     }
   }

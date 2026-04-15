@@ -484,7 +484,7 @@ Result:
 | ----- | --------------------------------- | -------- | -------- |
 | 00    | Contract and Drift Cleanup        | 4        | Complete |
 | 01    | Docs and Entrypoints              | 4        | Complete |
-| 02    | Batch Runtime Conversion          | 4        | Complete    |
+| 02    | Batch Runtime Conversion          | 4        | Complete |
 | 03    | Prompt and Metadata Normalization | TBD      | Planned  |
 
 Phase 00 is complete as of 2026-04-15. Phase 01 is complete as of 2026-04-15.

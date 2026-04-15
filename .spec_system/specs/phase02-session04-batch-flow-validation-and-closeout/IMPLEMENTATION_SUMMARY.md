@@ -19,25 +19,27 @@ quick regression gate now includes the new closeout harness.
 ## Deliverables
 
 ### Files Created
-| File | Purpose | Lines |
-|------|---------|-------|
-| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/validation.md` | Session validation report | ~120 |
-| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/IMPLEMENTATION_SUMMARY.md` | Session closeout summary | ~60 |
-| `scripts/test-batch-runner-closeout.mjs` | Deterministic closeout harness for runner, merge, and verify behavior | ~220 |
+
+| File                                                                                                | Purpose                                                               | Lines |
+| --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ----- |
+| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/validation.md`             | Session validation report                                             | ~120  |
+| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/IMPLEMENTATION_SUMMARY.md` | Session closeout summary                                              | ~60   |
+| `scripts/test-batch-runner-closeout.mjs`                                                            | Deterministic closeout harness for runner, merge, and verify behavior | ~220  |
 
 ### Files Modified
-| File | Changes |
-|------|---------|
-| `.spec_system/state.json` | Marked Session 04 complete, cleared the current session, and recorded completion history |
-| `.spec_system/PRD/phase_02/PRD_phase_02.md` | Marked Phase 02 complete and advanced progress to 4/4 |
-| `.spec_system/PRD/phase_02/session_04_batch_flow_validation_and_closeout.md` | Marked the phase stub complete |
-| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/spec.md` | Marked the session spec complete |
-| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/implementation-notes.md` | Added validation evidence and handoff notes |
-| `scripts/test-batch-runner-state-semantics.mjs` | Added rerun and retry-budget coverage |
-| `scripts/test-all.mjs` | Added the closeout harness to the quick gate |
-| `package.json` | Bumped the patch version to `1.5.17` |
-| `package-lock.json` | Kept lockfile version metadata aligned with the canonical version |
-| `VERSION` | Bumped the patch version to `1.5.17` |
+
+| File                                                                                              | Changes                                                                                  |
+| ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `.spec_system/state.json`                                                                         | Marked Session 04 complete, cleared the current session, and recorded completion history |
+| `.spec_system/PRD/phase_02/PRD_phase_02.md`                                                       | Marked Phase 02 complete and advanced progress to 4/4                                    |
+| `.spec_system/PRD/phase_02/session_04_batch_flow_validation_and_closeout.md`                      | Marked the phase stub complete                                                           |
+| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/spec.md`                 | Marked the session spec complete                                                         |
+| `.spec_system/specs/phase02-session04-batch-flow-validation-and-closeout/implementation-notes.md` | Added validation evidence and handoff notes                                              |
+| `scripts/test-batch-runner-state-semantics.mjs`                                                   | Added rerun and retry-budget coverage                                                    |
+| `scripts/test-all.mjs`                                                                            | Added the closeout harness to the quick gate                                             |
+| `package.json`                                                                                    | Bumped the patch version to `1.5.17`                                                     |
+| `package-lock.json`                                                                               | Kept lockfile version metadata aligned with the canonical version                        |
+| `VERSION`                                                                                         | Bumped the patch version to `1.5.17`                                                     |
 
 ---
 
@@ -53,11 +55,11 @@ quick regression gate now includes the new closeout harness.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 80 quick-suite checks |
-| Passed | 80 |
-| Coverage | N/A |
+| Metric   | Value                 |
+| -------- | --------------------- |
+| Tests    | 80 quick-suite checks |
+| Passed   | 80                    |
+| Coverage | N/A                   |
 
 ---
 
@@ -73,6 +75,7 @@ quick regression gate now includes the new closeout harness.
 ## Future Considerations
 
 Items for future sessions:
+
 1. Phase 03 should handle the remaining prompt and metadata cleanup.
 2. Any new batch workflow should add coverage to the closeout harness rather
    than bypassing it.

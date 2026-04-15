@@ -8,22 +8,24 @@
 
 ## Session Progress
 
-| Metric | Value |
-|--------|-------|
-| Tasks Completed | 21 / 21 |
+| Metric              | Value   |
+| ------------------- | ------- |
+| Tasks Completed     | 21 / 21 |
 | Estimated Remaining | 0 hours |
-| Blockers | 0 |
+| Blockers            | 0       |
 
 ---
 
 ## Session Start Audit
 
 **Environment verified**:
+
 - [x] Prerequisites confirmed
 - [x] Tools available
 - [x] Directory structure ready
 
 **Stale runtime-doc inventory**:
+
 - `batch/README-batch.md` still documents `claude -p`, auto-merge wording,
   and the pre-Session-02 state model.
 - `docs/ARCHITECTURE.md` is Codex-first at a high level but underspecifies
@@ -32,6 +34,7 @@
   conductor architecture that contradicts the live runner.
 
 **Operator questions the docs need to answer**:
+
 - Which CLI command actually launches workers now, and from which repo path?
 - Which files are created per offer, and which file is authoritative for
   state transitions?
@@ -41,6 +44,7 @@
   which commands should operators rerun manually?
 
 **Phase 03 deferral boundary**:
+
 - Keep broader repo wording cleanup, metadata normalization, and non-batch
   prompt-language cleanup out of this session.
 - Limit `modes/batch.md` changes to runtime-fact alignment needed for
@@ -275,7 +279,7 @@ bytes or CR characters. `git diff --check` also returned clean.
   state values, structured-result schema, and merge or verify commands.
 - Legacy worker search on the session-owned doc surfaces returned no matches.
 - `node scripts/test-all.mjs --quick` passed with `78 passed, 0 failed,
-  0 warnings`.
+0 warnings`.
 - ASCII and LF validation passed for all touched docs and notes.
 
 ## Phase 03 Deferral Ledger

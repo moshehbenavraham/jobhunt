@@ -85,13 +85,13 @@ The `status` column stores the runner's persisted state. Some operator-facing
 summary buckets are derived from `status` plus the `error` and `retries`
 columns:
 
-| Stored status | Meaning |
-| ------------- | ------- |
-| `processing` | Report number reserved and worker launched |
-| `completed` | Worker emitted a valid completed result |
-| `partial` | Worker emitted a valid partial result with warnings |
-| `failed` | Semantic failure or infrastructure failure |
-| `skipped` | Score fell below `--min-score` after a valid worker result |
+| Stored status | Meaning                                                    |
+| ------------- | ---------------------------------------------------------- |
+| `processing`  | Report number reserved and worker launched                 |
+| `completed`   | Worker emitted a valid completed result                    |
+| `partial`     | Worker emitted a valid partial result with warnings        |
+| `failed`      | Semantic failure or infrastructure failure                 |
+| `skipped`     | Score fell below `--min-score` after a valid worker result |
 
 The summary line prints `Retryable Failed` for rows stored as `failed` whose
 `error` starts with `infrastructure:` and whose retry count is still below
@@ -99,14 +99,14 @@ The summary line prints `Retryable Failed` for rows stored as `failed` whose
 
 ## Runner Options
 
-| Flag | Default | Description |
-| ---- | ------- | ----------- |
-| `--parallel N` | `1` | Number of concurrent `codex exec` workers |
-| `--dry-run` | off | List the rows that would run without launching workers |
-| `--retry-failed` | off | Retry only retryable infrastructure failures |
-| `--start-from N` | `0` | Skip offer IDs below `N` |
-| `--max-retries N` | `2` | Retry budget for infrastructure failures |
-| `--min-score N` | `0` | Mark rows as `skipped` when the score is below `N` |
+| Flag              | Default | Description                                            |
+| ----------------- | ------- | ------------------------------------------------------ |
+| `--parallel N`    | `1`     | Number of concurrent `codex exec` workers              |
+| `--dry-run`       | off     | List the rows that would run without launching workers |
+| `--retry-failed`  | off     | Retry only retryable infrastructure failures           |
+| `--start-from N`  | `0`     | Skip offer IDs below `N`                               |
+| `--max-retries N` | `2`     | Retry budget for infrastructure failures               |
+| `--min-score N`   | `0`     | Mark rows as `skipped` when the score is below `N`     |
 
 ## Runtime Flow
 
@@ -161,11 +161,11 @@ batch/
 The worker result schema is defined in `batch/worker-result.schema.json`.
 Every successful worker invocation must emit exactly one of these result types:
 
-| Worker status | Required semantics |
-| ------------- | ------------------ |
-| `completed` | Numeric score, legitimacy, report path, PDF path, tracker path, no warnings, `error: null` |
-| `partial` | Numeric score, legitimacy, report path, at least one warning, and either `pdf` or `tracker` set to `null` |
-| `failed` | Semantic failure: `score`, `legitimacy`, `pdf`, and `tracker` are `null`; `error` is a non-empty string; `report` may exist |
+| Worker status | Required semantics                                                                                                          |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `completed`   | Numeric score, legitimacy, report path, PDF path, tracker path, no warnings, `error: null`                                  |
+| `partial`     | Numeric score, legitimacy, report path, at least one warning, and either `pdf` or `tracker` set to `null`                   |
+| `failed`      | Semantic failure: `score`, `legitimacy`, `pdf`, and `tracker` are `null`; `error` is a non-empty string; `report` may exist |
 
 Infrastructure failures are not a worker status. They happen when the worker
 exits non-zero or does not leave a valid result artifact. The runner stores
@@ -173,13 +173,13 @@ those rows as `failed` with an `error` message prefixed by `infrastructure:`.
 
 ## State Semantics And Retry Behavior
 
-| Case | Stored status | Retry behavior | Operator expectation |
-| ---- | ------------- | -------------- | -------------------- |
-| Fully successful run | `completed` | Terminal | Report, PDF, and tracker TSV all exist |
-| Main evaluation succeeded but PDF or tracker degraded | `partial` | Terminal | Report exists; inspect `warnings` and decide whether to repair artifacts manually |
-| Semantic evaluation failure | `failed` | Terminal | Check the `semantic:` error summary in `batch-state.tsv` and the report if one exists |
-| Worker crash, bad JSON, or missing result artifact | `failed` | Retryable until `retries >= --max-retries` | Inspect the event log and rerun with `--retry-failed` |
-| Valid result below `--min-score` | `skipped` | Terminal | No downstream tracker or PDF work should proceed for that row |
+| Case                                                  | Stored status | Retry behavior                             | Operator expectation                                                                  |
+| ----------------------------------------------------- | ------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| Fully successful run                                  | `completed`   | Terminal                                   | Report, PDF, and tracker TSV all exist                                                |
+| Main evaluation succeeded but PDF or tracker degraded | `partial`     | Terminal                                   | Report exists; inspect `warnings` and decide whether to repair artifacts manually     |
+| Semantic evaluation failure                           | `failed`      | Terminal                                   | Check the `semantic:` error summary in `batch-state.tsv` and the report if one exists |
+| Worker crash, bad JSON, or missing result artifact    | `failed`      | Retryable until `retries >= --max-retries` | Inspect the event log and rerun with `--retry-failed`                                 |
+| Valid result below `--min-score`                      | `skipped`     | Terminal                                   | No downstream tracker or PDF work should proceed for that row                         |
 
 Normal reruns skip rows already stored as `completed`, `partial`, or `skipped`.
 Normal reruns also skip semantic failures and exhausted infrastructure

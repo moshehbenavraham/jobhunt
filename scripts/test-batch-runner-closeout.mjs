@@ -204,19 +204,31 @@ function createSandbox({ existingReportNums = [] } = {}) {
   mkdirSync(binDir, { recursive: true });
 
   copyExecutable(RUNNER_SOURCE, join(batchDir, 'batch-runner.sh'));
-  writeFile(join(batchDir, 'batch-prompt.md'), readFileSync(PROMPT_SOURCE, 'utf8'));
-  writeFile(join(batchDir, 'worker-result.schema.json'), readFileSync(SCHEMA_SOURCE, 'utf8'));
-  writeFile(join(scriptsDir, 'merge-tracker.mjs'), readFileSync(MERGE_SOURCE, 'utf8'));
-  writeFile(join(scriptsDir, 'verify-pipeline.mjs'), readFileSync(VERIFY_SOURCE, 'utf8'));
+  writeFile(
+    join(batchDir, 'batch-prompt.md'),
+    readFileSync(PROMPT_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(batchDir, 'worker-result.schema.json'),
+    readFileSync(SCHEMA_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(scriptsDir, 'merge-tracker.mjs'),
+    readFileSync(MERGE_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(scriptsDir, 'verify-pipeline.mjs'),
+    readFileSync(VERIFY_SOURCE, 'utf8'),
+  );
   writeFile(join(binDir, 'codex'), MOCK_CODEX_SCRIPT);
   chmodSync(join(binDir, 'codex'), 0o755);
 
   writeFile(
     join(batchDir, 'batch-input.tsv'),
-    [
+    `${[
       'id\turl\tsource\tnotes',
       '1\thttps://example.com/jobs/1\tfixture\tcloseout test',
-    ].join('\n') + '\n',
+    ].join('\n')}\n`,
   );
   writeFile(join(dataDir, 'applications.md'), createApplicationsTracker());
 
@@ -297,9 +309,20 @@ function scenarioCloseoutWithSeededReport() {
       MOCK_CLOSEOUT_MODE: 'completed',
     });
     assertSucceeded(dryRun, 'closeout dry run');
-    assertIncludes(dryRun.stdout, '=== DRY RUN (no processing) ===', 'closeout dry run');
-    assertIncludes(dryRun.stdout, '#1: https://example.com/jobs/1', 'closeout dry run');
-    const dryRunState = readFileSync(join(sandboxRoot, 'batch', 'batch-state.tsv'), 'utf8');
+    assertIncludes(
+      dryRun.stdout,
+      '=== DRY RUN (no processing) ===',
+      'closeout dry run',
+    );
+    assertIncludes(
+      dryRun.stdout,
+      '#1: https://example.com/jobs/1',
+      'closeout dry run',
+    );
+    const dryRunState = readFileSync(
+      join(sandboxRoot, 'batch', 'batch-state.tsv'),
+      'utf8',
+    );
     assert.equal(
       dryRunState.trim(),
       'id\turl\tstatus\tstarted_at\tcompleted_at\treport_num\tscore\terror\tretries',
@@ -310,26 +333,52 @@ function scenarioCloseoutWithSeededReport() {
       MOCK_CLOSEOUT_MODE: 'completed',
     });
     assertSucceeded(runResult, 'closeout normal run');
-    assertIncludes(runResult.stdout, '=== Merging tracker additions ===', 'closeout normal run');
-    assertIncludes(runResult.stdout, '=== Verifying pipeline integrity ===', 'closeout normal run');
+    assertIncludes(
+      runResult.stdout,
+      '=== Merging tracker additions ===',
+      'closeout normal run',
+    );
+    assertIncludes(
+      runResult.stdout,
+      '=== Verifying pipeline integrity ===',
+      'closeout normal run',
+    );
 
-    const stateRows = readStateRows(join(sandboxRoot, 'batch', 'batch-state.tsv'));
-    assert.equal(stateRows.length, 1, 'closeout normal run: expected one state row');
+    const stateRows = readStateRows(
+      join(sandboxRoot, 'batch', 'batch-state.tsv'),
+    );
+    assert.equal(
+      stateRows.length,
+      1,
+      'closeout normal run: expected one state row',
+    );
     assert.equal(stateRows[0].status, 'completed');
     assert.equal(stateRows[0].reportNum, '005');
     assert.equal(stateRows[0].score, '4.6');
     assert.equal(stateRows[0].retries, '0');
 
-    const appsContent = readApplications(join(sandboxRoot, 'data', 'applications.md'));
-    assertIncludes(appsContent, '| 5 | 2026-04-15 | Example AI | Senior AI Engineer | 4.6/5 | Evaluated |', 'closeout applications');
-    assertIncludes(appsContent, '[005](reports/005-example-ai-2026-04-15.md)', 'closeout applications');
+    const appsContent = readApplications(
+      join(sandboxRoot, 'data', 'applications.md'),
+    );
+    assertIncludes(
+      appsContent,
+      '| 5 | 2026-04-15 | Example AI | Senior AI Engineer | 4.6/5 | Evaluated |',
+      'closeout applications',
+    );
+    assertIncludes(
+      appsContent,
+      '[005](reports/005-example-ai-2026-04-15.md)',
+      'closeout applications',
+    );
     assert.equal(
       existsSync(join(sandboxRoot, 'batch', 'tracker-additions', '1.tsv')),
       false,
       'closeout normal run: tracker TSV should be moved after merge',
     );
     assert.equal(
-      existsSync(join(sandboxRoot, 'batch', 'tracker-additions', 'merged', '1.tsv')),
+      existsSync(
+        join(sandboxRoot, 'batch', 'tracker-additions', 'merged', '1.tsv'),
+      ),
       true,
       'closeout normal run: merged tracker TSV missing',
     );
@@ -341,8 +390,16 @@ function scenarioCloseoutWithSeededReport() {
 
     const verifyResult = runNodeScript(sandboxRoot, 'verify-pipeline.mjs');
     assertSucceeded(verifyResult, 'closeout verify rerun');
-    assertIncludes(verifyResult.stdout, 'No pending TSVs', 'closeout verify rerun');
-    assertIncludes(verifyResult.stdout, 'All report links valid', 'closeout verify rerun');
+    assertIncludes(
+      verifyResult.stdout,
+      'No pending TSVs',
+      'closeout verify rerun',
+    );
+    assertIncludes(
+      verifyResult.stdout,
+      'All report links valid',
+      'closeout verify rerun',
+    );
   } finally {
     rmSync(sandboxRoot, { recursive: true, force: true });
   }
@@ -362,8 +419,14 @@ function scenarioRetryFailedRerunUsesNextReportNumber() {
       'retry-failed initial infrastructure run',
     );
 
-    let stateRows = readStateRows(join(sandboxRoot, 'batch', 'batch-state.tsv'));
-    assert.equal(stateRows.length, 1, 'retry-failed initial infrastructure run: expected one state row');
+    let stateRows = readStateRows(
+      join(sandboxRoot, 'batch', 'batch-state.tsv'),
+    );
+    assert.equal(
+      stateRows.length,
+      1,
+      'retry-failed initial infrastructure run: expected one state row',
+    );
     assert.equal(stateRows[0].status, 'failed');
     assert.equal(stateRows[0].reportNum, '006');
     assert.equal(stateRows[0].retries, '1');
@@ -372,11 +435,19 @@ function scenarioRetryFailedRerunUsesNextReportNumber() {
       'retry-failed initial infrastructure run: missing infrastructure error prefix',
     );
 
-    const retryDryRun = runRunner(sandboxRoot, ['--dry-run', '--retry-failed'], {
-      MOCK_CLOSEOUT_MODE: 'completed',
-    });
+    const retryDryRun = runRunner(
+      sandboxRoot,
+      ['--dry-run', '--retry-failed'],
+      {
+        MOCK_CLOSEOUT_MODE: 'completed',
+      },
+    );
     assertSucceeded(retryDryRun, 'retry-failed dry run');
-    assertIncludes(retryDryRun.stdout, '#1: https://example.com/jobs/1', 'retry-failed dry run');
+    assertIncludes(
+      retryDryRun.stdout,
+      '#1: https://example.com/jobs/1',
+      'retry-failed dry run',
+    );
 
     const retryRun = runRunner(sandboxRoot, ['--retry-failed'], {
       MOCK_CLOSEOUT_MODE: 'completed',
@@ -393,12 +464,22 @@ function scenarioRetryFailedRerunUsesNextReportNumber() {
     assert.equal(stateRows[0].reportNum, '007');
     assert.equal(stateRows[0].retries, '1');
 
-    const appsContent = readApplications(join(sandboxRoot, 'data', 'applications.md'));
-    assertIncludes(appsContent, '[007](reports/007-example-ai-2026-04-15.md)', 'retry-failed applications');
+    const appsContent = readApplications(
+      join(sandboxRoot, 'data', 'applications.md'),
+    );
+    assertIncludes(
+      appsContent,
+      '[007](reports/007-example-ai-2026-04-15.md)',
+      'retry-failed applications',
+    );
 
     const verifyResult = runNodeScript(sandboxRoot, 'verify-pipeline.mjs');
     assertSucceeded(verifyResult, 'retry-failed verify rerun');
-    assertIncludes(verifyResult.stdout, 'No pending TSVs', 'retry-failed verify rerun');
+    assertIncludes(
+      verifyResult.stdout,
+      'No pending TSVs',
+      'retry-failed verify rerun',
+    );
   } finally {
     rmSync(sandboxRoot, { recursive: true, force: true });
   }

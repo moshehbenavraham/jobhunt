@@ -15,9 +15,9 @@ import {
   copyFileSync,
   existsSync,
   mkdirSync,
-} from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+} from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const CAREER_OPS = resolve(SCRIPT_DIR, '..');
@@ -152,8 +152,8 @@ function parseScore(s) {
 function parseAppLine(line) {
   const parts = line.split('|').map((s) => s.trim());
   if (parts.length < 9) return null;
-  const num = parseInt(parts[1]);
-  if (isNaN(num)) return null;
+  const num = parseInt(parts[1], 10);
+  if (Number.isNaN(num)) return null;
   return {
     num,
     date: parts[2],
@@ -203,7 +203,7 @@ for (const entry of entries) {
 let removed = 0;
 const linesToRemove = new Set();
 
-for (const [company, companyEntries] of groups) {
+for (const [_company, companyEntries] of groups) {
   if (companyEntries.length < 2) continue;
 
   // Within same company, find role matches
@@ -244,7 +244,7 @@ for (const [company, companyEntries] of groups) {
       if (lineIdx !== undefined) {
         const parts = lines[lineIdx].split('|').map((s) => s.trim());
         parts[6] = bestStatus;
-        lines[lineIdx] = '| ' + parts.slice(1, -1).join(' | ') + ' |';
+        lines[lineIdx] = `| ${parts.slice(1, -1).join(' | ')} |`;
         console.log(
           `  📝 #${keeper.num}: status promoted to "${bestStatus}" (from #${cluster.find((e) => e.status === bestStatus)?.num})`,
         );
@@ -275,7 +275,7 @@ for (const idx of sortedRemoveIndices) {
 console.log(`\n📊 ${removed} duplicates removed`);
 
 if (!DRY_RUN && removed > 0) {
-  copyFileSync(APPS_FILE, APPS_FILE + '.bak');
+  copyFileSync(APPS_FILE, `${APPS_FILE}.bak`);
   writeFileSync(APPS_FILE, lines.join('\n'));
   console.log('✅ Written to applications.md (backup: applications.md.bak)');
 } else if (DRY_RUN) {

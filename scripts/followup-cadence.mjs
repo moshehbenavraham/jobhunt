@@ -11,9 +11,9 @@
  *      node scripts/followup-cadence.mjs --applied-days 10
  */
 
-import { readFileSync, existsSync } from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+import { readFileSync, existsSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const CAREER_OPS = resolve(SCRIPT_DIR, '..');
@@ -28,7 +28,7 @@ const summaryMode = args.includes('--summary');
 const overdueOnly = args.includes('--overdue-only');
 const appliedDaysIdx = args.indexOf('--applied-days');
 const APPLIED_FIRST =
-  appliedDaysIdx !== -1 ? parseInt(args[appliedDaysIdx + 1]) || 7 : 7;
+  appliedDaysIdx !== -1 ? parseInt(args[appliedDaysIdx + 1], 10) || 7 : 7;
 
 // --- Cadence config ---
 const CADENCE = {
@@ -108,8 +108,8 @@ function parseTracker() {
     if (!line.startsWith('|')) continue;
     const parts = line.split('|').map((s) => s.trim());
     if (parts.length < 9) continue;
-    const num = parseInt(parts[1]);
-    if (isNaN(num)) continue;
+    const num = parseInt(parts[1], 10);
+    if (Number.isNaN(num)) continue;
     entries.push({
       num,
       date: parts[2],
@@ -134,11 +134,11 @@ function parseFollowups() {
     if (!line.startsWith('|')) continue;
     const parts = line.split('|').map((s) => s.trim());
     if (parts.length < 8) continue;
-    const num = parseInt(parts[1]);
-    if (isNaN(num)) continue;
+    const num = parseInt(parts[1], 10);
+    if (Number.isNaN(num)) continue;
     entries.push({
       num,
-      appNum: parseInt(parts[2]),
+      appNum: parseInt(parts[2], 10),
       date: parts[3],
       company: parts[4],
       role: parts[5],
@@ -382,7 +382,7 @@ function printSummary(result) {
       'Urgency'.padEnd(10) +
       'Contact',
   );
-  console.log('  ' + '-'.repeat(80));
+  console.log(`  ${'-'.repeat(80)}`);
 
   for (const e of entries) {
     const urgLabel = urgencyIcon[e.urgency] || e.urgency;

@@ -11,10 +11,10 @@
  */
 
 import { chromium } from 'playwright';
-import { resolve, dirname } from 'path';
-import { readFile } from 'fs/promises';
-import { mkdirSync } from 'fs';
-import { fileURLToPath } from 'url';
+import { resolve, dirname } from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { mkdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(SCRIPT_DIR, '..');
@@ -67,7 +67,7 @@ function normalizeTextForATS(html) {
   }
 
   const restored = out.replace(
-    /\u0000MASK(\d+)\u0000/g,
+    new RegExp('\\u0000MASK(\\d+)\\u0000', 'g'),
     (_, n) => masks[Number(n)],
   );
   return { html: restored, replacements };
@@ -95,7 +95,7 @@ function normalizeTextForATS(html) {
       bump('ellipsis', 1);
       return '...';
     });
-    t = t.replace(/[\u200B\u200C\u200D\u2060\uFEFF]/g, () => {
+    t = t.replace(/(?:\u200B|\u200C|\u200D|\u2060|\uFEFF)/g, () => {
       bump('zero-width', 1);
       return '';
     });
@@ -203,7 +203,7 @@ async function generatePDF() {
     });
 
     // Write PDF
-    const { writeFile } = await import('fs/promises');
+    const { writeFile } = await import('node:fs/promises');
     await writeFile(outputPath, pdfBuffer);
 
     // Count pages (approximate from PDF structure)

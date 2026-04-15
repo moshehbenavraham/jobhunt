@@ -29,13 +29,13 @@ Eres un worker de evaluacion de ofertas de empleo for the candidate (read name f
 
 ## Placeholders (sustituidos por el orquestador)
 
-| Placeholder      | Descripcion                                            |
-| ---------------- | ------------------------------------------------------ |
-| `{{URL}}`        | URL de la oferta                                       |
-| `{{JD_FILE}}`    | Ruta al archivo con el texto del JD                    |
-| `{{REPORT_NUM}}` | Numero de report (3 digitos, zero-padded: 001, 002...) |
-| `{{DATE}}`       | Fecha actual YYYY-MM-DD                                |
-| `{{ID}}`         | ID unico de la oferta en batch-input.tsv               |
+| Placeholder       | Descripcion                                            |
+| ----------------- | ------------------------------------------------------ |
+| `{{URL}}`         | URL de la oferta                                       |
+| `{{JD_FILE}}`     | Ruta al archivo con el texto del JD                    |
+| `{{REPORT_NUM}}`  | Numero de report (3 digitos, zero-padded: 001, 002...) |
+| `{{DATE}}`        | Fecha actual YYYY-MM-DD                                |
+| `{{ID}}`          | ID unico de la oferta en batch-input.tsv               |
 | `{{RESULT_FILE}}` | Ruta absoluta donde debes escribir el JSON final       |
 
 RESULT_FILE: {{RESULT_FILE}}
@@ -64,7 +64,7 @@ Clasifica la oferta en uno de los 6 arquetipos. Si es hibrido, indica los 2 mas 
 | ---------------------------------- | ------------------------------------------------- | ---------------------------------------------------- |
 | **AI Platform / LLMOps Engineer**  | Evaluation, observability, reliability, pipelines | Alguien que ponga AI en produccion con metricas      |
 | **Agentic Workflows / Automation** | HITL, tooling, orchestration, multi-agent         | Alguien que construya sistemas de agentes fiables    |
-| **Technical AI Product Manager**   | GenAI/Agents, PRDs, discovery, delivery           | Alguien que traduzca negocio -> producto AI           |
+| **Technical AI Product Manager**   | GenAI/Agents, PRDs, discovery, delivery           | Alguien que traduzca negocio -> producto AI          |
 | **AI Solutions Architect**         | Hyperautomation, enterprise, integrations         | Alguien que disene arquitecturas AI end-to-end       |
 | **AI Forward Deployed Engineer**   | Client-facing, fast delivery, prototyping         | Alguien que entregue soluciones AI a clientes rapido |
 | **AI Transformation Lead**         | Change management, adoption, org enablement       | Alguien que lidere el cambio AI en una organizacion  |
@@ -79,7 +79,7 @@ Clasifica la oferta en uno de los 6 arquetipos. Si es hibrido, indica los 2 mas 
 | Agentic / Automation      | Orquestacion multi-agente, HITL, reliability, cost                   | article-digest.md + cv.md |
 | Technical AI PM           | Product discovery, PRDs, metricas, stakeholder mgmt                  | cv.md + article-digest.md |
 | Solutions Architect       | Diseno de sistemas, integrations, enterprise-ready                   | article-digest.md + cv.md |
-| Forward Deployed Engineer | Fast delivery, client-facing, prototype -> prod                       | cv.md + article-digest.md |
+| Forward Deployed Engineer | Fast delivery, client-facing, prototype -> prod                      | cv.md + article-digest.md |
 | AI Transformation Lead    | Change management, team enablement, adoption                         | cv.md + article-digest.md |
 
 **Ventaja transversal**: Enmarcar perfil como **"Technical builder"** que adapta su framing al rol:
@@ -336,7 +336,7 @@ Formato TSV (una sola linea, sin header, 9 columnas tab-separated):
 | 4   | role    | string     | `Staff AI Engineer`      | Titulo del rol                     |
 | 5   | status  | canonical  | `Evaluada`               | DEBE ser canonico (ver states.yml) |
 | 6   | score   | X.XX/5     | `4.55/5`                 | O `N/A` si no evaluable            |
-| 7   | pdf     | emoji      | `?` o `?`              | Si se genero PDF                   |
+| 7   | pdf     | emoji      | `?` o `?`                | Si se genero PDF                   |
 | 8   | report  | md link    | `[647](reports/647-...)` | Link al report                     |
 | 9   | notes   | string     | `APPLY HIGH...`          | Resumen 1 frase                    |
 

@@ -15,16 +15,16 @@
  * See docs/DATA_CONTRACT.md for the full system/user layer definitions.
  */
 
-import { execFileSync, execSync } from 'child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import {
   readFileSync,
   writeFileSync,
   existsSync,
   unlinkSync,
   mkdirSync,
-} from 'fs';
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath } from 'url';
+} from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
