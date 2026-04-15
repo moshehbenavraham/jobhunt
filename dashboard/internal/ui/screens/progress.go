@@ -7,8 +7,8 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/santifer/career-ops/dashboard/internal/model"
-	"github.com/santifer/career-ops/dashboard/internal/theme"
+	"github.com/moshehbenavraham/jobhunt/dashboard/internal/model"
+	"github.com/moshehbenavraham/jobhunt/dashboard/internal/theme"
 )
 
 // ProgressClosedMsg is emitted when the progress screen is dismissed.
@@ -424,7 +424,7 @@ func (m ProgressModel) renderHelp() string {
 
 	keyStyle := m.theme.Body().Bold(true)
 	descStyle := m.theme.Supporting()
-	brand := m.theme.Supporting().Render("career-ops by santifer.io")
+	brand := m.theme.Supporting().Render("jobhunt by aiwithapex.com")
 
 	keys := keyStyle.Render("\u2191\u2193") + descStyle.Render(" scroll  ") +
 		keyStyle.Render("PgUp/Dn") + descStyle.Render(" page  ") +

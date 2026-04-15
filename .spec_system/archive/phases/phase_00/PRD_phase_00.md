@@ -94,7 +94,7 @@ Codex contract.
 
 Phase complete when:
 - [x] All 4 sessions completed
-- [x] `.codex/skills/career-ops/SKILL.md` no longer depends on missing
+- [x] `.codex/skills/jobhunt/SKILL.md` no longer depends on missing
       `docs/CODEX.md` or `docs/CLAUDE.md`
 - [x] Root `VERSION`, `package.json`, updater logic, and repo validation agree
   on one canonical version source

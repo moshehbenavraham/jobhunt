@@ -11,7 +11,7 @@ Use the checked-in Career-Ops modes, scripts, templates, and tracker flow. Do no
    ```
 
    Parse the JSON:
-   - `update-available`: tell the user `career-ops update available (v{local} → v{remote}). Your data (CV, profile, tracker, reports) will NOT be touched. Want me to update?`
+   - `update-available`: tell the user `jobhunt update available (v{local} → v{remote}). Your data (CV, profile, tracker, reports) will NOT be touched. Want me to update?`
      - If yes: `node scripts/update-system.mjs apply`
      - If no: `node scripts/update-system.mjs dismiss`
    - `up-to-date`, `dismissed`, `offline`: say nothing

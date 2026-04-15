@@ -21,7 +21,7 @@ references that remain outside the narrow validator closeout scope.
 | Doctor success path is Codex-primary               | `npm run doctor`                               | Validation Evidence    |
 | Repo validation catches validator drift            | `node scripts/test-all.mjs --quick`            | Validation Evidence    |
 | Updater remains healthy                            | `node scripts/update-system.mjs check`         | Validation Evidence    |
-| Remaining legacy references are explicit deferrals | `rg -n "claude                                 | Claude Code            | \\.claude" README.md docs batch modes scripts .github AGENTS.md .codex/skills/career-ops/SKILL.md` and Session 03 residual ledger | Residual Deferrals and Phase 00 Blockers |
+| Remaining legacy references are explicit deferrals | `rg -n "claude                                 | Claude Code            | \\.claude" README.md docs batch modes scripts .github AGENTS.md .codex/skills/jobhunt/SKILL.md` and Session 03 residual ledger | Residual Deferrals and Phase 00 Blockers |
 | Phase 00 can hand off cleanly                      | Session 04 spec, PRD, and live command results | Handoff Recommendation |
 
 ## Validation Evidence

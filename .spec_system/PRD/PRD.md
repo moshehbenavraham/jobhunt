@@ -1,8 +1,8 @@
-# career-ops - Product Requirements Document
+# jobhunt - Product Requirements Document
 
 ## Overview
 
-career-ops is an AI-powered job search pipeline whose durable value lives in
+jobhunt is an AI-powered job search pipeline whose durable value lives in
 its prompts, scripts, templates, and tracker discipline. The product already
 delivers job evaluation, PDF generation, portal scanning, and tracker
 integrity through mostly agent-agnostic Node.js and Go components.
@@ -22,10 +22,10 @@ rewrite.
 
 ## Current State Summary
 
-career-ops is not Codex-primary today. It is in a mixed state:
+jobhunt is not Codex-primary today. It is in a mixed state:
 
 - The repo already contains a real Codex instruction surface in `AGENTS.md`
-  and `.codex/skills/career-ops/SKILL.md`.
+  and `.codex/skills/jobhunt/SKILL.md`.
 - The core Node.js and Go implementation is mostly agent-agnostic and does not
   require a rewrite.
 - The operating model, docs, batch runner, updater metadata, and test harness
@@ -43,7 +43,7 @@ The migration therefore centers on four outcomes:
 ## Goals
 
 1. Make Codex CLI the primary interactive and non-interactive runtime for
-   career-ops.
+   jobhunt.
 2. Eliminate internal repo drift that causes missing-file failures, version
    mismatches, and ambiguous instruction sources.
 3. Preserve the existing job-search business logic, data contract, and user
@@ -99,7 +99,7 @@ The migration therefore centers on four outcomes:
 - Contributor can run repo validation on a clean checkout and get passing
   results once required system files and version paths are aligned.
 - User can follow `README.md` and `docs/SETUP.md` to install dependencies and
-  start career-ops with `codex` from the repo root.
+  start jobhunt with `codex` from the repo root.
 - User sees Codex CLI as the only documented runtime in primary onboarding,
   with Claude Code and OpenCode removed from the main setup, quick-start, and
   contribution path.
@@ -178,7 +178,7 @@ changes:
 - `templates/`, `fonts/`, `data/`, `reports/`, `output/`, and `jds/`.
 - Most of `docs/DATA_CONTRACT.md`.
 - Root agent instructions in `AGENTS.md`.
-- Codex skill bootstrap in `.codex/skills/career-ops/SKILL.md`.
+- Codex skill bootstrap in `.codex/skills/jobhunt/SKILL.md`.
 
 The repo's durable value is in its prompts, scripts, templates, and tracker
 discipline. Those should survive the migration intact.
@@ -190,7 +190,7 @@ discipline. Those should survive the migration intact.
 The repo currently has three competing stories:
 
 - `AGENTS.md` is the only real Codex contract.
-- `.codex/skills/career-ops/SKILL.md` still says the read order starts with
+- `.codex/skills/jobhunt/SKILL.md` still says the read order starts with
   `docs/CODEX.md` and `docs/CLAUDE.md`.
 - The test suite and multiple docs still assume `docs/CLAUDE.md` exists.
 
@@ -227,7 +227,7 @@ Observed examples:
 - `README.md` badges include `Claude Code`, `OpenCode`, and `Codex (soon)`.
 - `README.md` quick start tells users to run `claude`.
 - `docs/SETUP.md` requires Claude Code and starts with `claude`.
-- `docs/CONTRIBUTING.md` says career-ops is built with Claude Code.
+- `docs/CONTRIBUTING.md` says jobhunt is built with Claude Code.
 - `scripts/doctor.mjs` ends with `Run claude to start`.
 
 The result is that even functional Codex support would still be hidden behind
@@ -256,7 +256,7 @@ Observed examples across `modes/` and `batch/` include:
 - `browser_navigate`
 - `browser_snapshot`
 - `Agent(...)`
-- `/career-ops ...` slash-command framing
+- `/jobhunt ...` slash-command framing
 
 Some of these are capability descriptions, but others encode another agent's
 tool API and UX model directly into the repo.
@@ -311,10 +311,10 @@ primary shape for this repository.
 
 ## Recommended Target State
 
-To make career-ops truly Codex-primary, the canonical model should be:
+To make jobhunt truly Codex-primary, the canonical model should be:
 
 - **Interactive use**: `codex` from the repo root, governed by `AGENTS.md`
-  and `.codex/skills/career-ops/SKILL.md`
+  and `.codex/skills/jobhunt/SKILL.md`
 - **Non-interactive and batch use**: `codex exec`
 - **Repo-owned business logic**: Node.js scripts, mode files, templates, and
   tracker rules
@@ -333,12 +333,12 @@ Problem:
 
 Required changes:
 
-- Rewrite `.codex/skills/career-ops/SKILL.md` to read `AGENTS.md` first, not
+- Rewrite `.codex/skills/jobhunt/SKILL.md` to read `AGENTS.md` first, not
   `docs/CODEX.md` or `docs/CLAUDE.md`.
 - Remove `docs/CLAUDE.md` integrity checks from `scripts/test-all.mjs`.
 - Replace those checks with validation that:
   - `AGENTS.md` exists
-  - `.codex/skills/career-ops/SKILL.md` exists
+  - `.codex/skills/jobhunt/SKILL.md` exists
   - required Career-Ops sections are present in `AGENTS.md`
 
 Result:

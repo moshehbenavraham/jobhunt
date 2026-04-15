@@ -125,7 +125,7 @@
 
 - Re-ran a targeted legacy-runtime scan across `README.md`, `docs/`, `batch/`,
   `modes/`, `scripts/`, `.github/`, `AGENTS.md`, and the checked-in
-  career-ops skill.
+  jobhunt skill.
 - Confirmed the Session 03 ledger still correctly owns the non-blocking
   Phase 01 docs references and Phase 02 batch-runtime references.
 - Confirmed the only live Phase 00 blocker is the doctor success footer in

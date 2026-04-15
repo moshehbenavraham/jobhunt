@@ -1,4 +1,4 @@
-# career-ops Batch Worker -- Evaluacion Completa + PDF + Tracker Line
+# jobhunt Batch Worker -- Evaluacion Completa + PDF + Tracker Line
 
 Eres un worker de evaluacion de ofertas de empleo for the candidate (read name from config/profile.yml). Recibes una oferta (URL + JD text) y produces:
 
@@ -193,7 +193,7 @@ Donde `{company-slug}` es el nombre de empresa en lowercase, sin espacios, con g
 **Score:** {X/5}
 **Legitimacy:** {High Confidence | Proceed with Caution | Suspicious}
 **URL:** {URL de la oferta original}
-**PDF:** career-ops/output/cv-candidate-{company-slug}-{{DATE}}.pdf
+**PDF:** jobhunt/output/cv-candidate-{company-slug}-{{DATE}}.pdf
 **Batch ID:** {{ID}}
 
 ---

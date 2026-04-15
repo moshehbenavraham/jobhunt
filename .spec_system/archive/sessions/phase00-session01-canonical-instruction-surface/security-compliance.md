@@ -10,7 +10,7 @@
 
 **Files reviewed** (session deliverables only):
 
-- `.codex/skills/career-ops/SKILL.md` - canonical bootstrap and contract routing
+- `.codex/skills/jobhunt/SKILL.md` - canonical bootstrap and contract routing
 - `scripts/test-all.mjs` - validation checks for the live instruction surface
 - `modes/_shared.md` - shared workflow guidance cleanup
 - `scripts/analyze-project.sh` - deterministic project-state helper for validation

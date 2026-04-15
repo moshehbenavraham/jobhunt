@@ -11,7 +11,7 @@
 
 This session aligns the remaining blocking metadata and system-doc path
 references with the repo's real Codex-first layout. Session 01 established
-`AGENTS.md` and `.codex/skills/career-ops/SKILL.md` as the canonical
+`AGENTS.md` and `.codex/skills/jobhunt/SKILL.md` as the canonical
 instruction surface, and Session 02 normalized version ownership around root
 `VERSION`. The live repo still carries drift in metadata and contributor
 surfaces that point at `.claude/skills/`, `CLAUDE.md`, or root-level doc

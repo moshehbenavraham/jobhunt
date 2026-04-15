@@ -4,7 +4,7 @@
 
 **Do NOT open a public issue for security vulnerabilities.**
 
-Instead, please email **hi@santifer.io** with:
+Instead, please email **max@aiwithapex.com** with:
 
 1. Description of the vulnerability
 2. Steps to reproduce
@@ -27,7 +27,7 @@ Security issues in the following are in scope:
 - Issues in third-party dependencies (report upstream)
 - Issues requiring physical access to the user's machine
 - Social engineering attacks
-- career-ops is a local tool — there is no hosted service to attack
+- jobhunt is a local tool — there is no hosted service to attack
 
 ## Disclosure Policy
 

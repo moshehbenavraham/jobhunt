@@ -103,7 +103,7 @@
 - `.spec_system/CONVENTIONS.md`
 - `AGENTS.md`
 - `docs/DATA_CONTRACT.md`
-- `.codex/skills/career-ops/SKILL.md`
+- `.codex/skills/jobhunt/SKILL.md`
 - `docs/CUSTOMIZATION.md`
 - `docs/LEGAL_DISCLAIMER.md`
 
@@ -175,7 +175,7 @@ Verified in `docs/DATA_CONTRACT.md` that personalization belongs in
 **Completed**: 2026-04-15 09:57
 **Duration**: 0 minutes
 
-Verified in `.codex/skills/career-ops/SKILL.md` that the active checked-in
+Verified in `.codex/skills/jobhunt/SKILL.md` that the active checked-in
 runtime surface is `AGENTS.md`, `docs/DATA_CONTRACT.md`, and the selected
 mode files, not `.claude` hooks or alternate required companion docs.
 
@@ -214,7 +214,7 @@ sources of truth.
 **Duration**: 3 minutes
 
 Removed the stale `.claude/settings.json` hook section and replaced it with
-the active runtime surfaces: `AGENTS.md`, `.codex/skills/career-ops/SKILL.md`,
+the active runtime surfaces: `AGENTS.md`, `.codex/skills/jobhunt/SKILL.md`,
 and the repo validation scripts.
 
 ### Task T011 - Correct negotiation and personalization guidance
@@ -301,7 +301,7 @@ final run passed with 74 checks passed, 0 failed, and 0 warnings.
 **Duration**: 1 minute
 
 Manually reviewed `docs/CUSTOMIZATION.md` against `AGENTS.md`,
-`docs/DATA_CONTRACT.md`, and `.codex/skills/career-ops/SKILL.md` to confirm
+`docs/DATA_CONTRACT.md`, and `.codex/skills/jobhunt/SKILL.md` to confirm
 the user/system boundary and active runtime surfaces match the checked-in
 contract.
 

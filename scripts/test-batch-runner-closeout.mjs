@@ -187,7 +187,7 @@ function createApplicationsTracker() {
 }
 
 function createSandbox({ existingReportNums = [] } = {}) {
-  const root = mkdtempSync(join(tmpdir(), 'career-ops-batch-closeout-'));
+  const root = mkdtempSync(join(tmpdir(), 'jobhunt-batch-closeout-'));
   const batchDir = join(root, 'batch');
   const scriptsDir = join(root, 'scripts');
   const dataDir = join(root, 'data');

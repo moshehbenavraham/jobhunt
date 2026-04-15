@@ -19,11 +19,10 @@ runtime policy, and repo reference material.
 - [Security Policy](SECURITY.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 
-## Policy and Governance
+## Policy
 
 - [Legal Disclaimer](LEGAL_DISCLAIMER.md)
 - [Third-Party Connections](THIRD_PARTY_CONNECTIONS.md)
-- [Governance](GOVERNANCE.md)
 
 ## Reference
 
@@ -31,7 +30,6 @@ runtime policy, and repo reference material.
 - [Environments](environments.md)
 - [Deployment](deployment.md)
 - [Credits](CREDITS.md)
-- [Changelog](CHANGELOG.md)
 
 ## Notes
 

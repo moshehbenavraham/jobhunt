@@ -1,4 +1,4 @@
-# career-ops Dashboard - UX Requirements Document
+# jobhunt Dashboard - UX Requirements Document
 
 **Companion to**: [PRD.md](PRD.md)
 **Created**: 2026-04-15
@@ -103,7 +103,7 @@ momentum of their entire campaign.
 
 ### Flow 1: Pipeline Review
 
-**Trigger**: Dashboard launch (`go run . -path /path/to/career-ops`)
+**Trigger**: Dashboard launch (`go run . -path /path/to/jobhunt`)
 **Goal**: Survey the current state of all tracked applications
 
 ```
@@ -734,7 +734,7 @@ design decisions that should not close them off:
 ## 15. UX Acceptance Criteria
 
 1. **Launch and navigation**
-   - Launching with `go run . -path <career-ops-root>` opens Pipeline by
+   - Launching with `go run . -path <jobhunt-root>` opens Pipeline by
      default.
    - `p` opens Progress, `Enter` opens Report Viewer, and `Esc` always returns
      one level up.

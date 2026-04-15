@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * test-all.mjs - Comprehensive test suite for career-ops
+ * test-all.mjs - Comprehensive test suite for jobhunt
  *
  * Run before merging any PR or pushing changes.
  * Tests: syntax, scripts, dashboard, data contract, personal data, paths.
@@ -72,7 +72,7 @@ function stripAnsi(text) {
   return text.replace(new RegExp(`${ESC}\\[[0-9;]*m`, 'g'), '');
 }
 
-console.log('\ncareer-ops test suite\n');
+console.log('\njobhunt test suite\n');
 
 // -- 1. SYNTAX CHECKS --------------------------------------------
 
@@ -213,7 +213,7 @@ console.log('\n5. Data contract validation');
 // Check system files exist
 const systemFiles = [
   'AGENTS.md',
-  '.codex/skills/career-ops/SKILL.md',
+  '.codex/skills/jobhunt/SKILL.md',
   'VERSION',
   'docs/DATA_CONTRACT.md',
   'modes/_shared.md',
@@ -251,19 +251,11 @@ for (const f of userFiles) {
 console.log('\n6. Personal data leak check');
 
 const leakPatterns = [
-  'Santiago',
-  'santifer.io',
-  'Santifer iRepair',
-  'Zinkee',
-  'ALMAS',
-  'hi@santifer.io',
-  '688921377',
-  '/Users/santifer/',
 ];
 
 const scanExtensions = ['md', 'yml', 'html', 'mjs', 'sh', 'go', 'json'];
 const allowedFiles = [
-  // English README + localized translations (all legitimately credit Santiago)
+  // English README + localized translations
   'README.md',
   'docs/README.es.md',
   'docs/README.ja.md',
@@ -281,9 +273,8 @@ const allowedFiles = [
   'AGENTS.md',
   'go.mod',
   'scripts/test-all.mjs',
-  // Community / governance files (added in v1.3.0, all legitimately reference the maintainer)
+  // Community and policy files legitimately reference the maintainer
   'docs/CODE_OF_CONDUCT.md',
-  'docs/GOVERNANCE.md',
   'docs/SECURITY.md',
   'docs/SUPPORT.md',
   '.github/SECURITY.md',
@@ -388,15 +379,15 @@ if (agents.includes('Startup Checklist (every session)')) {
   fail('AGENTS.md missing the startup checklist');
 }
 
-const skillPath = '.codex/skills/career-ops/SKILL.md';
+const skillPath = '.codex/skills/jobhunt/SKILL.md';
 if (fileExists(skillPath)) {
-  pass('career-ops skill exists');
+  pass('jobhunt skill exists');
   const careerOpsSkill = readFile(skillPath);
 
   if (careerOpsSkill.includes('1. `AGENTS.md`')) {
-    pass('career-ops skill reads AGENTS.md first');
+    pass('jobhunt skill reads AGENTS.md first');
   } else {
-    fail('career-ops skill does not read AGENTS.md first');
+    fail('jobhunt skill does not read AGENTS.md first');
   }
 
   const bootstrapMarkers = [
@@ -410,10 +401,10 @@ if (fileExists(skillPath)) {
     (marker) => !careerOpsSkill.includes(marker),
   );
   if (missingBootstrapMarkers.length === 0) {
-    pass('career-ops skill bootstrap matches the startup checklist');
+    pass('jobhunt skill bootstrap matches the startup checklist');
   } else {
     fail(
-      `career-ops skill missing startup checklist markers: ${missingBootstrapMarkers.join(', ')}`,
+      `jobhunt skill missing startup checklist markers: ${missingBootstrapMarkers.join(', ')}`,
     );
   }
 
@@ -421,12 +412,12 @@ if (fileExists(skillPath)) {
     !careerOpsSkill.includes('docs/CODEX.md') &&
     !careerOpsSkill.includes('docs/CLAUDE.md')
   ) {
-    pass('career-ops skill has no legacy instruction-doc dependency');
+    pass('jobhunt skill has no legacy instruction-doc dependency');
   } else {
-    fail('career-ops skill still references legacy instruction docs');
+    fail('jobhunt skill still references legacy instruction docs');
   }
 } else {
-  fail('career-ops skill missing');
+  fail('jobhunt skill missing');
 }
 
 if (!shared.includes('docs/CODEX.md') && !shared.includes('docs/CLAUDE.md')) {
@@ -470,7 +461,6 @@ const requiredLabelerLines = [
   '- docs/DATA_CONTRACT.md',
   '- .codex/skills/**',
   '- docs/CONTRIBUTING.md',
-  '- docs/GOVERNANCE.md',
   '- docs/CODE_OF_CONDUCT.md',
   '- docs/SECURITY.md',
   '- docs/SUPPORT.md',
@@ -489,7 +479,6 @@ const forbiddenLabelerLines = [
   '- DATA_CONTRACT.md',
   '- .claude/skills/**',
   '- CONTRIBUTING.md',
-  '- GOVERNANCE.md',
   '- CODE_OF_CONDUCT.md',
   '- SECURITY.md',
   '- SUPPORT.md',
@@ -509,39 +498,39 @@ const contributorMetadataChecks = [
   {
     path: '.github/PULL_REQUEST_TEMPLATE.md',
     required: [
-      'https://github.com/santifer/career-ops/blob/main/docs/CONTRIBUTING.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/docs/CONTRIBUTING.md',
     ],
     forbidden: [
-      'https://github.com/santifer/career-ops/blob/main/CONTRIBUTING.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/CONTRIBUTING.md',
     ],
   },
   {
     path: '.github/workflows/welcome.yml',
     required: [
-      'https://github.com/santifer/career-ops/blob/main/docs/CONTRIBUTING.md',
-      'https://github.com/santifer/career-ops/blob/main/docs/SUPPORT.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/docs/CONTRIBUTING.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/docs/SUPPORT.md',
     ],
     forbidden: [
-      'https://github.com/santifer/career-ops/blob/main/CONTRIBUTING.md',
-      'https://github.com/santifer/career-ops/blob/main/SUPPORT.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/CONTRIBUTING.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/SUPPORT.md',
     ],
   },
   {
     path: '.github/ISSUE_TEMPLATE/bug_report.yml',
     required: [
-      'https://github.com/santifer/career-ops/blob/main/docs/CODE_OF_CONDUCT.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/docs/CODE_OF_CONDUCT.md',
     ],
     forbidden: [
-      'https://github.com/santifer/career-ops/blob/main/CODE_OF_CONDUCT.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/CODE_OF_CONDUCT.md',
     ],
   },
   {
     path: '.github/ISSUE_TEMPLATE/feature_request.yml',
     required: [
-      'https://github.com/santifer/career-ops/blob/main/docs/CODE_OF_CONDUCT.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/docs/CODE_OF_CONDUCT.md',
     ],
     forbidden: [
-      'https://github.com/santifer/career-ops/blob/main/CODE_OF_CONDUCT.md',
+      'https://github.com/moshehbenavraham/jobhunt/blob/main/CODE_OF_CONDUCT.md',
     ],
   },
 ];

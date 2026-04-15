@@ -70,7 +70,7 @@ Para cada pregunta, generar la respuesta siguiendo:
 2. **Section G previa**: Si existe una respuesta draft, usarla como base y refinar
 3. **Tono "I'm choosing you"**: Mismo framework del auto-pipeline
 4. **Especificidad**: Referenciar algo concreto del JD visible en pantalla
-5. **career-ops proof point**: Incluir en "Additional info" si hay campo para ello
+5. **jobhunt proof point**: Incluir en "Additional info" si hay campo para ello
 
 **Formato de output:**
 
@@ -102,7 +102,7 @@ Si el candidato confirma que envió la aplicación:
 
 1. Actualizar estado en `applications.md` de "Evaluada" a "Aplicado"
 2. Actualizar Section G del report con las respuestas finales
-3. Sugerir siguiente paso: `/career-ops contacto` para LinkedIn outreach
+3. Sugerir siguiente paso: `/jobhunt contacto` para LinkedIn outreach
 
 ## Scroll handling
 

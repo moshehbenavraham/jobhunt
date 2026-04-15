@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * verify-pipeline.mjs — Health check for career-ops pipeline integrity
+ * verify-pipeline.mjs — Health check for jobhunt pipeline integrity
  *
  * Checks:
  * 1. All statuses are canonical (per states.yml)

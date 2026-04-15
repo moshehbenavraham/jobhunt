@@ -125,7 +125,7 @@ N/A - no DB-layer changes.
 
 - [x] Targeted `rg` checks across the touched docs show no stale `.claude` hook guidance or contradictory personalization instructions
 - [x] `node scripts/test-all.mjs --quick` passes after the docs edits
-- [x] Manual read-through confirms both docs match `AGENTS.md`, `docs/DATA_CONTRACT.md`, and the checked-in career-ops skill
+- [x] Manual read-through confirms both docs match `AGENTS.md`, `docs/DATA_CONTRACT.md`, and the checked-in jobhunt skill
 
 ### Non-Functional Requirements
 

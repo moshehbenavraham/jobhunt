@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://career-ops.local/batch/worker-result.schema.json",
-  "title": "career-ops batch worker result",
+  "$id": "https://jobhunt.local/batch/worker-result.schema.json",
+  "title": "jobhunt batch worker result",
   "description": "Structured contract emitted by batch workers.",
   "oneOf": [
     {

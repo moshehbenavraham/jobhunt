@@ -87,7 +87,7 @@ function buildStateRow({
 }
 
 function createSandbox({ inputRows, stateRows = [] }) {
-  const root = mkdtempSync(join(tmpdir(), 'career-ops-batch-state-'));
+  const root = mkdtempSync(join(tmpdir(), 'jobhunt-batch-state-'));
   const batchDir = join(root, 'batch');
   const scriptsDir = join(root, 'scripts');
   const dataDir = join(root, 'data');

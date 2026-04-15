@@ -9,7 +9,7 @@
 
 ## Objective
 
-Make `AGENTS.md` and `.codex/skills/career-ops/SKILL.md` the only required
+Make `AGENTS.md` and `.codex/skills/jobhunt/SKILL.md` the only required
 instruction surface for repo operation and validation.
 
 ---
@@ -18,7 +18,7 @@ instruction surface for repo operation and validation.
 
 ### In Scope (MVP)
 
-- Rewrite the `career-ops` skill read order away from missing
+- Rewrite the `jobhunt` skill read order away from missing
   `docs/CODEX.md` and `docs/CLAUDE.md`
 - Align repo-owned validation expectations with `AGENTS.md` as the source of
   truth
@@ -49,7 +49,7 @@ instruction surface for repo operation and validation.
 
 ## Success Criteria
 
-- [ ] The `career-ops` skill reads `AGENTS.md` first
+- [ ] The `jobhunt` skill reads `AGENTS.md` first
 - [ ] No required workflow step depends on missing `docs/CODEX.md` or
       `docs/CLAUDE.md`
 - [ ] Contract validation checks the real instruction surface

@@ -1,6 +1,6 @@
 # Templates
 
-System-layer template files used by career-ops scripts and modes. These files are auto-updated when you run `npm run update` -- put user customizations in the user-layer files instead (see `docs/DATA_CONTRACT.md`).
+System-layer template files used by jobhunt scripts and modes. These files are auto-updated when you run `npm run update` -- put user customizations in the user-layer files instead (see `docs/DATA_CONTRACT.md`).
 
 ## Files
 

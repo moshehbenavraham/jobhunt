@@ -1,6 +1,6 @@
 # Getting Help
 
-career-ops is a local-first, Codex-primary project maintained in limited time.
+jobhunt is a local-first, Codex-primary project maintained in limited time.
 The fastest way to get help is to use the right support path and include only
 the diagnostics needed to reproduce the problem.
 
@@ -8,11 +8,11 @@ the diagnostics needed to reproduce the problem.
 
 | Need                              | Best path                                                                                                                                                                                                 |
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Setup or validation issue**     | Read [SETUP.md](SETUP.md), rerun `npm run doctor`, then ask in [GitHub Discussions](https://github.com/santifer/career-ops/discussions) or [Discord](https://discord.gg/8pRpHETxa4) with the failing step |
-| **Reproducible bug**              | Open a [GitHub Issue](https://github.com/santifer/career-ops/issues) with steps, expected behavior, actual behavior, and validation notes                                                                 |
-| **Feature idea or docs gap**      | Open a [GitHub Issue](https://github.com/santifer/career-ops/issues) or start in [GitHub Discussions](https://github.com/santifer/career-ops/discussions)                                                 |
-| **Contributor workflow question** | Start with [CONTRIBUTING.md](CONTRIBUTING.md), then ask in [GitHub Discussions](https://github.com/santifer/career-ops/discussions) or [Discord](https://discord.gg/8pRpHETxa4)                           |
-| **Security vulnerability**        | Email `hi@santifer.io` and follow [SECURITY.md](SECURITY.md); do not open a public issue                                                                                                                  |
+| **Setup or validation issue**     | Read [SETUP.md](SETUP.md), rerun `npm run doctor`, then ask in [GitHub Discussions](https://github.com/moshehbenavraham/jobhunt/discussions) or [Discord](https://discord.gg/8pRpHETxa4) with the failing step |
+| **Reproducible bug**              | Open a [GitHub Issue](https://github.com/moshehbenavraham/jobhunt/issues) with steps, expected behavior, actual behavior, and validation notes                                                                 |
+| **Feature idea or docs gap**      | Open a [GitHub Issue](https://github.com/moshehbenavraham/jobhunt/issues) or start in [GitHub Discussions](https://github.com/moshehbenavraham/jobhunt/discussions)                                                 |
+| **Contributor workflow question** | Start with [CONTRIBUTING.md](CONTRIBUTING.md), then ask in [GitHub Discussions](https://github.com/moshehbenavraham/jobhunt/discussions) or [Discord](https://discord.gg/8pRpHETxa4)                           |
+| **Security vulnerability**        | Email `max@aiwithapex.com` and follow [SECURITY.md](SECURITY.md); do not open a public issue                                                                                                                  |
 
 ## Before Opening an Issue
 

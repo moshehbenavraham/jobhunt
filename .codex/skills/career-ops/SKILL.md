@@ -1,5 +1,5 @@
 ---
-name: career-ops
+name: jobhunt
 description: Route Career-Ops job-search tasks in this repository to the correct checked-in mode files and scripts. Use when Codex needs to evaluate a job URL or JD, run the full pipeline, scan portals, generate ATS PDFs, process inbox URLs, review tracker status, compare offers, draft application help, run deep company research, prepare interviews, analyze rejection patterns, or manage follow-up cadence inside this project.
 ---
 

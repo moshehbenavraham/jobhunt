@@ -46,7 +46,7 @@
 - Re-read `.spec_system/PRD/phase_00/session_01_canonical_instruction_surface.md`
   and the master PRD before patching runtime files.
 - Confirmed Session 01 is limited to the active contract surface:
-  `.codex/skills/career-ops/SKILL.md`, `scripts/test-all.mjs`, and
+  `.codex/skills/jobhunt/SKILL.md`, `scripts/test-all.mjs`, and
   `modes/_shared.md`.
 - Confirmed public docs, version ownership, and broader metadata cleanup stay
   deferred to later sessions.
@@ -73,7 +73,7 @@
 
 **Files Changed**:
 
-- `.codex/skills/career-ops/SKILL.md` - rewrote the canonical read order
+- `.codex/skills/jobhunt/SKILL.md` - rewrote the canonical read order
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T004 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
 
@@ -93,7 +93,7 @@
 
 **Files Changed**:
 
-- `.codex/skills/career-ops/SKILL.md` - aligned bootstrap and onboarding rules
+- `.codex/skills/jobhunt/SKILL.md` - aligned bootstrap and onboarding rules
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T005 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
 
@@ -108,7 +108,7 @@
 **Notes**:
 
 - Replaced the validator's legacy `docs/CLAUDE.md` dependency with checks for
-  `AGENTS.md` and `.codex/skills/career-ops/SKILL.md`.
+  `AGENTS.md` and `.codex/skills/jobhunt/SKILL.md`.
 - Kept the validator anchored to live repo files on the active contract path.
 
 **Files Changed**:
@@ -128,7 +128,7 @@
 **Notes**:
 
 - Added validator assertions for the `AGENTS.md` startup checklist, the
-  career-ops skill read order, the startup checklist markers, and the absence
+  jobhunt skill read order, the startup checklist markers, and the absence
   of legacy-doc dependency wording in the shared mode path.
 - Renamed the validator section output to the Codex-primary instruction
   surface for clearer quick-suite messaging.
@@ -161,7 +161,7 @@
 
 ---
 
-### Task T009 - Normalize any remaining required legacy-doc wording in the career-ops skill
+### Task T009 - Normalize any remaining required legacy-doc wording in the jobhunt skill
 
 **Started**: 2026-04-15 02:38
 **Completed**: 2026-04-15 02:39
@@ -175,7 +175,7 @@
 
 **Files Changed**:
 
-- `.codex/skills/career-ops/SKILL.md` - removed remaining required legacy-doc wording
+- `.codex/skills/jobhunt/SKILL.md` - removed remaining required legacy-doc wording
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T009 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
 
@@ -213,7 +213,7 @@
 
 - Re-scanned the active contract files after patching.
 - Confirmed no required legacy-doc dependency wording remains in
-  `.codex/skills/career-ops/SKILL.md` or `modes/_shared.md`.
+  `.codex/skills/jobhunt/SKILL.md` or `modes/_shared.md`.
 - The validator now mentions legacy doc paths only inside negative assertions,
   not as required runtime dependencies, so no additional blocker patch was
   needed.
@@ -292,7 +292,7 @@
 
 **Notes**:
 
-- Re-scanned `AGENTS.md`, `.codex/skills/career-ops/SKILL.md`,
+- Re-scanned `AGENTS.md`, `.codex/skills/jobhunt/SKILL.md`,
   `modes/_shared.md`, and `scripts/test-all.mjs` for legacy instruction-doc
   references.
 - Confirmed there are no remaining required legacy-doc dependencies in the
@@ -316,7 +316,7 @@
 
 **Notes**:
 
-- Ran ASCII and CRLF checks across `.codex/skills/career-ops/SKILL.md`,
+- Ran ASCII and CRLF checks across `.codex/skills/jobhunt/SKILL.md`,
   `modes/_shared.md`, and `scripts/test-all.mjs`.
 - Normalized pre-existing non-ASCII characters in the touched mode and
   validator files so the final edited set is ASCII-only with LF line endings.
@@ -341,7 +341,7 @@
 - Scanned the active contract path for `docs/CODEX.md` and
   `docs/CLAUDE.md` references with `rg`.
 - Confirmed the live blockers in normal execution are limited to
-  `.codex/skills/career-ops/SKILL.md`, `modes/_shared.md`, and the updated
+  `.codex/skills/jobhunt/SKILL.md`, `modes/_shared.md`, and the updated
   messaging inside `scripts/test-all.mjs`.
 - Confirmed PRD and spec references remain as expected project-history
   artifacts and do not expand implementation scope.

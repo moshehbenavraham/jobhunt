@@ -92,7 +92,7 @@ work and Phase 03 prompt/metadata cleanup.
   `modes/batch.md` runtime conversion work - Reason: Phase 02 owns batch
   runtime migration
 - Mode-file and batch-prompt tool-name cleanup such as `WebSearch`,
-  `WebFetch`, `browser_navigate`, and `/career-ops` workflow wording -
+  `WebFetch`, `browser_navigate`, and `/jobhunt` workflow wording -
   Reason: Phase 03 owns prompt normalization
 - Issue templates, GitHub metadata, and other non-doc repo metadata cleanup -
   Reason: Phase 03 owns metadata normalization

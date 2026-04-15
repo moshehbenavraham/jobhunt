@@ -60,7 +60,7 @@ function copyExecutable(sourcePath, targetPath) {
 }
 
 function createSandbox() {
-  const root = mkdtempSync(join(tmpdir(), 'career-ops-batch-contract-'));
+  const root = mkdtempSync(join(tmpdir(), 'jobhunt-batch-contract-'));
   const batchDir = join(root, 'batch');
   const scriptsDir = join(root, 'scripts');
   const dataDir = join(root, 'data');

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# career-ops batch runner - standalone orchestrator for codex exec workers
+# jobhunt batch runner - standalone orchestrator for codex exec workers
 # Reads batch-input.tsv, delegates each offer to a codex exec worker,
 # tracks state in batch-state.tsv for resumability.
 
@@ -32,7 +32,7 @@ MIN_SCORE=0
 
 usage() {
   cat <<'USAGE'
-career-ops batch runner - process job offers in batch via codex exec workers
+jobhunt batch runner - process job offers in batch via codex exec workers
 Uses your default Codex CLI configuration.
 
 Usage: batch-runner.sh [OPTIONS]
@@ -795,7 +795,7 @@ main() {
     exit 0
   fi
 
-  echo "=== career-ops batch runner ==="
+  echo "=== jobhunt batch runner ==="
   echo "Parallel: $PARALLEL | Max retries: $MAX_RETRIES"
   echo "Input: $total_input offers"
   echo ""

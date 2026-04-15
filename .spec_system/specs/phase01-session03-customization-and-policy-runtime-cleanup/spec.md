@@ -59,7 +59,7 @@ explicitly deferred to later phases.
 - Familiarity with the Phase 01 PRD, Session 03 stub, and Phase 00/01
   considerations
 - Working knowledge of `AGENTS.md`, `docs/DATA_CONTRACT.md`, and
-  `.codex/skills/career-ops/SKILL.md`
+  `.codex/skills/jobhunt/SKILL.md`
 - `node`, `npm`, `rg`, and Bash
 
 ### Environment Requirements
@@ -67,7 +67,7 @@ explicitly deferred to later phases.
 - Repo root checkout with `.spec_system/` initialized
 - Read access to `docs/CUSTOMIZATION.md`, `docs/LEGAL_DISCLAIMER.md`,
   `AGENTS.md`, `docs/DATA_CONTRACT.md`, and
-  `.codex/skills/career-ops/SKILL.md`
+  `.codex/skills/jobhunt/SKILL.md`
 - Ability to run `node scripts/test-all.mjs --quick`
 
 ---
@@ -104,7 +104,7 @@ explicitly deferred to later phases.
 
 ### Architecture
 
-Treat `AGENTS.md`, `.codex/skills/career-ops/SKILL.md`, and
+Treat `AGENTS.md`, `.codex/skills/jobhunt/SKILL.md`, and
 `docs/DATA_CONTRACT.md` as the live contract for runtime behavior and file
 ownership. Update `docs/CUSTOMIZATION.md` so every recommendation points to a
 real repo surface that exists today and follows the user/system boundary.
@@ -127,7 +127,7 @@ as the primary path.
 
 - Markdown docs under `docs/`
 - Repo contract files: `AGENTS.md`, `docs/DATA_CONTRACT.md`, and
-  `.codex/skills/career-ops/SKILL.md`
+  `.codex/skills/jobhunt/SKILL.md`
 - Existing repo validation command: `node scripts/test-all.mjs --quick`
 
 ---
@@ -170,7 +170,7 @@ as the primary path.
       hook guidance or contradictory personalization instructions
 - [ ] `node scripts/test-all.mjs --quick` passes after the docs edits
 - [ ] Manual read-through confirms both docs match `AGENTS.md`,
-      `docs/DATA_CONTRACT.md`, and the checked-in career-ops skill
+      `docs/DATA_CONTRACT.md`, and the checked-in jobhunt skill
 
 ### Non-Functional Requirements
 
@@ -238,7 +238,7 @@ as the primary path.
 ### Manual Testing
 
 - Read `docs/CUSTOMIZATION.md` beside `AGENTS.md`, `docs/DATA_CONTRACT.md`,
-  and `.codex/skills/career-ops/SKILL.md` and confirm the customization
+  and `.codex/skills/jobhunt/SKILL.md` and confirm the customization
   surfaces align.
 - Read `docs/LEGAL_DISCLAIMER.md` and verify the local-execution, provider,
   privacy, and acceptable-use wording is consistent and internally linked

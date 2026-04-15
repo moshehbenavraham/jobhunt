@@ -1,6 +1,6 @@
 # Customization Guide
 
-`career-ops` has two kinds of files:
+`jobhunt` has two kinds of files:
 
 - **User layer**: your personal data, targeting, narrative, and outputs
 - **System layer**: shared prompts, scripts, templates, and docs that define
@@ -67,7 +67,7 @@ The active, checked-in runtime surface for this repo is:
 
 - `AGENTS.md` for startup rules, routing, tracker integrity, and operating
   boundaries
-- `.codex/skills/career-ops/SKILL.md` for the repo skill bootstrap and mode
+- `.codex/skills/jobhunt/SKILL.md` for the repo skill bootstrap and mode
   routing summary
 - `scripts/*.mjs`, `npm run doctor`, and `node scripts/test-all.mjs --quick`
   for validation and maintenance

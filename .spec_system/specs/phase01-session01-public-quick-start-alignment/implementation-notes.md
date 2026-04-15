@@ -218,7 +218,7 @@
 
 | Stage     | Canonical Sequence                                                                                                     | Notes                                                                                                         |
 | --------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Install   | `npm install` -> `npx playwright install chromium`                                                                     | `docs/SETUP.md` also carries `git clone` and `cd career-ops`                                                  |
+| Install   | `npm install` -> `npx playwright install chromium`                                                                     | `docs/SETUP.md` also carries `git clone` and `cd jobhunt`                                                  |
 | Configure | `cp config/profile.example.yml config/profile.yml` -> `cp templates/portals.example.yml portals.yml` -> create `cv.md` | `article-digest.md` stays optional proof-point support                                                        |
 | Validate  | `npm run doctor`                                                                                                       | Doctor validates Node.js, dependencies, Playwright Chromium, `cv.md`, `config/profile.yml`, and `portals.yml` |
 | Launch    | `codex`                                                                                                                | Primary interactive runtime from the repo root                                                                |

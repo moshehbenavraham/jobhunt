@@ -151,7 +151,7 @@ async function generatePDF() {
   // Read HTML to inject font paths as absolute file:// URLs
   let html = await readFile(inputPath, 'utf-8');
 
-  // Resolve font paths relative to career-ops/fonts/
+  // Resolve font paths relative to jobhunt/fonts/
   const fontsDir = resolve(__dirname, 'fonts');
   html = html.replace(/url\(['"]?\.\/fonts\//g, `url('file://${fontsDir}/`);
   // Close any unclosed quotes from the replacement (handles all font formats)

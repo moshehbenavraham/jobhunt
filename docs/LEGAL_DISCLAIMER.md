@@ -2,7 +2,7 @@
 
 ## 1. Nature of the Project
 
-`career-ops` is a local repository of Markdown instructions, Node.js scripts,
+`jobhunt` is a local repository of Markdown instructions, Node.js scripts,
 templates, and documentation. The checked-in workflow is documented for local,
 Codex-primary use, but the maintainers do not host models, proxy prompts, run
 a managed backend, or operate a hosted career service on your behalf.
@@ -45,7 +45,7 @@ before using it with an employer or platform.
 
 ## 4. Third-Party Platforms and Terms
 
-`career-ops` may interact with AI providers, career sites, ATS platforms, and
+`jobhunt` may interact with AI providers, career sites, ATS platforms, and
 browser automation tooling. You are responsible for complying with the Terms
 of Service, robots rules, rate limits, and account policies that apply to the
 services you use.
@@ -86,7 +86,7 @@ assessing your own obligations under the EU AI Act and any related law.
 
 ## 7. Indemnification
 
-By using `career-ops`, you agree to indemnify, defend, and hold harmless the
+By using `jobhunt`, you agree to indemnify, defend, and hold harmless the
 authors, contributors, and affiliated parties from claims, damages, losses,
 liabilities, costs, and expenses arising from your use of the software, your
 violation of these terms, or your violation of third-party terms.

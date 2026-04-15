@@ -48,9 +48,9 @@ Initial review and scope confirmation for the canonical contract surface.
 Align the canonical skill and validation baseline to the real repo contract.
 
 - [x] T004 [S0001] [P] Rewrite the skill read order around `AGENTS.md` and
-      existing checked-in docs (`.codex/skills/career-ops/SKILL.md`)
+      existing checked-in docs (`.codex/skills/jobhunt/SKILL.md`)
 - [x] T005 [S0001] [P] Align skill bootstrap and setup rules with the current
-      `AGENTS.md` startup contract (`.codex/skills/career-ops/SKILL.md`)
+      `AGENTS.md` startup contract (`.codex/skills/jobhunt/SKILL.md`)
 - [x] T006 [S0001] [P] Replace legacy-doc instruction-surface checks with
       canonical file checks (`scripts/test-all.mjs`)
 - [x] T007 [S0001] Add content assertions and output messaging for the real
@@ -65,7 +65,7 @@ Remove blocking missing-doc dependencies from active workflow files.
 - [x] T008 [S0001] [P] Remove the missing `docs/CLAUDE.md` dependency from
       shared workflow guidance (`modes/_shared.md`)
 - [x] T009 [S0001] Normalize any remaining required legacy-doc wording in the
-      `career-ops` skill (`.codex/skills/career-ops/SKILL.md`)
+      `jobhunt` skill (`.codex/skills/jobhunt/SKILL.md`)
 - [x] T010 [S0001] Reconcile contract-surface changes with the existing local
       diff without reverting unrelated edits (`scripts/test-all.mjs`)
 - [x] T011 [S0001] Search for remaining required `docs/CODEX.md` or
@@ -87,7 +87,7 @@ Verification that the canonical instruction surface is now the live contract.
 - [x] T015 [S0001] [P] Re-scan the active contract path for legacy instruction
       dependencies and record any deferred drift (`.`)
 - [x] T016 [S0001] Validate ASCII-only encoding and LF endings on touched
-      session files (`.codex/skills/career-ops/SKILL.md`)
+      session files (`.codex/skills/jobhunt/SKILL.md`)
 
 ---
 

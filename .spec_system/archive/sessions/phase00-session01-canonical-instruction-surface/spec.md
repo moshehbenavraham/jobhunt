@@ -11,13 +11,13 @@
 
 This session establishes the canonical instruction surface that the rest of
 the Codex-primary migration depends on. The repo already treats `AGENTS.md`
-as the real persistent contract, but the checked-in `career-ops` skill and
+as the real persistent contract, but the checked-in `jobhunt` skill and
 repo validation still imply that missing legacy docs remain required. That
 drift blocks clean onboarding, makes validation less trustworthy, and muddies
 the migration sequence described in the PRD.
 
 The work stays intentionally narrow. It focuses on the contract files that are
-already on the active operator path: `.codex/skills/career-ops/SKILL.md`,
+already on the active operator path: `.codex/skills/jobhunt/SKILL.md`,
 `scripts/test-all.mjs`, and any repo-owned mode text that still points to
 missing instruction docs during normal execution. Public onboarding, version
 ownership, updater path cleanup, and broader `.claude` metadata alignment are
@@ -32,7 +32,7 @@ legacy references are no longer required.
 
 ## 2. Objectives
 
-1. Make `.codex/skills/career-ops/SKILL.md` start from `AGENTS.md` and other
+1. Make `.codex/skills/jobhunt/SKILL.md` start from `AGENTS.md` and other
    checked-in, existing repo sources only.
 2. Make `scripts/test-all.mjs` validate the real instruction surface instead
    of implying `docs/CODEX.md` or `docs/CLAUDE.md` are required.
@@ -53,7 +53,7 @@ legacy references are no longer required.
 ### Required Tools/Knowledge
 
 - Familiarity with the current instruction surfaces in `AGENTS.md`,
-  `.codex/skills/career-ops/SKILL.md`, `modes/_shared.md`, and
+  `.codex/skills/jobhunt/SKILL.md`, `modes/_shared.md`, and
   `scripts/test-all.mjs`
 - Working knowledge of the Phase 00 PRD and session stub sequencing
 - `node`, `git`, and `rg`
@@ -71,7 +71,7 @@ legacy references are no longer required.
 
 ### In Scope (MVP)
 
-- Contributor can read the `career-ops` skill and follow a valid bootstrap
+- Contributor can read the `jobhunt` skill and follow a valid bootstrap
   path without missing `docs/CODEX.md` or `docs/CLAUDE.md` dependencies -
   rewrite the checked-in skill read order and setup guidance.
 - Repo validation can confirm the real instruction surface - update
@@ -99,7 +99,7 @@ legacy references are no longer required.
 ### Architecture
 
 Treat `AGENTS.md` as the canonical persistent contract and
-`.codex/skills/career-ops/SKILL.md` as the checked-in routing bootstrap that
+`.codex/skills/jobhunt/SKILL.md` as the checked-in routing bootstrap that
 must point back to that contract. Keep validation deterministic by updating
 `scripts/test-all.mjs` to assert the real files and expected content directly,
 while limiting scope to repo-owned files on the active instruction path.
@@ -134,7 +134,7 @@ while limiting scope to repo-owned files on the active instruction path.
 
 | File                                | Changes                                                                                  | Est. Lines |
 | ----------------------------------- | ---------------------------------------------------------------------------------------- | ---------- |
-| `.codex/skills/career-ops/SKILL.md` | Replace missing-doc read order and bootstrap guidance with canonical repo sources        | ~20        |
+| `.codex/skills/jobhunt/SKILL.md` | Replace missing-doc read order and bootstrap guidance with canonical repo sources        | ~20        |
 | `scripts/test-all.mjs`              | Align instruction-surface checks with `AGENTS.md` and checked-in Codex skills            | ~40        |
 | `modes/_shared.md`                  | Remove required pointer to missing legacy instruction docs from active workflow guidance | ~5         |
 
@@ -144,7 +144,7 @@ while limiting scope to repo-owned files on the active instruction path.
 
 ### Functional Requirements
 
-- [ ] The `career-ops` skill read order starts with `AGENTS.md` and existing
+- [ ] The `jobhunt` skill read order starts with `AGENTS.md` and existing
       repo sources only.
 - [ ] `scripts/test-all.mjs` validates the live instruction surface rather
       than relying on `docs/CODEX.md` or `docs/CLAUDE.md`.
@@ -206,7 +206,7 @@ while limiting scope to repo-owned files on the active instruction path.
 ### Unit Tests
 
 - Extend `scripts/test-all.mjs` checks so the instruction-surface section
-  explicitly validates `AGENTS.md` and `.codex/skills/career-ops/SKILL.md`.
+  explicitly validates `AGENTS.md` and `.codex/skills/jobhunt/SKILL.md`.
 
 ### Integration Tests
 

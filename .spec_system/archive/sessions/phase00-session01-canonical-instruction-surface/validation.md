@@ -15,6 +15,6 @@
 
 - Quick suite passed with `62 passed, 0 failed, 0 warnings`.
 - The Codex-primary instruction surface checks passed against `AGENTS.md`
-  and `.codex/skills/career-ops/SKILL.md`.
+  and `.codex/skills/jobhunt/SKILL.md`.
 - No blocking legacy instruction-doc dependencies remain on the active
   contract path.

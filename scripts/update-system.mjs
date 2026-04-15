@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * update-system.mjs - Safe auto-updater for career-ops
+ * update-system.mjs - Safe auto-updater for jobhunt
  *
  * Updates ONLY system layer files (modes, scripts, dashboard, templates).
  * NEVER touches user data (cv.md, profile.yml, _profile.md, data/, reports/).
@@ -30,11 +30,11 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
 
 const UPSTREAM_REMOTE = 'upstream';
-const CANONICAL_REPO = 'https://github.com/santifer/career-ops.git';
+const CANONICAL_REPO = 'https://github.com/moshehbenavraham/jobhunt.git';
 const RAW_VERSION_URL =
-  'https://raw.githubusercontent.com/santifer/career-ops/main/VERSION';
+  'https://raw.githubusercontent.com/moshehbenavraham/jobhunt/main/VERSION';
 const RELEASES_API =
-  'https://api.github.com/repos/santifer/career-ops/releases/latest';
+  'https://api.github.com/repos/moshehbenavraham/jobhunt/releases/latest';
 const VERSION_PATH = 'VERSION';
 
 // System layer paths - ONLY these files get updated

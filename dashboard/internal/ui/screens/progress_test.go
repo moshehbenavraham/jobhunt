@@ -5,8 +5,8 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/santifer/career-ops/dashboard/internal/model"
-	"github.com/santifer/career-ops/dashboard/internal/theme"
+	"github.com/moshehbenavraham/jobhunt/dashboard/internal/model"
+	"github.com/moshehbenavraham/jobhunt/dashboard/internal/theme"
 )
 
 func TestBrailleSparkline(t *testing.T) {

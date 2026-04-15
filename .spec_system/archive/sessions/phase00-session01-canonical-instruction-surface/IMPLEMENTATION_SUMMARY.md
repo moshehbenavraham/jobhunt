@@ -29,7 +29,7 @@ session.
 
 | File                                        | Changes                                                                           |
 | ------------------------------------------- | --------------------------------------------------------------------------------- |
-| `.codex/skills/career-ops/SKILL.md`         | Rebased the bootstrap and read order on `AGENTS.md` and live repo files           |
+| `.codex/skills/jobhunt/SKILL.md`         | Rebased the bootstrap and read order on `AGENTS.md` and live repo files           |
 | `modes/_shared.md`                          | Removed required legacy-doc dependency wording from shared workflow guidance      |
 | `scripts/test-all.mjs`                      | Updated validation checks and messaging for the Codex-primary instruction surface |
 | `.spec_system/PRD/phase_00/PRD_phase_00.md` | Marked Session 01 complete and advanced phase progress                            |

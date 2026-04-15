@@ -56,7 +56,7 @@ Verify the live contract surfaces and map the exact docs drift before editing.
       rules that customization docs must follow (`docs/DATA_CONTRACT.md`)
 - [x] T006 [S0103] [P] Verify the active checked-in skill bootstrap and
       runtime wording that user-facing docs must match
-      (`.codex/skills/career-ops/SKILL.md`)
+      (`.codex/skills/jobhunt/SKILL.md`)
 - [x] T007 [S0103] Map stale `.claude`, personalization, and search-guidance
       drift inside the customization doc (`docs/CUSTOMIZATION.md`)
 - [x] T008 [S0103] Map local-execution, provider, and docs-local link drift in
