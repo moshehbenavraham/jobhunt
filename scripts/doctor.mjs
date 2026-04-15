@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * doctor.mjs — Setup validation for career-ops
+ * doctor.mjs - Setup validation for career-ops
  * Checks all prerequisites and prints a pass/fail checklist.
  */
 
@@ -170,13 +170,13 @@ async function main() {
 
   for (const result of checks) {
     if (result.pass) {
-      console.log(`${green('✓')} ${result.label}`);
+      console.log(`${green('[PASS]')} ${result.label}`);
     } else {
       failures++;
-      console.log(`${red('✗')} ${result.label}`);
+      console.log(`${red('[FAIL]')} ${result.label}`);
       const fixes = Array.isArray(result.fix) ? result.fix : [result.fix];
       for (const hint of fixes) {
-        console.log(`  ${dim('→ ' + hint)}`);
+        console.log(`  ${dim('-> ' + hint)}`);
       }
     }
   }
@@ -186,7 +186,7 @@ async function main() {
     console.log(`Result: ${failures} issue${failures === 1 ? '' : 's'} found. Fix them and run \`npm run doctor\` again.`);
     process.exit(1);
   } else {
-    console.log('Result: All checks passed. You\'re ready to go! Run `claude` to start.');
+    console.log('Result: All checks passed. You\'re ready to go! Run `codex` to start.');
     console.log('');
     console.log('Join the community: https://discord.gg/8pRpHETxa4');
     process.exit(0);

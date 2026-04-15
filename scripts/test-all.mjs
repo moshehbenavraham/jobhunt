@@ -42,6 +42,7 @@ function run(cmd, args = [], opts = {}) {
 function fileExists(path) { return existsSync(join(ROOT, path)); }
 function readFile(path) { return readFileSync(join(ROOT, path), 'utf-8'); }
 function readJson(path) { return JSON.parse(readFile(path)); }
+function stripAnsi(text) { return text.replace(/\x1b\[[0-9;]*m/g, ''); }
 
 console.log('\ncareer-ops test suite\n');
 
@@ -420,9 +421,29 @@ for (const check of contributorMetadataChecks) {
   }
 }
 
-// -- 11. VERSION FILE --------------------------------------------
+// -- 11. VALIDATOR RUNTIME CONTRACT -------------------------------
 
-console.log('\n11. Version file');
+console.log('\n11. Validator runtime contract');
+
+const doctorOutput = run('npm', ['run', 'doctor'], { stdio: ['pipe', 'pipe', 'pipe'] });
+if (doctorOutput === null) {
+  fail('npm run doctor failed');
+} else {
+  const normalizedDoctorOutput = stripAnsi(doctorOutput);
+  const hasCodexFooter = normalizedDoctorOutput.includes('Run `codex` to start.');
+  const hasLegacyRuntimeHint = normalizedDoctorOutput.includes('`claude`') &&
+    normalizedDoctorOutput.includes('to start.');
+
+  if (hasCodexFooter && !hasLegacyRuntimeHint) {
+    pass('Doctor success output points to codex');
+  } else {
+    fail('Doctor success output is not aligned to the Codex-primary runtime contract');
+  }
+}
+
+// -- 12. VERSION FILE --------------------------------------------
+
+console.log('\n12. Version file');
 
 if (fileExists('VERSION')) {
   const canonicalVersion = readFile('VERSION').trim();

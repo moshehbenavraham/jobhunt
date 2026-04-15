@@ -1,10 +1,10 @@
 # PRD Phase 00: Contract and Drift Cleanup
 
-**Status**: In Progress
+**Status**: Complete
 **Sessions**: 4
 **Estimated Duration**: 4-8 days
 
-**Progress**: 3/4 sessions (75%)
+**Progress**: 4/4 sessions (100%)
 
 ---
 
@@ -26,7 +26,7 @@ planned for Phase 01.
 | 01 | Canonical instruction surface | Complete | ~12-16 | PASS |
 | 02 | Version ownership normalization | Complete | ~12-16 | PASS |
 | 03 | Codex metadata alignment | Complete | ~12-16 | PASS |
-| 04 | Validation drift closeout | Not Started | ~12-18 | - |
+| 04 | Validation drift closeout | Complete | ~12-18 | PASS |
 
 ---
 
@@ -35,12 +35,13 @@ planned for Phase 01.
 - Session 01: Canonical instruction surface
 - Session 02: Version ownership normalization
 - Session 03: Codex metadata alignment
+- Session 04: Validation drift closeout
 
 ---
 
 ## Upcoming Sessions
 
-- Session 04: Validation drift closeout
+None. Phase 00 is complete.
 
 ---
 
@@ -92,12 +93,12 @@ Codex contract.
 ## Success Criteria
 
 Phase complete when:
-- [ ] All 4 sessions completed
+- [x] All 4 sessions completed
 - [x] `.codex/skills/career-ops/SKILL.md` no longer depends on missing
       `docs/CODEX.md` or `docs/CLAUDE.md`
-- [ ] Root `VERSION`, `package.json`, updater logic, and repo validation agree
+- [x] Root `VERSION`, `package.json`, updater logic, and repo validation agree
   on one canonical version source
-- [ ] Blocking repo metadata points at `.codex` instead of `.claude`
+- [x] Blocking repo metadata points at `.codex` instead of `.claude`
 - [x] Validation and updater flows are no longer broken by missing-file or
       legacy-path drift
 

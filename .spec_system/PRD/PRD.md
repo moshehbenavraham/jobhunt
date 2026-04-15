@@ -482,10 +482,13 @@ Result:
 
 | Phase | Name | Sessions | Status |
 |-------|------|----------|--------|
-| 00 | Contract and Drift Cleanup | 4 | Not Started |
+| 00 | Contract and Drift Cleanup | 4 | Complete |
 | 01 | Docs and Entrypoints | TBD | Planned |
 | 02 | Batch Runtime Conversion | TBD | Planned |
 | 03 | Prompt and Metadata Normalization | TBD | Planned |
+
+Phase 00 is complete as of 2026-04-15. The remaining migration phases stay
+planned.
 
 ## Suggested Migration Order
 

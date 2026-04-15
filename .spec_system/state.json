@@ -9,14 +9,15 @@
     "0": {
       "name": "Contract and Drift Cleanup",
       "description": "Establish the canonical Codex contract, normalize version ownership, and remove blocking metadata drift.",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 4
     }
   },
   "completed_sessions": [
     "phase00-session01-canonical-instruction-surface",
     "phase00-session02-version-ownership-normalization",
-    "phase00-session03-codex-metadata-alignment"
+    "phase00-session03-codex-metadata-alignment",
+    "phase00-session04-validation-drift-closeout"
   ],
   "next_session_history": [
     {
@@ -47,6 +48,11 @@
     {
       "date": "2026-04-15",
       "session": "phase00-session03-codex-metadata-alignment",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-15",
+      "session": "phase00-session04-validation-drift-closeout",
       "status": "completed"
     }
   ]
