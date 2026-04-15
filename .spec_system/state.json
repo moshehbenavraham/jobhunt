@@ -21,7 +21,7 @@
     "2": {
       "name": "Batch Runtime Conversion",
       "description": "Replace batch worker orchestration with codex exec, adopt a structured worker result contract, and validate the runtime against real batch flows.",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 4
     }
   },
@@ -35,7 +35,9 @@
     "phase01-session03-customization-and-policy-runtime-cleanup",
     "phase01-session04-docs-surface-validation-and-phase-closeout",
     "phase02-session01-codex-exec-worker-contract",
-    "phase02-session02-structured-batch-result-handling"
+    "phase02-session02-structured-batch-result-handling",
+    "phase02-session03-batch-runtime-docs-alignment",
+    "phase02-session04-batch-flow-validation-and-closeout"
   ],
   "next_session_history": [
     {
@@ -136,6 +138,16 @@
     {
       "date": "2026-04-15",
       "session": "phase02-session03-batch-runtime-docs-alignment",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-15",
+      "session": "phase02-session04-batch-flow-validation-and-closeout",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-15",
+      "session": "phase02-session04-batch-flow-validation-and-closeout",
       "status": "completed"
     }
   ]

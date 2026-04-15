@@ -367,4 +367,100 @@ runSingleOfferScenario({
   }
 }
 
+{
+  const sandboxRoot = createSandbox({ inputRows: [buildInputRow('1')] });
+
+  try {
+    const failedRun = runRunner(sandboxRoot, {
+      env: {
+        MOCK_CODEX_FIXTURE: FAILED_FIXTURE,
+        MOCK_CODEX_EXIT_CODE: '17',
+        MOCK_CODEX_WRITE_RESULT: 'false',
+      },
+    });
+    assertRunSucceeded(failedRun, 'retry execution resumability');
+
+    let stateRow = readStateRow(join(sandboxRoot, 'batch', 'batch-state.tsv'));
+    assert.equal(stateRow.status, 'failed');
+    assert.equal(stateRow.reportNum, '001');
+    assert.equal(stateRow.retries, '1');
+    assert.ok(
+      stateRow.error.startsWith('infrastructure: exit 17;'),
+      'retry execution resumability: expected infrastructure failure prefix',
+    );
+
+    const rerunFixture = join(sandboxRoot, 'completed-rerun.json');
+    const rerunPayload = JSON.parse(readFileSync(COMPLETED_FIXTURE, 'utf8'));
+    rerunPayload.report_num = '002';
+    rerunPayload.report = 'reports/002-example-ai-2026-04-15.md';
+    writeFile(rerunFixture, `${JSON.stringify(rerunPayload, null, 2)}\n`);
+
+    const retryRun = runRunner(sandboxRoot, {
+      args: ['--retry-failed'],
+      env: {
+        MOCK_CODEX_FIXTURE: rerunFixture,
+        MOCK_CODEX_EXIT_CODE: '0',
+        MOCK_CODEX_WRITE_RESULT: 'true',
+      },
+    });
+    assertRunSucceeded(retryRun, 'retry execution resumability rerun');
+
+    stateRow = readStateRow(join(sandboxRoot, 'batch', 'batch-state.tsv'));
+    assert.equal(stateRow.status, 'completed');
+    assert.equal(stateRow.reportNum, '002');
+    assert.equal(stateRow.score, '4.6');
+    assert.equal(stateRow.retries, '1');
+
+    const retryDryRunAfterSuccess = runRunner(sandboxRoot, {
+      args: ['--dry-run', '--retry-failed'],
+    });
+    assertRunSucceeded(
+      retryDryRunAfterSuccess,
+      'retry execution resumability post-success dry run',
+    );
+    assert.ok(
+      retryDryRunAfterSuccess.stdout.includes('No offers to process.'),
+      'retry execution resumability post-success dry run: expected no retryable offers',
+    );
+  } finally {
+    rmSync(sandboxRoot, { recursive: true, force: true });
+  }
+}
+
+{
+  const sandboxRoot = createSandbox({
+    inputRows: [buildInputRow('1'), buildInputRow('2')],
+    stateRows: [
+      buildStateRow({
+        id: '1',
+        status: 'failed',
+        reportNum: '001',
+        error: 'infrastructure: exit 17; worker timed out',
+        retries: '1',
+      }),
+      buildStateRow({
+        id: '2',
+        status: 'failed',
+        reportNum: '002',
+        error: 'infrastructure: exit 17; worker timed out',
+        retries: '0',
+      }),
+    ],
+  });
+
+  try {
+    const retryBudgetDryRun = runRunner(sandboxRoot, {
+      args: ['--dry-run', '--retry-failed', '--max-retries', '1'],
+    });
+    assertRunSucceeded(retryBudgetDryRun, 'retry budget dry run');
+    assert.deepEqual(
+      dryRunIds(retryBudgetDryRun.stdout),
+      ['2'],
+      'retry budget dry run: expected only rows below the overridden retry budget',
+    );
+  } finally {
+    rmSync(sandboxRoot, { recursive: true, force: true });
+  }
+}
+
 console.log('Batch runner state-semantics tests passed');

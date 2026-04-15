@@ -1,16 +1,16 @@
 # PRD Phase 02: Batch Runtime Conversion
 
-**Status**: In Progress
+**Status**: Complete
 **Sessions**: 4
 **Estimated Duration**: 4-6 days
 
-**Progress**: 3/4 sessions (75%)
+**Progress**: 4/4 sessions (100%)
 
 ---
 
 ## Overview
 
-Phase 02 converts the repository's batch execution path from `claude -p`
+Phase 02 converted the repository's batch execution path from `claude -p`
 workers to a Codex-native `codex exec` runtime with a structured JSON result
 contract. The goal is operational alignment, not a rewrite of the batch input,
 report generation, or tracker merge business logic.
@@ -29,7 +29,7 @@ language cleanup and metadata normalization that Phase 03 already owns.
 | 01 | Codex Exec Worker Contract | Complete | ~12-25 | 2026-04-15 |
 | 02 | Structured Batch Result Handling | Complete | ~12-25 | 2026-04-15 |
 | 03 | Batch Runtime Docs Alignment | Complete | ~12-25 | 2026-04-15 |
-| 04 | Batch Flow Validation and Closeout | Not Started | ~12-25 | - |
+| 04 | Batch Flow Validation and Closeout | Complete | ~12-25 | 2026-04-15 |
 
 ---
 
@@ -37,12 +37,14 @@ language cleanup and metadata normalization that Phase 03 already owns.
 
 - Session 01: Codex Exec Worker Contract
 - Session 02: Structured Batch Result Handling
+- Session 03: Batch Runtime Docs Alignment
+- Session 04: Batch Flow Validation and Closeout
 
 ---
 
 ## Upcoming Sessions
 
-- Session 04: Batch Flow Validation and Closeout
+None. Phase 02 is complete.
 
 ---
 
@@ -115,16 +117,16 @@ replaces the worker runtime surface and the way worker outcomes are recorded.
 ## Success Criteria
 
 Phase complete when:
-- [ ] All 4 sessions completed
-- [ ] `batch/batch-runner.sh` launches workers through `codex exec`, not
+- [x] All 4 sessions completed
+- [x] `batch/batch-runner.sh` launches workers through `codex exec`, not
       `claude -p`
-- [ ] Worker outcomes are read from a structured result file rather than log
+- [x] Worker outcomes are read from a structured result file rather than log
       scraping
-- [ ] Batch-owned docs describe the live `codex exec` runtime and the worker
+- [x] Batch-owned docs describe the live `codex exec` runtime and the worker
       result contract
-- [ ] Validation evidence shows dry-run and controlled batch flows work
+- [x] Validation evidence shows dry-run and controlled batch flows work
       without reopening Phase 00 or Phase 01 scope
-- [ ] Residual prompt and metadata cleanup is explicitly handed to Phase 03
+- [x] Residual prompt and metadata cleanup is explicitly handed to Phase 03
 
 ---
 

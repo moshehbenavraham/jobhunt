@@ -484,11 +484,11 @@ Result:
 | ----- | --------------------------------- | -------- | -------- |
 | 00    | Contract and Drift Cleanup        | 4        | Complete |
 | 01    | Docs and Entrypoints              | 4        | Complete |
-| 02    | Batch Runtime Conversion          | 4        | In Progress |
+| 02    | Batch Runtime Conversion          | 4        | Complete    |
 | 03    | Prompt and Metadata Normalization | TBD      | Planned  |
 
 Phase 00 is complete as of 2026-04-15. Phase 01 is complete as of 2026-04-15.
-Phase 02 is in progress with 4 defined sessions. Phase 03 remains planned.
+Phase 02 is complete as of 2026-04-15. Phase 03 remains planned.
 
 ## Suggested Migration Order
 
@@ -558,26 +558,26 @@ Primary workstreams:
 
 ## Success Criteria
 
-- [ ] A new user can follow `README.md` and `docs/SETUP.md` using `codex`, not
+- [x] A new user can follow `README.md` and `docs/SETUP.md` using `codex`, not
       `claude`.
-- [ ] `README.md`, `docs/SETUP.md`, `docs/CONTRIBUTING.md`, and
+- [x] `README.md`, `docs/SETUP.md`, `docs/CONTRIBUTING.md`, and
       `scripts/doctor.mjs` no longer position Claude Code or OpenCode as
       alternate runtimes in the main onboarding path.
-- [ ] The canonical instructions are rooted in `AGENTS.md`, with no required
+- [x] The canonical instructions are rooted in `AGENTS.md`, with no required
       missing companion files.
-- [ ] `node scripts/test-all.mjs --quick` passes on a clean checkout.
-- [ ] `node scripts/update-system.mjs check` reports the correct local version.
-- [ ] Batch mode runs via `codex exec`, not `claude -p`.
-- [ ] Batch workers emit schema-validated structured JSON via
+- [x] `node scripts/test-all.mjs --quick` passes on a clean checkout.
+- [x] `node scripts/update-system.mjs check` reports the correct local version.
+- [x] Batch mode runs via `codex exec`, not `claude -p`.
+- [x] Batch workers emit schema-validated structured JSON via
       `--output-last-message`, and the runner no longer scrapes scores from
       logs.
-- [ ] `.codex/skills/` is treated as the active checked-in skill surface
+- [x] `.codex/skills/` is treated as the active checked-in skill surface
       across docs, updater logic, and repo metadata.
-- [ ] Root `VERSION` is present as the canonical version source and
+- [x] Root `VERSION` is present as the canonical version source and
       `docs/VERSION` is removed.
-- [ ] Mode files, batch prompts, and primary docs contain zero Claude-specific
+- [x] Mode files, batch prompts, and primary docs contain zero Claude-specific
       tool names or backward-compatible wording.
-- [ ] `docs/CODEX_CLI_PRIMARY_CONVERSION_AUDIT.md` can be deleted without
+- [x] `docs/CODEX_CLI_PRIMARY_CONVERSION_AUDIT.md` can be deleted without
       losing migration scope, evidence, or acceptance criteria.
 
 ## What Does Not Need a Rewrite

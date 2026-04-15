@@ -176,6 +176,17 @@ if (batchStateSemantics !== null) {
   fail('Batch runner state-semantics tests failed');
 }
 
+// -- 3d. BATCH RUNNER CLOSEOUT ----------------------------------
+
+console.log('\n3d. Batch runner closeout');
+
+const batchCloseout = run('node', ['scripts/test-batch-runner-closeout.mjs']);
+if (batchCloseout !== null) {
+  pass('Batch runner closeout tests pass');
+} else {
+  fail('Batch runner closeout tests failed');
+}
+
 // -- 4. DASHBOARD BUILD ------------------------------------------
 
 if (!QUICK) {
