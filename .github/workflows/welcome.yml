@@ -24,10 +24,8 @@ jobs:
             - Make sure you've linked a related issue (required for features)
             - Read [CONTRIBUTING.md](https://github.com/moshehbenavraham/jobhunt/blob/main/docs/CONTRIBUTING.md) if you haven't
 
-            We'll review your PR soon. Join our [Discord](https://discord.gg/8pRpHETxa4) if you have questions.
           issue-message: |
             Thanks for opening your first issue, @${{ github.actor }}! We'll take a look soon.
 
             In the meantime:
             - Check [SUPPORT.md](https://github.com/moshehbenavraham/jobhunt/blob/main/docs/SUPPORT.md) for setup help
-            - Join our [Discord](https://discord.gg/8pRpHETxa4) for quick answers

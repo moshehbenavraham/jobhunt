@@ -243,7 +243,7 @@
 **Notes**:
 
 - Corrected the support guide's docs-local links so the setup and security references resolve from inside `docs/`.
-- Preserved external GitHub and Discord support links while removing the broken `docs/SETUP.md` target.
+- Preserved external GitHub support link while removing the broken `docs/SETUP.md` target.
 
 **Files Changed**:
 

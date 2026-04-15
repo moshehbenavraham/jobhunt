@@ -401,7 +401,6 @@ export async function runScan(args = process.argv.slice(2)) {
   }
 
   console.log(`\n→ Run /jobhunt pipeline to evaluate new offers.`);
-  console.log('→ Share results and get help: https://discord.gg/8pRpHETxa4');
 }
 
 export {

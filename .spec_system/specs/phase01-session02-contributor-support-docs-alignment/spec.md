@@ -122,7 +122,7 @@ GitHub and in local reading.
 
 - Markdown docs in the repo root and `docs/`
 - Existing npm scripts exposed through `package.json`
-- Existing public support channels in GitHub and Discord
+- Existing public support channel in GitHub
 
 ---
 
@@ -204,7 +204,7 @@ GitHub and in local reading.
 - Expanding contributor docs into a second setup guide instead of keeping setup
   depth in `docs/SETUP.md`
 - Correcting internal links without accidentally breaking existing external
-  GitHub and Discord references
+  GitHub reference
 - Keeping validation guidance useful for contributors while not widening into
   batch or implementation-specific docs
 

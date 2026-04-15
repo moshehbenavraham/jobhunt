@@ -203,7 +203,6 @@ async function main() {
       "Result: All checks passed. You're ready to go! Run `codex` to start.",
     );
     console.log('');
-    console.log('Join the community: https://discord.gg/8pRpHETxa4');
     process.exit(0);
   }
 }

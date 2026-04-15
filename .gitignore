@@ -7,6 +7,7 @@ reports/*.md
 !reports/.gitkeep
 output/*
 !output/.gitkeep
+tmp/
 coverage/
 batch/logs/*
 !batch/logs/.gitkeep

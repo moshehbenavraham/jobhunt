@@ -32,6 +32,7 @@ The standard user-layer inputs are:
 
 - `profile/cv.md`
 - `config/profile.yml`
+- `modes/_profile.md`
 - `portals.yml`
 - `profile/article-digest.md` if you have proof points
 
