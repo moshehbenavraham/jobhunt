@@ -18,9 +18,7 @@ const LISTING_PAGE_PATTERNS = [
   /search for jobs page is loaded/i,
 ];
 
-const EXPIRED_URL_PATTERNS = [
-  /[?&]error=true/i,
-];
+const EXPIRED_URL_PATTERNS = [/[?&]error=true/i];
 
 const APPLY_PATTERNS = [
   /\bapply\b/i,
@@ -40,10 +38,17 @@ function firstMatch(patterns, text = '') {
 }
 
 function hasApplyControl(controls = []) {
-  return controls.some((control) => APPLY_PATTERNS.some((pattern) => pattern.test(control)));
+  return controls.some((control) =>
+    APPLY_PATTERNS.some((pattern) => pattern.test(control)),
+  );
 }
 
-export function classifyLiveness({ status = 0, finalUrl = '', bodyText = '', applyControls = [] } = {}) {
+export function classifyLiveness({
+  status = 0,
+  finalUrl = '',
+  bodyText = '',
+  applyControls = [],
+} = {}) {
   if (status === 404 || status === 410) {
     return { result: 'expired', reason: `HTTP ${status}` };
   }
@@ -55,7 +60,10 @@ export function classifyLiveness({ status = 0, finalUrl = '', bodyText = '', app
 
   const expiredBody = firstMatch(HARD_EXPIRED_PATTERNS, bodyText);
   if (expiredBody) {
-    return { result: 'expired', reason: `pattern matched: ${expiredBody.source}` };
+    return {
+      result: 'expired',
+      reason: `pattern matched: ${expiredBody.source}`,
+    };
   }
 
   if (hasApplyControl(applyControls)) {
@@ -64,12 +72,21 @@ export function classifyLiveness({ status = 0, finalUrl = '', bodyText = '', app
 
   const listingPage = firstMatch(LISTING_PAGE_PATTERNS, bodyText);
   if (listingPage) {
-    return { result: 'expired', reason: `pattern matched: ${listingPage.source}` };
+    return {
+      result: 'expired',
+      reason: `pattern matched: ${listingPage.source}`,
+    };
   }
 
   if (bodyText.trim().length < MIN_CONTENT_CHARS) {
-    return { result: 'expired', reason: 'insufficient content — likely nav/footer only' };
+    return {
+      result: 'expired',
+      reason: 'insufficient content — likely nav/footer only',
+    };
   }
 
-  return { result: 'uncertain', reason: 'content present but no visible apply control found' };
+  return {
+    result: 'uncertain',
+    reason: 'content present but no visible apply control found',
+  };
 }

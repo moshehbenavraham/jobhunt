@@ -11,7 +11,13 @@
  * Run: node scripts/normalize-statuses.mjs [--dry-run]
  */
 
-import { readFileSync, writeFileSync, copyFileSync, existsSync, mkdirSync } from 'fs';
+import {
+  readFileSync,
+  writeFileSync,
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+} from 'fs';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -51,7 +57,8 @@ function normalizeStatus(raw) {
   if (/^aplicado\s+\d{4}/i.test(s)) return { status: 'Applied' };
 
   // CONDICIONAL / HOLD / EVALUAR / Verificar → Evaluated
-  if (/^(condicional|hold|evaluar|verificar)$/i.test(s)) return { status: 'Evaluated' };
+  if (/^(condicional|hold|evaluar|verificar)$/i.test(s))
+    return { status: 'Evaluated' };
 
   // MONITOR → SKIP
   if (/^monitor$/i.test(s)) return { status: 'SKIP' };
@@ -60,15 +67,22 @@ function normalizeStatus(raw) {
   if (/geo.?blocker/i.test(s)) return { status: 'SKIP' };
 
   // Repost #NNN → Discarded
-  if (/^repost/i.test(s)) return { status: 'Discarded', moveToNotes: raw.trim() };
+  if (/^repost/i.test(s))
+    return { status: 'Discarded', moveToNotes: raw.trim() };
 
   // "—" (em dash, no status) → Discarded
   if (s === '—' || s === '-' || s === '') return { status: 'Discarded' };
 
   // Already canonical (English, per states.yml) — just fix casing/bold
   const canonical = [
-    'Evaluated', 'Applied', 'Responded', 'Interview',
-    'Offer', 'Rejected', 'Discarded', 'SKIP',
+    'Evaluated',
+    'Applied',
+    'Responded',
+    'Interview',
+    'Offer',
+    'Rejected',
+    'Discarded',
+    'SKIP',
   ];
   for (const c of canonical) {
     if (lower === c.toLowerCase()) return { status: c };
@@ -76,12 +90,14 @@ function normalizeStatus(raw) {
 
   // Spanish aliases → English canonicals
   if (['evaluada'].includes(lower)) return { status: 'Evaluated' };
-  if (['aplicado', 'enviada', 'aplicada', 'applied', 'sent'].includes(lower)) return { status: 'Applied' };
+  if (['aplicado', 'enviada', 'aplicada', 'applied', 'sent'].includes(lower))
+    return { status: 'Applied' };
   if (['respondido'].includes(lower)) return { status: 'Responded' };
   if (['entrevista'].includes(lower)) return { status: 'Interview' };
   if (['oferta'].includes(lower)) return { status: 'Offer' };
   if (['cerrada', 'descartada'].includes(lower)) return { status: 'Discarded' };
-  if (['no aplicar', 'no_aplicar', 'skip'].includes(lower)) return { status: 'SKIP' };
+  if (['no aplicar', 'no_aplicar', 'skip'].includes(lower))
+    return { status: 'SKIP' };
 
   // Unknown — flag it
   return { status: null, unknown: true };
@@ -102,7 +118,7 @@ for (let i = 0; i < lines.length; i++) {
   const line = lines[i];
   if (!line.startsWith('|')) continue;
 
-  const parts = line.split('|').map(s => s.trim());
+  const parts = line.split('|').map((s) => s.trim());
   // Format: ['', '#', 'fecha', 'empresa', 'rol', 'score', 'STATUS', 'pdf', 'report', 'notas', '']
   if (parts.length < 9) continue;
   if (parts[1] === '#' || parts[1] === '---' || parts[1] === '') continue;

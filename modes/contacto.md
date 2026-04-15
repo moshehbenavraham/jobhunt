@@ -45,6 +45,7 @@
 6. **Targets alternativos** con justificacion de por que son buenos second choices
 
 **Reglas del mensaje:**
+
 - Maximo 300 caracteres (LinkedIn connection request limit)
 - NO corporate-speak
 - NO "I'm passionate about..."

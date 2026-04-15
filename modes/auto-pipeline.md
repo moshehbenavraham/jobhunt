@@ -17,13 +17,16 @@ Si el input es una **URL** (no texto de JD pegado), seguir esta estrategia para 
 **Si el input es texto de JD** (no URL): usar directamente, sin necesidad de fetch.
 
 ## Paso 1 — Evaluación A-G
+
 Ejecutar exactamente igual que el modo `oferta` (leer `modes/oferta.md` para todos los bloques A-F + Block G Posting Legitimacy).
 
 ## Paso 2 — Guardar Report .md
+
 Guardar la evaluación completa en `reports/{###}-{company-slug}-{YYYY-MM-DD}.md` (ver formato en `modes/oferta.md`).
 Include Block G in the saved report. Add `**Legitimacy:** {tier}` to the report header.
 
 ## Paso 3 — Generar PDF
+
 Ejecutar el pipeline completo de `pdf` (leer `modes/pdf.md`).
 
 ## Paso 4 — Draft Application Answers (solo si score >= 4.5)
@@ -47,6 +50,7 @@ Si el score final es >= 4.5, generar borrador de respuestas para el formulario d
 **Posición: "I'm choosing you."** el candidato tiene opciones y está eligiendo esta empresa por razones concretas.
 
 **Reglas de tono:**
+
 - **Confiado sin arrogancia**: "I've spent the past year building production AI agent systems — your role is where I want to apply that experience next"
 - **Selectivo sin soberbia**: "I've been intentional about finding a team where I can contribute meaningfully from day one"
 - **Específico y concreto**: Siempre referenciar algo REAL del JD o de la empresa, y algo REAL de la experiencia del candidato
@@ -54,6 +58,7 @@ Si el score final es >= 4.5, generar borrador de respuestas para el formulario d
 - **El hook es la prueba, no la afirmación**: En vez de "I'm great at X", decir "I built X that does Y"
 
 **Framework por pregunta:**
+
 - **Why this role?** → "Your [specific thing] maps directly to [specific thing I built]."
 - **Why this company?** → Mencionar algo concreto sobre la empresa. "I've been using [product] for [time/purpose]."
 - **Relevant experience?** → Un proof point cuantificado. "Built [X] that [metric]. Sold the company in 2025."
@@ -63,6 +68,7 @@ Si el score final es >= 4.5, generar borrador de respuestas para el formulario d
 **Idioma**: Siempre en el idioma del JD (EN default). Aplicar `/tech-translate`.
 
 ## Paso 5 — Actualizar Tracker
+
 Registrar en `data/applications.md` con todas las columnas incluyendo Report y PDF en ✅.
 
 **Si algún paso falla**, continuar con los siguientes y marcar el paso fallido como pendiente en el tracker.

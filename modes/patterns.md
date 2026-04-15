@@ -17,6 +17,7 @@ Analyze all tracked applications to find patterns in outcomes and surface action
 Before running analysis, check: does `data/applications.md` have at least 5 entries with status beyond "Evaluated" (i.e., Applied, Responded, Interview, Offer, Rejected, Discarded, SKIP)?
 
 If not, tell the user:
+
 > "Not enough data yet -- {N}/5 applications have progressed beyond evaluation. Keep applying and come back when you have more outcomes to analyze."
 
 Exit gracefully.
@@ -31,18 +32,18 @@ node scripts/analyze-patterns.mjs
 
 Parse the JSON output. It contains:
 
-| Key | Contents |
-|-----|----------|
-| `metadata` | Total entries, date range, analysis date, counts by outcome |
-| `funnel` | Count per status stage (evaluated, applied, interview, offer, etc.) |
-| `scoreComparison` | Avg/min/max score per outcome group (positive, negative, self_filtered, pending) |
-| `archetypeBreakdown` | Per-archetype: total, positive, negative, self_filtered, conversion rate |
-| `blockerAnalysis` | Most frequent hard blockers: geo-restriction, stack-mismatch, seniority, onsite |
-| `remotePolicy` | Per-policy bucket: total, positive, negative, conversion rate |
-| `companySizeBreakdown` | Per-size bucket: startup, scaleup, enterprise |
-| `scoreThreshold` | Recommended minimum score + reasoning |
-| `techStackGaps` | Most frequent tech gaps in negative outcomes |
-| `recommendations` | Top 5 actionable items with reasoning and impact level |
+| Key                    | Contents                                                                         |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| `metadata`             | Total entries, date range, analysis date, counts by outcome                      |
+| `funnel`               | Count per status stage (evaluated, applied, interview, offer, etc.)              |
+| `scoreComparison`      | Avg/min/max score per outcome group (positive, negative, self_filtered, pending) |
+| `archetypeBreakdown`   | Per-archetype: total, positive, negative, self_filtered, conversion rate         |
+| `blockerAnalysis`      | Most frequent hard blockers: geo-restriction, stack-mismatch, seniority, onsite  |
+| `remotePolicy`         | Per-policy bucket: total, positive, negative, conversion rate                    |
+| `companySizeBreakdown` | Per-size bucket: startup, scaleup, enterprise                                    |
+| `scoreThreshold`       | Recommended minimum score + reasoning                                            |
+| `techStackGaps`        | Most frequent tech gaps in negative outcomes                                     |
+| `recommendations`      | Top 5 actionable items with reasoning and impact level                           |
 
 If the script returns `error`, display the error message and exit.
 
@@ -65,20 +66,20 @@ Write the report to `reports/pattern-analysis-{YYYY-MM-DD}.md`.
 
 Show each status with count and percentage of total. Use a simple table:
 
-| Stage | Count | % |
-|-------|-------|---|
-| Evaluated | X | X% |
-| Applied | X | X% |
-| ... | | |
+| Stage     | Count | %   |
+| --------- | ----- | --- |
+| Evaluated | X     | X%  |
+| Applied   | X     | X%  |
+| ...       |       |     |
 
 ## Score vs Outcome
 
-| Outcome | Avg Score | Min | Max | Count |
-|---------|-----------|-----|-----|-------|
-| Positive | X.X/5 | X.X | X.X | X |
-| Negative | ... | | | |
-| Self-filtered | ... | | | |
-| Pending | ... | | | |
+| Outcome       | Avg Score | Min | Max | Count |
+| ------------- | --------- | --- | --- | ----- |
+| Positive      | X.X/5     | X.X | X.X | X     |
+| Negative      | ...       |     |     |       |
+| Self-filtered | ...       |     |     |       |
+| Pending       | ...       |     |     |       |
 
 ## Archetype Performance
 
@@ -105,6 +106,7 @@ State the data-driven minimum score and reasoning.
 ## Recommendations
 
 Number the top recommendations (from the script output). For each:
+
 1. **[IMPACT]** Action to take
    Reasoning behind the recommendation.
 ```
@@ -112,14 +114,17 @@ Number the top recommendations (from the script output). For each:
 ## Step 3 — Present Summary
 
 Show the user a condensed version with:
+
 1. One-line stat summary (X applications, Y% applied, Z% positive outcome)
 2. Top 3 findings (most impactful patterns)
 3. Link to full report
 
 Example:
+
 > **Pattern Analysis Complete** (24 applications, Apr 7-8)
 >
 > Key findings:
+>
 > - Geo-restricted roles are 0% conversion (7 of 24) -- stop evaluating US/Canada-only postings
 > - Regional/global remote roles convert at 57-67% -- these are your sweet spot
 > - No positive outcomes below 4.2/5 -- consider this your score floor
@@ -131,6 +136,7 @@ Example:
 Ask the user if they want to act on any recommendations:
 
 > "Want me to apply any of these recommendations? I can:
+>
 > - Update `portals.yml` to filter out geo-restricted roles
 > - Set a score threshold in `_profile.md` for PDF generation
 > - Adjust archetype targeting based on what's converting
@@ -138,6 +144,7 @@ Ask the user if they want to act on any recommendations:
 > Just say which ones, or 'all' to apply everything."
 
 If the user agrees:
+
 - For portal filter changes: edit `portals.yml`
 - For profile/archetype changes: edit `modes/_profile.md` (NEVER `_shared.md`)
 - For score threshold: add to `config/profile.yml` under a `patterns` key
@@ -146,9 +153,9 @@ If the user agrees:
 
 For reference, outcomes are classified as:
 
-| Status | Outcome |
-|--------|---------|
+| Status                               | Outcome                                        |
+| ------------------------------------ | ---------------------------------------------- |
 | Interview, Offer, Responded, Applied | **Positive** (invested effort or got traction) |
-| Rejected, Discarded | **Negative** (company said no or offer closed) |
-| SKIP, NO APLICAR | **Self-filtered** (user decided not to apply) |
-| Evaluated | **Pending** (no action taken yet) |
+| Rejected, Discarded                  | **Negative** (company said no or offer closed) |
+| SKIP, NO APLICAR                     | **Self-filtered** (user decided not to apply)  |
+| Evaluated                            | **Pending** (no action taken yet)              |

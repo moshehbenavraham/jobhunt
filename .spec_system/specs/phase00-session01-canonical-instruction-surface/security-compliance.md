@@ -9,6 +9,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `.codex/skills/career-ops/SKILL.md` - canonical bootstrap and contract routing
 - `scripts/test-all.mjs` - validation checks for the live instruction surface
 - `modes/_shared.md` - shared workflow guidance cleanup
@@ -22,13 +23,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No unsafe input handling introduced in the reviewed files. |
-| Hardcoded Secrets | PASS | -- | No secrets, tokens, or credentials added. |
-| Sensitive Data Exposure | PASS | -- | No new logging or plaintext PII exposure paths added. |
-| Insecure Dependencies | N/A | -- | No dependency changes in this session. |
-| Misconfiguration | PASS | -- | No debug or permissive runtime settings introduced. |
+| Category                      | Status | Severity | Details                                                    |
+| ----------------------------- | ------ | -------- | ---------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No unsafe input handling introduced in the reviewed files. |
+| Hardcoded Secrets             | PASS   | --       | No secrets, tokens, or credentials added.                  |
+| Sensitive Data Exposure       | PASS   | --       | No new logging or plaintext PII exposure paths added.      |
+| Insecure Dependencies         | N/A    | --       | No dependency changes in this session.                     |
+| Misconfiguration              | PASS   | --       | No debug or permissive runtime settings introduced.        |
 
 ---
 

@@ -19,13 +19,13 @@
 
 ## Progress Summary
 
-| Category | Total | Done | Remaining |
-|----------|-------|------|-----------|
-| Setup | 3 | 0 | 3 |
-| Foundation | 4 | 0 | 4 |
-| Implementation | 5 | 0 | 5 |
-| Testing | 4 | 0 | 4 |
-| **Total** | **16** | **0** | **16** |
+| Category       | Total  | Done  | Remaining |
+| -------------- | ------ | ----- | --------- |
+| Setup          | 3      | 0     | 3         |
+| Foundation     | 4      | 0     | 4         |
+| Implementation | 5      | 0     | 5         |
+| Testing        | 4      | 0     | 4         |
+| **Total**      | **16** | **0** | **16**    |
 
 ---
 

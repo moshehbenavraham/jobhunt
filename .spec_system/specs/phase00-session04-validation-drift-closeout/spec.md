@@ -46,18 +46,21 @@ say the same thing.
 ## 3. Prerequisites
 
 ### Required Sessions
+
 - [x] `phase00-session02-version-ownership-normalization` - restores canonical
-  version ownership used by updater and validation flows
+      version ownership used by updater and validation flows
 - [x] `phase00-session03-codex-metadata-alignment` - removes blocking metadata
-  drift and records later-phase residual legacy references
+      drift and records later-phase residual legacy references
 
 ### Required Tools/Knowledge
+
 - Familiarity with the Phase 00 PRD, Session 04 stub, and existing residual
   legacy inventory
 - Working knowledge of the repo validation commands and updater behavior
 - `node`, `npm`, `rg`, `git`, and Bash
 
 ### Environment Requirements
+
 - Repo root checkout with `.spec_system/` initialized
 - Ability to run `node scripts/test-all.mjs --quick`, `npm run doctor`, and
   `node scripts/update-system.mjs check`
@@ -68,6 +71,7 @@ say the same thing.
 ## 4. Scope
 
 ### In Scope (MVP)
+
 - Operator can run `npm run doctor` and receive Codex-primary launch guidance
   from the setup validator - remove the remaining legacy runtime hint from the
   doctor success path.
@@ -82,6 +86,7 @@ say the same thing.
   references that are not part of this closeout.
 
 ### Out of Scope (Deferred)
+
 - Public onboarding rewrite in `README.md`, `docs/SETUP.md`,
   `docs/CONTRIBUTING.md`, `docs/SUPPORT.md`, `docs/CUSTOMIZATION.md`, and
   `docs/LEGAL_DISCLAIMER.md` - Reason: Phase 01 owns the user-facing
@@ -97,6 +102,7 @@ say the same thing.
 ## 5. Technical Approach
 
 ### Architecture
+
 Treat validation surfaces as part of the runtime contract, not as incidental
 copy. Update the doctor success path so the setup validator reports the live
 Codex entrypoint, then extend `scripts/test-all.mjs` to assert that contract
@@ -105,6 +111,7 @@ sessions. Record the resulting command evidence in a session-local exit report
 that can drive the next `validate` and `updateprd` steps without a fresh audit.
 
 ### Design Patterns
+
 - Contract-through-validation: encode runtime expectations in repo tests
   instead of relying on manual memory
 - Narrow closeout evidence: keep the phase-exit proof in one session-local
@@ -113,6 +120,7 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
   later-phase references instead of widening this session
 
 ### Technology Stack
+
 - Node.js ESM scripts in `scripts/`
 - Markdown artifacts in `.spec_system/specs/`
 - Bash and `rg` for targeted drift scans
@@ -122,21 +130,24 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
 ## 6. Deliverables
 
 ### Files to Create
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | Capture validation evidence, success-criteria mapping, and residual-gap decisions for Phase 00 closeout | ~80 |
+
+| File                                                                                    | Purpose                                                                                                 | Est. Lines |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------- |
+| `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | Capture validation evidence, success-criteria mapping, and residual-gap decisions for Phase 00 closeout | ~80        |
 
 ### Files to Modify
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `scripts/doctor.mjs` | Replace the legacy `claude` success hint with Codex-primary launch guidance in the setup validator | ~5 |
-| `scripts/test-all.mjs` | Add assertions for the doctor success output and keep validator-surface runtime checks in the repo gate | ~25 |
+
+| File                   | Changes                                                                                                 | Est. Lines |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- | ---------- |
+| `scripts/doctor.mjs`   | Replace the legacy `claude` success hint with Codex-primary launch guidance in the setup validator      | ~5         |
+| `scripts/test-all.mjs` | Add assertions for the doctor success output and keep validator-surface runtime checks in the repo gate | ~25        |
 
 ---
 
 ## 7. Success Criteria
 
 ### Functional Requirements
+
 - [ ] `npm run doctor` completes successfully and points the user at `codex`
       instead of `claude`
 - [ ] `scripts/test-all.mjs` validates the doctor success output alongside the
@@ -147,6 +158,7 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
       deferrals rather than ambiguous Phase 00 blockers
 
 ### Testing Requirements
+
 - [ ] `node --check scripts/doctor.mjs` passes
 - [ ] `node --check scripts/test-all.mjs` passes
 - [ ] `npm run doctor` passes and prints Codex-primary launch guidance
@@ -156,6 +168,7 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
       remains in validator surfaces
 
 ### Non-Functional Requirements
+
 - [ ] Phase 00 closeout remains scoped to validator surfaces and evidence
       capture rather than a public docs rewrite
 - [ ] Exit evidence is explicit enough to support `validate` and `updateprd`
@@ -164,6 +177,7 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
       root
 
 ### Quality Gates
+
 - [ ] All files ASCII-encoded
 - [ ] Unix LF line endings
 - [ ] Code follows project conventions
@@ -173,6 +187,7 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
 ## 8. Implementation Notes
 
 ### Key Considerations
+
 - Live repo evidence already shows `node scripts/test-all.mjs --quick` and
   `node scripts/update-system.mjs check` passing, so the remaining work should
   stay focused on validator-surface alignment and phase-exit evidence.
@@ -183,6 +198,7 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
   tracker.
 
 ### Potential Challenges
+
 - Scope creep from the many legacy references already deferred to Phase 01 and
   Phase 02
 - False confidence if validation checks only source text and never assert the
@@ -191,6 +207,7 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
   recorded immediately after re-validation
 
 ### Relevant Considerations
+
 - No active concerns or lessons learned are currently recorded in
   `.spec_system/CONSIDERATIONS.md`.
 - `.spec_system/SECURITY-COMPLIANCE.md` is clean; this session is validation
@@ -201,10 +218,12 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
 ## 9. Testing Strategy
 
 ### Unit Tests
+
 - Run `node --check` for `scripts/doctor.mjs` and `scripts/test-all.mjs`
   after the validator updates.
 
 ### Integration Tests
+
 - Run `npm run doctor` and verify the success footer points to `codex`.
 - Run `node scripts/test-all.mjs --quick` and verify the expanded
   validator-surface checks pass.
@@ -212,12 +231,14 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
   evidence to confirm updater behavior remains healthy.
 
 ### Manual Testing
+
 - Review the doctor success output in a normal terminal run to confirm the
   message is accurate and still readable.
 - Review `phase00-exit-report.md` against `PRD_phase_00.md` and the residual
   inventory to confirm Phase 00 blockers and deferrals are clearly separated.
 
 ### Edge Cases
+
 - Doctor output should remain matchable in non-TTY environments where ANSI
   colors are disabled.
 - Existing `claude` references in later-phase docs and batch files should not
@@ -231,9 +252,11 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
 ## 10. Dependencies
 
 ### External Libraries
+
 - None
 
 ### Internal Dependencies
+
 - `scripts/doctor.mjs` - setup validator whose success output still carries a
   legacy runtime hint
 - `scripts/test-all.mjs` - repo gate that should enforce the validator
@@ -248,6 +271,7 @@ that can drive the next `validate` and `updateprd` steps without a fresh audit.
   conventions
 
 ### Other Sessions
+
 - Depends on: `phase00-session02-version-ownership-normalization`,
   `phase00-session03-codex-metadata-alignment`
 - Depended by: none inside Phase 00; completion enables `validate`,

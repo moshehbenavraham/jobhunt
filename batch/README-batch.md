@@ -8,7 +8,7 @@ Process multiple job offers in parallel via `claude -p` workers. Each worker run
 
    ```tsv
    id	url	source	notes
-   1	https://jobs.example.com/role-a	LinkedIn	
+   1	https://jobs.example.com/role-a	LinkedIn
    2	https://greenhouse.io/company/role-b	Greenhouse	priority
    ```
 
@@ -28,13 +28,13 @@ Process multiple job offers in parallel via `claude -p` workers. Each worker run
 
 ## Options
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--parallel N` | `1` | Number of concurrent `claude -p` workers |
-| `--dry-run` | off | Preview pending offers without processing |
-| `--retry-failed` | off | Only retry offers marked as `failed` in state |
-| `--start-from N` | `0` | Skip offers with ID below N |
-| `--max-retries N` | `2` | Max retry attempts per offer before giving up |
+| Flag              | Default | Description                                   |
+| ----------------- | ------- | --------------------------------------------- |
+| `--parallel N`    | `1`     | Number of concurrent `claude -p` workers      |
+| `--dry-run`       | off     | Preview pending offers without processing     |
+| `--retry-failed`  | off     | Only retry offers marked as `failed` in state |
+| `--start-from N`  | `0`     | Skip offers with ID below N                   |
+| `--max-retries N` | `2`     | Max retry attempts per offer before giving up |
 
 ## Directory Layout
 

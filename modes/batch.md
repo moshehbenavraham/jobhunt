@@ -43,11 +43,11 @@ batch/
    b. Guardar JD a `/tmp/batch-jd-{id}.txt`
    c. Calcular siguiente REPORT_NUM secuencial
    d. Ejecutar via Bash:
-      ```bash
-      claude -p --dangerously-skip-permissions \
-        --append-system-prompt-file batch/batch-prompt.md \
-        "Procesa esta oferta. URL: {url}. JD: /tmp/batch-jd-{id}.txt. Report: {num}. ID: {id}"
-      ```
+   ```bash
+   claude -p --dangerously-skip-permissions \
+     --append-system-prompt-file batch/batch-prompt.md \
+     "Procesa esta oferta. URL: {url}. JD: /tmp/batch-jd-{id}.txt. Report: {num}. ID: {id}"
+   ```
    e. Actualizar `batch-state.tsv` (completed/failed + score + report_num)
    f. Log a `logs/{report_num}-{id}.log`
    g. Chrome: volver atrás → siguiente oferta
@@ -61,6 +61,7 @@ batch/batch-runner.sh [OPTIONS]
 ```
 
 Opciones:
+
 - `--dry-run` — lista pendientes sin ejecutar
 - `--retry-failed` — solo reintenta fallidas
 - `--start-from N` — empieza desde ID N
@@ -87,6 +88,7 @@ id	url	status	started_at	completed_at	report_num	score	error	retries
 Cada worker recibe `batch-prompt.md` como system prompt. Es self-contained.
 
 El worker produce:
+
 1. Report `.md` en `reports/`
 2. PDF en `output/`
 3. Línea de tracker en `batch/tracker-additions/{id}.tsv`
@@ -94,11 +96,11 @@ El worker produce:
 
 ## Gestión de errores
 
-| Error | Recovery |
-|-------|----------|
-| URL inaccesible | Worker falla → conductor marca `failed`, siguiente |
-| JD detrás de login | Conductor intenta leer DOM. Si falla → `failed` |
-| Portal cambia layout | Conductor razona sobre HTML, se adapta |
-| Worker crashea | Conductor marca `failed`, siguiente. Retry con `--retry-failed` |
-| Conductor muere | Re-ejecutar → lee state → skip completadas |
-| PDF falla | Report .md se guarda. PDF queda pendiente |
+| Error                | Recovery                                                        |
+| -------------------- | --------------------------------------------------------------- |
+| URL inaccesible      | Worker falla → conductor marca `failed`, siguiente              |
+| JD detrás de login   | Conductor intenta leer DOM. Si falla → `failed`                 |
+| Portal cambia layout | Conductor razona sobre HTML, se adapta                          |
+| Worker crashea       | Conductor marca `failed`, siguiente. Retry con `--retry-failed` |
+| Conductor muere      | Re-ejecutar → lee state → skip completadas                      |
+| PDF falla            | Report .md se guarda. PDF queda pendiente                       |

@@ -12,6 +12,7 @@ companion execution guide for UI-focused sessions and does not redefine the
 core migration requirements in `PRD.md`.
 
 Scope guardrails:
+
 - Preserve existing data contracts (`data/applications.md`, reports, tracker
   scripts).
 - Treat `Pipeline`, `Progress`, and `Report Viewer` as the only first-class
@@ -24,6 +25,7 @@ Scope guardrails:
 ## 1. Design Brief
 
 ### Emotional Targets
+
 **Quiet confidence + strategic clarity + controlled momentum**
 
 The operator is navigating career uncertainty. Every pixel of this dashboard
@@ -33,6 +35,7 @@ experience should feel like sitting at the helm of something precise and
 powerful, where every data point exists to serve a decision.
 
 ### Aesthetic Identity
+
 - **Reference domain**: Astronomical observatory instrument panels -- the
   kind of purpose-built displays used in radio telescope control rooms where
   dense information must be parsed instantly under pressure, where every
@@ -49,11 +52,12 @@ powerful, where every data point exists to serve a decision.
   steel (too cold) -- obsidian: ancient, precise, reflective enough to
   suggest depth beneath the surface
 
-*The intersection creates something recognizable yet unprecedented: a career
+_The intersection creates something recognizable yet unprecedented: a career
 command center that feels like it was built for mission-critical work, not a
-toy dashboard.*
+toy dashboard._
 
 ### Signature Moment
+
 The **Pipeline Constellation View** -- when the operator presses a key to
 toggle the progress screen, the funnel visualization renders as a cascading
 waterfall of half-block characters that builds from top to bottom in a single
@@ -65,6 +69,7 @@ showing weekly trend for each stage. This single screen should make someone
 pause and think "this is not a normal terminal app."
 
 ### Micro-Narrative
+
 **Arrival** (launch) -- The alt-screen clears to a deep base color. The
 header materializes with the operator's pipeline title and aggregate stats.
 The interface announces: you are in control.
@@ -97,6 +102,7 @@ momentum of their entire campaign.
 ## 2. User Flows
 
 ### Flow 1: Pipeline Review
+
 **Trigger**: Dashboard launch (`go run . -path /path/to/career-ops`)
 **Goal**: Survey the current state of all tracked applications
 
@@ -120,6 +126,7 @@ Missing report file shows inline error in viewer. Failed status update logs
 to stderr and reloads data to stay consistent.
 
 ### Flow 2: Status Management
+
 **Trigger**: Press `c` on a selected application
 **Goal**: Update an application's pipeline status
 
@@ -142,6 +149,7 @@ to stderr and reloads data to stay consistent.
 reloads from disk to stay consistent with actual file state.
 
 ### Flow 3: Campaign Analytics
+
 **Trigger**: Press `p` from pipeline view
 **Goal**: Understand overall campaign health and trajectory
 
@@ -164,6 +172,7 @@ If data parsing fails, affected widgets render safe fallback values while
 navigation remains responsive.
 
 ### Flow 4: Report Deep-Dive
+
 **Trigger**: Press `Enter` on an application with a report
 **Goal**: Read the full evaluation report for a specific opportunity
 
@@ -190,11 +199,11 @@ instead of breaking viewport layout.
 
 ## 3. Screen Inventory
 
-| Screen | View State | Purpose | Key Components |
-|--------|------------|---------|----------------|
-| Pipeline | `viewPipeline` | Primary application list with filtering, sorting, grouping | Header bar, tab row, metrics ribbon, sort indicator, scrollable grouped list, preview pane, help bar |
-| Progress | `viewProgress` | Campaign analytics and funnel visualization | Header bar, funnel chart, score distribution, conversion rates, weekly activity, help bar |
-| Report Viewer | `viewReport` | Full-screen markdown report reader | Header bar with scroll position, styled markdown body, footer with nav keys |
+| Screen        | View State     | Purpose                                                    | Key Components                                                                                       |
+| ------------- | -------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Pipeline      | `viewPipeline` | Primary application list with filtering, sorting, grouping | Header bar, tab row, metrics ribbon, sort indicator, scrollable grouped list, preview pane, help bar |
+| Progress      | `viewProgress` | Campaign analytics and funnel visualization                | Header bar, funnel chart, score distribution, conversion rates, weekly activity, help bar            |
+| Report Viewer | `viewReport`   | Full-screen markdown report reader                         | Header bar with scroll position, styled markdown body, footer with nav keys                          |
 
 ---
 
@@ -226,6 +235,7 @@ loading screen -- data is either available from cache or loaded inline.
 ## 5. Interaction Patterns
 
 ### List Navigation
+
 - **Cursor movement**: j/k or arrow keys with scroll-adjusted viewport
 - **Page movement**: Ctrl+D/Ctrl+U or PgDn/PgUp for half-page jumps
 - **Jump to extremes**: g (top), G (bottom)
@@ -239,6 +249,7 @@ loading screen -- data is either available from cache or loaded inline.
   using Unicode quarter-block characters to show approximate position.
 
 ### Tab Filtering
+
 - **Cycle**: h/l or left/right arrows, plus `f` for forward-only
 - **Active indicator**: Bold text in accent color with a thick underline
   (using `U+2501` heavy horizontal) beneath the active tab; inactive tabs
@@ -247,11 +258,13 @@ loading screen -- data is either available from cache or loaded inline.
   for inactive tabs, bright for active
 
 ### Sort Cycling
+
 - **Trigger**: `s` key cycles through score > date > company > status
 - **Indicator**: Sort bar shows current mode and view mode in bracket
   notation with count of visible items
 
 ### State Consistency Rules
+
 - **Manual refresh (`r`)**: Reload tracker and metrics from disk without
   changing active tab, sort mode, or view mode.
 - **View toggle (`v`)**: Switch grouped/flat rendering while preserving
@@ -260,6 +273,7 @@ loading screen -- data is either available from cache or loaded inline.
   selection on the same logical application when possible.
 
 ### Status Picker
+
 - **Trigger**: `c` on selected application
 - **Appearance**: Overlay appended to bottom of body with clear title
   "Change status:" in accent color
@@ -270,6 +284,7 @@ loading screen -- data is either available from cache or loaded inline.
   cursor position on the same application in its new group
 
 ### Preview Pane
+
 - **Trigger**: Automatic on cursor movement (lazy-loads from report cache)
 - **Content**: Archetype, TL;DR, comp estimate, remote policy -- extracted
   from report header fields
@@ -279,6 +294,7 @@ loading screen -- data is either available from cache or loaded inline.
   notes, shows "Loading preview..." in Subtext
 
 ### Report Viewer
+
 - **Markdown rendering**: H1 (Blue, bold), H2 (Mauve, bold), H3 (Sky,
   bold), blockquotes (vertical bar + italic), bold fields (Yellow),
   horizontal rules (full-width thin line)
@@ -294,11 +310,13 @@ loading screen -- data is either available from cache or loaded inline.
 ## 6. Motion and Animation Strategy
 
 ### Philosophy
+
 Motion in a TUI serves wayfinding and state confirmation. Every visual
 change should feel intentional and instantaneous -- no lag, no gratuitous
 animation, but clear feedback that actions had effect.
 
 ### Entrance Choreography
+
 - **Launch**: Single-frame render of the full pipeline view. No staggered
   loading -- the alt-screen clears and the complete interface appears as
   one unit. Speed IS the animation.
@@ -306,17 +324,18 @@ animation, but clear feedback that actions had effect.
   and Pipeline-to-Viewer are instant view swaps with no intermediate state.
 
 ### Interaction Feedback
+
 - **Cursor movement**: Immediate redraw of the selection highlight. The
   previous row loses its accent bar and background; the new row gains them.
   The preview pane updates in the same frame (from cache) or shows
   "Loading preview..." until the report summary is loaded.
-- **Tab switch**: Instant re-filter and re-sort. Cursor resets to position
-  0. The tab underline shifts to the new active tab.
+- **Tab switch**: Instant re-filter and re-sort. Cursor resets to position 0. The tab underline shifts to the new active tab.
 - **Status change**: After confirming in the picker, the full dataset
   reloads from disk. The cursor attempts to follow the application to its
   new group position.
 
 ### Scroll-Driven Moments
+
 - **Progress screen**: The funnel visualization uses Unicode full-block
   characters (`U+2588`) with proportional bar widths. On wide terminals,
   bars should use half-block characters (`U+2580/U+2584`) for
@@ -327,6 +346,7 @@ animation, but clear feedback that actions had effect.
   spatial model of "status regions."
 
 ### Animation Constraints
+
 - All renders must complete in a single frame (Bubble Tea's synchronous
   `View()` model). No `tea.Tick`-based animation loops.
 - Locked target: 60fps interaction budget (<=16ms key-to-redraw for
@@ -343,6 +363,7 @@ animation, but clear feedback that actions had effect.
 ## 7. Layout Philosophy
 
 ### Composition Approach
+
 **Dense-but-breathable information architecture.** Every screen follows
 a strict vertical stack with no wasted horizontal space, but generous
 use of single-line padding between semantic regions. The layout should
@@ -356,6 +377,7 @@ comp (14 chars). This fixed structure means the operator's eye can scan
 vertically down any column without horizontal hunting.
 
 ### Visual Hierarchy
+
 - **Scale contrast**: Dramatic. The header title is bold and brightly
   colored. Metrics are smaller and dimmer. Application rows are the
   "body text" -- readable but recessive until selected. Group headers
@@ -372,7 +394,9 @@ vertically down any column without horizontal hunting.
   separated by single blank lines.
 
 ### Section Transitions
+
 **Ruled lines and color shifts.** Sections are separated by:
+
 - Thin horizontal rules (`U+2500`) in Overlay color for hard breaks
   (pipeline body to preview pane)
 - Status group headers using em-dash bordered labels
@@ -385,14 +409,15 @@ vertically down any column without horizontal hunting.
 
 ## 8. Responsive Strategy
 
-| Terminal Width | Target | Layout Approach |
-|----------------|--------|-----------------|
-| < 80 cols | Minimum viable | Drop comp column. Truncate company to 10 chars. Reduce role column. Preview shows only TL;DR. Tab labels abbreviate (ALL, EVAL, APP, INT, TOP, SKIP). |
-| 80-120 cols | Standard | Full column layout. All tab labels visible. Preview shows archetype + TL;DR + comp. Funnel bars at comfortable width. |
-| 120-160 cols | Comfortable | Extended role column width. Preview shows all four fields. Funnel bars with generous width. Score distribution bars fully visible. |
-| > 160 cols | Cinematic | Extra padding. Weekly activity shows full ISO week labels instead of abbreviated. Funnel bars flanked by trend sparklines using Braille dot patterns (`U+2800`-`U+28FF`). Consider side-by-side panels for progress sections. |
+| Terminal Width | Target         | Layout Approach                                                                                                                                                                                                               |
+| -------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| < 80 cols      | Minimum viable | Drop comp column. Truncate company to 10 chars. Reduce role column. Preview shows only TL;DR. Tab labels abbreviate (ALL, EVAL, APP, INT, TOP, SKIP).                                                                         |
+| 80-120 cols    | Standard       | Full column layout. All tab labels visible. Preview shows archetype + TL;DR + comp. Funnel bars at comfortable width.                                                                                                         |
+| 120-160 cols   | Comfortable    | Extended role column width. Preview shows all four fields. Funnel bars with generous width. Score distribution bars fully visible.                                                                                            |
+| > 160 cols     | Cinematic      | Extra padding. Weekly activity shows full ISO week labels instead of abbreviated. Funnel bars flanked by trend sparklines using Braille dot patterns (`U+2800`-`U+28FF`). Consider side-by-side panels for progress sections. |
 
 **Height handling**:
+
 - Pipeline body height = total height - 7 (fixed chrome) - preview height
 - Minimum viable body height: 3 lines
 - Scroll offset adjusts with 3-line look-ahead margin
@@ -437,6 +462,7 @@ adaptation is continuous and proportional.
 ## 10. Design System
 
 ### Color Architecture
+
 - **Dominant surface** (60%): **Base #1e1e2e** (Catppuccin Mocha) -- the
   deep obsidian plane. Nearly black with enough blue warmth to avoid the
   harshness of pure black. This is the void that all information floats
@@ -465,6 +491,7 @@ rather than reflect it. This matches the observatory aesthetic: indicators
 glowing against a dark instrument panel.
 
 #### Light Theme (Catppuccin Latte)
+
 Auto-detected on light terminal backgrounds. Same semantic color roles
 with inverted luminance: Base #eff1f5, Surface #ccd0da, Overlay #bcc0cc,
 Text #4c4f69, Subtext #6c6f85. Accent colors shift to their Latte
@@ -472,6 +499,7 @@ equivalents (deeper, more saturated to maintain contrast on light
 backgrounds).
 
 ### Typography
+
 - **Display font**: The terminal's monospace font IS the display font.
   Personality comes from WEIGHT and COLOR, not typeface. Bold + accent
   color on headers creates the "display" tier.
@@ -491,34 +519,37 @@ backgrounds).
   terminal font settings.
 
 ### Spacing Scale
+
 Terminal spacing is measured in character cells:
 
-| Token | Chars | Usage |
-|-------|-------|-------|
-| `xs` | 1 | Between inline elements (score and date) |
-| `sm` | 2 | Left/right content padding (`Padding(0, 2)`) |
-| `md` | 4 | Between column groups in the sort bar |
-| `lg` | 1 line | Between semantic sections in progress screen |
-| `xl` | 2 lines | Not currently used; reserved for section groups |
+| Token | Chars   | Usage                                           |
+| ----- | ------- | ----------------------------------------------- |
+| `xs`  | 1       | Between inline elements (score and date)        |
+| `sm`  | 2       | Left/right content padding (`Padding(0, 2)`)    |
+| `md`  | 4       | Between column groups in the sort bar           |
+| `lg`  | 1 line  | Between semantic sections in progress screen    |
+| `xl`  | 2 lines | Not currently used; reserved for section groups |
 
 Horizontal padding is consistently 2 characters on each side for all
 content lines. Vertical spacing within a screen uses single-line gaps
 between sections.
 
 ### Elevation and Depth
+
 Three-level elevation model using background color:
 
-| Level | Background | Usage | Visual Effect |
-|-------|-----------|-------|---------------|
-| Ground | Base #1e1e2e | Default content area | Recedes; content floats |
-| Shelf | Surface #313244 | Header bar, help bar, metrics ribbon | Anchors top/bottom; frames the viewport |
-| Focus | Overlay #45475a | Selected row, status picker highlight | Elevates the focused element above peers |
+| Level  | Background      | Usage                                 | Visual Effect                            |
+| ------ | --------------- | ------------------------------------- | ---------------------------------------- |
+| Ground | Base #1e1e2e    | Default content area                  | Recedes; content floats                  |
+| Shelf  | Surface #313244 | Header bar, help bar, metrics ribbon  | Anchors top/bottom; frames the viewport  |
+| Focus  | Overlay #45475a | Selected row, status picker highlight | Elevates the focused element above peers |
 
 No shadows (not available in terminal). No blur. No transparency. Depth
 is communicated purely through luminance stepping: darker = further away,
 lighter = closer to the operator. This is honest to the medium.
 
 ### Texture and Atmosphere
+
 - **Background treatment**: Clean, solid Base color. No gradients, no
   patterns, no noise. The obsidian metaphor demands an unbroken dark plane.
 - **Structural texture**: Unicode box-drawing characters (`U+2500`-`U+257F`)
@@ -537,22 +568,22 @@ lighter = closer to the operator. This is honest to the medium.
 
 ## 11. Component Patterns
 
-| Component | Used In | Behavior |
-|-----------|---------|----------|
-| Header Bar | Pipeline, Progress, Viewer | Full-width Surface background. Left-aligned bold title in screen accent color. Right-aligned stats/position in Subtext. Padding(0, 2). |
-| Tab Row | Pipeline | Horizontal tab labels with count badges. Active tab: bold + accent color + heavy underline. Inactive: Subtext + thin underline. Padding(0, 1). |
-| Metrics Ribbon | Pipeline | Full-width Surface background. Inline status counts colored by status semantics. Compact single-line format. |
-| Sort Bar | Pipeline | Single-line Subtext showing `[Sort: mode] [View: mode] N shown`. No background -- sits on Base. |
-| Application Row | Pipeline | Fixed-column layout: score (colored by threshold), date, company, role, status (colored), comp (Yellow). Selected row: Overlay background + left accent bar. |
-| Group Header | Pipeline (grouped mode) | `-- STATUS_LABEL (count) ---` in Subtext bold. Rule extends to fill width. Separates status groups in the scrollable list. |
-| Preview Pane | Pipeline | Below a thin divider. Shows 2-4 lines of report summary (archetype, TL;DR, comp, remote) with Sky bold labels and Text values. Falls back to notes or loading indicator. |
-| Help Bar | Pipeline, Progress, Viewer | Full-width Surface background. Key hints: bold Text for key, Subtext for description. Brand text right-aligned in Overlay. Padding(0, 1). |
-| Bar Chart | Progress | Full-block characters scaled proportionally. Color per-bar based on semantic meaning (funnel stage, score range). Label left-aligned, bar center, count right. |
-| Conversion Rates | Progress | Inline label + bold colored value. Rates separated by `|` in Overlay. Color thresholds: >=30% green, >=15% yellow, >=5% peach, <5% red. |
-| Status Picker | Pipeline (overlay) | Appended to body. Title in Blue bold. Options with `>` cursor and Overlay background on selected. Width 30 chars. |
-| Markdown Renderer | Viewer | H1/H2/H3 with color + bold. Blockquotes with vertical bar. Bold inline segments in Yellow. Tables with full box-drawing borders. |
-| Box-Drawing Table | Viewer | Corner pieces, T-junctions, cross pieces. Header row in Sky bold. Column widths auto-computed from content with intelligent truncation. |
-| Scroll Indicator | Viewer header | "Top", "End", or percentage. Right-aligned in Subtext. |
+| Component         | Used In                    | Behavior                                                                                                                                                                 |
+| ----------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| Header Bar        | Pipeline, Progress, Viewer | Full-width Surface background. Left-aligned bold title in screen accent color. Right-aligned stats/position in Subtext. Padding(0, 2).                                   |
+| Tab Row           | Pipeline                   | Horizontal tab labels with count badges. Active tab: bold + accent color + heavy underline. Inactive: Subtext + thin underline. Padding(0, 1).                           |
+| Metrics Ribbon    | Pipeline                   | Full-width Surface background. Inline status counts colored by status semantics. Compact single-line format.                                                             |
+| Sort Bar          | Pipeline                   | Single-line Subtext showing `[Sort: mode] [View: mode] N shown`. No background -- sits on Base.                                                                          |
+| Application Row   | Pipeline                   | Fixed-column layout: score (colored by threshold), date, company, role, status (colored), comp (Yellow). Selected row: Overlay background + left accent bar.             |
+| Group Header      | Pipeline (grouped mode)    | `-- STATUS_LABEL (count) ---` in Subtext bold. Rule extends to fill width. Separates status groups in the scrollable list.                                               |
+| Preview Pane      | Pipeline                   | Below a thin divider. Shows 2-4 lines of report summary (archetype, TL;DR, comp, remote) with Sky bold labels and Text values. Falls back to notes or loading indicator. |
+| Help Bar          | Pipeline, Progress, Viewer | Full-width Surface background. Key hints: bold Text for key, Subtext for description. Brand text right-aligned in Overlay. Padding(0, 1).                                |
+| Bar Chart         | Progress                   | Full-block characters scaled proportionally. Color per-bar based on semantic meaning (funnel stage, score range). Label left-aligned, bar center, count right.           |
+| Conversion Rates  | Progress                   | Inline label + bold colored value. Rates separated by `                                                                                                                  | ` in Overlay. Color thresholds: >=30% green, >=15% yellow, >=5% peach, <5% red. |
+| Status Picker     | Pipeline (overlay)         | Appended to body. Title in Blue bold. Options with `>` cursor and Overlay background on selected. Width 30 chars.                                                        |
+| Markdown Renderer | Viewer                     | H1/H2/H3 with color + bold. Blockquotes with vertical bar. Bold inline segments in Yellow. Tables with full box-drawing borders.                                         |
+| Box-Drawing Table | Viewer                     | Corner pieces, T-junctions, cross pieces. Header row in Sky bold. Column widths auto-computed from content with intelligent truncation.                                  |
+| Scroll Indicator  | Viewer header              | "Top", "End", or percentage. Right-aligned in Subtext.                                                                                                                   |
 
 ---
 
@@ -593,15 +624,17 @@ lighter = closer to the operator. This is honest to the medium.
 These are specific to the Go + Bubble Tea + Lip Gloss stack.
 
 ### Priority Tiers
+
 Use this prioritization to keep implementation decisions objective:
 
-| Tier | Intent | Candidate items |
-|------|--------|-----------------|
-| P0 | Baseline clarity and reliability | Selection highlight enhancement, empty state quality, status update continuity |
-| P1 | Information density gains | Score gauge, weekly activity color encoding |
-| P2 | Signature polish | Funnel half-block refinement, optional wide-screen sparklines |
+| Tier | Intent                           | Candidate items                                                                |
+| ---- | -------------------------------- | ------------------------------------------------------------------------------ |
+| P0   | Baseline clarity and reliability | Selection highlight enhancement, empty state quality, status update continuity |
+| P1   | Information density gains        | Score gauge, weekly activity color encoding                                    |
+| P2   | Signature polish                 | Funnel half-block refinement, optional wide-screen sparklines                  |
 
 ### Selection Highlight Enhancement
+
 Replace the current `Background(m.theme.Overlay)` on the full row with a
 compound selection indicator:
 
@@ -615,21 +648,23 @@ creating a color-coded selection pip. The rest of the row gets the Overlay
 background. Unselected rows have no left pip -- just normal padding.
 
 ### Score Visualization
+
 Current: plain number with color thresholds.
 Enhanced: prepend a 1-character "gauge" using quarter-block characters:
 
-| Score | Char | Color |
-|-------|------|-------|
+| Score  | Char                  | Color      |
+| ------ | --------------------- | ---------- |
 | >= 4.5 | `U+2588` (full block) | Green bold |
-| >= 4.0 | `U+2586` (3/4 block) | Green |
-| >= 3.5 | `U+2584` (half block) | Yellow |
-| >= 3.0 | `U+2582` (1/4 block) | Text |
-| < 3.0 | `U+2581` (1/8 block) | Red |
+| >= 4.0 | `U+2586` (3/4 block)  | Green      |
+| >= 3.5 | `U+2584` (half block) | Yellow     |
+| >= 3.0 | `U+2582` (1/4 block)  | Text       |
+| < 3.0  | `U+2581` (1/8 block)  | Red        |
 
 This adds a scannable "bar graph" down the score column that communicates
 relative quality faster than reading numbers.
 
 ### Funnel Visualization Enhancement
+
 Current: full-block bars with stage colors.
 Enhanced: use half-block characters (`U+2580` upper half, `U+2584` lower
 half) with foreground/background color pairs to double vertical resolution.
@@ -643,6 +678,7 @@ for that stage (last 8 weeks). Implementation: each Braille character
 A sparkline of 8 data points fits in 4 characters.
 
 ### Weekly Activity Enhancement
+
 Current: full-block bars in Blue.
 Enhanced: use graduated color per bar based on activity level relative to
 the operator's average. Above-average weeks in Green, average in Blue,
@@ -650,6 +686,7 @@ below-average in Peach. This immediately shows whether the operator's
 cadence is accelerating or decelerating.
 
 ### Empty State
+
 When the tracker has zero applications, the pipeline body should render a
 centered block:
 

@@ -100,15 +100,22 @@
 
 ## Local Dev Tools
 
-| Category | Tool | Config |
-|----------|------|--------|
-| Formatter | not configured | - |
-| Linter | not configured | - |
-| Type Safety | not configured | - |
-| Testing | `node scripts/test-all.mjs`, `npm run doctor` | repo scripts |
-| Observability | not configured | - |
-| Git Hooks | not configured | - |
-| Database | not configured | - |
+| Category      | Tool                                          | Config       |
+| ------------- | --------------------------------------------- | ------------ |
+| Formatter     | Prettier                                      | .prettierrc  |
+| Linter        | not configured                                | -            |
+| Type Safety   | not configured                                | -            |
+| Testing       | `node scripts/test-all.mjs`, `npm run doctor` | repo scripts |
+| Observability | not configured                                | -            |
+| Git Hooks     | not configured                                | -            |
+| Database      | not configured                                | -            |
+
+## Infrastructure
+
+| Surface | Command | Details |
+| ------- | ------- | ------- |
+| Health  | `npm run doctor && node scripts/test-all.mjs --quick` | Repo health gate; validates setup, version consistency, and dashboard build coverage |
+| Local Dev | `cd dashboard && go build -o career-dashboard . && ./career-dashboard --path ..` | Manual launch path for the Go TUI dashboard; run from the `dashboard/` directory |
 
 ## When In Doubt
 

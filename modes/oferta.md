@@ -5,6 +5,7 @@ Cuando el candidato pega una oferta (texto o URL), entregar SIEMPRE los 7 bloque
 ## Paso 0 — Detección de Arquetipo
 
 Clasificar la oferta en uno de los 6 arquetipos (ver `_shared.md`). Si es híbrido, indicar los 2 más cercanos. Esto determina:
+
 - Qué proof points priorizar en bloque B
 - Cómo reescribir el summary en bloque E
 - Qué historias STAR preparar en bloque F
@@ -12,6 +13,7 @@ Clasificar la oferta en uno de los 6 arquetipos (ver `_shared.md`). Si es híbri
 ## Bloque A — Resumen del Rol
 
 Tabla con:
+
 - Arquetipo detectado
 - Domain (platform/agentic/LLMOps/ML/enterprise)
 - Function (build/consult/manage/deploy)
@@ -25,6 +27,7 @@ Tabla con:
 Lee `cv.md`. Crea tabla con cada requisito del JD mapeado a líneas exactas del CV.
 
 **Adaptado al arquetipo:**
+
 - Si FDE → priorizar proof points de delivery rápida y client-facing
 - Si SA → priorizar diseño de sistemas e integrations
 - Si PM → priorizar product discovery y métricas
@@ -33,6 +36,7 @@ Lee `cv.md`. Crea tabla con cada requisito del JD mapeado a líneas exactas del 
 - Si Transformation → priorizar change management, adoption, scaling
 
 Sección de **gaps** con estrategia de mitigación para cada uno. Para cada gap:
+
 1. ¿Es un hard blocker o un nice-to-have?
 2. ¿Puede el candidato demostrar experiencia adyacente?
 3. ¿Hay un proyecto portfolio que cubra este gap?
@@ -47,6 +51,7 @@ Sección de **gaps** con estrategia de mitigación para cada uno. Para cada gap:
 ## Bloque D — Comp y Demanda
 
 Usar WebSearch para:
+
 - Salarios actuales del rol (Glassdoor, Levels.fyi, Blind)
 - Reputación de compensación de la empresa
 - Tendencia de demanda del rol
@@ -55,10 +60,10 @@ Tabla con datos y fuentes citadas. Si no hay datos, decirlo en vez de inventar.
 
 ## Bloque E — Plan de Personalización
 
-| # | Sección | Estado actual | Cambio propuesto | Por qué |
-|---|---------|---------------|------------------|---------|
-| 1 | Summary | ... | ... | ... |
-| ... | ... | ... | ... | ... |
+| #   | Sección | Estado actual | Cambio propuesto | Por qué |
+| --- | ------- | ------------- | ---------------- | ------- |
+| 1   | Summary | ...           | ...              | ...     |
+| ... | ...     | ...           | ...              | ...     |
 
 Top 5 cambios al CV + Top 5 cambios a LinkedIn para maximizar match.
 
@@ -66,14 +71,15 @@ Top 5 cambios al CV + Top 5 cambios a LinkedIn para maximizar match.
 
 6-10 historias STAR+R mapeadas a requisitos del JD (STAR + **Reflection**):
 
-| # | Requisito del JD | Historia STAR+R | S | T | A | R | Reflection |
-|---|-----------------|-----------------|---|---|---|---|------------|
+| #   | Requisito del JD | Historia STAR+R | S   | T   | A   | R   | Reflection |
+| --- | ---------------- | --------------- | --- | --- | --- | --- | ---------- |
 
 The **Reflection** column captures what was learned or what would be done differently. This signals seniority — junior candidates describe what happened, senior candidates extract lessons.
 
 **Story Bank:** If `interview-prep/story-bank.md` exists, check if any of these stories are already there. If not, append new ones. Over time this builds a reusable bank of 5-10 master stories that can be adapted to any interview question.
 
 **Seleccionadas y enmarcadas según el arquetipo:**
+
 - FDE → enfatizar velocidad de entrega y client-facing
 - SA → enfatizar decisiones de arquitectura
 - PM → enfatizar discovery y trade-offs
@@ -82,6 +88,7 @@ The **Reflection** column captures what was learned or what would be done differ
 - Transformation → enfatizar adopción, cambio organizacional
 
 Incluir también:
+
 - 1 case study recomendado (cuál de sus proyectos presentar y cómo)
 - Preguntas red-flag y cómo responderlas (ej: "¿por qué vendiste tu empresa?", "¿tienes equipo de reports?")
 
@@ -94,11 +101,13 @@ Analyze the job posting for signals that indicate whether this is a real, active
 ### Signals to analyze (in order):
 
 **1. Posting Freshness** (from Playwright snapshot, already captured in Paso 0):
+
 - Date posted or "X days ago" -- extract from page
 - Apply button state (active / closed / missing / redirects to generic page)
 - If URL redirected to generic careers page, note it
 
 **2. Description Quality** (from JD text):
+
 - Does it name specific technologies, frameworks, tools?
 - Does it mention team size, reporting structure, or org context?
 - Are requirements realistic? (years of experience vs technology age)
@@ -108,15 +117,18 @@ Analyze the job posting for signals that indicate whether this is a real, active
 - Any internal contradictions? (entry-level title + staff requirements, etc.)
 
 **3. Company Hiring Signals** (2-3 WebSearch queries, combine with Block D research):
+
 - Search: `"{company}" layoffs {year}` -- note date, scale, departments
 - Search: `"{company}" hiring freeze {year}` -- note any announcements
 - If layoffs found: are they in the same department as this role?
 
 **4. Reposting Detection** (from scan-history.tsv):
+
 - Check if company + similar role title appeared before with a different URL
 - Note how many times and over what period
 
 **5. Role Market Context** (qualitative, no additional queries):
+
 - Is this a common role that typically fills in 4-6 weeks?
 - Does the role make sense for this company's business?
 - Is the seniority level one that legitimately takes longer to fill?
@@ -124,6 +136,7 @@ Analyze the job posting for signals that indicate whether this is a real, active
 ### Output format:
 
 **Assessment:** One of three tiers:
+
 - **High Confidence** -- Multiple signals suggest a real, active opening
 - **Proceed with Caution** -- Mixed signals worth noting
 - **Suspicious** -- Multiple ghost job indicators, investigate before investing time
@@ -133,6 +146,7 @@ Analyze the job posting for signals that indicate whether this is a real, active
 **Context Notes:** Any caveats (niche role, government job, evergreen position, etc.) that explain potentially concerning signals.
 
 ### Edge case handling:
+
 - **Government/academic postings:** Longer timelines are standard. Adjust thresholds (60-90 days is normal).
 - **Evergreen/continuous hire postings:** If the JD explicitly says "ongoing" or "rolling," note it as context -- this is not a ghost job, it is a pipeline role.
 - **Niche/executive roles:** Staff+, VP, Director, or highly specialized roles legitimately stay open for months. Adjust age thresholds accordingly.
@@ -168,38 +182,48 @@ Guardar evaluación completa en `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 ---
 
 ## A) Resumen del Rol
+
 (contenido completo del bloque A)
 
 ## B) Match con CV
+
 (contenido completo del bloque B)
 
 ## C) Nivel y Estrategia
+
 (contenido completo del bloque C)
 
 ## D) Comp y Demanda
+
 (contenido completo del bloque D)
 
 ## E) Plan de Personalización
+
 (contenido completo del bloque E)
 
 ## F) Plan de Entrevistas
+
 (contenido completo del bloque F)
 
 ## G) Posting Legitimacy
+
 (contenido completo del bloque G)
 
 ## H) Draft Application Answers
+
 (solo si score >= 4.5 — borradores de respuestas para el formulario de aplicación)
 
 ---
 
 ## Keywords extraídas
+
 (lista de 15-20 keywords del JD para ATS optimization)
 ```
 
 ### 2. Registrar en tracker
 
 **SIEMPRE** registrar en `data/applications.md`:
+
 - Siguiente número secuencial
 - Fecha actual
 - Empresa

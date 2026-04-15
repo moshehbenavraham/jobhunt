@@ -22,11 +22,13 @@ Procesa URLs de ofertas acumuladas en `data/pipeline.md`. El usuario agrega URLs
 
 ```markdown
 ## Pendientes
+
 - [ ] https://jobs.example.com/posting/123
 - [ ] https://boards.greenhouse.io/company/jobs/456 | Company Inc | Senior PM
 - [!] https://private.url/job — Error: login required
 
 ## Procesadas
+
 - [x] #143 | https://jobs.example.com/posting/789 | Acme Corp | AI PM | 4.2/5 | PDF ✅
 - [x] #144 | https://boards.greenhouse.io/xyz/jobs/012 | BigCo | SA | 2.1/5 | PDF ❌
 ```
@@ -38,6 +40,7 @@ Procesa URLs de ofertas acumuladas en `data/pipeline.md`. El usuario agrega URLs
 3. **WebSearch (último recurso):** Buscar en portales secundarios que indexan el JD.
 
 **Casos especiales:**
+
 - **LinkedIn**: Puede requerir login → marcar `[!]` y pedir al usuario que pegue el texto
 - **PDF**: Si la URL apunta a un PDF, leerlo directamente con Read tool
 - **`local:` prefix**: Leer el archivo local. Ejemplo: `local:jds/linkedin-pm-ai.md` → leer `jds/linkedin-pm-ai.md`
@@ -51,7 +54,9 @@ Procesa URLs de ofertas acumuladas en `data/pipeline.md`. El usuario agrega URLs
 ## Sincronización de fuentes
 
 Antes de procesar cualquier URL, verificar sync:
+
 ```bash
 node scripts/cv-sync-check.mjs
 ```
+
 Si hay desincronización, advertir al usuario antes de continuar.

@@ -1,6 +1,6 @@
-name: "I Got Hired!"
+name: 'I Got Hired!'
 description: Share your success story — you landed a job using career-ops
-labels: ["hired"]
+labels: ['hired']
 body:
   - type: markdown
     attributes:
@@ -10,20 +10,20 @@ body:
     id: role
     attributes:
       label: What role did you land?
-      placeholder: "e.g., Senior Backend Engineer, Product Manager, ML Engineer"
+      placeholder: 'e.g., Senior Backend Engineer, Product Manager, ML Engineer'
     validations:
       required: true
   - type: input
     id: company_type
     attributes:
       label: Company type
-      placeholder: "e.g., startup, big tech, agency, remote-first"
+      placeholder: 'e.g., startup, big tech, agency, remote-first'
   - type: textarea
     id: story
     attributes:
       label: Your story
       description: How did career-ops help? What features made the difference?
-      placeholder: "e.g., I evaluated 50+ listings, the scoring helped me focus on 3 real matches, generated tailored CVs for each..."
+      placeholder: 'e.g., I evaluated 50+ listings, the scoring helped me focus on 3 real matches, generated tailored CVs for each...'
     validations:
       required: true
   - type: dropdown
@@ -45,12 +45,12 @@ body:
     id: listings_evaluated
     attributes:
       label: How many listings did you evaluate?
-      placeholder: "e.g., 30, 100, 500+"
+      placeholder: 'e.g., 30, 100, 500+'
   - type: input
     id: time_to_hire
     attributes:
       label: Time from first scan to offer
-      placeholder: "e.g., 2 weeks, 1 month, 3 months"
+      placeholder: 'e.g., 2 weeks, 1 month, 3 months'
   - type: textarea
     id: advice
     attributes:

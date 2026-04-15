@@ -35,32 +35,65 @@ mkdirSync(join(CAREER_OPS, 'data'), { recursive: true });
 mkdirSync(REPORTS_DIR, { recursive: true });
 
 const CANONICAL_STATUSES = [
-  'evaluated', 'applied', 'responded', 'interview',
-  'offer', 'rejected', 'discarded', 'skip',
+  'evaluated',
+  'applied',
+  'responded',
+  'interview',
+  'offer',
+  'rejected',
+  'discarded',
+  'skip',
 ];
 
 const ALIASES = {
-  'evaluada': 'evaluated', 'condicional': 'evaluated', 'hold': 'evaluated', 'evaluar': 'evaluated', 'verificar': 'evaluated',
-  'aplicado': 'applied', 'enviada': 'applied', 'aplicada': 'applied', 'applied': 'applied', 'sent': 'applied',
-  'respondido': 'responded',
-  'entrevista': 'interview',
-  'oferta': 'offer',
-  'rechazado': 'rejected', 'rechazada': 'rejected',
-  'descartado': 'discarded', 'descartada': 'discarded', 'cerrada': 'discarded', 'cancelada': 'discarded',
-  'no aplicar': 'skip', 'no_aplicar': 'skip', 'monitor': 'skip', 'geo blocker': 'skip',
+  evaluada: 'evaluated',
+  condicional: 'evaluated',
+  hold: 'evaluated',
+  evaluar: 'evaluated',
+  verificar: 'evaluated',
+  aplicado: 'applied',
+  enviada: 'applied',
+  aplicada: 'applied',
+  applied: 'applied',
+  sent: 'applied',
+  respondido: 'responded',
+  entrevista: 'interview',
+  oferta: 'offer',
+  rechazado: 'rejected',
+  rechazada: 'rejected',
+  descartado: 'discarded',
+  descartada: 'discarded',
+  cerrada: 'discarded',
+  cancelada: 'discarded',
+  'no aplicar': 'skip',
+  no_aplicar: 'skip',
+  monitor: 'skip',
+  'geo blocker': 'skip',
 };
 
 let errors = 0;
 let warnings = 0;
 
-function error(msg) { console.log(`❌ ${msg}`); errors++; }
-function warn(msg) { console.log(`⚠️  ${msg}`); warnings++; }
-function ok(msg) { console.log(`✅ ${msg}`); }
+function error(msg) {
+  console.log(`❌ ${msg}`);
+  errors++;
+}
+function warn(msg) {
+  console.log(`⚠️  ${msg}`);
+  warnings++;
+}
+function ok(msg) {
+  console.log(`✅ ${msg}`);
+}
 
 // --- Read applications.md ---
 if (!existsSync(APPS_FILE)) {
-  console.log('\n📊 No applications.md found. This is normal for a fresh setup.');
-  console.log('   The file will be created when you evaluate your first offer.\n');
+  console.log(
+    '\n📊 No applications.md found. This is normal for a fresh setup.',
+  );
+  console.log(
+    '   The file will be created when you evaluate your first offer.\n',
+  );
   process.exit(0);
 }
 const content = readFileSync(APPS_FILE, 'utf-8');
@@ -69,13 +102,19 @@ const lines = content.split('\n');
 const entries = [];
 for (const line of lines) {
   if (!line.startsWith('|')) continue;
-  const parts = line.split('|').map(s => s.trim());
+  const parts = line.split('|').map((s) => s.trim());
   if (parts.length < 9) continue;
   const num = parseInt(parts[1]);
   if (isNaN(num)) continue;
   entries.push({
-    num, date: parts[2], company: parts[3], role: parts[4],
-    score: parts[5], status: parts[6], pdf: parts[7], report: parts[8],
+    num,
+    date: parts[2],
+    company: parts[3],
+    role: parts[4],
+    score: parts[5],
+    status: parts[6],
+    pdf: parts[7],
+    report: parts[8],
     notes: parts[9] || '',
   });
 }
@@ -102,7 +141,9 @@ for (const e of entries) {
 
   // Check for dates in status
   if (/\d{4}-\d{2}-\d{2}/.test(e.status)) {
-    error(`#${e.num}: Status contains date: "${e.status}" — dates go in date column`);
+    error(
+      `#${e.num}: Status contains date: "${e.status}" — dates go in date column`,
+    );
     badStatuses++;
   }
 }
@@ -112,14 +153,18 @@ if (badStatuses === 0) ok('All statuses are canonical');
 const companyRoleMap = new Map();
 let dupes = 0;
 for (const e of entries) {
-  const key = e.company.toLowerCase().replace(/[^a-z0-9]/g, '') + '::' +
+  const key =
+    e.company.toLowerCase().replace(/[^a-z0-9]/g, '') +
+    '::' +
     e.role.toLowerCase().replace(/[^a-z0-9 ]/g, '');
   if (!companyRoleMap.has(key)) companyRoleMap.set(key, []);
   companyRoleMap.get(key).push(e);
 }
 for (const [key, group] of companyRoleMap) {
   if (group.length > 1) {
-    warn(`Possible duplicates: ${group.map(e => `#${e.num}`).join(', ')} (${group[0].company} — ${group[0].role})`);
+    warn(
+      `Possible duplicates: ${group.map((e) => `#${e.num}`).join(', ')} (${group[0].company} — ${group[0].role})`,
+    );
     dupes++;
   }
 }
@@ -165,7 +210,7 @@ if (badRows === 0) ok('All rows properly formatted');
 // --- Check 6: Pending TSVs ---
 let pendingTsvs = 0;
 if (existsSync(ADDITIONS_DIR)) {
-  const files = readdirSync(ADDITIONS_DIR).filter(f => f.endsWith('.tsv'));
+  const files = readdirSync(ADDITIONS_DIR).filter((f) => f.endsWith('.tsv'));
   pendingTsvs = files.length;
   if (pendingTsvs > 0) {
     warn(`${pendingTsvs} pending TSVs in tracker-additions/ (not merged)`);

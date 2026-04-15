@@ -47,9 +47,11 @@ legacy references are no longer required.
 ## 3. Prerequisites
 
 ### Required Sessions
+
 - [x] None - Phase 00 starts with canonical contract cleanup.
 
 ### Required Tools/Knowledge
+
 - Familiarity with the current instruction surfaces in `AGENTS.md`,
   `.codex/skills/career-ops/SKILL.md`, `modes/_shared.md`, and
   `scripts/test-all.mjs`
@@ -57,6 +59,7 @@ legacy references are no longer required.
 - `node`, `git`, and `rg`
 
 ### Environment Requirements
+
 - Repo root checkout with `.spec_system/` initialized
 - Review of active working-tree edits touching contract files, especially
   `scripts/test-all.mjs`
@@ -67,6 +70,7 @@ legacy references are no longer required.
 ## 4. Scope
 
 ### In Scope (MVP)
+
 - Contributor can read the `career-ops` skill and follow a valid bootstrap
   path without missing `docs/CODEX.md` or `docs/CLAUDE.md` dependencies -
   rewrite the checked-in skill read order and setup guidance.
@@ -78,6 +82,7 @@ legacy references are no longer required.
   contract-owned mode text on the primary path.
 
 ### Out of Scope (Deferred)
+
 - Public onboarding and docs positioning changes in `README.md`,
   `docs/SETUP.md`, and `docs/CONTRIBUTING.md` - Reason: Phase 01 owns public
   Codex-primary positioning work.
@@ -92,6 +97,7 @@ legacy references are no longer required.
 ## 5. Technical Approach
 
 ### Architecture
+
 Treat `AGENTS.md` as the canonical persistent contract and
 `.codex/skills/career-ops/SKILL.md` as the checked-in routing bootstrap that
 must point back to that contract. Keep validation deterministic by updating
@@ -99,6 +105,7 @@ must point back to that contract. Keep validation deterministic by updating
 while limiting scope to repo-owned files on the active instruction path.
 
 ### Design Patterns
+
 - Canonical source anchoring: make every required instruction path resolve to
   live checked-in files.
 - Deterministic validation: express contract expectations in the existing
@@ -107,6 +114,7 @@ while limiting scope to repo-owned files on the active instruction path.
   broader metadata cleanup to the later phase session that owns it.
 
 ### Technology Stack
+
 - Node.js ESM scripts in `scripts/`
 - Markdown instruction surfaces in `AGENTS.md`, `.codex/skills/`, and
   `modes/`
@@ -117,22 +125,25 @@ while limiting scope to repo-owned files on the active instruction path.
 ## 6. Deliverables
 
 ### Files to Create
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| None | Session 01 modifies existing contract files only | 0 |
+
+| File | Purpose                                          | Est. Lines |
+| ---- | ------------------------------------------------ | ---------- |
+| None | Session 01 modifies existing contract files only | 0          |
 
 ### Files to Modify
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `.codex/skills/career-ops/SKILL.md` | Replace missing-doc read order and bootstrap guidance with canonical repo sources | ~20 |
-| `scripts/test-all.mjs` | Align instruction-surface checks with `AGENTS.md` and checked-in Codex skills | ~40 |
-| `modes/_shared.md` | Remove required pointer to missing legacy instruction docs from active workflow guidance | ~5 |
+
+| File                                | Changes                                                                                  | Est. Lines |
+| ----------------------------------- | ---------------------------------------------------------------------------------------- | ---------- |
+| `.codex/skills/career-ops/SKILL.md` | Replace missing-doc read order and bootstrap guidance with canonical repo sources        | ~20        |
+| `scripts/test-all.mjs`              | Align instruction-surface checks with `AGENTS.md` and checked-in Codex skills            | ~40        |
+| `modes/_shared.md`                  | Remove required pointer to missing legacy instruction docs from active workflow guidance | ~5         |
 
 ---
 
 ## 7. Success Criteria
 
 ### Functional Requirements
+
 - [ ] The `career-ops` skill read order starts with `AGENTS.md` and existing
       repo sources only.
 - [ ] `scripts/test-all.mjs` validates the live instruction surface rather
@@ -141,6 +152,7 @@ while limiting scope to repo-owned files on the active instruction path.
       missing legacy instruction docs.
 
 ### Testing Requirements
+
 - [ ] `node --check scripts/test-all.mjs` passes
 - [ ] `node scripts/test-all.mjs --quick` passes
 - [ ] Targeted `rg` checks confirm no required `docs/CODEX.md` or
@@ -148,11 +160,13 @@ while limiting scope to repo-owned files on the active instruction path.
 - [ ] Manual diff review confirms unrelated working-tree edits remain intact
 
 ### Non-Functional Requirements
+
 - [ ] Contract validation remains deterministic on a clean checkout
 - [ ] Session output stays within the existing system-layer ownership model
 - [ ] No Session 02 or Session 03 scope is pulled forward unnecessarily
 
 ### Quality Gates
+
 - [ ] All files ASCII-encoded
 - [ ] Unix LF line endings
 - [ ] Code follows project conventions
@@ -162,6 +176,7 @@ while limiting scope to repo-owned files on the active instruction path.
 ## 8. Implementation Notes
 
 ### Key Considerations
+
 - `scripts/test-all.mjs` already has local edits in the working tree, so the
   implementation must integrate changes without reverting unrelated work.
 - The repo still contains broader `.claude` and version-path drift, but this
@@ -171,6 +186,7 @@ while limiting scope to repo-owned files on the active instruction path.
   parallel validator.
 
 ### Potential Challenges
+
 - Dirty diff in `scripts/test-all.mjs`: reconcile contract checks carefully
   instead of overwriting nearby edits.
 - Legacy references outside the active contract path: document them for later
@@ -179,6 +195,7 @@ while limiting scope to repo-owned files on the active instruction path.
   dependency language and preserve existing business rules.
 
 ### Relevant Considerations
+
 - No active concerns or lessons learned are currently recorded in
   `.spec_system/CONSIDERATIONS.md`.
 
@@ -187,19 +204,23 @@ while limiting scope to repo-owned files on the active instruction path.
 ## 9. Testing Strategy
 
 ### Unit Tests
+
 - Extend `scripts/test-all.mjs` checks so the instruction-surface section
   explicitly validates `AGENTS.md` and `.codex/skills/career-ops/SKILL.md`.
 
 ### Integration Tests
+
 - Run `node scripts/test-all.mjs --quick` after the contract changes to verify
   the repo-level gate still passes.
 
 ### Manual Testing
+
 - Read the updated skill bootstrap and confirm it points to live files only.
 - Inspect the shared mode guidance to confirm no missing-doc dependency
   remains in the active workflow path.
 
 ### Edge Cases
+
 - Existing legacy docs may be absent and should not fail validation.
 - Unrelated dirty worktree edits must remain untouched.
 - Contract validation should not depend on user-layer files being present.
@@ -209,9 +230,11 @@ while limiting scope to repo-owned files on the active instruction path.
 ## 10. Dependencies
 
 ### External Libraries
+
 - None
 
 ### Internal Dependencies
+
 - `AGENTS.md` - canonical repo contract to anchor validation and routing
 - `.spec_system/PRD/PRD.md` - migration goals and session sequencing
 - `.spec_system/PRD/phase_00/session_01_canonical_instruction_surface.md` -
@@ -220,6 +243,7 @@ while limiting scope to repo-owned files on the active instruction path.
   wording conventions
 
 ### Other Sessions
+
 - Depends on: none
 - Depended by: `phase00-session02-version-ownership-normalization`,
   `phase00-session03-codex-metadata-alignment`,

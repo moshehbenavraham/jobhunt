@@ -3,6 +3,7 @@
 Lee y muestra `data/applications.md`.
 
 **Formato del tracker:**
+
 ```markdown
 | # | Fecha | Empresa | Rol | Score | Estado | PDF | Report |
 ```
@@ -16,6 +17,7 @@ Estados posibles: `Evaluada` → `Aplicado` → `Respondido` → `Contacto` → 
 Si el usuario pide actualizar un estado, editar la fila correspondiente.
 
 Mostrar también estadísticas:
+
 - Total de aplicaciones
 - Por estado
 - Score promedio

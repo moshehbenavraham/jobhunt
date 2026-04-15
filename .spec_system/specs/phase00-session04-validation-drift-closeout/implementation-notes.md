@@ -8,11 +8,11 @@
 
 ## Session Progress
 
-| Metric | Value |
-|--------|-------|
-| Tasks Completed | 17 / 17 |
+| Metric              | Value   |
+| ------------------- | ------- |
+| Tasks Completed     | 17 / 17 |
 | Estimated Remaining | 0 hours |
-| Blockers | 0 |
+| Blockers            | 0       |
 
 ---
 
@@ -23,6 +23,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Reviewed `.spec_system/PRD/phase_00/PRD_phase_00.md`, the Session 04 stub,
   and the Session 04 spec to confirm the work stays limited to validator
   surfaces, validation gates, and closeout evidence.
@@ -31,6 +32,7 @@
   truth for later-phase docs and batch references.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T001 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged PRD and prerequisite review
 
@@ -41,6 +43,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Ran `node scripts/update-system.mjs check` and captured the current updater
   state as `up-to-date` with local `1.5.5`.
 - Ran `node scripts/test-all.mjs --quick` and confirmed the repo gate passes
@@ -50,6 +53,7 @@
   start.` while all checks pass.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T002 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged baseline command evidence
 
@@ -60,12 +64,14 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Created `phase00-exit-report.md` as the session-local evidence artifact for
   Phase 00 closeout.
 - Added the required top-level sections for validation evidence, residual
   deferrals and blockers, and the final handoff recommendation.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` - created Phase 00 exit report scaffold
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T003 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged report scaffold creation
@@ -77,6 +83,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Reviewed `scripts/doctor.mjs` and confirmed the setup checks themselves are
   already aligned; the remaining Phase 00 drift is the success footer on line
   189 that tells the operator to run `claude`.
@@ -85,6 +92,7 @@
   onboarding rewrite.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T004 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged doctor success-path audit
 
@@ -95,6 +103,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Reviewed `scripts/test-all.mjs` and confirmed it validates instruction
   surfaces, metadata paths, and version ownership but never executes
   `npm run doctor` or asserts its success footer.
@@ -102,6 +111,7 @@
   can pass the repo gate undetected even though the runtime contract is wrong.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T005 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged repo validation audit
 
@@ -112,6 +122,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Re-ran a targeted legacy-runtime scan across `README.md`, `docs/`, `batch/`,
   `modes/`, `scripts/`, `.github/`, `AGENTS.md`, and the checked-in
   career-ops skill.
@@ -122,6 +133,7 @@
   placeholder is contributor copy, not a validator-surface blocker.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T006 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged residual reconciliation
 
@@ -132,6 +144,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Added the success-criteria mapping table to `phase00-exit-report.md` so
   each Phase 00 requirement is tied to a concrete command or source and a
   report section.
@@ -139,6 +152,7 @@
   updater health, residual deferrals, and the final handoff decision.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` - added success-criteria mapping table
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T007 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged criteria mapping
@@ -150,12 +164,14 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Updated the success footer in `scripts/doctor.mjs` from `claude` to `codex`
   without changing any prerequisite checks or failure guidance.
 - Kept the change limited to the pass path so the validator behavior stays
   deterministic and the runtime contract now matches the Phase 00 target.
 
 **Files Changed**:
+
 - `scripts/doctor.mjs` - changed the success footer to Codex-primary launch guidance
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T008 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged doctor footer update
@@ -167,6 +183,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Added a live `npm run doctor` check to `scripts/test-all.mjs` so the repo
   gate now asserts the validator success footer points to `codex` and no
   longer points to `claude`.
@@ -174,11 +191,13 @@
   if colored output appears in other environments.
 
 **Files Changed**:
+
 - `scripts/test-all.mjs` - added validator runtime contract coverage for doctor output
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T009 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged repo gate update
 
 **BQC Fixes**:
+
 - Contract alignment: added a live doctor-output assertion in `scripts/test-all.mjs` so the validator contract is enforced by the repo gate
 
 ### Task T013 - Run node --check on the updated doctor validator
@@ -188,10 +207,12 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Ran `node --check scripts/doctor.mjs` and confirmed the updated validator
   parses cleanly.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T013 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged doctor syntax validation
 
@@ -202,10 +223,12 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Ran `node --check scripts/test-all.mjs` and confirmed the new doctor-output
   assertion parses cleanly.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T014 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged repo gate syntax validation
 
@@ -216,11 +239,13 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Ran `npm run doctor` and confirmed all checks still pass.
 - Verified the success footer now reads `Run \`codex\` to start.` and no longer
   presents the old runtime hint.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T015 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged doctor runtime validation
 
@@ -231,11 +256,13 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Ran `node scripts/test-all.mjs --quick` after the validator changes.
 - Confirmed the new `Validator runtime contract` section passes and the suite
   now reports `74 passed, 0 failed, 0 warnings`.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T016 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged quick-suite validation
 
@@ -246,11 +273,13 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Ran `rg -n 'Run \`claude\` to start\\.' scripts/doctor.mjs scripts/test-all.mjs`.
 - Confirmed the command returned no matches, which verifies the old
   Phase 00-owned doctor footer no longer exists in the validator surfaces.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T017 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged targeted validator scan
 
@@ -261,6 +290,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Added baseline and post-change validation evidence to
   `phase00-exit-report.md`, including updater status, doctor output, quick
   suite results, syntax checks, and the targeted validator scan.
@@ -269,6 +299,7 @@
   was added.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` - recorded baseline and post-change validation evidence
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T010 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged evidence capture
@@ -280,6 +311,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Added the confirmed Phase 01 docs deferrals and Phase 02 batch-runtime
   deferrals from the Session 03 residual inventory to the exit report.
 - Recorded that the Session 04 scan also surfaced a non-blocking issue-template
@@ -287,6 +319,7 @@
   changes.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` - recorded residual deferrals and blocker status
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T011 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged residual reporting
@@ -298,12 +331,14 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Completed the handoff recommendation in the exit report with a clear
   statement that Phase 00 is ready for `validate`.
 - Recorded the next workflow decisions: `validate`, then `updateprd`, then
   Phase 01 planning if validation passes.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` - added Phase 00 handoff recommendation
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/tasks.md` - marked T012 complete
 - `.spec_system/specs/phase00-session04-validation-drift-closeout/implementation-notes.md` - logged handoff summary
@@ -311,6 +346,7 @@
 ### 2026-04-15 - Final Verification
 
 **Notes**:
+
 - Replaced the pre-existing Unicode checklist markers in `scripts/doctor.mjs`
   with ASCII-only output to satisfy the session quality gate.
 - Re-ran `node --check scripts/doctor.mjs`, `npm run doctor`,
@@ -325,11 +361,13 @@
 ### 2026-04-15 - Session Start
 
 **Environment verified**:
+
 - [x] Prerequisites confirmed
 - [x] Tools available
 - [x] Directory structure ready
 
 **Baseline commands captured**:
+
 - `node scripts/update-system.mjs check` -> `{"status":"up-to-date","local":"1.5.5","remote":"1.5.0"}`
 - `node scripts/test-all.mjs --quick` -> `73 passed, 0 failed, 0 warnings`
 - `npm run doctor` -> `Result: All checks passed. You're ready to go! Run \`claude\` to start.`

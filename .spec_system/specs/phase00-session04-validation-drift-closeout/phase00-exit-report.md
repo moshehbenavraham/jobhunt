@@ -16,24 +16,24 @@ references that remain outside the narrow validator closeout scope.
 
 ## Success Criteria Map
 
-| Phase 00 Success Criterion | Command or Source | Report Section |
-|----------------------------|-------------------|----------------|
-| Doctor success path is Codex-primary | `npm run doctor` | Validation Evidence |
-| Repo validation catches validator drift | `node scripts/test-all.mjs --quick` | Validation Evidence |
-| Updater remains healthy | `node scripts/update-system.mjs check` | Validation Evidence |
-| Remaining legacy references are explicit deferrals | `rg -n "claude|Claude Code|\\.claude" README.md docs batch modes scripts .github AGENTS.md .codex/skills/career-ops/SKILL.md` and Session 03 residual ledger | Residual Deferrals and Phase 00 Blockers |
-| Phase 00 can hand off cleanly | Session 04 spec, PRD, and live command results | Handoff Recommendation |
+| Phase 00 Success Criterion                         | Command or Source                              | Report Section         |
+| -------------------------------------------------- | ---------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Doctor success path is Codex-primary               | `npm run doctor`                               | Validation Evidence    |
+| Repo validation catches validator drift            | `node scripts/test-all.mjs --quick`            | Validation Evidence    |
+| Updater remains healthy                            | `node scripts/update-system.mjs check`         | Validation Evidence    |
+| Remaining legacy references are explicit deferrals | `rg -n "claude                                 | Claude Code            | \\.claude" README.md docs batch modes scripts .github AGENTS.md .codex/skills/career-ops/SKILL.md` and Session 03 residual ledger | Residual Deferrals and Phase 00 Blockers |
+| Phase 00 can hand off cleanly                      | Session 04 spec, PRD, and live command results | Handoff Recommendation |
 
 ## Validation Evidence
 
-| Command | Baseline Result | Post-Change Result | Outcome |
-|---------|-----------------|--------------------|---------|
-| `node scripts/update-system.mjs check` | `{"status":"up-to-date","local":"1.5.5","remote":"1.5.0"}` | `{"status":"up-to-date","local":"1.5.5","remote":"1.5.0"}` | Updater remained healthy before and after the validator changes |
-| `npm run doctor` | All checks passed, but the footer ended with `Run \`claude\` to start.` | All checks passed and the footer now ends with `Run \`codex\` to start.` | Phase 00 validator-surface drift fixed |
-| `node scripts/test-all.mjs --quick` | `73 passed, 0 failed, 0 warnings` | `74 passed, 0 failed, 0 warnings` with `Doctor success output points to codex` | Repo validation now enforces the doctor runtime contract |
-| `node --check scripts/doctor.mjs` | not run before changes | passed | Updated validator parses cleanly |
-| `node --check scripts/test-all.mjs` | not run before changes | passed | Updated repo gate parses cleanly |
-| `rg -n 'Run \`claude\` to start\\.' scripts/doctor.mjs scripts/test-all.mjs` | not run before changes | no matches | No Phase 00-owned legacy doctor footer remains in validator surfaces |
+| Command                                                                      | Baseline Result                                                         | Post-Change Result                                                             | Outcome                                                              |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `node scripts/update-system.mjs check`                                       | `{"status":"up-to-date","local":"1.5.5","remote":"1.5.0"}`              | `{"status":"up-to-date","local":"1.5.5","remote":"1.5.0"}`                     | Updater remained healthy before and after the validator changes      |
+| `npm run doctor`                                                             | All checks passed, but the footer ended with `Run \`claude\` to start.` | All checks passed and the footer now ends with `Run \`codex\` to start.`       | Phase 00 validator-surface drift fixed                               |
+| `node scripts/test-all.mjs --quick`                                          | `73 passed, 0 failed, 0 warnings`                                       | `74 passed, 0 failed, 0 warnings` with `Doctor success output points to codex` | Repo validation now enforces the doctor runtime contract             |
+| `node --check scripts/doctor.mjs`                                            | not run before changes                                                  | passed                                                                         | Updated validator parses cleanly                                     |
+| `node --check scripts/test-all.mjs`                                          | not run before changes                                                  | passed                                                                         | Updated repo gate parses cleanly                                     |
+| `rg -n 'Run \`claude\` to start\\.' scripts/doctor.mjs scripts/test-all.mjs` | not run before changes                                                  | no matches                                                                     | No Phase 00-owned legacy doctor footer remains in validator surfaces |
 
 ## Residual Deferrals and Phase 00 Blockers
 

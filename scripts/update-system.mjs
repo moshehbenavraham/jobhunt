@@ -16,7 +16,13 @@
  */
 
 import { execFileSync, execSync } from 'child_process';
-import { readFileSync, writeFileSync, existsSync, unlinkSync, mkdirSync } from 'fs';
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  unlinkSync,
+  mkdirSync,
+} from 'fs';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -25,8 +31,10 @@ const ROOT = resolve(SCRIPT_DIR, '..');
 
 const UPSTREAM_REMOTE = 'upstream';
 const CANONICAL_REPO = 'https://github.com/santifer/career-ops.git';
-const RAW_VERSION_URL = 'https://raw.githubusercontent.com/santifer/career-ops/main/VERSION';
-const RELEASES_API = 'https://api.github.com/repos/santifer/career-ops/releases/latest';
+const RAW_VERSION_URL =
+  'https://raw.githubusercontent.com/santifer/career-ops/main/VERSION';
+const RELEASES_API =
+  'https://api.github.com/repos/santifer/career-ops/releases/latest';
 const VERSION_PATH = 'VERSION';
 
 // System layer paths - ONLY these files get updated
@@ -134,7 +142,11 @@ function compareVersions(a, b) {
 }
 
 function git(...args) {
-  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf-8', timeout: 30000 }).trim();
+  return execFileSync('git', args, {
+    cwd: ROOT,
+    encoding: 'utf-8',
+    timeout: 30000,
+  }).trim();
 }
 
 function gitOrNull(...args) {
@@ -149,9 +161,10 @@ function gitStatusEntries() {
   const status = git('status', '--porcelain');
   if (!status) return [];
 
-  return status.split('\n')
+  return status
+    .split('\n')
     .filter(Boolean)
-    .map(line => ({
+    .map((line) => ({
       code: line.slice(0, 2),
       path: line.slice(3),
     }));
@@ -188,7 +201,7 @@ function latestRemoteTagVersion() {
 
   const versions = refs
     .split('\n')
-    .map(line => line.trim().split(/\s+/)[1] || '')
+    .map((line) => line.trim().split(/\s+/)[1] || '')
     .map(extractTagVersion)
     .filter(Boolean);
 
@@ -208,7 +221,9 @@ function writeCanonicalVersion(version, updatedPaths) {
   if (!version || !isSemver(version)) return;
 
   const versionFile = join(ROOT, VERSION_PATH);
-  const current = existsSync(versionFile) ? readFileSync(versionFile, 'utf-8').trim() : null;
+  const current = existsSync(versionFile)
+    ? readFileSync(versionFile, 'utf-8').trim()
+    : null;
   if (current !== version) {
     writeFileSync(versionFile, `${version}\n`);
   }
@@ -216,7 +231,7 @@ function writeCanonicalVersion(version, updatedPaths) {
 }
 
 function isUserPath(file) {
-  return USER_PATHS.some(path => file === path || file.startsWith(path));
+  return USER_PATHS.some((path) => file === path || file.startsWith(path));
 }
 
 function updateTargets() {
@@ -241,8 +256,8 @@ function isUpdateTargetPath(file) {
 
 function dirtyUpdateTargets() {
   return gitStatusEntries()
-    .map(entry => entry.path)
-    .filter(path => !isUserPath(path))
+    .map((entry) => entry.path)
+    .filter((path) => !isUserPath(path))
     .filter(isUpdateTargetPath);
 }
 
@@ -258,7 +273,9 @@ function checkoutSystemFilesFromRef(ref, updatedPaths) {
 
   for (const { source, dest } of REMAPPED_SYSTEM_FILES) {
     try {
-      const content = execFileSync('git', ['show', `${ref}:${source}`], { cwd: ROOT });
+      const content = execFileSync('git', ['show', `${ref}:${source}`], {
+        cwd: ROOT,
+      });
       const destination = join(ROOT, dest);
       mkdirSync(dirname(destination), { recursive: true });
       writeFileSync(destination, content);
@@ -302,7 +319,7 @@ async function check() {
   let changelog = '';
   try {
     const res = await fetch(RELEASES_API, {
-      headers: { 'Accept': 'application/vnd.github.v3+json' }
+      headers: { Accept: 'application/vnd.github.v3+json' },
     });
     if (res.ok) {
       const release = await res.json();
@@ -312,12 +329,14 @@ async function check() {
     // No changelog available, that's OK
   }
 
-  console.log(JSON.stringify({
-    status: 'update-available',
-    local,
-    remote,
-    changelog: changelog.slice(0, 500),
-  }));
+  console.log(
+    JSON.stringify({
+      status: 'update-available',
+      local,
+      remote,
+      changelog: changelog.slice(0, 500),
+    }),
+  );
 }
 
 // -- APPLY -------------------------------------------------------
@@ -325,11 +344,15 @@ async function check() {
 async function apply() {
   const local = localVersion();
   const remote = latestRemoteTagVersion();
-  const initialStatusPaths = new Set(gitStatusEntries().map(entry => entry.path));
+  const initialStatusPaths = new Set(
+    gitStatusEntries().map((entry) => entry.path),
+  );
   const dirtyTargets = dirtyUpdateTargets();
 
   if (dirtyTargets.length > 0) {
-    console.error('Refusing to update with local changes in update-managed files:');
+    console.error(
+      'Refusing to update with local changes in update-managed files:',
+    );
     for (const path of dirtyTargets) {
       console.error(`- ${path}`);
     }
@@ -340,7 +363,9 @@ async function apply() {
   // Check for lock
   const lockFile = join(ROOT, '.update-lock');
   if (existsSync(lockFile)) {
-    console.error('Update already in progress (.update-lock exists). If stuck, delete it manually.');
+    console.error(
+      'Update already in progress (.update-lock exists). If stuck, delete it manually.',
+    );
     process.exit(1);
   }
 
@@ -354,7 +379,9 @@ async function apply() {
       git('branch', backupBranch);
       console.log(`Backup branch created: ${backupBranch}`);
     } catch {
-      console.log(`Backup branch already exists (${backupBranch}), continuing...`);
+      console.log(
+        `Backup branch already exists (${backupBranch}), continuing...`,
+      );
     }
 
     // 2. Fetch from canonical repo
@@ -365,7 +392,10 @@ async function apply() {
     console.log('Updating system files...');
     const updated = new Set();
     checkoutSystemFilesFromRef('FETCH_HEAD', updated);
-    writeCanonicalVersion(remote || readVersionFromGitRef('FETCH_HEAD'), updated);
+    writeCanonicalVersion(
+      remote || readVersionFromGitRef('FETCH_HEAD'),
+      updated,
+    );
 
     // 4. Validate: check NO user files were touched
     let userFileTouched = false;
@@ -407,7 +437,11 @@ async function apply() {
         pathsToStage.push('.update-dismissed');
       }
       addPaths(pathsToStage);
-      git('commit', '-m', `chore: auto-update system files to v${updatedVersion}`);
+      git(
+        'commit',
+        '-m',
+        `chore: auto-update system files to v${updatedVersion}`,
+      );
     } catch {
       // Nothing to commit (already up to date)
     }
@@ -415,7 +449,6 @@ async function apply() {
     console.log(`\nUpdate complete: v${local} -> v${updatedVersion}`);
     console.log(`Updated ${updated.size} system paths.`);
     console.log('Rollback available: node scripts/update-system.mjs rollback');
-
   } finally {
     // Remove lock
     if (existsSync(lockFile)) unlinkSync(lockFile);
@@ -427,8 +460,16 @@ async function apply() {
 function rollback() {
   // Find most recent backup branch
   try {
-    const branches = git('for-each-ref', '--sort=-committerdate', '--format=%(refname:short)', 'refs/heads/backup-pre-update-*');
-    const branchList = branches.split('\n').map(b => b.trim()).filter(Boolean);
+    const branches = git(
+      'for-each-ref',
+      '--sort=-committerdate',
+      '--format=%(refname:short)',
+      'refs/heads/backup-pre-update-*',
+    );
+    const branchList = branches
+      .split('\n')
+      .map((b) => b.trim())
+      .filter(Boolean);
 
     if (branchList.length === 0) {
       console.error('No backup branches found. Nothing to rollback.');
@@ -458,7 +499,9 @@ function rollback() {
 
 function dismiss() {
   writeFileSync(join(ROOT, '.update-dismissed'), new Date().toISOString());
-  console.log('Update check dismissed. Run "node scripts/update-system.mjs check" or say "check for updates" to re-enable.');
+  console.log(
+    'Update check dismissed. Run "node scripts/update-system.mjs check" or say "check for updates" to re-enable.',
+  );
 }
 
 // -- MAIN --------------------------------------------------------
@@ -466,11 +509,21 @@ function dismiss() {
 const cmd = process.argv[2] || 'check';
 
 switch (cmd) {
-  case 'check': await check(); break;
-  case 'apply': await apply(); break;
-  case 'rollback': rollback(); break;
-  case 'dismiss': dismiss(); break;
+  case 'check':
+    await check();
+    break;
+  case 'apply':
+    await apply();
+    break;
+  case 'rollback':
+    rollback();
+    break;
+  case 'dismiss':
+    dismiss();
+    break;
   default:
-    console.log('Usage: node scripts/update-system.mjs [check|apply|rollback|dismiss]');
+    console.log(
+      'Usage: node scripts/update-system.mjs [check|apply|rollback|dismiss]',
+    );
     process.exit(1);
 }

@@ -9,6 +9,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `scripts/update-system.mjs` - updater system-layer path ownership
 - `docs/DATA_CONTRACT.md` - system-layer skill surface contract
 - `.github/labeler.yml` - contributor metadata globs
@@ -27,14 +28,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No user-controlled input reaches queries or shell calls in the reviewed metadata files. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or API keys introduced. |
-| Sensitive Data Exposure | PASS | -- | No PII, secrets, or sensitive runtime data added to docs or scripts. |
-| Insecure Dependencies | N/A | -- | No dependency changes in this session. |
-| Misconfiguration | PASS | -- | Updated links and globs point at live repo paths only. |
-| Database Security | N/A | -- | Session does not touch the database layer. |
+| Category                      | Status | Severity | Details                                                                                 |
+| ----------------------------- | ------ | -------- | --------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No user-controlled input reaches queries or shell calls in the reviewed metadata files. |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or API keys introduced.                                         |
+| Sensitive Data Exposure       | PASS   | --       | No PII, secrets, or sensitive runtime data added to docs or scripts.                    |
+| Insecure Dependencies         | N/A    | --       | No dependency changes in this session.                                                  |
+| Misconfiguration              | PASS   | --       | Updated links and globs point at live repo paths only.                                  |
+| Database Security             | N/A    | --       | Session does not touch the database layer.                                              |
 
 ---
 
@@ -51,4 +52,3 @@ This session only adjusted repo metadata, docs links, and validation assertions.
 ### Overall: N/A
 
 This session does not introduce application runtime behavior. The changes are metadata, documentation, and validation assertions only.
-

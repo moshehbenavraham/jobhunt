@@ -377,7 +377,7 @@ Required changes:
 - Update `README.md`, `docs/SETUP.md`, `docs/CONTRIBUTING.md`, and
   `scripts/doctor.mjs`.
 - Replace wording like "Open Claude Code" with `Run codex from this
-  directory`.
+directory`.
 - Replace `Codex (soon)` positioning with Codex as the primary runtime.
 - Remove Claude Code and OpenCode from the primary onboarding path instead of
   documenting them as alternate runtimes.
@@ -447,7 +447,7 @@ Required changes:
 
 - Keep job-search business rules intact.
 - Replace named tool expectations with capability language such as `use browser
-  automation when available`.
+automation when available`.
 - Replace tool-specific directions with repo-script language where appropriate,
   such as `run npm run liveness -- <url>`.
 - Replace slash-command framing with natural-language Codex usage or
@@ -480,15 +480,15 @@ Result:
 
 ## Phases
 
-| Phase | Name | Sessions | Status |
-|-------|------|----------|--------|
-| 00 | Contract and Drift Cleanup | 4 | Complete |
-| 01 | Docs and Entrypoints | TBD | Planned |
-| 02 | Batch Runtime Conversion | TBD | Planned |
-| 03 | Prompt and Metadata Normalization | TBD | Planned |
+| Phase | Name                              | Sessions | Status   |
+| ----- | --------------------------------- | -------- | -------- |
+| 00    | Contract and Drift Cleanup        | 4        | Complete |
+| 01    | Docs and Entrypoints              | 4        | Not Started |
+| 02    | Batch Runtime Conversion          | TBD      | Planned  |
+| 03    | Prompt and Metadata Normalization | TBD      | Planned  |
 
-Phase 00 is complete as of 2026-04-15. The remaining migration phases stay
-planned.
+Phase 00 is complete as of 2026-04-15. Phase 01 is scaffolded and ready for
+session planning. Phases 02 and 03 remain planned.
 
 ## Suggested Migration Order
 

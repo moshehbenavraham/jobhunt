@@ -22,13 +22,14 @@ node scripts/followup-cadence.mjs
 
 Parse the JSON output. It contains:
 
-| Key | Contents |
-|-----|----------|
-| `metadata` | Analysis date, total tracked, actionable count, overdue/urgent/cold/waiting counts |
-| `entries` | Per-application: company, role, status, days since application, follow-up count, urgency, next follow-up date, extracted contacts, report path |
-| `cadenceConfig` | Cadence rules (applied: 7 days, responded: 3 days, interview: 1 day) |
+| Key             | Contents                                                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `metadata`      | Analysis date, total tracked, actionable count, overdue/urgent/cold/waiting counts                                                             |
+| `entries`       | Per-application: company, role, status, days since application, follow-up count, urgency, next follow-up date, extracted contacts, report path |
+| `cadenceConfig` | Cadence rules (applied: 7 days, responded: 3 days, interview: 1 day)                                                                           |
 
 If no actionable entries, tell the user:
+
 > "No active applications to follow up on. Apply to some roles first with `/career-ops` and come back when they're aging."
 
 ## Step 2 — Display Dashboard
@@ -43,6 +44,7 @@ Follow-up Cadence Dashboard — {date}
 ```
 
 Use visual indicators:
+
 - **URGENT** — respond within 24 hours (company replied)
 - **OVERDUE** — follow-up is past due
 - **waiting (X days)** — on track, follow-up scheduled
@@ -66,6 +68,7 @@ Generate a 3-4 sentence email:
 4. **Sentence 4 (optional):** Brief mention of a relevant recent project or achievement.
 
 **Rules:**
+
 - Professional but warm, NOT desperate
 - **NEVER** use "just checking in", "just following up", "touching base", or "circling back"
 - Lead with value, not with the ask
@@ -75,6 +78,7 @@ Generate a 3-4 sentence email:
 - Use the candidate's name from `config/profile.yml`
 
 **Example tone:**
+
 > Subject: Re: Senior PHP/Laravel Developer — IxDF
 >
 > Hi [contact name or "team"],
@@ -89,12 +93,14 @@ Generate a 3-4 sentence email:
 ### LinkedIn Follow-up (if no email contact found)
 
 Reuse the contacto framework: 3 sentences, 300 character max.
+
 - Hook specific to company → proof point → soft ask
 - Suggest the user run `/career-ops contacto {company}` to find the right person first
 
 ### Second Follow-up (followupCount == 1)
 
 Shorter than first (2-3 sentences). Take a **new angle**:
+
 - Share a relevant insight, article, or project update
 - Don't repeat the first follow-up's content
 - Still reference the role specifically
@@ -102,7 +108,9 @@ Shorter than first (2-3 sentences). Take a **new angle**:
 ### Cold Application (followupCount >= 2)
 
 Do NOT generate another follow-up. Instead suggest:
+
 > "This application has had {N} follow-ups with no response. Consider:
+>
 > - Updating status to `Discarded` if the role seems filled
 > - Trying a different contact via `/career-ops contacto`
 > - Keeping in `Applied` status but deprioritizing"
@@ -128,11 +136,12 @@ For each draft, show:
 After the user reviews and says they've sent a follow-up, record it:
 
 1. If `data/follow-ups.md` doesn't exist, create it:
+
    ```markdown
    # Follow-up History
 
-   | # | App# | Date | Company | Role | Channel | Contact | Notes |
-   |---|------|------|---------|------|---------|---------|-------|
+   | #   | App# | Date | Company | Role | Channel | Contact | Notes |
+   | --- | ---- | ---- | ------- | ---- | ------- | ------- | ----- |
    ```
 
 2. Append a row with:
@@ -154,6 +163,7 @@ After the user reviews and says they've sent a follow-up, record it:
 After showing all drafts, summarize:
 
 > **Follow-up Dashboard** ({date})
+>
 > - {N} applications being tracked
 > - {N} overdue — drafts generated above
 > - {N} urgent — respond today
@@ -164,10 +174,10 @@ After showing all drafts, summarize:
 
 ## Cadence Rules Reference
 
-| Status | First follow-up | Subsequent | Max attempts |
-|--------|----------------|------------|-------------|
-| Applied | 7 days after application | Every 7 days | 2 (then mark cold) |
-| Responded | 1 day (urgent reply) | Every 3 days | No limit |
-| Interview | 1 day after (thank-you) | Every 3 days | No limit |
+| Status    | First follow-up          | Subsequent   | Max attempts       |
+| --------- | ------------------------ | ------------ | ------------------ |
+| Applied   | 7 days after application | Every 7 days | 2 (then mark cold) |
+| Responded | 1 day (urgent reply)     | Every 3 days | No limit           |
+| Interview | 1 day after (thank-you)  | Every 3 days | No limit           |
 
 These defaults can be overridden via `node scripts/followup-cadence.mjs --applied-days N`.

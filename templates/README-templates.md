@@ -4,11 +4,11 @@ System-layer template files used by career-ops scripts and modes. These files ar
 
 ## Files
 
-| File | Used By | Purpose |
-|------|---------|---------|
-| `cv-template.html` | `scripts/generate-pdf.mjs` | HTML/CSS template for ATS-optimized CV PDFs |
-| `portals.example.yml` | Onboarding | Example portal scanner configuration (copy to `portals.yml` to activate) |
-| `states.yml` | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases |
+| File                  | Used By                                                                                      | Purpose                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `cv-template.html`    | `scripts/generate-pdf.mjs`                                                                   | HTML/CSS template for ATS-optimized CV PDFs                              |
+| `portals.example.yml` | Onboarding                                                                                   | Example portal scanner configuration (copy to `portals.yml` to activate) |
+| `states.yml`          | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases                           |
 
 ### cv-template.html
 

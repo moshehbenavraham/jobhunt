@@ -46,18 +46,21 @@ documentation paths.
 ## 3. Prerequisites
 
 ### Required Sessions
+
 - [x] `phase00-session01-canonical-instruction-surface` - establishes the
-  canonical Codex instruction contract
+      canonical Codex instruction contract
 - [x] `phase00-session02-version-ownership-normalization` - stabilizes version
-  ownership before metadata cleanup
+      ownership before metadata cleanup
 
 ### Required Tools/Knowledge
+
 - Familiarity with repo metadata and contributor surfaces in `.github/`,
   `docs/`, and `scripts/`
 - Working knowledge of the Phase 00 PRD and Session 03 success criteria
 - `node`, `git`, `rg`, and Bash
 
 ### Environment Requirements
+
 - Repo root checkout with `.spec_system/` initialized
 - Ability to run repo validation commands from the project root
 - Review of the current `.claude` and dead-path references before editing
@@ -67,6 +70,7 @@ documentation paths.
 ## 4. Scope
 
 ### In Scope (MVP)
+
 - Maintainer can update system-layer ownership to the active Codex skill
   surface - replace `.claude/skills/` with `.codex/skills/` in updater and
   data-contract definitions.
@@ -80,6 +84,7 @@ documentation paths.
   inventory.
 
 ### Out of Scope (Deferred)
+
 - Public onboarding rewrite in `README.md`, `docs/SETUP.md`, and
   `docs/CONTRIBUTING.md` - Reason: Phase 01 owns the user-facing Codex-primary
   documentation refresh.
@@ -94,6 +99,7 @@ documentation paths.
 ## 5. Technical Approach
 
 ### Architecture
+
 Treat `.codex/skills/` and `docs/` as the live metadata targets everywhere
 repo-owned tooling or contributor automation depends on file paths. Align the
 updater's system-layer ownership, the data contract, GitHub labeler rules, and
@@ -101,6 +107,7 @@ GitHub contributor templates to those canonical locations. Then add validation
 assertions that fail if those blocking metadata paths regress.
 
 ### Design Patterns
+
 - Canonical path ownership: one live path for skills and docs, reused across
   updater, docs, and metadata.
 - Fail-fast metadata validation: repo tests should report exactly which path
@@ -109,6 +116,7 @@ assertions that fail if those blocking metadata paths regress.
   instead of widening this session into a full docs migration.
 
 ### Technology Stack
+
 - Node.js ESM scripts in `scripts/`
 - YAML and Markdown metadata in `.github/` and `docs/`
 - Markdown session artifacts in `.spec_system/`
@@ -118,27 +126,30 @@ assertions that fail if those blocking metadata paths regress.
 ## 6. Deliverables
 
 ### Files to Create
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `.spec_system/specs/phase00-session03-codex-metadata-alignment/residual-legacy-references.md` | Track deferred non-blocking legacy references by file and owning phase | ~40 |
+
+| File                                                                                          | Purpose                                                                | Est. Lines |
+| --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------- |
+| `.spec_system/specs/phase00-session03-codex-metadata-alignment/residual-legacy-references.md` | Track deferred non-blocking legacy references by file and owning phase | ~40        |
 
 ### Files to Modify
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `scripts/update-system.mjs` | Replace `.claude/skills/` with `.codex/skills/` in system-layer ownership | ~2 |
-| `docs/DATA_CONTRACT.md` | Align the system-layer skills path with the live `.codex` directory | ~2 |
-| `.github/labeler.yml` | Point labeler globs at live instruction and docs paths | ~10 |
-| `.github/PULL_REQUEST_TEMPLATE.md` | Fix contributor links to the live docs paths | ~2 |
-| `.github/workflows/welcome.yml` | Fix onboarding links to the live docs paths | ~4 |
-| `.github/ISSUE_TEMPLATE/bug_report.yml` | Fix Code of Conduct link to the live docs path | ~1 |
-| `.github/ISSUE_TEMPLATE/feature_request.yml` | Fix Code of Conduct link to the live docs path | ~1 |
-| `scripts/test-all.mjs` | Add assertions that blocking metadata references use live Codex and docs paths | ~35 |
+
+| File                                         | Changes                                                                        | Est. Lines |
+| -------------------------------------------- | ------------------------------------------------------------------------------ | ---------- |
+| `scripts/update-system.mjs`                  | Replace `.claude/skills/` with `.codex/skills/` in system-layer ownership      | ~2         |
+| `docs/DATA_CONTRACT.md`                      | Align the system-layer skills path with the live `.codex` directory            | ~2         |
+| `.github/labeler.yml`                        | Point labeler globs at live instruction and docs paths                         | ~10        |
+| `.github/PULL_REQUEST_TEMPLATE.md`           | Fix contributor links to the live docs paths                                   | ~2         |
+| `.github/workflows/welcome.yml`              | Fix onboarding links to the live docs paths                                    | ~4         |
+| `.github/ISSUE_TEMPLATE/bug_report.yml`      | Fix Code of Conduct link to the live docs path                                 | ~1         |
+| `.github/ISSUE_TEMPLATE/feature_request.yml` | Fix Code of Conduct link to the live docs path                                 | ~1         |
+| `scripts/test-all.mjs`                       | Add assertions that blocking metadata references use live Codex and docs paths | ~35        |
 
 ---
 
 ## 7. Success Criteria
 
 ### Functional Requirements
+
 - [ ] `scripts/update-system.mjs` and `docs/DATA_CONTRACT.md` reference
       `.codex/skills/` as the active checked-in skill surface.
 - [ ] `.github/labeler.yml` tracks `AGENTS.md`, `docs/DATA_CONTRACT.md`,
@@ -150,6 +161,7 @@ assertions that fail if those blocking metadata paths regress.
       references and the phase that should own them.
 
 ### Testing Requirements
+
 - [ ] `node --check scripts/update-system.mjs` passes
 - [ ] `node --check scripts/test-all.mjs` passes
 - [ ] `node scripts/test-all.mjs --quick` passes with the new metadata-path
@@ -158,6 +170,7 @@ assertions that fail if those blocking metadata paths regress.
       or dead root-doc references remain in the updated metadata surface
 
 ### Non-Functional Requirements
+
 - [ ] Blocking metadata cleanup remains scoped to Phase 00 and does not become
       a full public docs rewrite
 - [ ] Validation failures identify the exact mismatched metadata file or path
@@ -165,6 +178,7 @@ assertions that fail if those blocking metadata paths regress.
       work without re-auditing the repo
 
 ### Quality Gates
+
 - [ ] All files ASCII-encoded
 - [ ] Unix LF line endings
 - [ ] Code follows project conventions
@@ -174,6 +188,7 @@ assertions that fail if those blocking metadata paths regress.
 ## 8. Implementation Notes
 
 ### Key Considerations
+
 - The live repo still contains broader Claude-first wording in `README.md`,
   `docs/SETUP.md`, `batch/`, and `modes/batch.md`; those should be inventoried
   here, not rewritten in this session.
@@ -185,6 +200,7 @@ assertions that fail if those blocking metadata paths regress.
   scope, capture it as residual drift for Session 04.
 
 ### Potential Challenges
+
 - Metadata spread: path drift is distributed across docs, scripts, YAML, and
   GitHub workflow templates, which makes omission easy without a deliberate
   inventory.
@@ -194,6 +210,7 @@ assertions that fail if those blocking metadata paths regress.
   turn Phase 00 into a repo-wide language lint.
 
 ### Relevant Considerations
+
 - No active concerns or lessons learned are currently recorded in
   `.spec_system/CONSIDERATIONS.md`.
 - `.spec_system/SECURITY-COMPLIANCE.md` is clean; this session is metadata
@@ -204,22 +221,26 @@ assertions that fail if those blocking metadata paths regress.
 ## 9. Testing Strategy
 
 ### Unit Tests
+
 - Extend `scripts/test-all.mjs` so it asserts canonical skill-path and
   contributor-metadata references for the files touched in this session.
 
 ### Integration Tests
+
 - Run `node scripts/test-all.mjs --quick` after metadata cleanup to verify the
   repo-level gate catches and then accepts the corrected paths.
 - Run targeted `rg` checks across `.github/`, `docs/`, and `scripts/` to
   confirm blocking path references are removed from the scoped surface.
 
 ### Manual Testing
+
 - Review the updated GitHub template and workflow links to confirm they point
   at the live `docs/` files.
 - Review the residual legacy inventory to ensure every deferred reference has
   a clear owner phase or rationale.
 
 ### Edge Cases
+
 - Root doc names such as `CONTRIBUTING.md` may appear legitimately inside
   relative links from files already under `docs/`; do not treat those as dead
   root-path references when the target resolves correctly.
@@ -233,9 +254,11 @@ assertions that fail if those blocking metadata paths regress.
 ## 10. Dependencies
 
 ### External Libraries
+
 - None
 
 ### Internal Dependencies
+
 - `scripts/update-system.mjs` - updater ownership list must reflect the live
   skill surface
 - `docs/DATA_CONTRACT.md` - system/user layer contract must name the live
@@ -254,6 +277,7 @@ assertions that fail if those blocking metadata paths regress.
   conventions
 
 ### Other Sessions
+
 - Depends on: `phase00-session01-canonical-instruction-surface`,
   `phase00-session02-version-ownership-normalization`
 - Depended by: `phase00-session04-validation-drift-closeout`

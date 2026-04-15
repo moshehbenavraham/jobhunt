@@ -25,6 +25,7 @@ Modo interactivo para cuando el candidato está rellenando un formulario de apli
 **Con Playwright:** Tomar snapshot de la página activa. Leer título, URL, y contenido visible.
 
 **Sin Playwright:** Pedir al candidato que:
+
 - Comparta un screenshot del formulario (Read tool lee imágenes)
 - O pegue las preguntas del formulario como texto
 - O diga empresa + rol para que lo busquemos
@@ -40,6 +41,7 @@ Modo interactivo para cuando el candidato está rellenando un formulario de apli
 ## Paso 3 — Detectar cambios en el rol
 
 Si el rol en pantalla difiere del evaluado:
+
 - **Avisar al candidato**: "El rol ha cambiado de [X] a [Y]. ¿Quieres que re-evalúe o adapto las respuestas al nuevo título?"
 - **Si adaptar**: Ajustar las respuestas al nuevo rol sin re-evaluar
 - **Si re-evaluar**: Ejecutar evaluación A-F completa, actualizar report, regenerar Section G
@@ -48,6 +50,7 @@ Si el rol en pantalla difiere del evaluado:
 ## Paso 4 — Analizar preguntas del formulario
 
 Identificar TODAS las preguntas visibles:
+
 - Campos de texto libre (cover letter, why this role, etc.)
 - Dropdowns (how did you hear, work authorization, etc.)
 - Yes/No (relocation, visa, etc.)
@@ -55,6 +58,7 @@ Identificar TODAS las preguntas visibles:
 - Upload fields (resume, cover letter PDF)
 
 Clasificar cada pregunta:
+
 - **Ya respondida en Section G** → adaptar la respuesta existente
 - **Nueva pregunta** → generar respuesta desde el report + cv.md
 
@@ -95,6 +99,7 @@ Notas:
 ## Paso 6 — Post-apply (opcional)
 
 Si el candidato confirma que envió la aplicación:
+
 1. Actualizar estado en `applications.md` de "Evaluada" a "Aplicado"
 2. Actualizar Section G del report con las respuestas finales
 3. Sugerir siguiente paso: `/career-ops contacto` para LinkedIn outreach
@@ -102,6 +107,7 @@ Si el candidato confirma que envió la aplicación:
 ## Scroll handling
 
 Si el formulario tiene más preguntas que las visibles:
+
 - Pedir al candidato que haga scroll y comparta otro screenshot
 - O que pegue las preguntas restantes
 - Procesar en iteraciones hasta cubrir todo el formulario

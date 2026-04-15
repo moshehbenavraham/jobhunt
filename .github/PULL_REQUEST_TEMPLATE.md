@@ -25,4 +25,5 @@
 - [ ] My changes align with the [project roadmap](https://github.com/santifer/career-ops/discussions/156)
 
 ---
+
 Questions? [Join the Discord](https://discord.gg/8pRpHETxa4) for faster feedback.

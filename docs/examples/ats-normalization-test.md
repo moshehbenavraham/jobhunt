@@ -4,15 +4,15 @@ This file is a regression fixture for the text normalization pass added in `scri
 
 ## Problematic Unicode (normalizer must convert these)
 
-| Name | Codepoint | Sample line | Converts to |
-|------|-----------|-------------|-------------|
-| Em-dash | U+2014 | Built and sold a SaaS — now shipping AI in production. | Built and sold a SaaS - now shipping AI in production. |
-| En-dash | U+2013 | 2020–2024 at Acme Corp. | 2020-2024 at Acme Corp. |
-| Curly double quote | U+201C / U+201D | "Led the migration" was a real bullet. | "Led the migration" was a real bullet. |
-| Curly single quote | U+2018 / U+2019 | The team's velocity tripled. | The team's velocity tripled. |
-| Ellipsis | U+2026 | And so on… | And so on... |
-| Zero-width space | U+200B | Hello​world (there is a ZWSP between the two words) | Helloworld (removed) |
-| Non-breaking space | U+00A0 | 5 years experience | 5 years experience (regular space) |
+| Name               | Codepoint       | Sample line                                            | Converts to                                            |
+| ------------------ | --------------- | ------------------------------------------------------ | ------------------------------------------------------ |
+| Em-dash            | U+2014          | Built and sold a SaaS — now shipping AI in production. | Built and sold a SaaS - now shipping AI in production. |
+| En-dash            | U+2013          | 2020–2024 at Acme Corp.                                | 2020-2024 at Acme Corp.                                |
+| Curly double quote | U+201C / U+201D | "Led the migration" was a real bullet.                 | "Led the migration" was a real bullet.                 |
+| Curly single quote | U+2018 / U+2019 | The team's velocity tripled.                           | The team's velocity tripled.                           |
+| Ellipsis           | U+2026          | And so on…                                             | And so on...                                           |
+| Zero-width space   | U+200B          | Hello​world (there is a ZWSP between the two words)    | Helloworld (removed)                                   |
+| Non-breaking space | U+00A0          | 5 years experience                                     | 5 years experience (regular space)                     |
 
 ## Writing quality guidelines (writer must follow these)
 

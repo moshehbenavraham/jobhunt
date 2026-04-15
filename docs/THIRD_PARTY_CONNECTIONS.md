@@ -32,15 +32,15 @@ The repo treats these as in-scope third-party surfaces:
 
 These are the recruiting platforms and patterns explicitly handled or documented by the repo.
 
-| Family | Common domains / patterns | Typical use in Career Ops |
-|---|---|---|
-| Greenhouse | `job-boards.greenhouse.io`, `job-boards.eu.greenhouse.io`, `boards-api.greenhouse.io` | direct scan, JD extraction, liveness |
-| Ashby | `jobs.ashbyhq.com`, `api.ashbyhq.com` | direct scan, JD extraction, liveness |
-| Lever | `jobs.lever.co`, `api.lever.co` | direct scan, JD extraction, liveness |
-| BambooHR | `*.bamboohr.com/careers/*` | documented scan target and JD read |
-| Teamtailor | `*.teamtailor.com/jobs`, `*.teamtailor.com/jobs.rss` | documented scan target and feed-based discovery |
-| Workday | `*.myworkdayjobs.com` | documented scan target, JD extraction, liveness |
-| Custom company sites | company-owned careers domains | direct scan and single-offer evaluation |
+| Family               | Common domains / patterns                                                             | Typical use in Career Ops                       |
+| -------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Greenhouse           | `job-boards.greenhouse.io`, `job-boards.eu.greenhouse.io`, `boards-api.greenhouse.io` | direct scan, JD extraction, liveness            |
+| Ashby                | `jobs.ashbyhq.com`, `api.ashbyhq.com`                                                 | direct scan, JD extraction, liveness            |
+| Lever                | `jobs.lever.co`, `api.lever.co`                                                       | direct scan, JD extraction, liveness            |
+| BambooHR             | `*.bamboohr.com/careers/*`                                                            | documented scan target and JD read              |
+| Teamtailor           | `*.teamtailor.com/jobs`, `*.teamtailor.com/jobs.rss`                                  | documented scan target and feed-based discovery |
+| Workday              | `*.myworkdayjobs.com`                                                                 | documented scan target, JD extraction, liveness |
+| Custom company sites | company-owned careers domains                                                         | direct scan and single-offer evaluation         |
 
 The example `portals.yml` also includes search-driven discovery across broader job sites, including `apply.workable.com`, `workatastartup.com`, `ycombinator.com/jobs`, `ai-jobs.net`, `remoteok.com`, `weworkremotely.com`, `workingnomads.com`, `euremotejobs.com`, `fwddeploy.com`, and `getmanfred.com`.
 

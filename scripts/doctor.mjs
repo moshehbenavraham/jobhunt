@@ -14,9 +14,9 @@ const projectRoot = resolve(SCRIPT_DIR, '..');
 
 // ANSI colors (only on TTY)
 const isTTY = process.stdout.isTTY;
-const green = (s) => isTTY ? `\x1b[32m${s}\x1b[0m` : s;
-const red = (s) => isTTY ? `\x1b[31m${s}\x1b[0m` : s;
-const dim = (s) => isTTY ? `\x1b[2m${s}\x1b[0m` : s;
+const green = (s) => (isTTY ? `\x1b[32m${s}\x1b[0m` : s);
+const red = (s) => (isTTY ? `\x1b[31m${s}\x1b[0m` : s);
+const dim = (s) => (isTTY ? `\x1b[2m${s}\x1b[0m` : s);
 
 function checkNodeVersion() {
   const major = parseInt(process.versions.node.split('.')[0]);
@@ -183,10 +183,14 @@ async function main() {
 
   console.log('');
   if (failures > 0) {
-    console.log(`Result: ${failures} issue${failures === 1 ? '' : 's'} found. Fix them and run \`npm run doctor\` again.`);
+    console.log(
+      `Result: ${failures} issue${failures === 1 ? '' : 's'} found. Fix them and run \`npm run doctor\` again.`,
+    );
     process.exit(1);
   } else {
-    console.log('Result: All checks passed. You\'re ready to go! Run `codex` to start.');
+    console.log(
+      "Result: All checks passed. You're ready to go! Run `codex` to start.",
+    );
     console.log('');
     console.log('Join the community: https://discord.gg/8pRpHETxa4');
     process.exit(0);

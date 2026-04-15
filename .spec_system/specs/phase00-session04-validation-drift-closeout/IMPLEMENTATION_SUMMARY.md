@@ -18,23 +18,25 @@ cleanly.
 ## Deliverables
 
 ### Files Created
-| File | Purpose | Lines |
-|------|---------|-------|
-| `.spec_system/specs/phase00-session04-validation-drift-closeout/IMPLEMENTATION_SUMMARY.md` | Capture the session closeout summary | ~60 |
+
+| File                                                                                       | Purpose                              | Lines |
+| ------------------------------------------------------------------------------------------ | ------------------------------------ | ----- |
+| `.spec_system/specs/phase00-session04-validation-drift-closeout/IMPLEMENTATION_SUMMARY.md` | Capture the session closeout summary | ~60   |
 
 ### Files Modified
-| File | Changes |
-|------|---------|
-| `scripts/doctor.mjs` | Replaced the legacy success footer with Codex-primary launch guidance |
-| `scripts/test-all.mjs` | Added a live doctor-output assertion to the repo validation gate |
+
+| File                                                                                    | Changes                                                                |
+| --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `scripts/doctor.mjs`                                                                    | Replaced the legacy success footer with Codex-primary launch guidance  |
+| `scripts/test-all.mjs`                                                                  | Added a live doctor-output assertion to the repo validation gate       |
 | `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | Marked the exit report complete and updated the handoff recommendation |
-| `.spec_system/specs/phase00-session04-validation-drift-closeout/spec.md` | Marked the session complete |
-| `.spec_system/state.json` | Recorded Session 04 as completed and closed Phase 00 |
-| `.spec_system/archive/phases/phase_00/` | Archived the Phase 00 PRD and session stubs after closeout |
-| `.spec_system/PRD/PRD.md` | Updated the master phase table to show Phase 00 complete |
-| `VERSION` | Bumped the patch version to `1.5.6` |
-| `package.json` | Aligned the manifest version with `VERSION` |
-| `package-lock.json` | Aligned the lockfile version fields with `VERSION` |
+| `.spec_system/specs/phase00-session04-validation-drift-closeout/spec.md`                | Marked the session complete                                            |
+| `.spec_system/state.json`                                                               | Recorded Session 04 as completed and closed Phase 00                   |
+| `.spec_system/archive/phases/phase_00/`                                                 | Archived the Phase 00 PRD and session stubs after closeout             |
+| `.spec_system/PRD/PRD.md`                                                               | Updated the master phase table to show Phase 00 complete               |
+| `VERSION`                                                                               | Bumped the patch version to `1.5.6`                                    |
+| `package.json`                                                                          | Aligned the manifest version with `VERSION`                            |
+| `package-lock.json`                                                                     | Aligned the lockfile version fields with `VERSION`                     |
 
 ---
 
@@ -50,11 +52,11 @@ cleanly.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 74 |
-| Passed | 74 |
-| Coverage | N/A |
+| Metric   | Value |
+| -------- | ----- |
+| Tests    | 74    |
+| Passed   | 74    |
+| Coverage | N/A   |
 
 ---
 
@@ -70,6 +72,7 @@ cleanly.
 ## Future Considerations
 
 Items for future sessions:
+
 1. Continue with Phase 01 docs and entrypoint migration.
 2. Keep the validator surfaces under repo-gate coverage so footer drift cannot
    return silently.

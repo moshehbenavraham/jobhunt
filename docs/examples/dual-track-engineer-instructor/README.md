@@ -15,11 +15,11 @@ This folder shows how to:
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `cv.md` | Fictional dual-track CV (Sam Rivera). Use as structural reference for your own. |
-| `profile.yml` | Profile config with two primary archetypes and two comp ranges. |
-| `README.md` | This file. |
+| File          | Purpose                                                                         |
+| ------------- | ------------------------------------------------------------------------------- |
+| `cv.md`       | Fictional dual-track CV (Sam Rivera). Use as structural reference for your own. |
+| `profile.yml` | Profile config with two primary archetypes and two comp ranges.                 |
+| `README.md`   | This file.                                                                      |
 
 The persona is fictional (`Sam Rivera <sam@example.com>`). Do not copy values directly -- adapt them.
 
@@ -45,9 +45,11 @@ Use single-track instead if:
 ## How dual-track changes the rest of career-ops
 
 ### `modes/_shared.md`
+
 List both archetypes in the "North Star -- Target Roles" table with `fit: primary`. The skill applies equal rigor to all primary archetypes, which is what you need here.
 
 ### `cv.md`
+
 Two ways to structure it:
 
 - Layered (what I recommend): one Professional Summary that names both tracks in the first sentence, then experience entries that include both engineering and teaching bullets per role. Use this when the roles actually combined both. See the `cv.md` in this folder.
@@ -56,9 +58,11 @@ Two ways to structure it:
 Lead the Professional Summary with the combination itself -- "senior AI engineer who runs the curriculum", or whatever the equivalent is for your stack. The combination is the thing that's hard to hire. Either side alone is not.
 
 ### `profile.yml` -- compensation
+
 Put your engineering range in `compensation.target_range` (it's usually the higher one) and the teaching range in the optional `compensation.alternate_ranges` block. The evaluator picks the right one based on the JD.
 
 ### Evaluation reports
+
 When career-ops evaluates an offer, it should detect which archetype the JD targets and pick the matching salary range, the matching CV emphasis, and the matching STAR stories. With two `fit: primary` entries this mostly just works, but check the `Archetype:` line in the report header. If it picked wrong, the rest of the report is wrong too.
 
 ---
@@ -91,10 +95,10 @@ Lead with the teaching wins (hours, alumni placed, retention, NPS). Use the engi
 
 Dual-track candidates get read as overqualified for pure teaching roles ("you will leave in six months for an engineering job") and as underqualified for pure engineering roles ("you have not been a full-time IC in two years"). Both kill applications. The mitigations:
 
-| Risk | Mitigation in CV | Mitigation in interview |
-|------|------------------|-------------------------|
-| Overqualified for teaching | Lead the Summary with curriculum and outcomes, not LOC | Tell a story about a course you redesigned that moved student outcomes. Show you care about pedagogy, not just shipping. |
-| Underqualified for engineering | Add a "Recent Engineering" section that lists shipping work from the last 12 months | Bring code. Pull up a PR you wrote in the last month. Walk through the architecture decisions in plain language. |
+| Risk                           | Mitigation in CV                                                                    | Mitigation in interview                                                                                                  |
+| ------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Overqualified for teaching     | Lead the Summary with curriculum and outcomes, not LOC                              | Tell a story about a course you redesigned that moved student outcomes. Show you care about pedagogy, not just shipping. |
+| Underqualified for engineering | Add a "Recent Engineering" section that lists shipping work from the last 12 months | Bring code. Pull up a PR you wrote in the last month. Walk through the architecture decisions in plain language.         |
 
 ---
 

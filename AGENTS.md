@@ -51,8 +51,8 @@ If setup is incomplete, do not run evaluations, scans, PDFs, or pipeline process
    ```markdown
    # Applications Tracker
 
-   | # | Date | Company | Role | Score | Status | PDF | Report | Notes |
-   |---|------|---------|------|-------|--------|-----|--------|-------|
+   | #   | Date | Company | Role | Score | Status | PDF | Report | Notes |
+   | --- | ---- | ------- | ---- | ----- | ------ | --- | ------ | ----- |
    ```
 
 5. Learn the user
@@ -71,6 +71,7 @@ Read `docs/DATA_CONTRACT.md`.
 - System layer: `modes/_shared.md`, `modes/**`, `scripts/**`, `templates/**`, `batch/**`, `dashboard/**`, `docs/**`, `AGENTS.md`
 
 Rule:
+
 - Put personalization only in the user layer.
 - Do not put user-specific archetypes, targeting, proof points, comp policy, or negotiation scripts into `modes/_shared.md`.
 - If changing shared defaults for everyone, update the system-layer files that implement them, including `batch/batch-prompt.md` when relevant.
@@ -78,6 +79,7 @@ Rule:
 ## Sources Of Truth
 
 Read these before evaluation work:
+
 - `modes/_shared.md`
 - `modes/_profile.md`
 - `config/profile.yml`
@@ -85,6 +87,7 @@ Read these before evaluation work:
 - `article-digest.md` if present
 
 Rules:
+
 - Never invent experience or metrics.
 - If `article-digest.md` conflicts with `cv.md` on proof-point metrics, prefer `article-digest.md`.
 - Learn from user feedback after evaluations by updating `config/profile.yml`, `modes/_profile.md`, or `article-digest.md`.
@@ -95,24 +98,24 @@ Treat a pasted JD or job URL as full auto-pipeline unless the user explicitly as
 
 Always read `modes/_shared.md` first, then `modes/_profile.md`, then the relevant mode:
 
-| User intent | Mode file |
-|-------------|-----------|
-| Raw JD text or job URL | `modes/auto-pipeline.md` |
-| Single evaluation only | `modes/oferta.md` |
-| Compare offers | `modes/ofertas.md` |
-| Scan portals | `modes/scan.md` |
-| Generate ATS PDF | `modes/pdf.md` |
-| Live application help | `modes/apply.md` |
-| Process `data/pipeline.md` | `modes/pipeline.md` |
-| Tracker status | `modes/tracker.md` |
-| Deep company research | `modes/deep.md` |
-| LinkedIn outreach | `modes/contacto.md` |
-| Interview prep | `modes/interview-prep.md` |
-| Training or certification review | `modes/training.md` |
-| Project idea review | `modes/project.md` |
-| Batch evaluation | `modes/batch.md` |
-| Rejection pattern analysis | `modes/patterns.md` |
-| Follow-up cadence | `modes/followup.md` |
+| User intent                      | Mode file                 |
+| -------------------------------- | ------------------------- |
+| Raw JD text or job URL           | `modes/auto-pipeline.md`  |
+| Single evaluation only           | `modes/oferta.md`         |
+| Compare offers                   | `modes/ofertas.md`        |
+| Scan portals                     | `modes/scan.md`           |
+| Generate ATS PDF                 | `modes/pdf.md`            |
+| Live application help            | `modes/apply.md`          |
+| Process `data/pipeline.md`       | `modes/pipeline.md`       |
+| Tracker status                   | `modes/tracker.md`        |
+| Deep company research            | `modes/deep.md`           |
+| LinkedIn outreach                | `modes/contacto.md`       |
+| Interview prep                   | `modes/interview-prep.md` |
+| Training or certification review | `modes/training.md`       |
+| Project idea review              | `modes/project.md`        |
+| Batch evaluation                 | `modes/batch.md`          |
+| Rejection pattern analysis       | `modes/patterns.md`       |
+| Follow-up cadence                | `modes/followup.md`       |
 
 ## Operating Rules
 
@@ -127,11 +130,13 @@ Always read `modes/_shared.md` first, then `modes/_profile.md`, then the relevan
 Do not trust generic search or fetch alone to decide whether a posting is still active when Playwright/Chromium is available.
 
 Preferred order:
+
 1. Browser automation / Playwright on the live posting
 2. `npm run liveness -- <url>` if you need a local scripted check
 3. Batch-mode fallback only when Playwright is unavailable
 
 Rules:
+
 - A live posting needs real JD content, not just a navbar/footer shell.
 - In batch/headless workflows where Playwright is unavailable, add `**Verification:** unconfirmed (batch mode)` to the report header.
 
@@ -157,6 +162,7 @@ Rules:
 ## Personalization Rules
 
 Common user-specific changes belong here:
+
 - archetypes, narrative, negotiation, location policy, scoring preference: `modes/_profile.md` or `config/profile.yml`
 - target companies and queries: `portals.yml`
 - proof points and public metrics: `article-digest.md`

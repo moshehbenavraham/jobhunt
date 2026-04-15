@@ -18,4 +18,3 @@
   and `.codex/skills/career-ops/SKILL.md`.
 - No blocking legacy instruction-doc dependencies remain on the active
   contract path.
-

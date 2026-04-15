@@ -2,109 +2,65 @@
 
 ## System Overview
 
-```
-                    ┌─────────────────────────────────┐
-                    │          AI Agent CLI            │
-                    │    (reads AGENTS.md + modes/*.md)     │
-                    └──────────┬──────────────────────┘
-                               │
-            ┌──────────────────┼──────────────────────┐
-            │                  │                       │
-     ┌──────▼──────┐   ┌──────▼──────┐   ┌───────────▼────────┐
-     │ Single Eval  │   │ Portal Scan │   │   Batch Process    │
-     │ (auto-pipe)  │   │  (scan.md)  │   │   (batch-runner)   │
-     └──────┬──────┘   └──────┬──────┘   └───────────┬────────┘
-            │                  │                       │
-            │           ┌──────▼──────┐          ┌────▼─────┐
-            │           │ pipeline.md │          │ N workers│
-            │           │ (URL inbox) │          │ (claude -p)
-            │           └─────────────┘          └────┬─────┘
-            │                                          │
-     ┌──────▼──────────────────────────────────────────▼──────┐
-     │                    Output Pipeline                      │
-     │  ┌──────────┐  ┌────────────┐  ┌───────────────────┐  │
-     │  │ Report.md│  │  PDF (HTML  │  │ Tracker TSV       │  │
-     │  │ (A-F eval)│  │  → Puppeteer)│  │ (merge-tracker)  │  │
-     │  └──────────┘  └────────────┘  └───────────────────┘  │
-     └────────────────────────────────────────────────────────┘
-                               │
-                    ┌──────────▼──────────┐
-                    │  data/applications.md │
-                    │  (canonical tracker)  │
-                    └──────────────────────┘
+```text
+Codex CLI
+  -> AGENTS.md
+  -> .codex/skills/career-ops/SKILL.md
+  -> modes/*.md
+  -> scripts/*.mjs
+  -> reports / output / batch tracker files / data/applications.md
 ```
 
-## Evaluation Flow (Single Offer)
+The repository is organized around a Codex-first agent contract, repo-owned scripts, and tracker discipline. The durable product value lives in prompts, modes, templates, and deterministic scripts rather than in a large application server.
 
-1. **Input**: User pastes JD text or URL
-2. **Extract**: Playwright/WebFetch extracts JD from URL
-3. **Classify**: Detect archetype (1 of 6 types)
-4. **Evaluate**: 6 blocks (A-F):
-   - A: Role summary
-   - B: CV match (gaps + mitigation)
-   - C: Level strategy
-   - D: Comp research (WebSearch)
-   - E: CV personalization plan
-   - F: Interview prep (STAR stories)
-5. **Score**: Weighted average across 10 dimensions (1-5)
-6. **Report**: Save as `reports/{num}-{company}-{date}.md`
-7. **PDF**: Generate ATS-optimized CV (`scripts/generate-pdf.mjs`)
-8. **Track**: Write TSV to `batch/tracker-additions/`, auto-merged
+## Main Components
 
-## Batch Processing
+### Agent surface
 
-The batch system processes multiple offers in parallel:
+- `AGENTS.md` is the canonical instruction entry point.
+- `.codex/skills/career-ops/SKILL.md` is the checked-in skill surface.
+- `modes/` contains the task-specific workflow files used by the repo.
 
-```
-batch-input.tsv    →  batch-runner.sh  →  N × claude -p workers
-(id, url, source)     (orchestrator)       (self-contained prompt)
-                           │
-                    batch-state.tsv
-                    (tracks progress)
-```
+### Job evaluation pipeline
 
-Each worker is a headless Claude instance (`claude -p`) that receives the full `batch-prompt.md` as context. Workers produce:
-- Report .md
-- PDF
-- Tracker TSV line
+- User input starts as a JD URL or JD text.
+- `scripts/` handles extraction, scoring, PDF generation, tracker validation, and update checks.
+- Reports are written to `reports/`.
+- PDFs are written to `output/`.
+- Tracker data is merged into `data/applications.md`.
 
-The orchestrator manages parallelism, state, retries, and resume.
+### Batch processing
+
+- `batch/batch-runner.sh` orchestrates batch runs.
+- `batch/batch-prompt.md` defines the worker prompt.
+- Batch outputs are merged through `scripts/merge-tracker.mjs` and checked with `scripts/verify-pipeline.mjs`.
+
+### Dashboard
+
+- `dashboard/` contains the Go TUI for browsing the pipeline.
+- It reads the same tracker and report artifacts as the rest of the repo.
+
+## Integrity Scripts
+
+| Script                           | Purpose                       |
+| -------------------------------- | ----------------------------- |
+| `scripts/verify-pipeline.mjs`    | Check tracker integrity       |
+| `scripts/merge-tracker.mjs`      | Merge batch TSV additions     |
+| `scripts/dedup-tracker.mjs`      | Remove duplicate tracker rows |
+| `scripts/normalize-statuses.mjs` | Normalize status aliases      |
+| `scripts/cv-sync-check.mjs`      | Validate setup consistency    |
+| `scripts/update-system.mjs`      | Check and apply repo updates  |
 
 ## Data Flow
 
+```text
+cv.md
+article-digest.md
+config/profile.yml
+portals.yml
+  -> evaluation and scan workflows
+  -> reports/
+  -> output/
+  -> batch/tracker-additions/
+  -> data/applications.md
 ```
-cv.md                    →  Evaluation context
-article-digest.md        →  Proof points for matching
-config/profile.yml       →  Candidate identity
-portals.yml              →  Scanner configuration
-templates/states.yml     →  Canonical status values
-templates/cv-template.html → PDF generation template
-```
-
-## File Naming Conventions
-
-- Reports: `{###}-{company-slug}-{YYYY-MM-DD}.md` (3-digit zero-padded)
-- PDFs: `cv-candidate-{company-slug}-{YYYY-MM-DD}.pdf`
-- Tracker TSVs: `batch/tracker-additions/{id}.tsv`
-
-## Pipeline Integrity
-
-Scripts maintain data consistency:
-
-| Script | Purpose |
-|--------|---------|
-| `scripts/merge-tracker.mjs` | Merges batch TSV additions into applications.md |
-| `scripts/verify-pipeline.mjs` | Health check: statuses, duplicates, links |
-| `scripts/dedup-tracker.mjs` | Removes duplicate entries by company+role |
-| `scripts/normalize-statuses.mjs` | Maps status aliases to canonical values |
-| `scripts/cv-sync-check.mjs` | Validates setup consistency |
-
-## Dashboard TUI
-
-The `dashboard/` directory contains a standalone Go TUI application that visualizes the pipeline:
-
-- Filter tabs: All, Evaluada, Aplicado, Entrevista, Top >=4, No Aplicar
-- Sort modes: Score, Date, Company, Status
-- Grouped/flat view
-- Lazy-loaded report previews
-- Inline status picker

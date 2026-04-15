@@ -15,7 +15,13 @@
  *   node scripts/scan.mjs --company Cohere # scan a single company
  */
 
-import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync } from 'fs';
+import {
+  readFileSync,
+  writeFileSync,
+  appendFileSync,
+  existsSync,
+  mkdirSync,
+} from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import yaml from 'js-yaml';
@@ -81,7 +87,7 @@ function detectApi(company) {
 
 function parseGreenhouse(json, companyName) {
   const jobs = json.jobs || [];
-  return jobs.map(j => ({
+  return jobs.map((j) => ({
     title: j.title || '',
     url: j.absolute_url || '',
     company: companyName,
@@ -91,7 +97,7 @@ function parseGreenhouse(json, companyName) {
 
 function parseAshby(json, companyName) {
   const jobs = json.jobs || [];
-  return jobs.map(j => ({
+  return jobs.map((j) => ({
     title: j.title || '',
     url: j.jobUrl || '',
     company: companyName,
@@ -101,7 +107,7 @@ function parseAshby(json, companyName) {
 
 function parseLever(json, companyName) {
   if (!Array.isArray(json)) return [];
-  return json.map(j => ({
+  return json.map((j) => ({
     title: j.text || '',
     url: j.hostedUrl || '',
     company: companyName,
@@ -109,7 +115,11 @@ function parseLever(json, companyName) {
   }));
 }
 
-const PARSERS = { greenhouse: parseGreenhouse, ashby: parseAshby, lever: parseLever };
+const PARSERS = {
+  greenhouse: parseGreenhouse,
+  ashby: parseAshby,
+  lever: parseLever,
+};
 
 // ── Fetch with timeout ──────────────────────────────────────────────
 
@@ -128,13 +138,14 @@ async function fetchJson(url) {
 // ── Title filter ────────────────────────────────────────────────────
 
 function buildTitleFilter(titleFilter) {
-  const positive = (titleFilter?.positive || []).map(k => k.toLowerCase());
-  const negative = (titleFilter?.negative || []).map(k => k.toLowerCase());
+  const positive = (titleFilter?.positive || []).map((k) => k.toLowerCase());
+  const negative = (titleFilter?.negative || []).map((k) => k.toLowerCase());
 
   return (title) => {
     const lower = title.toLowerCase();
-    const hasPositive = positive.length === 0 || positive.some(k => lower.includes(k));
-    const hasNegative = negative.some(k => lower.includes(k));
+    const hasPositive =
+      positive.length === 0 || positive.some((k) => lower.includes(k));
+    const hasNegative = negative.some((k) => lower.includes(k));
     return hasPositive && !hasNegative;
   };
 }
@@ -147,7 +158,8 @@ function loadSeenUrls() {
   // scan-history.tsv
   if (existsSync(SCAN_HISTORY_PATH)) {
     const lines = readFileSync(SCAN_HISTORY_PATH, 'utf-8').split('\n');
-    for (const line of lines.slice(1)) { // skip header
+    for (const line of lines.slice(1)) {
+      // skip header
       const url = line.split('\t')[0];
       if (url) seen.add(url);
     }
@@ -177,7 +189,9 @@ function loadSeenCompanyRoles() {
   if (existsSync(APPLICATIONS_PATH)) {
     const text = readFileSync(APPLICATIONS_PATH, 'utf-8');
     // Parse markdown table rows: | # | Date | Company | Role | ...
-    for (const match of text.matchAll(/\|[^|]+\|[^|]+\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g)) {
+    for (const match of text.matchAll(
+      /\|[^|]+\|[^|]+\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g,
+    )) {
       const company = match[1].trim().toLowerCase();
       const role = match[2].trim().toLowerCase();
       if (company && role && company !== 'company') {
@@ -202,9 +216,12 @@ function appendToPipeline(offers) {
     // No Pendientes section — append at end before Procesadas
     const procIdx = text.indexOf('## Procesadas');
     const insertAt = procIdx === -1 ? text.length : procIdx;
-    const block = `\n${marker}\n\n` + offers.map(o =>
-      `- [ ] ${o.url} | ${o.company} | ${o.title}`
-    ).join('\n') + '\n\n';
+    const block =
+      `\n${marker}\n\n` +
+      offers
+        .map((o) => `- [ ] ${o.url} | ${o.company} | ${o.title}`)
+        .join('\n') +
+      '\n\n';
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
   } else {
     // Find the end of existing Pendientes content (next ## or end)
@@ -212,9 +229,12 @@ function appendToPipeline(offers) {
     const nextSection = text.indexOf('\n## ', afterMarker);
     const insertAt = nextSection === -1 ? text.length : nextSection;
 
-    const block = '\n' + offers.map(o =>
-      `- [ ] ${o.url} | ${o.company} | ${o.title}`
-    ).join('\n') + '\n';
+    const block =
+      '\n' +
+      offers
+        .map((o) => `- [ ] ${o.url} | ${o.company} | ${o.title}`)
+        .join('\n') +
+      '\n';
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
   }
 
@@ -224,12 +244,20 @@ function appendToPipeline(offers) {
 function appendToScanHistory(offers, date) {
   // Ensure file + header exist
   if (!existsSync(SCAN_HISTORY_PATH)) {
-    writeFileSync(SCAN_HISTORY_PATH, 'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n', 'utf-8');
+    writeFileSync(
+      SCAN_HISTORY_PATH,
+      'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n',
+      'utf-8',
+    );
   }
 
-  const lines = offers.map(o =>
-    `${o.url}\t${date}\t${o.source}\t${o.title}\t${o.company}\tadded`
-  ).join('\n') + '\n';
+  const lines =
+    offers
+      .map(
+        (o) =>
+          `${o.url}\t${date}\t${o.source}\t${o.title}\t${o.company}\tadded`,
+      )
+      .join('\n') + '\n';
 
   appendFileSync(SCAN_HISTORY_PATH, lines, 'utf-8');
 }
@@ -247,7 +275,9 @@ async function parallelFetch(tasks, limit) {
     }
   }
 
-  const workers = Array.from({ length: Math.min(limit, tasks.length) }, () => next());
+  const workers = Array.from({ length: Math.min(limit, tasks.length) }, () =>
+    next(),
+  );
   await Promise.all(workers);
   return results;
 }
@@ -258,7 +288,8 @@ async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
   const companyFlag = args.indexOf('--company');
-  const filterCompany = companyFlag !== -1 ? args[companyFlag + 1]?.toLowerCase() : null;
+  const filterCompany =
+    companyFlag !== -1 ? args[companyFlag + 1]?.toLowerCase() : null;
 
   // 1. Read portals.yml
   if (!existsSync(PORTALS_PATH)) {
@@ -272,14 +303,19 @@ async function main() {
 
   // 2. Filter to enabled companies with detectable APIs
   const targets = companies
-    .filter(c => c.enabled !== false)
-    .filter(c => !filterCompany || c.name.toLowerCase().includes(filterCompany))
-    .map(c => ({ ...c, _api: detectApi(c) }))
-    .filter(c => c._api !== null);
+    .filter((c) => c.enabled !== false)
+    .filter(
+      (c) => !filterCompany || c.name.toLowerCase().includes(filterCompany),
+    )
+    .map((c) => ({ ...c, _api: detectApi(c) }))
+    .filter((c) => c._api !== null);
 
-  const skippedCount = companies.filter(c => c.enabled !== false).length - targets.length;
+  const skippedCount =
+    companies.filter((c) => c.enabled !== false).length - targets.length;
 
-  console.log(`Scanning ${targets.length} companies via API (${skippedCount} skipped — no API detected)`);
+  console.log(
+    `Scanning ${targets.length} companies via API (${skippedCount} skipped — no API detected)`,
+  );
   if (dryRun) console.log('(dry run — no files will be written)\n');
 
   // 3. Load dedup sets
@@ -294,7 +330,7 @@ async function main() {
   const newOffers = [];
   const errors = [];
 
-  const tasks = targets.map(company => async () => {
+  const tasks = targets.map((company) => async () => {
     const { type, url } = company._api;
     try {
       const json = await fetchJson(url);
@@ -358,7 +394,9 @@ async function main() {
     if (dryRun) {
       console.log('\n(dry run — run without --dry-run to save results)');
     } else {
-      console.log(`\nResults saved to ${PIPELINE_PATH} and ${SCAN_HISTORY_PATH}`);
+      console.log(
+        `\nResults saved to ${PIPELINE_PATH} and ${SCAN_HISTORY_PATH}`,
+      );
     }
   }
 
@@ -366,7 +404,7 @@ async function main() {
   console.log('→ Share results and get help: https://discord.gg/8pRpHETxa4');
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('Fatal:', err.message);
   process.exit(1);
 });

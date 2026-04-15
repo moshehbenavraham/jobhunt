@@ -4,20 +4,20 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 
 ## Quick Reference
 
-| Command | Script | Purpose |
-|---------|--------|---------|
-| `npm run doctor` | `scripts/doctor.mjs` | Validate setup prerequisites |
-| `npm run verify` | `scripts/verify-pipeline.mjs` | Check pipeline data integrity |
-| `npm run normalize` | `scripts/normalize-statuses.mjs` | Fix non-canonical statuses |
-| `npm run dedup` | `scripts/dedup-tracker.mjs` | Remove duplicate tracker entries |
-| `npm run merge` | `scripts/merge-tracker.mjs` | Merge batch TSVs into applications.md |
-| `npm run pdf` | `scripts/generate-pdf.mjs` | Convert HTML to ATS-optimized PDF |
-| `npm run sync-check` | `scripts/cv-sync-check.mjs` | Validate CV/profile consistency |
-| `npm run update:check` | `scripts/update-system.mjs check` | Check for upstream updates |
-| `npm run update` | `scripts/update-system.mjs apply` | Apply upstream update |
-| `npm run rollback` | `scripts/update-system.mjs rollback` | Rollback last update |
-| `npm run liveness` | `scripts/check-liveness.mjs` | Test if job URLs are still active |
-| `npm run scan` | `scripts/scan.mjs` | Zero-token portal scanner |
+| Command                | Script                               | Purpose                               |
+| ---------------------- | ------------------------------------ | ------------------------------------- |
+| `npm run doctor`       | `scripts/doctor.mjs`                 | Validate setup prerequisites          |
+| `npm run verify`       | `scripts/verify-pipeline.mjs`        | Check pipeline data integrity         |
+| `npm run normalize`    | `scripts/normalize-statuses.mjs`     | Fix non-canonical statuses            |
+| `npm run dedup`        | `scripts/dedup-tracker.mjs`          | Remove duplicate tracker entries      |
+| `npm run merge`        | `scripts/merge-tracker.mjs`          | Merge batch TSVs into applications.md |
+| `npm run pdf`          | `scripts/generate-pdf.mjs`           | Convert HTML to ATS-optimized PDF     |
+| `npm run sync-check`   | `scripts/cv-sync-check.mjs`          | Validate CV/profile consistency       |
+| `npm run update:check` | `scripts/update-system.mjs check`    | Check for upstream updates            |
+| `npm run update`       | `scripts/update-system.mjs apply`    | Apply upstream update                 |
+| `npm run rollback`     | `scripts/update-system.mjs rollback` | Rollback last update                  |
+| `npm run liveness`     | `scripts/check-liveness.mjs`         | Test if job URLs are still active     |
+| `npm run scan`         | `scripts/scan.mjs`                   | Zero-token portal scanner             |
 
 ---
 
@@ -127,12 +127,12 @@ npm run update:check
 
 Possible JSON responses:
 
-| `status` | Meaning |
-|----------|---------|
-| `up-to-date` | Local version matches remote |
+| `status`           | Meaning                                                        |
+| ------------------ | -------------------------------------------------------------- |
+| `up-to-date`       | Local version matches remote                                   |
 | `update-available` | Newer version exists (includes `local`, `remote`, `changelog`) |
-| `dismissed` | User dismissed the update prompt |
-| `offline` | Could not reach GitHub |
+| `dismissed`        | User dismissed the update prompt                               |
+| `offline`          | Could not reach GitHub                                         |
 
 **Exit codes:** `0` always.
 

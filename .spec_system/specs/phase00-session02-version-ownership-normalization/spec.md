@@ -46,10 +46,12 @@ path.
 ## 3. Prerequisites
 
 ### Required Sessions
+
 - [x] `phase00-session01-canonical-instruction-surface` - establishes the
-  canonical contract that Session 02 builds on
+      canonical contract that Session 02 builds on
 
 ### Required Tools/Knowledge
+
 - Familiarity with repo version surfaces in `VERSION`, `package.json`,
   `package-lock.json`, `scripts/update-system.mjs`, and
   `scripts/test-all.mjs`
@@ -57,6 +59,7 @@ path.
 - `node`, `npm`, `git`, and `rg`
 
 ### Environment Requirements
+
 - Repo root checkout with `.spec_system/` initialized
 - Ability to run Node-based validation commands from the project root
 - Review of current version drift before modifying package metadata
@@ -66,6 +69,7 @@ path.
 ## 4. Scope
 
 ### In Scope (MVP)
+
 - Maintainer can treat root `VERSION` as the only authoritative repo version
   file - align package manifests and validation around that source.
 - Updater logic reads and writes canonical version state without depending on
@@ -75,6 +79,7 @@ path.
   package metadata - strengthen repo checks so mismatches fail explicitly.
 
 ### Out of Scope (Deferred)
+
 - `.claude` to `.codex` metadata cleanup across docs and repo config -
   Reason: Session 03 owns blocking metadata alignment.
 - Broad validation closeout and residual drift verification beyond version
@@ -87,6 +92,7 @@ path.
 ## 5. Technical Approach
 
 ### Architecture
+
 Treat `VERSION` as the sole human-edited source of semantic version truth.
 All other version surfaces in the repo become mirrors or validations against
 that file. `scripts/update-system.mjs` should resolve local and remote version
@@ -95,6 +101,7 @@ assert equality between the canonical file and package metadata so drift is
 caught immediately.
 
 ### Design Patterns
+
 - Single source of truth: one canonical version file, mirrored elsewhere only
   where tooling requires it.
 - Fail-fast drift detection: validation should report mismatches with the
@@ -103,6 +110,7 @@ caught immediately.
   and defer broader metadata modernization to Session 03.
 
 ### Technology Stack
+
 - Node.js ESM scripts in `scripts/`
 - JSON package manifests in `package.json` and `package-lock.json`
 - Markdown PRD and session artifacts in `.spec_system/`
@@ -112,24 +120,27 @@ caught immediately.
 ## 6. Deliverables
 
 ### Files to Create
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| None | Session 02 modifies existing version surfaces only | 0 |
+
+| File | Purpose                                            | Est. Lines |
+| ---- | -------------------------------------------------- | ---------- |
+| None | Session 02 modifies existing version surfaces only | 0          |
 
 ### Files to Modify
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `VERSION` | Confirm or correct the canonical semver retained by the repo | ~1 |
-| `package.json` | Align package manifest version with canonical root version | ~1 |
-| `package-lock.json` | Align lockfile package version metadata with canonical version | ~2 |
-| `scripts/update-system.mjs` | Remove legacy version-path handling and anchor version resolution to `VERSION` | ~35 |
-| `scripts/test-all.mjs` | Add version consistency checks across canonical and mirrored manifests | ~30 |
+
+| File                        | Changes                                                                        | Est. Lines |
+| --------------------------- | ------------------------------------------------------------------------------ | ---------- |
+| `VERSION`                   | Confirm or correct the canonical semver retained by the repo                   | ~1         |
+| `package.json`              | Align package manifest version with canonical root version                     | ~1         |
+| `package-lock.json`         | Align lockfile package version metadata with canonical version                 | ~2         |
+| `scripts/update-system.mjs` | Remove legacy version-path handling and anchor version resolution to `VERSION` | ~35        |
+| `scripts/test-all.mjs`      | Add version consistency checks across canonical and mirrored manifests         | ~30        |
 
 ---
 
 ## 7. Success Criteria
 
 ### Functional Requirements
+
 - [ ] Root `VERSION` is the only repo-owned version source read by the updater
       and related release-path helpers.
 - [ ] `package.json` and `package-lock.json` match the canonical root version.
@@ -137,6 +148,7 @@ caught immediately.
 - [ ] No runtime version logic still depends on `docs/VERSION`.
 
 ### Testing Requirements
+
 - [ ] `node --check scripts/update-system.mjs` passes
 - [ ] `node --check scripts/test-all.mjs` passes
 - [ ] `node scripts/update-system.mjs check` reports the canonical local
@@ -147,11 +159,13 @@ caught immediately.
       `docs/VERSION` remain outside PRD history
 
 ### Non-Functional Requirements
+
 - [ ] Version ownership remains deterministic on a clean checkout
 - [ ] No hardcoded fallback values hide missing or invalid version state
 - [ ] Session output stays within Phase 00 version-normalization scope
 
 ### Quality Gates
+
 - [ ] All files ASCII-encoded
 - [ ] Unix LF line endings
 - [ ] Code follows project conventions
@@ -161,6 +175,7 @@ caught immediately.
 ## 8. Implementation Notes
 
 ### Key Considerations
+
 - The live repo already restored root `VERSION` and removed `docs/VERSION`,
   so this session is about eliminating residual drift, not reintroducing
   deleted files.
@@ -170,6 +185,7 @@ caught immediately.
   it does not yet enforce manifest consistency.
 
 ### Potential Challenges
+
 - Unclear intended release number: verify whether the canonical value should
   stay at `1.5.3` or whether all mirrors should move together to a deliberate
   newer semver.
@@ -179,6 +195,7 @@ caught immediately.
   rather than producing generic version errors.
 
 ### Relevant Considerations
+
 - No active concerns or lessons learned are currently recorded in
   `.spec_system/CONSIDERATIONS.md`.
 - `.spec_system/SECURITY-COMPLIANCE.md` is clean; no security findings expand
@@ -189,22 +206,26 @@ caught immediately.
 ## 9. Testing Strategy
 
 ### Unit Tests
+
 - Extend `scripts/test-all.mjs` so the version section validates equality
   between `VERSION`, `package.json`, and `package-lock.json`.
 
 ### Integration Tests
+
 - Run `node scripts/update-system.mjs check` after the version cleanup to
   verify reported local version matches the canonical file.
 - Run `node scripts/test-all.mjs --quick` to confirm the repo-level gate
   passes with the strengthened version assertions.
 
 ### Manual Testing
+
 - Inspect the updated version files and confirm the chosen semver is
   consistent across all touched package surfaces.
 - Review the updater diff to confirm `docs/VERSION` logic is fully removed
   from active resolution paths.
 
 ### Edge Cases
+
 - Missing `docs/VERSION` should remain a non-issue rather than a fallback path.
 - Invalid or blank `VERSION` contents should fail clearly instead of silently
   falling back to a manifest value.
@@ -216,9 +237,11 @@ caught immediately.
 ## 10. Dependencies
 
 ### External Libraries
+
 - None
 
 ### Internal Dependencies
+
 - `VERSION` - canonical version source required by the PRD
 - `package.json` and `package-lock.json` - package metadata that must mirror
   the canonical version
@@ -232,6 +255,7 @@ caught immediately.
   conventions
 
 ### Other Sessions
+
 - Depends on: `phase00-session01-canonical-instruction-surface`
 - Depended by: `phase00-session03-codex-metadata-alignment`,
   `phase00-session04-validation-drift-closeout`

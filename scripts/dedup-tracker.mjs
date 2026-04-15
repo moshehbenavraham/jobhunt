@@ -9,7 +9,13 @@
  * Run: node scripts/dedup-tracker.mjs [--dry-run]
  */
 
-import { readFileSync, writeFileSync, copyFileSync, existsSync, mkdirSync } from 'fs';
+import {
+  readFileSync,
+  writeFileSync,
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+} from 'fs';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -28,30 +34,31 @@ mkdirSync(join(CAREER_OPS, 'data'), { recursive: true });
 // Aplicado > Rechazado because active application > terminal state
 const STATUS_RANK = {
   // English canonicals (states.yml labels)
-  'skip': 0,
-  'discarded': 0,
-  'rejected': 1,
-  'evaluated': 2,
-  'applied': 3,
-  'responded': 4,
-  'interview': 5,
-  'offer': 6,
+  skip: 0,
+  discarded: 0,
+  rejected: 1,
+  evaluated: 2,
+  applied: 3,
+  responded: 4,
+  interview: 5,
+  offer: 6,
   // Spanish aliases — kept for backwards compat with existing tracker data
-  'no_aplicar': 0,
+  no_aplicar: 0,
   'no aplicar': 0,
-  'descartado': 0,
-  'descartada': 0,
-  'rechazado': 1,  // Terminal — below active states
-  'rechazada': 1,
-  'evaluada': 2,
-  'aplicado': 3,
-  'respondido': 4,
-  'entrevista': 5,
-  'oferta': 6,
+  descartado: 0,
+  descartada: 0,
+  rechazado: 1, // Terminal — below active states
+  rechazada: 1,
+  evaluada: 2,
+  aplicado: 3,
+  respondido: 4,
+  entrevista: 5,
+  oferta: 6,
 };
 
 function normalizeCompany(name) {
-  return name.toLowerCase()
+  return name
+    .toLowerCase()
     .replace(/[()]/g, '')
     .replace(/\s+/g, ' ')
     .replace(/[^a-z0-9 ]/g, '')
@@ -59,7 +66,8 @@ function normalizeCompany(name) {
 }
 
 function normalizeRole(role) {
-  return role.toLowerCase()
+  return role
+    .toLowerCase()
     .replace(/[()]/g, ' ')
     .replace(/\s+/g, ' ')
     .replace(/[^a-z0-9 /]/g, '')
@@ -67,29 +75,69 @@ function normalizeRole(role) {
 }
 
 const ROLE_STOPWORDS = new Set([
-  'senior', 'junior', 'lead', 'staff', 'principal', 'head', 'chief',
-  'manager', 'director', 'associate', 'intern', 'contractor',
-  'remote', 'hybrid', 'onsite',
-  'engineer', 'engineering',
+  'senior',
+  'junior',
+  'lead',
+  'staff',
+  'principal',
+  'head',
+  'chief',
+  'manager',
+  'director',
+  'associate',
+  'intern',
+  'contractor',
+  'remote',
+  'hybrid',
+  'onsite',
+  'engineer',
+  'engineering',
 ]);
 
 const LOCATION_STOPWORDS = new Set([
-  'tokyo', 'japan', 'london', 'berlin', 'paris', 'singapore',
-  'york', 'francisco', 'angeles', 'seattle', 'austin', 'boston',
-  'chicago', 'denver', 'toronto', 'amsterdam', 'dublin', 'sydney',
-  'remote', 'global', 'emea', 'apac', 'latam',
+  'tokyo',
+  'japan',
+  'london',
+  'berlin',
+  'paris',
+  'singapore',
+  'york',
+  'francisco',
+  'angeles',
+  'seattle',
+  'austin',
+  'boston',
+  'chicago',
+  'denver',
+  'toronto',
+  'amsterdam',
+  'dublin',
+  'sydney',
+  'remote',
+  'global',
+  'emea',
+  'apac',
+  'latam',
 ]);
 
 function roleMatch(a, b) {
   const filterStopwords = (words) =>
-    words.filter(w => !ROLE_STOPWORDS.has(w) && !LOCATION_STOPWORDS.has(w));
+    words.filter((w) => !ROLE_STOPWORDS.has(w) && !LOCATION_STOPWORDS.has(w));
 
-  const wordsA = filterStopwords(normalizeRole(a).split(/\s+/).filter(w => w.length > 2));
-  const wordsB = filterStopwords(normalizeRole(b).split(/\s+/).filter(w => w.length > 2));
+  const wordsA = filterStopwords(
+    normalizeRole(a)
+      .split(/\s+/)
+      .filter((w) => w.length > 2),
+  );
+  const wordsB = filterStopwords(
+    normalizeRole(b)
+      .split(/\s+/)
+      .filter((w) => w.length > 2),
+  );
 
   if (wordsA.length === 0 || wordsB.length === 0) return false;
 
-  const overlap = wordsA.filter(w => wordsB.some(wb => wb === w));
+  const overlap = wordsA.filter((w) => wordsB.some((wb) => wb === w));
   const smaller = Math.min(wordsA.length, wordsB.length);
   const ratio = overlap.length / smaller;
 
@@ -102,7 +150,7 @@ function parseScore(s) {
 }
 
 function parseAppLine(line) {
-  const parts = line.split('|').map(s => s.trim());
+  const parts = line.split('|').map((s) => s.trim());
   if (parts.length < 9) return null;
   const num = parseInt(parts[1]);
   if (isNaN(num)) return null;
@@ -194,10 +242,12 @@ for (const [company, companyEntries] of groups) {
     if (bestStatus !== keeper.status) {
       const lineIdx = entryLineMap.get(keeper.num);
       if (lineIdx !== undefined) {
-        const parts = lines[lineIdx].split('|').map(s => s.trim());
+        const parts = lines[lineIdx].split('|').map((s) => s.trim());
         parts[6] = bestStatus;
         lines[lineIdx] = '| ' + parts.slice(1, -1).join(' | ') + ' |';
-        console.log(`  📝 #${keeper.num}: status promoted to "${bestStatus}" (from #${cluster.find(e => e.status === bestStatus)?.num})`);
+        console.log(
+          `  📝 #${keeper.num}: status promoted to "${bestStatus}" (from #${cluster.find((e) => e.status === bestStatus)?.num})`,
+        );
       }
     }
 
@@ -208,7 +258,9 @@ for (const [company, companyEntries] of groups) {
       if (lineIdx !== undefined) {
         linesToRemove.add(lineIdx);
         removed++;
-        console.log(`🗑️  Remove #${dup.num} (${dup.company} — ${dup.role}, ${dup.score}) → kept #${keeper.num} (${keeper.score})`);
+        console.log(
+          `🗑️  Remove #${dup.num} (${dup.company} — ${dup.role}, ${dup.score}) → kept #${keeper.num} (${keeper.score})`,
+        );
       }
     }
   }

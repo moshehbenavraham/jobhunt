@@ -8,17 +8,17 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Tasks Complete | PASS | 17/17 tasks marked complete |
-| Files Exist | PASS | 3/3 deliverables found and non-empty |
-| ASCII Encoding | PASS | All deliverables are ASCII with LF line endings |
-| Tests Passing | PASS | 74 passed, 0 failed, 0 warnings |
-| Database/Schema Alignment | N/A | No DB-layer changes in this session |
-| Quality Gates | PASS | Success criteria, ASCII/LF, and conventions checks passed |
-| Conventions | PASS | Spot-check found no obvious repo-convention violations |
-| Security & GDPR | PASS | Security PASS, GDPR N/A; see `security-compliance.md` |
-| Behavioral Quality | N/A | Session changed tooling and documentation, not application runtime code |
+| Check                     | Status | Notes                                                                   |
+| ------------------------- | ------ | ----------------------------------------------------------------------- |
+| Tasks Complete            | PASS   | 17/17 tasks marked complete                                             |
+| Files Exist               | PASS   | 3/3 deliverables found and non-empty                                    |
+| ASCII Encoding            | PASS   | All deliverables are ASCII with LF line endings                         |
+| Tests Passing             | PASS   | 74 passed, 0 failed, 0 warnings                                         |
+| Database/Schema Alignment | N/A    | No DB-layer changes in this session                                     |
+| Quality Gates             | PASS   | Success criteria, ASCII/LF, and conventions checks passed               |
+| Conventions               | PASS   | Spot-check found no obvious repo-convention violations                  |
+| Security & GDPR           | PASS   | Security PASS, GDPR N/A; see `security-compliance.md`                   |
+| Behavioral Quality        | N/A    | Session changed tooling and documentation, not application runtime code |
 
 **Overall**: PASS
 
@@ -30,12 +30,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-|----------|----------|-----------|--------|
-| Setup | 3 | 3 | PASS |
-| Foundation | 4 | 4 | PASS |
-| Implementation | 5 | 5 | PASS |
-| Testing | 5 | 5 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 3        | 3         | PASS   |
+| Foundation     | 4        | 4         | PASS   |
+| Implementation | 5        | 5         | PASS   |
+| Testing        | 5        | 5         | PASS   |
 
 ### Incomplete Tasks
 
@@ -47,11 +47,11 @@ None.
 
 ### Status: PASS
 
-| File | Found | Status |
-|------|-------|--------|
-| `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | Yes | PASS |
-| `scripts/doctor.mjs` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
+| File                                                                                    | Found | Status |
+| --------------------------------------------------------------------------------------- | ----- | ------ |
+| `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | Yes   | PASS   |
+| `scripts/doctor.mjs`                                                                    | Yes   | PASS   |
+| `scripts/test-all.mjs`                                                                  | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -63,11 +63,11 @@ None.
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-|------|----------|--------------|--------|
-| `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | ASCII | LF | PASS |
-| `scripts/doctor.mjs` | ASCII | LF | PASS |
-| `scripts/test-all.mjs` | ASCII | LF | PASS |
+| File                                                                                    | Encoding | Line Endings | Status |
+| --------------------------------------------------------------------------------------- | -------- | ------------ | ------ |
+| `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | ASCII    | LF           | PASS   |
+| `scripts/doctor.mjs`                                                                    | ASCII    | LF           | PASS   |
+| `scripts/test-all.mjs`                                                                  | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -79,12 +79,12 @@ None.
 
 ### Status: PASS
 
-| Metric | Value |
-|--------|-------|
-| Total Tests | 74 |
-| Passed | 74 |
-| Failed | 0 |
-| Coverage | Not reported |
+| Metric      | Value        |
+| ----------- | ------------ |
+| Total Tests | 74           |
+| Passed      | 74           |
+| Failed      | 0            |
+| Coverage    | Not reported |
 
 ### Commands Run
 
@@ -144,13 +144,13 @@ From `spec.md`:
 
 ### Status: PASS
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| Naming | PASS | `stripAnsi` and the validator section names are clear and consistent with repo naming. |
-| File Structure | PASS | Changes stayed in the existing script owners and the session-local spec directory. |
-| Error Handling | PASS | `scripts/doctor.mjs` exits non-zero on failing checks and `scripts/test-all.mjs` turns subprocess failures into explicit test failures. |
-| Comments | PASS | Comments remain sparse and explain section purpose without commented-out code. |
-| Testing | PASS | The session used the repo-standard `node --check`, `npm run doctor`, and `node scripts/test-all.mjs --quick` gates. |
+| Category       | Status | Notes                                                                                                                                   |
+| -------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Naming         | PASS   | `stripAnsi` and the validator section names are clear and consistent with repo naming.                                                  |
+| File Structure | PASS   | Changes stayed in the existing script owners and the session-local spec directory.                                                      |
+| Error Handling | PASS   | `scripts/doctor.mjs` exits non-zero on failing checks and `scripts/test-all.mjs` turns subprocess failures into explicit test failures. |
+| Comments       | PASS   | Comments remain sparse and explain section purpose without commented-out code.                                                          |
+| Testing        | PASS   | The session used the repo-standard `node --check`, `npm run doctor`, and `node scripts/test-all.mjs --quick` gates.                     |
 
 ### Convention Violations
 
@@ -166,10 +166,10 @@ None.
 
 #### Summary
 
-| Area | Status | Findings |
-|------|--------|----------|
-| Security | PASS | 0 issues |
-| GDPR | N/A | 0 issues |
+| Area     | Status | Findings |
+| -------- | ------ | -------- |
+| Security | PASS   | 0 issues |
+| GDPR     | N/A    | 0 issues |
 
 ### Critical Violations
 
@@ -181,18 +181,18 @@ None.
 
 ### Status: N/A
 
-*N/A because this session changes repo tooling and session documentation, not application runtime code.*
+_N/A because this session changes repo tooling and session documentation, not application runtime code._
 
 **Checklist applied**: N/A
 **Files spot-checked**: `scripts/doctor.mjs`, `scripts/test-all.mjs`, `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md`
 
-| Category | Status | File | Details |
-|----------|--------|------|---------|
-| Trust boundaries | N/A | `scripts/doctor.mjs` | Session does not add application trust-boundary handling. |
-| Resource cleanup | N/A | `scripts/test-all.mjs` | Session does not add long-lived runtime resources in application code. |
-| Mutation safety | N/A | `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | Documentation artifact only. |
-| Failure paths | N/A | `scripts/doctor.mjs` | CLI validation messaging is not application runtime behavior. |
-| Contract alignment | N/A | `scripts/test-all.mjs` | Repo tooling change; not application runtime code. |
+| Category           | Status | File                                                                                    | Details                                                                |
+| ------------------ | ------ | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Trust boundaries   | N/A    | `scripts/doctor.mjs`                                                                    | Session does not add application trust-boundary handling.              |
+| Resource cleanup   | N/A    | `scripts/test-all.mjs`                                                                  | Session does not add long-lived runtime resources in application code. |
+| Mutation safety    | N/A    | `.spec_system/specs/phase00-session04-validation-drift-closeout/phase00-exit-report.md` | Documentation artifact only.                                           |
+| Failure paths      | N/A    | `scripts/doctor.mjs`                                                                    | CLI validation messaging is not application runtime behavior.          |
+| Contract alignment | N/A    | `scripts/test-all.mjs`                                                                  | Repo tooling change; not application runtime code.                     |
 
 ### Violations Found
 

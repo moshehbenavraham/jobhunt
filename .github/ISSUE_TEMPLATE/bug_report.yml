@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a bug in career-ops
-labels: ["bug"]
+labels: ['bug']
 body:
   - type: checkboxes
     id: coc
@@ -39,12 +39,12 @@ body:
     id: cli
     attributes:
       label: CLI tool
-      placeholder: "e.g., Claude Code, OpenCode, Codex"
+      placeholder: 'e.g., Claude Code, OpenCode, Codex'
   - type: input
     id: os
     attributes:
       label: OS and Node.js version
-      placeholder: "e.g., macOS 15 / Node 20.11"
+      placeholder: 'e.g., macOS 15 / Node 20.11'
   - type: textarea
     id: doctor
     attributes:

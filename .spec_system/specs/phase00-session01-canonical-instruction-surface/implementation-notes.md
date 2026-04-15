@@ -8,11 +8,11 @@
 
 ## Session Progress
 
-| Metric | Value |
-|--------|-------|
-| Tasks Completed | 16 / 16 |
+| Metric              | Value   |
+| ------------------- | ------- |
+| Tasks Completed     | 16 / 16 |
 | Estimated Remaining | 0 hours |
-| Blockers | 0 |
+| Blockers            | 0       |
 
 ### Task T001 - Review active working-tree edits that touch contract validation
 
@@ -21,6 +21,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Reviewed the existing `git diff` for `scripts/test-all.mjs` before any edits.
 - Confirmed the local diff already swaps a legacy `docs/CLAUDE.md` file check
   for `AGENTS.md` and rewrites section 9 toward the agent instruction surface.
@@ -28,6 +29,7 @@
   reverting or overwriting unrelated hunks.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T001 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded setup review
 
@@ -40,6 +42,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Re-read `.spec_system/PRD/phase_00/session_01_canonical_instruction_surface.md`
   and the master PRD before patching runtime files.
 - Confirmed Session 01 is limited to the active contract surface:
@@ -49,6 +52,7 @@
   deferred to later sessions.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T003 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded scope confirmation
 
@@ -61,12 +65,14 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Replaced the missing `docs/CODEX.md` and `docs/CLAUDE.md` read order with
   `AGENTS.md`, `docs/DATA_CONTRACT.md`, and the shared/profile mode context.
 - Added direct pointers to `docs/ARCHITECTURE.md`, `docs/SCRIPTS.md`, and
   `batch/README.md` only for repo-mechanics cases.
 
 **Files Changed**:
+
 - `.codex/skills/career-ops/SKILL.md` - rewrote the canonical read order
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T004 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
@@ -80,11 +86,13 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Updated the skill bootstrap to follow the `AGENTS.md` startup checklist.
 - Added explicit onboarding behavior for missing required files, including the
   checked-in profile and portal examples plus tracker bootstrap guidance.
 
 **Files Changed**:
+
 - `.codex/skills/career-ops/SKILL.md` - aligned bootstrap and onboarding rules
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T005 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
@@ -98,11 +106,13 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Replaced the validator's legacy `docs/CLAUDE.md` dependency with checks for
   `AGENTS.md` and `.codex/skills/career-ops/SKILL.md`.
 - Kept the validator anchored to live repo files on the active contract path.
 
 **Files Changed**:
+
 - `scripts/test-all.mjs` - swapped the instruction-surface file checks
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T006 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
@@ -116,6 +126,7 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added validator assertions for the `AGENTS.md` startup checklist, the
   career-ops skill read order, the startup checklist markers, and the absence
   of legacy-doc dependency wording in the shared mode path.
@@ -123,6 +134,7 @@
   surface for clearer quick-suite messaging.
 
 **Files Changed**:
+
 - `scripts/test-all.mjs` - added content assertions and clearer reporting
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T007 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
@@ -136,11 +148,13 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Removed the blocking `docs/CLAUDE.md` pointer from the shared scoring
   guidance and replaced it with direct in-line guidance.
 - Normalized the edited score-interpretation lines to ASCII arrows.
 
 **Files Changed**:
+
 - `modes/_shared.md` - removed the missing-doc dependency from scoring guidance
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T008 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
@@ -154,11 +168,13 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Removed the remaining required `docs/CODEX.md` and `docs/CLAUDE.md`
   references from the skill surface.
 - Left the skill rooted in checked-in repo files only.
 
 **Files Changed**:
+
 - `.codex/skills/career-ops/SKILL.md` - removed remaining required legacy-doc wording
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T009 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
@@ -172,6 +188,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Layered the Session 01 changes on top of the existing local diff in
   `scripts/test-all.mjs` instead of resetting or replacing nearby edits.
 - Verified the resulting diff preserves the pre-existing move away from a
@@ -179,6 +196,7 @@
   contract surface.
 
 **Files Changed**:
+
 - `scripts/test-all.mjs` - integrated with the existing working-tree diff
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T010 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
@@ -192,6 +210,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Re-scanned the active contract files after patching.
 - Confirmed no required legacy-doc dependency wording remains in
   `.codex/skills/career-ops/SKILL.md` or `modes/_shared.md`.
@@ -200,6 +219,7 @@
   needed.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T011 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
 
@@ -212,12 +232,14 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Renamed section 9 of `scripts/test-all.mjs` to the Codex-primary
   instruction surface.
 - Kept the validator output aligned with the canonical `AGENTS.md` plus
   checked-in skill story described in the PRD.
 
 **Files Changed**:
+
 - `scripts/test-all.mjs` - refreshed labels and comments for the contract surface
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T012 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded task details
@@ -231,11 +253,13 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Ran `node --check scripts/test-all.mjs` after the contract-surface edits.
 - Re-ran the syntax check after the ASCII normalization pass to verify the
   final file state.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T013 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded test execution
 
@@ -248,11 +272,13 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Ran `node scripts/test-all.mjs --quick` on the final file state.
 - Confirmed the updated instruction-surface section passes and the full quick
   suite reports `62 passed, 0 failed, 0 warnings`.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T014 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded quick-suite results
 
@@ -265,6 +291,7 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Re-scanned `AGENTS.md`, `.codex/skills/career-ops/SKILL.md`,
   `modes/_shared.md`, and `scripts/test-all.mjs` for legacy instruction-doc
   references.
@@ -275,6 +302,7 @@
   blocker drift remains for Session 01.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T015 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded scan results
 
@@ -287,12 +315,14 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Ran ASCII and CRLF checks across `.codex/skills/career-ops/SKILL.md`,
   `modes/_shared.md`, and `scripts/test-all.mjs`.
 - Normalized pre-existing non-ASCII characters in the touched mode and
   validator files so the final edited set is ASCII-only with LF line endings.
 
 **Files Changed**:
+
 - `modes/_shared.md` - normalized remaining non-ASCII wording in touched sections
 - `scripts/test-all.mjs` - normalized non-ASCII comments and CLI output
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T016 complete
@@ -307,6 +337,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Scanned the active contract path for `docs/CODEX.md` and
   `docs/CLAUDE.md` references with `rg`.
 - Confirmed the live blockers in normal execution are limited to
@@ -316,6 +347,7 @@
   artifacts and do not expand implementation scope.
 
 **Files Changed**:
+
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/tasks.md` - marked T002 complete
 - `.spec_system/specs/phase00-session01-canonical-instruction-surface/implementation-notes.md` - recorded reference scan
 
@@ -326,6 +358,7 @@
 ### [2026-04-15] - Session Start
 
 **Environment verified**:
+
 - [x] Prerequisites confirmed
 - [x] Tools available
 - [x] Directory structure ready
