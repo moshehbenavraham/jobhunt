@@ -62,6 +62,22 @@ compensation:
   minimum: "$120K"               # Walk-away number
   location_flexibility: "Remote preferred, 1 week/month on-site possible"
 
+discovery:
+  # Scan-time geography policy.
+  # unrestricted = do not filter by location during scan
+  # remote_only = keep only remote roles
+  # remote_or_allowed_locations = allow remote roles broadly, but keep
+  # on-site or hybrid roles only in your allowed locations
+  # allowed_locations_only = require every role to match your allowed locations
+  remote_policy: "remote_or_allowed_locations"
+  allowed_location_terms:
+    - "United States"
+    - "US"
+  blocked_regions:
+    - "APAC"
+  allow_unknown_locations: true
+  allow_remote_unknown_locations: true
+
 location:
   country: "United States"
   city: "San Francisco"

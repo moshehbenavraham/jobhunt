@@ -242,4 +242,139 @@ function runScript(script, sandbox, args = []) {
   rmSync(passing, { recursive: true, force: true });
 }
 
+{
+  const sandbox = createSandbox('jobhunt-scan-state-archive-pipeline-');
+  writeFile(
+    join(sandbox, 'data', 'pipeline.md'),
+    [
+      '# Pipeline',
+      '',
+      '## Shortlist',
+      '',
+      'stale shortlist',
+      '',
+      '## Pending',
+      '',
+      '- [ ] https://jobs.example.com/acme | Acme | Forward Deployed Engineer',
+      '',
+      '## Processed',
+      '',
+    ].join('\n'),
+  );
+  writeFile(
+    join(sandbox, 'data', 'scan-history.tsv'),
+    [
+      'url\tfirst_seen\tportal\ttitle\tcompany\tstatus',
+      'https://jobs.example.com/acme\t2026-04-01\tgreenhouse-api\tForward Deployed Engineer\tAcme\tadded',
+      '',
+    ].join('\n'),
+  );
+
+  const archived = runScript('manage-scan-state.mjs', sandbox, [
+    '--archive-pipeline',
+  ]);
+  assert.equal(archived.status, 0, archived.stdout + archived.stderr);
+  assert.match(archived.stdout, /Archived data\/pipeline\.md ->/);
+  assert.match(archived.stdout, /Reset data\/pipeline\.md ->/);
+  const refreshedPipeline = readFileSync(
+    join(sandbox, 'data', 'pipeline.md'),
+    'utf8',
+  );
+  assert.match(refreshedPipeline, /## Shortlist/);
+  assert.doesNotMatch(refreshedPipeline, /jobs\.example\.com\/acme/);
+  assert.match(
+    readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
+    /https:\/\/jobs\.example\.com\/acme/,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'tmp', 'scan-state')),
+    true,
+  );
+
+  rmSync(sandbox, { recursive: true, force: true });
+}
+
+{
+  const sandbox = createSandbox('jobhunt-scan-state-archive-all-');
+  writeFile(
+    join(sandbox, 'data', 'pipeline.md'),
+    '# Pipeline\n\n## Pending\n\n- [ ] https://jobs.example.com/acme\n',
+  );
+  writeFile(
+    join(sandbox, 'data', 'scan-history.tsv'),
+    [
+      'url\tfirst_seen\tportal\ttitle\tcompany\tstatus',
+      'https://jobs.example.com/acme\t2026-04-01\tgreenhouse-api\tRole\tAcme\tadded',
+      '',
+    ].join('\n'),
+  );
+
+  const archived = runScript('manage-scan-state.mjs', sandbox, ['--archive-all']);
+  assert.equal(archived.status, 0, archived.stdout + archived.stderr);
+  assert.match(archived.stdout, /Archived data\/pipeline\.md ->/);
+  assert.match(archived.stdout, /Archived data\/scan-history\.tsv ->/);
+  assert.match(
+    readFileSync(join(sandbox, 'data', 'pipeline.md'), 'utf8'),
+    /Run `npm run scan` to refresh the shortlist\./,
+  );
+  assert.equal(
+    readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
+    'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n',
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'tmp', 'scan-state')),
+    true,
+  );
+
+  rmSync(sandbox, { recursive: true, force: true });
+}
+
+{
+  const sandbox = createSandbox('jobhunt-scan-state-reset-');
+  writeFile(
+    join(sandbox, 'data', 'pipeline.md'),
+    '# Pipeline\n\n## Pending\n\n- [ ] https://jobs.example.com/acme\n',
+  );
+  writeFile(
+    join(sandbox, 'data', 'scan-history.tsv'),
+    [
+      'url\tfirst_seen\tportal\ttitle\tcompany\tstatus',
+      'https://jobs.example.com/acme\t2026-04-01\tgreenhouse-api\tRole\tAcme\tadded',
+      '',
+    ].join('\n'),
+  );
+
+  const refused = runScript('manage-scan-state.mjs', sandbox, ['--reset-history']);
+  assert.equal(refused.status, 1);
+  assert.match(refused.stderr, /Refusing to reset data\/scan-history\.tsv without --yes\./);
+  assert.match(
+    readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
+    /https:\/\/jobs\.example\.com\/acme/,
+  );
+
+  const resetPipeline = runScript('manage-scan-state.mjs', sandbox, [
+    '--reset-pipeline',
+  ]);
+  assert.equal(resetPipeline.status, 0, resetPipeline.stdout + resetPipeline.stderr);
+  assert.match(resetPipeline.stdout, /Reset data\/pipeline\.md ->/);
+  assert.doesNotMatch(
+    readFileSync(join(sandbox, 'data', 'pipeline.md'), 'utf8'),
+    /jobs\.example\.com\/acme/,
+  );
+  assert.equal(existsSync(join(sandbox, 'tmp', 'scan-state')), false);
+
+  const resetHistory = runScript('manage-scan-state.mjs', sandbox, [
+    '--reset-history',
+    '--yes',
+  ]);
+  assert.equal(resetHistory.status, 0, resetHistory.stdout + resetHistory.stderr);
+  assert.match(resetHistory.stdout, /Reset data\/scan-history\.tsv ->/);
+  assert.equal(
+    readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
+    'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n',
+  );
+
+  rmSync(sandbox, { recursive: true, force: true });
+}
+
 console.log('maintenance script regressions pass');

@@ -214,10 +214,47 @@ Each URL gets a verdict: `active`, `expired`, or `uncertain` with a reason.
 
 ## scan
 
-Zero-token portal scanner. Hits ATS APIs (Greenhouse, Ashby, Lever) and career pages directly — no LLM tokens consumed. Reads `portals.yml` for target companies and search queries, outputs matching listings to stdout and optionally appends to `data/pipeline.md`.
+Zero-token portal scanner. Hits ATS APIs (Greenhouse, Ashby, Lever) directly,
+applies title filters from `portals.yml`, applies optional location constraints
+from `config/profile.yml -> discovery`, appends matching listings to
+`data/pipeline.md`, and refreshes the generated `## Shortlist` section with
+bucket counts, campaign guidance, and a top-10 ranking.
 
 ```bash
 npm run scan
+npm run scan -- --compare-clean
 ```
 
 **Exit codes:** `0` scan completed, `1` configuration error or no portals.yml found.
+
+---
+
+## scan-state
+
+Developer-oriented maintenance command for `data/pipeline.md` and
+`data/scan-history.tsv`. Use this when you intentionally want to archive or
+reset scan artifacts during testing or when changing campaigns. Archives are
+written to `tmp/scan-state/<timestamp>/`.
+
+```bash
+npm run scan-state -- --archive-pipeline
+npm run scan-state -- --archive-history
+npm run scan-state -- --archive-all
+npm run scan-state -- --reset-pipeline
+npm run scan-state -- --reset-history --yes
+```
+
+Recommended usage:
+
+- normal retuning: prefer `npm run scan -- --compare-clean`
+- inbox cleanup: `npm run scan-state -- --archive-pipeline`
+- destructive history wipe: `npm run scan-state -- --reset-history --yes`
+
+Notes:
+
+- `--archive-*` recreates a fresh scaffold after moving the old file
+- `--reset-history` requires `--yes`
+- normal users should usually keep `data/scan-history.tsv` intact because it
+  powers dedup and repost-pattern signals
+
+**Exit codes:** `0` success, `1` invalid usage or refused destructive reset.

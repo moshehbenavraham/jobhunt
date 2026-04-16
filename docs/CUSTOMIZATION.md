@@ -21,23 +21,59 @@ negotiation posture.
 | Archetypes and narrative | `modes/_profile.md`            | Role archetypes, adaptive framing, negotiation scripts, location policy, scoring preferences                |
 | CV content               | `profile/cv.md`                | Summary, experience, projects, education, skills                                                            |
 | Proof points             | `profile/article-digest.md`    | Public metrics, portfolio evidence, proof-point wording that should override weaker CV phrasing             |
-| Job-search targeting     | `portals.yml`                  | Positive and negative title filters, search queries, tracked companies                                      |
+| Job-search targeting     | `portals.yml`                  | Positive and negative title filters, tracked companies, and optional manual search notes                     |
 | Interview story bank     | `interview-prep/story-bank.md` | Accumulated STAR-style stories and interview examples                                                       |
 
 ### Common User-Layer Changes
 
 - Add or adjust identity, role targets, or salary policy in `config/profile.yml`
+- Add or adjust scan-time geography constraints in `config/profile.yml ->
+  discovery`
 - Update archetypes, negotiation language, or search narrative in
   `modes/_profile.md`
 - Refresh resume bullets in `profile/cv.md`
 - Add stronger proof points in `profile/article-digest.md`
-- Tune `title_filter.positive`, `title_filter.negative`, `search_queries`, or
+- Tune `title_filter.positive`, `title_filter.negative`, and
   `tracked_companies` in `portals.yml`
+- Keep `search_queries` in `portals.yml` only as manual notes for now; the
+  current zero-token scanner does not execute them
 
 If you are setting up from scratch, start from
 `config/profile.example.yml`, `templates/portals.example.yml`,
 `profile/cv.example.md`, and optionally `profile/article-digest.example.md`,
 then save your final settings in the user-layer files above.
+
+## Current Scan Knobs That Actually Matter
+
+For `npm run scan`, the current zero-token scanner uses:
+
+- `tracked_companies`
+- `title_filter.positive`
+- `title_filter.negative`
+- `config/profile.yml -> discovery` for scan-time location constraints
+
+The following config concepts may still appear in some files, but they are not
+active in the current scanner:
+
+- `search_queries`
+- `title_filter.seniority_boost`
+- `tracked_companies.scan_method`
+- `tracked_companies.scan_query`
+
+## Retuning Loop
+
+Use this loop when scan results are too broad or too thin:
+
+1. Tighten or broaden `title_filter.positive` and `title_filter.negative` in
+   `portals.yml`.
+2. Adjust `config/profile.yml -> discovery` if the problem is geographic rather
+   than title-based.
+3. Preview with `npm run scan -- --compare-clean` so you see the config's real
+   effect without old dedup state hiding results.
+4. Narrow to one company with `npm run scan -- --company "Name" --compare-clean`
+   when you need to debug a specific board.
+5. Once the preview looks right, run `npm run scan` normally to save only the
+   newly discovered roles.
 
 ## Shared Defaults
 

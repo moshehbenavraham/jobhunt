@@ -1,11 +1,16 @@
 # Mode: pipeline -- URL Inbox
 
-Process accumulated job URLs from `data/pipeline.md`. The user can add URLs whenever they want, then run the pipeline to process them in a batch.
+Process accumulated job URLs from `data/pipeline.md`. The user can add URLs
+whenever they want, then run the pipeline to process them in a batch.
 
 ## Workflow
 
-1. Read `data/pipeline.md` and find unchecked items `- [ ]` under `## Pending`.
-2. For each pending URL:
+1. Read `data/pipeline.md`.
+2. Review `## Shortlist` first when it exists:
+   - treat it as the recommended order of operations
+   - start with the highest-ranked roles before touching adjacent/noisy roles
+3. Find unchecked items `- [ ]` under `## Pending`.
+4. For each pending URL you decide to process:
    a. Calculate the next sequential `REPORT_NUM` from `reports/`
    b. Extract the JD using Playwright -> WebFetch -> WebSearch
    c. If the URL is inaccessible, mark it as `- [!]` with a note and continue
@@ -16,8 +21,9 @@ Process accumulated job URLs from `data/pipeline.md`. The user can add URLs when
 - [x] #NNN | URL | Company | Role | Score/5 | PDF ✅/❌
 ```
 
-3. If there are many pending URLs, process them in a controlled batch.
-4. At the end, show a summary table:
+5. If there are many pending URLs, process them in a controlled batch, but keep
+   the shortlist order as the default priority.
+6. At the end, show a summary table:
 
 ```text
 | # | Company | Role | Score | PDF | Recommended action |
@@ -27,6 +33,19 @@ Process accumulated job URLs from `data/pipeline.md`. The user can add URLs when
 
 ```markdown
 # Pipeline
+
+## Shortlist
+
+Last refreshed: 2026-04-16 by npm run scan.
+Campaign guidance: Current strongest lane cluster: Forward Deployed + Solutions. Use the top of the list below before touching adjacent/noisy roles.
+
+Bucket counts:
+- Strongest fit: 4
+- Possible fit: 9
+- Adjacent or noisy: 2
+
+Top 10 to evaluate first:
+1. Strongest fit | https://jobs.example.com/posting/123 | Example Co | Forward Deployed Engineer | direct forward-deployed title; remote-compatible
 
 ## Pending
 
@@ -39,6 +58,12 @@ Process accumulated job URLs from `data/pipeline.md`. The user can add URLs when
 - [x] #143 | https://jobs.example.com/posting/789 | Acme Corp | AI PM | 4.2/5 | PDF ✅
 - [x] #144 | https://boards.greenhouse.io/xyz/jobs/012 | BigCo | SA | 2.1/5 | PDF ❌
 ```
+
+Notes:
+
+- `## Shortlist` is generated guidance, not the executable queue
+- the real queue remains the unchecked `- [ ]` entries under `## Pending`
+- if the shortlist is stale, refresh it with `npm run scan`
 
 ## Smart JD extraction
 

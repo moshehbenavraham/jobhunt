@@ -14,6 +14,7 @@
     "merge": "node scripts/merge-tracker.mjs",
     "pdf": "node scripts/generate-pdf.mjs",
     "sync-check": "node scripts/cv-sync-check.mjs",
+    "scan-state": "node scripts/manage-scan-state.mjs",
     "coverage:node": "c8 --all --src=scripts --report-dir=coverage/node --reporter=text-summary --reporter=lcov --reporter=json-summary --exclude=scripts/test-*.mjs --exclude=scripts/test-all.mjs node scripts/test-all.mjs --quick",
     "coverage:dashboard": "cd dashboard && go test ./... -covermode=atomic -coverprofile=coverage.out && go tool cover -func=coverage.out",
     "coverage:dashboard:html": "cd dashboard && go tool cover -html=coverage.out -o coverage.html",
