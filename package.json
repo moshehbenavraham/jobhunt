@@ -1,8 +1,9 @@
 {
   "name": "jobhunt",
-  "version": "1.5.24",
+  "version": "1.5.25",
   "description": "AI-powered job search pipeline",
   "scripts": {
+    "cron:install": "node scripts/install-scan-cron.mjs",
     "doctor": "node scripts/doctor.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

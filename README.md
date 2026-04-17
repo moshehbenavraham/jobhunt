@@ -42,6 +42,7 @@ The standard user-layer inputs are:
 ## Core Commands
 
 - `npm run doctor` - validate local prerequisites
+- `npm run cron:install` - install the repo-managed daily scan cron entry
 - `npm run sync-check` - validate CV/profile consistency
 - `npm run verify` - check tracker integrity
 - `npm run merge` - merge batch tracker additions
@@ -67,6 +68,11 @@ refreshing the live shortlist with plain `npm run scan`.
 Use `npm run scan-state` only when you intentionally want to archive or reset
 `data/pipeline.md` and/or `data/scan-history.tsv`. Normal day-to-day usage
 should keep scan history intact and prefer `--compare-clean` for retuning.
+
+If you want discovery refreshed automatically on a machine that holds your user
+layer files, run `npm run cron:install`. That installs a daily `npm run scan`
+cron entry at `06:00` local host time, calling the checked-in
+`scripts/run-scheduled-scan.sh` runner and logging to `tmp/cron/scan.log`.
 
 ## Repository Layout
 

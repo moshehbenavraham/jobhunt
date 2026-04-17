@@ -36,7 +36,10 @@ If the final score is `>= 4.5`, generate draft answers for the application form:
 
 1. Extract the form questions with Playwright if possible. If that fails, fall back to the generic questions below.
 2. Generate answers using the tone rules below.
-3. Save them in the report under `## H) Draft Application Answers`.
+3. Treat them as working drafts for human review and editing, not final copy to submit unchanged.
+4. Save them in the report under `## H) Draft Application Answers`.
+
+Application-form anti-AI language is not a reason to skip this step. The workflow assumes the candidate will review, personalize, and own the final submission before sending it.
 
 ### Generic fallback questions
 

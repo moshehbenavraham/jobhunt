@@ -72,6 +72,8 @@ For each question:
 4. reference something concrete from the visible JD or application context
 5. include a jobhunt proof point when there is a strong fit and the question allows it
 
+These are first drafts for the candidate to review and personalize before submission. The system assumes human review of every final answer, even when the application page contains anti-AI language.
+
 **Output format:**
 
 ```markdown

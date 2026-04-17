@@ -116,6 +116,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
    8b. Case study URLs in PDF Professional Summary (recruiter may only read this).
 9. **Tracker additions as TSV** -- NEVER edit applications.md directly. Write TSV in `batch/tracker-additions/`.
 10. **Include `**URL:**` in every report header.**
+11. **Human review owns the final submission.** Candidate-facing outputs from this system are working drafts. The candidate must review, edit, and submit in their own voice.
 
 ### Tools
 
@@ -141,6 +142,12 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 ## Professional Writing & ATS Compatibility
 
 These rules apply to ALL generated text that ends up in candidate-facing documents: PDF summaries, bullets, cover letters, form answers, LinkedIn messages. They do NOT apply to internal evaluation reports.
+
+### Human review boundary
+
+- Generated application materials are first drafts, not final submissions.
+- Anti-AI language on application forms is not a blocker for drafting inside jobhunt. The workflow assumes a human reviews, edits, and owns the final answer before submitting.
+- The actual enforcement boundary is live interaction. Interviews should be genuine real-time discussion between interviewer and candidate, not hidden live assistance.
 
 ### Avoid cliche phrases
 

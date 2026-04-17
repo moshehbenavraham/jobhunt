@@ -6,6 +6,7 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 
 | Command                | Script                               | Purpose                               |
 | ---------------------- | ------------------------------------ | ------------------------------------- |
+| `npm run cron:install` | `scripts/install-scan-cron.mjs`      | Install repo-managed daily scan cron  |
 | `npm run doctor`       | `scripts/doctor.mjs`                 | Validate setup prerequisites          |
 | `npm run verify`       | `scripts/verify-pipeline.mjs`        | Check pipeline data integrity         |
 | `npm run normalize`    | `scripts/normalize-statuses.mjs`     | Fix non-canonical statuses            |
@@ -19,6 +20,30 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 | `npm run rollback`     | `scripts/update-system.mjs rollback` | Rollback last update                  |
 | `npm run liveness`     | `scripts/check-liveness.mjs`         | Test if job URLs are still active     |
 | `npm run scan`         | `scripts/scan.mjs`                   | Zero-token portal scanner             |
+
+---
+
+## cron:install
+
+Installs or refreshes the checked-in daily scan cron entry in the current
+user's crontab. The active cron line calls the repo-owned
+`scripts/run-scheduled-scan.sh` runner, which writes logs to
+`tmp/cron/scan.log`.
+
+```bash
+npm run cron:install
+npm run cron:install -- --hour 6 --minute 0
+npm run cron:install -- --remove
+```
+
+Notes:
+
+- default schedule is `06:00` host local time
+- intended host timezone is `Asia/Jerusalem` when you want Israel-local runs
+- the installer replaces only the tagged `jobhunt daily scan` block and leaves
+  other cron entries untouched
+
+**Exit codes:** `0` success, `1` invalid arguments or crontab failure.
 
 ---
 

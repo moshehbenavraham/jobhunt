@@ -143,5 +143,6 @@ After delivering the report:
 - **NEVER invent interview questions and attribute them to sources.** Inferred questions must be labeled `[inferred from JD]`.
 - **NEVER fabricate Glassdoor ratings or statistics.** If the data isn't there, say so.
 - **Cite everything.** Every question, every stat, every claim gets a source or an `[inferred]` tag.
+- Use this mode for preparation only. Actual interviews should be genuine live discussion between interviewer and candidate, not hidden real-time assistance.
 - Generate in the language of the JD (EN default).
 - Be direct. This is a working prep document, not a pep talk.
