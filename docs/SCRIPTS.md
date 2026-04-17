@@ -19,6 +19,7 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 | `npm run update`       | `scripts/update-system.mjs apply`    | Apply upstream update                 |
 | `npm run rollback`     | `scripts/update-system.mjs rollback` | Rollback last update                  |
 | `npm run liveness`     | `scripts/check-liveness.mjs`         | Test if job URLs are still active     |
+| `npm run extract-job`  | `scripts/extract-job.mjs`            | Extract one ATS-backed job as JSON    |
 | `npm run scan`         | `scripts/scan.mjs`                   | Zero-token portal scanner             |
 
 ---
@@ -218,6 +219,48 @@ npm run rollback
 ```
 
 **Exit codes:** `0` success, `1` no backup branch found or git error.
+
+---
+
+## extract-job
+
+Extracts a single job posting directly from a supported ATS URL and prints a
+normalized JSON payload. This is the repo-owned single-job counterpart to the
+scanner's ATS fetch logic.
+
+Supported hosted ATS URL families:
+
+- `jobs.ashbyhq.com`
+- `boards.greenhouse.io`
+- `job-boards.greenhouse.io`
+- `job-boards.eu.greenhouse.io`
+- `jobs.lever.co`
+
+```bash
+npm run extract-job -- https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb
+npm run extract-job -- https://job-boards.greenhouse.io/figma/jobs/5364702004
+npm run extract-job -- https://jobs.lever.co/entrata/3793997e-8983-4995-b896-4031c8169f63
+```
+
+Output fields include:
+
+- ATS type and source URL
+- normalized job URL and apply URL
+- company slug plus best-effort company name
+- title, location, department/team, employment type, workplace type
+- published date
+- normalized compensation object when the ATS exposes it
+- JD HTML and plain-text content
+
+`scripts/scan.mjs` and `scripts/extract-job.mjs` both reuse the shared
+`scripts/ats-core.mjs` module so ATS parsing stays aligned across batch scan
+and single-URL extraction.
+
+For supported Ashby, Greenhouse, and Lever job URLs, auto-pipeline uses this
+helper first. If the helper does not support the URL or extraction fails, fall
+back to Playwright, WebFetch, then WebSearch.
+
+**Exit codes:** `0` success, `1` unsupported URL or extraction failure.
 
 ---
 

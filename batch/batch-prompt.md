@@ -40,7 +40,7 @@ You are a batch worker evaluating a job posting for the candidate (read the cand
 | `{{ID}}` | Unique batch item ID from `batch-input.tsv` |
 | `{{RESULT_FILE}}` | Absolute path where you must write the final JSON result |
 
-RESULT_FILE: `{{RESULT_FILE}}`
+RESULT_FILE: {{RESULT_FILE}}
 
 ---
 

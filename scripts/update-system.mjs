@@ -80,11 +80,13 @@ const SYSTEM_PATHS = [
 ];
 
 const REMAPPED_SYSTEM_FILES = [
+  { source: 'ats-core.mjs', dest: 'scripts/ats-core.mjs' },
   { source: 'analyze-patterns.mjs', dest: 'scripts/analyze-patterns.mjs' },
   { source: 'check-liveness.mjs', dest: 'scripts/check-liveness.mjs' },
   { source: 'cv-sync-check.mjs', dest: 'scripts/cv-sync-check.mjs' },
   { source: 'dedup-tracker.mjs', dest: 'scripts/dedup-tracker.mjs' },
   { source: 'doctor.mjs', dest: 'scripts/doctor.mjs' },
+  { source: 'extract-job.mjs', dest: 'scripts/extract-job.mjs' },
   { source: 'followup-cadence.mjs', dest: 'scripts/followup-cadence.mjs' },
   { source: 'generate-pdf.mjs', dest: 'scripts/generate-pdf.mjs' },
   { source: 'liveness-core.mjs', dest: 'scripts/liveness-core.mjs' },

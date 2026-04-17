@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.25",
+  "version": "1.5.26",
   "description": "AI-powered job search pipeline",
   "scripts": {
     "cron:install": "node scripts/install-scan-cron.mjs",
@@ -24,6 +24,7 @@
     "update": "node scripts/update-system.mjs apply",
     "rollback": "node scripts/update-system.mjs rollback",
     "liveness": "node scripts/check-liveness.mjs",
+    "extract-job": "node scripts/extract-job.mjs",
     "scan": "node scripts/scan.mjs"
   },
   "keywords": [

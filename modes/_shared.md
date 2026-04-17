@@ -103,7 +103,7 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 
 ### ALWAYS
 
-0. **Cover letter:** If the form allows it, ALWAYS include one. Same visual design as CV. JD quotes mapped to proof points. 1 page max.
+0. **Cover letter:** If the form allows it and the current workflow has a checked-in cover-letter generation path, include one. Otherwise flag it as a manual follow-up item; do not pretend it was generated.
 1. Read `profile/cv.md` (legacy root `cv.md` also accepted during migration), `_profile.md`, and `profile/article-digest.md` (if exists; legacy root also accepted) before evaluating
    1b. **First evaluation of each session:** Run `node scripts/cv-sync-check.mjs`. If warnings, notify user.
 2. Detect the role archetype and adapt framing per \_profile.md

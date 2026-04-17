@@ -56,6 +56,7 @@ Identify all visible questions:
 - yes/no questions
 - salary fields
 - upload fields
+- cover-letter textareas or cover-letter upload slots
 
 Classify each one:
 
@@ -71,6 +72,10 @@ For each question:
 3. keep the "I'm choosing you" tone from auto-pipeline
 4. reference something concrete from the visible JD or application context
 5. include a jobhunt proof point when there is a strong fit and the question allows it
+
+If the visible form includes a cover-letter field, call it out explicitly in the
+final notes. Until the repo has a checked-in cover-letter generator and storage
+path, treat it as a manual follow-up item rather than a completed artifact.
 
 These are first drafts for the candidate to review and personalize before submission. The system assumes human review of every final answer, even when the application page contains anti-AI language.
 
@@ -93,6 +98,7 @@ Based on: Report #NNN | Score: X.X/5 | Archetype: [type]
 
 Notes:
 - [Role-change or context note]
+- [Cover-letter manual follow-up note, if applicable]
 - [Any final customization suggestion]
 ```
 

@@ -13,12 +13,29 @@
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import yaml from 'js-yaml';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(SCRIPT_DIR, '..');
+const parseYaml = yaml.load;
 
 const warnings = [];
 const errors = [];
+
+function hasText(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function getNestedValue(source, path) {
+  let current = source;
+  for (const segment of path) {
+    if (!current || typeof current !== 'object' || !(segment in current)) {
+      return undefined;
+    }
+    current = current[segment];
+  }
+  return current;
+}
 
 function resolveArticleDigestPath() {
   const preferred = join(projectRoot, 'profile', 'article-digest.md');
@@ -66,16 +83,74 @@ if (!existsSync(profilePath)) {
   );
 } else {
   const profileContent = readFileSync(profilePath, 'utf-8');
-  const requiredFields = ['full_name', 'email', 'location'];
-  for (const field of requiredFields) {
+  let parsedProfile = null;
+
+  try {
+    parsedProfile = parseYaml(profileContent) ?? {};
+  } catch (error) {
+    warnings.push(
+      `config/profile.yml could not be parsed cleanly (${error.message}). Falling back to string-based checks.`,
+    );
+  }
+
+  if (parsedProfile && typeof parsedProfile === 'object') {
+    const fullName =
+      getNestedValue(parsedProfile, ['candidate', 'full_name']) ??
+      getNestedValue(parsedProfile, ['full_name']);
+    const email =
+      getNestedValue(parsedProfile, ['candidate', 'email']) ??
+      getNestedValue(parsedProfile, ['email']);
+    const candidateLocation = getNestedValue(parsedProfile, [
+      'candidate',
+      'location',
+    ]);
+    const structuredLocation = getNestedValue(parsedProfile, ['location']);
+    const visaStatus =
+      (structuredLocation &&
+      typeof structuredLocation === 'object' &&
+      !Array.isArray(structuredLocation)
+        ? structuredLocation.visa_status
+        : undefined) ?? getNestedValue(parsedProfile, ['visa_status']);
+    const hasLocation =
+      hasText(candidateLocation) ||
+      (structuredLocation &&
+        typeof structuredLocation === 'object' &&
+        !Array.isArray(structuredLocation));
+
     if (
-      !profileContent.includes(field) ||
+      !hasText(fullName) ||
+      !hasText(email) ||
+      !hasLocation ||
       profileContent.includes(`"Jane Smith"`)
     ) {
       warnings.push(
-        `config/profile.yml may still have example data. Check field: ${field}`,
+        'config/profile.yml may still have example data. Check fields: full_name, email, location',
       );
-      break;
+    }
+
+    if (!hasText(visaStatus)) {
+      warnings.push(
+        'config/profile.yml is missing location.visa_status. Add a concrete work-authorization / sponsorship status before evaluating U.S.-restricted roles.',
+      );
+    }
+  } else {
+    const requiredFields = ['full_name', 'email', 'location'];
+    for (const field of requiredFields) {
+      if (
+        !profileContent.includes(field) ||
+        profileContent.includes(`"Jane Smith"`)
+      ) {
+        warnings.push(
+          `config/profile.yml may still have example data. Check field: ${field}`,
+        );
+        break;
+      }
+    }
+
+    if (!profileContent.includes('visa_status')) {
+      warnings.push(
+        'config/profile.yml is missing location.visa_status. Add a concrete work-authorization / sponsorship status before evaluating U.S.-restricted roles.',
+      );
     }
   }
 }
