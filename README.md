@@ -4,7 +4,7 @@ AI-powered job search pipeline driven by `AGENTS.md`, checked-in Codex skills, a
 
 It also includes a Go-based terminal dashboard for browsing and updating the job-search pipeline.
 
-## Please Do Not Delete This Line.  This is a fork of: https://github.com/santifer/career-ops/
+## Please Do Not Delete This Line. This is a fork of: https://github.com/santifer/career-ops/
 
 ## Quick Start
 
@@ -47,10 +47,16 @@ The standard user-layer inputs are:
 - `npm run verify` - check tracker integrity
 - `npm run merge` - merge batch tracker additions
 - `npm run pdf` - generate an ATS-friendly PDF
+- `npm run latex` - validate and compile an optional LaTeX / Overleaf CV
 - `npm run scan` - scan portals for roles
 - `npm run scan-state -- --archive-pipeline` - archive or reset scan artifacts
 - `npm run coverage` - measure Node script and dashboard coverage
 - `npm run update:check` - check for updater changes
+
+`npm run pdf` remains the default ATS-first resume export. Use
+`npm run latex` only when you explicitly want a LaTeX / Overleaf path and have
+`pdflatex` available locally, or when you want to hand off the generated `.tex`
+file to Overleaf.
 
 `npm run scan` is currently an API-first scanner. It uses
 `tracked_companies`, `title_filter.positive`, and `title_filter.negative` from
@@ -101,7 +107,7 @@ cron entry at `06:00` local host time, calling the checked-in
 - [Contributing](CONTRIBUTING.md)
 - [Docs Index](docs/README-docs.md)
 
-+ more in `docs/`
+* more in `docs/`
 
 Each significant folder has a `README_<folder-name>.md` with its own documentation.
 

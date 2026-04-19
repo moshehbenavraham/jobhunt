@@ -7,6 +7,7 @@ System-layer template files used by jobhunt scripts and modes. These files are a
 | File                  | Used By                                                                                      | Purpose                                                                  |
 | --------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `cv-template.html`    | `scripts/generate-pdf.mjs`                                                                   | HTML/CSS template for ATS-optimized CV PDFs                              |
+| `cv-template.tex`     | `scripts/generate-latex.mjs`                                                                 | LaTeX / Overleaf template for ATS-optimized CV PDFs                      |
 | `portals.example.yml` | Onboarding                                                                                   | Example portal scanner configuration (copy to `portals.yml` to activate) |
 | `states.yml`          | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases                           |
 
@@ -17,6 +18,22 @@ The HTML template rendered by Playwright into PDF. Uses placeholder tokens (`{{N
 **Design:** Space Grotesk headings + DM Sans body, single-column ATS-safe layout, self-hosted fonts from `fonts/`.
 
 **Customization:** Edit this file to change colors, spacing, or section order. The placeholder tokens are documented in `batch/batch-prompt.md` under "Template placeholders."
+
+### cv-template.tex
+
+The LaTeX template used for optional Overleaf-compatible CV generation. It uses placeholder tokens (`{{NAME}}`, `{{EXPERIENCE}}`, `{{PROJECTS}}`, etc.) that must be fully resolved before compilation.
+
+**Design:** Single-column ATS-safe layout with standard section headings and `\pdfgentounicode=1` enabled for machine-readable output.
+
+**Usage:**
+
+```bash
+npm run latex -- output/cv-name-company-date.tex output/cv-name-company-date.pdf
+```
+
+**Prerequisites:** `pdflatex` on `PATH` via TeX Live, MiKTeX, or equivalent. If local compilation is unavailable, upload the generated `.tex` file to Overleaf instead.
+
+**Customization:** Edit this file to change spacing, section order, or formatting commands. Placeholder guidance lives in `modes/latex.md`.
 
 ### portals.example.yml
 

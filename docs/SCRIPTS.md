@@ -4,23 +4,24 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 
 ## Quick Reference
 
-| Command                | Script                               | Purpose                               |
-| ---------------------- | ------------------------------------ | ------------------------------------- |
-| `npm run cron:install` | `scripts/install-scan-cron.mjs`      | Install repo-managed daily scan cron  |
-| `npm run doctor`       | `scripts/doctor.mjs`                 | Validate setup prerequisites          |
-| `npm run verify`       | `scripts/verify-pipeline.mjs`        | Check pipeline data integrity         |
-| `npm run normalize`    | `scripts/normalize-statuses.mjs`     | Fix non-canonical statuses            |
-| `npm run dedup`        | `scripts/dedup-tracker.mjs`          | Remove duplicate tracker entries      |
-| `npm run merge`        | `scripts/merge-tracker.mjs`          | Merge batch TSVs into applications.md |
-| `npm run pdf`          | `scripts/generate-pdf.mjs`           | Convert HTML to ATS-optimized PDF     |
-| `npm run sync-check`   | `scripts/cv-sync-check.mjs`          | Validate CV/profile consistency       |
+| Command                | Script                               | Purpose                                    |
+| ---------------------- | ------------------------------------ | ------------------------------------------ |
+| `npm run cron:install` | `scripts/install-scan-cron.mjs`      | Install repo-managed daily scan cron       |
+| `npm run doctor`       | `scripts/doctor.mjs`                 | Validate setup prerequisites               |
+| `npm run verify`       | `scripts/verify-pipeline.mjs`        | Check pipeline data integrity              |
+| `npm run normalize`    | `scripts/normalize-statuses.mjs`     | Fix non-canonical statuses                 |
+| `npm run dedup`        | `scripts/dedup-tracker.mjs`          | Remove duplicate tracker entries           |
+| `npm run merge`        | `scripts/merge-tracker.mjs`          | Merge batch TSVs into applications.md      |
+| `npm run pdf`          | `scripts/generate-pdf.mjs`           | Convert HTML to ATS-optimized PDF          |
+| `npm run latex`        | `scripts/generate-latex.mjs`         | Validate and compile an optional LaTeX CV  |
+| `npm run sync-check`   | `scripts/cv-sync-check.mjs`          | Validate CV/profile consistency            |
 | `npm run coverage`     | `c8` + `go test -cover`              | Measure Node script and dashboard coverage |
-| `npm run update:check` | `scripts/update-system.mjs check`    | Check for upstream updates            |
-| `npm run update`       | `scripts/update-system.mjs apply`    | Apply upstream update                 |
-| `npm run rollback`     | `scripts/update-system.mjs rollback` | Rollback last update                  |
-| `npm run liveness`     | `scripts/check-liveness.mjs`         | Test if job URLs are still active     |
-| `npm run extract-job`  | `scripts/extract-job.mjs`            | Extract one ATS-backed job as JSON    |
-| `npm run scan`         | `scripts/scan.mjs`                   | Zero-token portal scanner             |
+| `npm run update:check` | `scripts/update-system.mjs check`    | Check for upstream updates                 |
+| `npm run update`       | `scripts/update-system.mjs apply`    | Apply upstream update                      |
+| `npm run rollback`     | `scripts/update-system.mjs rollback` | Rollback last update                       |
+| `npm run liveness`     | `scripts/check-liveness.mjs`         | Test if job URLs are still active          |
+| `npm run extract-job`  | `scripts/extract-job.mjs`            | Extract one ATS-backed job as JSON         |
+| `npm run scan`         | `scripts/scan.mjs`                   | Zero-token portal scanner                  |
 
 ---
 
@@ -134,6 +135,35 @@ The ATS normalization regression is covered by `scripts/test-generate-pdf-normal
 
 ---
 
+## latex
+
+Validates a `.tex` CV against the repo's LaTeX guardrails, then compiles it
+with `pdflatex` when the local toolchain is available. This is the optional
+LaTeX / Overleaf path; the default ATS-first flow remains `npm run pdf`.
+
+```bash
+npm run latex -- input.tex output.pdf
+npm run latex -- output/cv-jane-openai-2026-04-19.tex
+```
+
+Notes:
+
+- requires `pdflatex` on `PATH`
+- supported local distributions include TeX Live and MiKTeX
+- if the output path is omitted, the PDF is written beside the input `.tex`
+- validation failures exit with code `1`, print a JSON report, and skip
+  compilation
+- missing `pdflatex` returns a clear actionable error instead of silently
+  failing; the same `.tex` can still be uploaded to Overleaf
+
+**Exit codes:** `0` validation and compile succeeded, `1` invalid input or
+compile failure.
+
+The LaTeX validation regression is covered by `scripts/test-generate-latex.mjs`
+and runs as part of `node scripts/test-all.mjs --quick`.
+
+---
+
 ## sync-check
 
 Validates that the jobhunt setup is internally consistent: `profile/cv.md` exists and is not too short, `config/profile.yml` exists with required fields, no hardcoded metrics in `modes/_shared.md` or `batch/batch-prompt.md`, and `profile/article-digest.md` freshness (warns if older than 30 days).
@@ -159,7 +189,7 @@ This runs two coverage passes:
 - `npm run coverage:node` wraps `node scripts/test-all.mjs --quick` with `c8`
   and writes reports to `coverage/node/`.
 - `npm run coverage:dashboard` runs `go test ./... -covermode=atomic
-  -coverprofile=coverage.out` inside `dashboard/` and prints the summary from
+-coverprofile=coverage.out` inside `dashboard/` and prints the summary from
   `go tool cover -func=coverage.out`.
 
 Useful variants:

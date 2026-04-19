@@ -1,5 +1,8 @@
 # Mode: pdf -- ATS-Optimized PDF Generation
 
+This is the default CV generation mode. Only switch to `modes/latex.md` and
+`npm run latex` when the user explicitly wants a LaTeX / Overleaf deliverable.
+
 ## Full pipeline
 
 1. Read `profile/cv.md` as a source of truth.
@@ -71,32 +74,32 @@ Never add skills the candidate does not actually have.
 
 Use `cv-template.html`. Replace the `{{...}}` placeholders with tailored content:
 
-| Placeholder | Content |
-| --- | --- |
-| `{{LANG}}` | `en` or `es` |
-| `{{PAGE_WIDTH}}` | `8.5in` or `210mm` |
-| `{{NAME}}` | from profile.yml |
-| `{{PHONE}}` | from profile.yml, only when non-empty |
-| `{{EMAIL}}` | from profile.yml |
-| `{{LINKEDIN_URL}}` | from profile.yml |
-| `{{LINKEDIN_DISPLAY}}` | from profile.yml |
-| `{{PORTFOLIO_URL}}` | from profile.yml |
-| `{{PORTFOLIO_DISPLAY}}` | from profile.yml |
-| `{{LOCATION}}` | from profile.yml |
-| `{{SECTION_SUMMARY}}` | "Professional Summary" / localized equivalent |
-| `{{SUMMARY_TEXT}}` | tailored summary |
-| `{{SECTION_COMPETENCIES}}` | "Core Competencies" / localized equivalent |
-| `{{COMPETENCIES}}` | competency tags |
-| `{{SECTION_EXPERIENCE}}` | "Work Experience" / localized equivalent |
-| `{{EXPERIENCE}}` | tailored experience HTML |
-| `{{SECTION_PROJECTS}}` | "Projects" / localized equivalent |
-| `{{PROJECTS}}` | tailored projects HTML |
-| `{{SECTION_EDUCATION}}` | "Education" / localized equivalent |
-| `{{EDUCATION}}` | education HTML |
-| `{{SECTION_CERTIFICATIONS}}` | "Certifications" / localized equivalent |
-| `{{CERTIFICATIONS}}` | certifications HTML |
-| `{{SECTION_SKILLS}}` | "Skills" / localized equivalent |
-| `{{SKILLS}}` | skills HTML |
+| Placeholder                  | Content                                       |
+| ---------------------------- | --------------------------------------------- |
+| `{{LANG}}`                   | `en` or `es`                                  |
+| `{{PAGE_WIDTH}}`             | `8.5in` or `210mm`                            |
+| `{{NAME}}`                   | from profile.yml                              |
+| `{{PHONE}}`                  | from profile.yml, only when non-empty         |
+| `{{EMAIL}}`                  | from profile.yml                              |
+| `{{LINKEDIN_URL}}`           | from profile.yml                              |
+| `{{LINKEDIN_DISPLAY}}`       | from profile.yml                              |
+| `{{PORTFOLIO_URL}}`          | from profile.yml                              |
+| `{{PORTFOLIO_DISPLAY}}`      | from profile.yml                              |
+| `{{LOCATION}}`               | from profile.yml                              |
+| `{{SECTION_SUMMARY}}`        | "Professional Summary" / localized equivalent |
+| `{{SUMMARY_TEXT}}`           | tailored summary                              |
+| `{{SECTION_COMPETENCIES}}`   | "Core Competencies" / localized equivalent    |
+| `{{COMPETENCIES}}`           | competency tags                               |
+| `{{SECTION_EXPERIENCE}}`     | "Work Experience" / localized equivalent      |
+| `{{EXPERIENCE}}`             | tailored experience HTML                      |
+| `{{SECTION_PROJECTS}}`       | "Projects" / localized equivalent             |
+| `{{PROJECTS}}`               | tailored projects HTML                        |
+| `{{SECTION_EDUCATION}}`      | "Education" / localized equivalent            |
+| `{{EDUCATION}}`              | education HTML                                |
+| `{{SECTION_CERTIFICATIONS}}` | "Certifications" / localized equivalent       |
+| `{{CERTIFICATIONS}}`         | certifications HTML                           |
+| `{{SECTION_SKILLS}}`         | "Skills" / localized equivalent               |
+| `{{SKILLS}}`                 | skills HTML                                   |
 
 ## Canva CV generation (optional)
 
@@ -175,4 +178,4 @@ It must report a PDF document. If it returns XML or HTML, re-export and retry.
 
 ## After generation
 
-If the role is already in the tracker, update the existing row so the PDF column changes from `❌` to `✅`.
+If the role is already in the tracker, update the existing row so the PDF column changes from `No` to `Yes`.
