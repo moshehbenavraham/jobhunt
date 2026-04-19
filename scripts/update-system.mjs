@@ -45,6 +45,7 @@ const SYSTEM_PATHS = [
   '.gitignore',
   'modes/_shared.md',
   'modes/_profile.template.md',
+  'modes/latex.md',
   'modes/oferta.md',
   'modes/pdf.md',
   'modes/scan.md',
@@ -77,6 +78,8 @@ const SYSTEM_PATHS = [
   'LICENSE',
   '.github/',
   'package.json',
+  'scripts/generate-latex.mjs',
+  'scripts/test-generate-latex.mjs',
 ];
 
 const REMAPPED_SYSTEM_FILES = [
@@ -86,12 +89,17 @@ const REMAPPED_SYSTEM_FILES = [
   { source: 'dedup-tracker.mjs', dest: 'scripts/dedup-tracker.mjs' },
   { source: 'doctor.mjs', dest: 'scripts/doctor.mjs' },
   { source: 'followup-cadence.mjs', dest: 'scripts/followup-cadence.mjs' },
+  { source: 'generate-latex.mjs', dest: 'scripts/generate-latex.mjs' },
   { source: 'generate-pdf.mjs', dest: 'scripts/generate-pdf.mjs' },
   { source: 'liveness-core.mjs', dest: 'scripts/liveness-core.mjs' },
   { source: 'merge-tracker.mjs', dest: 'scripts/merge-tracker.mjs' },
   { source: 'normalize-statuses.mjs', dest: 'scripts/normalize-statuses.mjs' },
   { source: 'scan.mjs', dest: 'scripts/scan.mjs' },
   { source: 'test-all.mjs', dest: 'scripts/test-all.mjs' },
+  {
+    source: 'test-generate-latex.mjs',
+    dest: 'scripts/test-generate-latex.mjs',
+  },
   { source: 'update-system.mjs', dest: 'scripts/update-system.mjs' },
   { source: 'verify-pipeline.mjs', dest: 'scripts/verify-pipeline.mjs' },
 ];

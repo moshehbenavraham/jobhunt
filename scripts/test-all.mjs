@@ -261,7 +261,9 @@ if (checkLiveness !== null) {
 
 console.log('\n3j. Maintenance script regressions');
 
-const maintenanceScripts = run('node', ['scripts/test-maintenance-scripts.mjs']);
+const maintenanceScripts = run('node', [
+  'scripts/test-maintenance-scripts.mjs',
+]);
 if (maintenanceScripts !== null) {
   pass('Maintenance script regression tests pass');
 } else {
@@ -285,10 +287,7 @@ console.log('\n3l. Upgrade safety regressions');
 
 try {
   const updaterSource = readFile('scripts/update-system.mjs');
-  const updaterHarnessPath = join(
-    ROOT,
-    '.tmp-test-update-system-contract.mjs',
-  );
+  const updaterHarnessPath = join(ROOT, '.tmp-test-update-system-contract.mjs');
   writeFileSync(
     updaterHarnessPath,
     `${updaterSource.split('// -- MAIN')[0]}\nexport { isUserPath, isUpdateTargetPath };\n`,
@@ -297,7 +296,9 @@ try {
     const updaterHarness = await import(pathToFileURL(updaterHarnessPath).href);
 
     if (updaterHarness.isUpdateTargetPath('data/follow-ups.example.md')) {
-      pass('Updater still treats data/follow-ups.example.md as a system target');
+      pass(
+        'Updater still treats data/follow-ups.example.md as a system target',
+      );
     } else {
       fail('Updater lost data/follow-ups.example.md as a system target');
     }
@@ -318,6 +319,27 @@ try {
       pass('Updater still protects legacy root cv.md');
     } else {
       fail('Updater does not protect legacy root cv.md');
+    }
+
+    const latexSystemTargets = [
+      'modes/latex.md',
+      'scripts/generate-latex.mjs',
+      'scripts/test-generate-latex.mjs',
+      'templates/cv-template.tex',
+    ];
+
+    for (const path of latexSystemTargets) {
+      if (updaterHarness.isUpdateTargetPath(path)) {
+        pass(`Updater ships LaTeX system target: ${path}`);
+      } else {
+        fail(`Updater misses LaTeX system target: ${path}`);
+      }
+
+      if (!updaterHarness.isUserPath(path)) {
+        pass(`Updater keeps LaTeX system target out of user data: ${path}`);
+      } else {
+        fail(`Updater misclassifies LaTeX system target as user data: ${path}`);
+      }
     }
   } finally {
     rmSync(updaterHarnessPath, { force: true });
@@ -341,7 +363,10 @@ try {
     join(tempRoot, 'scripts', 'cv-sync-check.mjs'),
     readFile('scripts/cv-sync-check.mjs'),
   );
-  writeFileSync(join(tempRoot, 'cv.md'), '# Legacy CV\n\n' + 'Experience\n'.repeat(20));
+  writeFileSync(
+    join(tempRoot, 'cv.md'),
+    '# Legacy CV\n\n' + 'Experience\n'.repeat(20),
+  );
   writeFileSync(
     join(tempRoot, 'config', 'profile.yml'),
     'full_name: "Test User"\nemail: "test@example.com"\nlocation: "Remote"\n',
@@ -350,11 +375,18 @@ try {
   writeFileSync(join(tempRoot, 'fonts', 'dummy.txt'), 'font');
 
   try {
-    const legacyDoctor = run('node', [join(tempRoot, 'scripts', 'doctor.mjs')], {
-      cwd: tempRoot,
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
-    if (legacyDoctor !== null && stripAnsi(legacyDoctor).includes('cv.md found')) {
+    const legacyDoctor = run(
+      'node',
+      [join(tempRoot, 'scripts', 'doctor.mjs')],
+      {
+        cwd: tempRoot,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      },
+    );
+    if (
+      legacyDoctor !== null &&
+      stripAnsi(legacyDoctor).includes('cv.md found')
+    ) {
       pass('doctor accepts legacy root cv.md during migration');
     } else {
       fail('doctor rejects legacy root cv.md during migration');
@@ -368,10 +400,7 @@ try {
         stdio: ['pipe', 'pipe', 'pipe'],
       },
     );
-    if (
-      legacySync !== null &&
-      !stripAnsi(legacySync).includes('ERRORS (')
-    ) {
+    if (legacySync !== null && !stripAnsi(legacySync).includes('ERRORS (')) {
       pass('cv-sync-check accepts legacy root cv.md during migration');
     } else {
       fail('cv-sync-check rejects legacy root cv.md during migration');
@@ -381,6 +410,17 @@ try {
   }
 } catch (e) {
   fail(`Legacy CV migration tests crashed: ${e.message}`);
+}
+
+// -- 3m. LaTeX validation regressions ----------------------------
+
+console.log('\n3m. LaTeX validation regressions');
+
+const generateLatex = run('node', ['scripts/test-generate-latex.mjs']);
+if (generateLatex !== null) {
+  pass('LaTeX validation regression tests pass');
+} else {
+  fail('LaTeX validation regression tests failed');
 }
 
 // -- 4. DASHBOARD BUILD ------------------------------------------
@@ -417,8 +457,10 @@ const systemFiles = [
   'modes/_shared.md',
   'modes/_profile.template.md',
   'modes/oferta.md',
+  'modes/latex.md',
   'modes/pdf.md',
   'modes/scan.md',
+  'templates/cv-template.tex',
   'templates/states.yml',
   'templates/cv-template.html',
 ];
@@ -458,8 +500,7 @@ for (const f of userFiles) {
 
 console.log('\n6. Personal data leak check');
 
-const leakPatterns = [
-];
+const leakPatterns = [];
 
 const scanExtensions = ['md', 'yml', 'html', 'mjs', 'sh', 'go', 'json'];
 const allowedFiles = [

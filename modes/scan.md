@@ -52,6 +52,26 @@ Config that is allowed in `portals.yml` but not used by this scanner today:
 - `tracked_companies.scan_method`: ignored by the current scanner
 - `tracked_companies.scan_query`: ignored by the current scanner
 
+## careers_url guidance
+
+Prefer a branded company careers page in `careers_url` when one exists. Use an
+ATS-hosted URL only as fallback when the company has no branded careers page.
+
+This matters for two reasons:
+
+- later liveness and application flows are often more stable on the company's
+  own careers domain
+- raw ATS URLs can produce false `410` or job-ID mismatch issues when the
+  public posting is really anchored on the branded site
+
+Keep the current zero-token scanner behavior in mind:
+
+- ATS family detection only comes from `api:` or an ATS-shaped `careers_url`
+- if `careers_url` points to a branded page that hides the ATS slug, set
+  `api:` explicitly
+- a branded `careers_url` without explicit `api:` will be skipped unless the
+  URL itself still exposes a supported ATS pattern
+
 ## Supported ATS families
 
 - Greenhouse
@@ -100,26 +120,29 @@ url    first_seen    portal    title    company    status
 ```
 
 11. Rebuild the generated `## Shortlist` section in `data/pipeline.md`:
-   - bucket pending roles into:
-     - strongest fit
-     - possible fit
-     - adjacent or noisy
-   - generate a top 10 ranking
-   - add campaign guidance and explicit next-step instructions
-   - keep the actual execution queue in `## Pending`
+
+- bucket pending roles into:
+  - strongest fit
+  - possible fit
+  - adjacent or noisy
+- generate a top 10 ranking
+- add campaign guidance and explicit next-step instructions
+- keep the actual execution queue in `## Pending`
+
 12. Print a scan summary showing:
-   - companies configured
-   - companies scanned
-   - companies skipped, with reasons
-   - unsupported config that was ignored
-   - total jobs found
-   - jobs filtered out by title
-   - jobs filtered out by location
-   - profile discovery constraints in effect
-   - duplicates skipped
-   - new roles added
-   - shortlist bucket counts
-   - top 10 roles to evaluate first
+
+- companies configured
+- companies scanned
+- companies skipped, with reasons
+- unsupported config that was ignored
+- total jobs found
+- jobs filtered out by title
+- jobs filtered out by location
+- profile discovery constraints in effect
+- duplicates skipped
+- new roles added
+- shortlist bucket counts
+- top 10 roles to evaluate first
 
 ## Pipeline file format
 
@@ -134,11 +157,13 @@ Last refreshed: 2026-04-16 by npm run scan.
 Campaign guidance: Current strongest lane cluster: Forward Deployed + Solutions. Use the top of the list below before touching adjacent/noisy roles.
 
 Bucket counts:
+
 - Strongest fit: 4
 - Possible fit: 9
 - Adjacent or noisy: 2
 
 Top 10 to evaluate first:
+
 1. Strongest fit | https://jobs.example.com/posting/123 | Example Co | Forward Deployed Engineer | direct forward-deployed title; remote-compatible
 
 ## Pending
@@ -181,8 +206,8 @@ The live script also prints:
 - broaden `title_filter.positive` if results are too thin
 - add or remove `tracked_companies` based on fit
 - tune `config/profile.yml -> discovery` if geo-cloned roles still leak through
-- make sure each tracked company has a working `careers_url` or explicit
-  supported `api:`
+- prefer a branded `careers_url` when available, and add explicit `api:` when
+  the branded page hides the supported ATS slug
 - treat `search_queries` as manual notes until the scanner grows a broader
   discovery backend
 - use `npm run scan -- --compare-clean` when retuning so the preview is not

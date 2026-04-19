@@ -12,14 +12,14 @@ You are a batch worker evaluating a job posting for the candidate (read the cand
 
 ## Sources Of Truth (read before evaluating)
 
-| File | Absolute path | When |
-| --- | --- | --- |
-| `profile/cv.md` | `profile/cv.md` (legacy root `cv.md` also accepted during migration) | ALWAYS |
-| `llms.txt` | `llms.txt` (if present) | ALWAYS |
-| `profile/article-digest.md` | `profile/article-digest.md` (legacy root `article-digest.md` also accepted during migration) | ALWAYS for proof points |
-| `i18n.ts` | `i18n.ts` (if present, optional) | Only for interview/deep text helpers |
-| `templates/cv-template.html` | `templates/cv-template.html` | For PDF generation |
-| `scripts/generate-pdf.mjs` | `scripts/generate-pdf.mjs` | For PDF generation |
+| File                         | Absolute path                                                                                | When                                 |
+| ---------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `profile/cv.md`              | `profile/cv.md` (legacy root `cv.md` also accepted during migration)                         | ALWAYS                               |
+| `llms.txt`                   | `llms.txt` (if present)                                                                      | ALWAYS                               |
+| `profile/article-digest.md`  | `profile/article-digest.md` (legacy root `article-digest.md` also accepted during migration) | ALWAYS for proof points              |
+| `i18n.ts`                    | `i18n.ts` (if present, optional)                                                             | Only for interview/deep text helpers |
+| `templates/cv-template.html` | `templates/cv-template.html`                                                                 | For PDF generation                   |
+| `scripts/generate-pdf.mjs`   | `scripts/generate-pdf.mjs`                                                                   | For PDF generation                   |
 
 **RULE:** Never write to `profile/cv.md`, legacy `cv.md`, `i18n.ts`, or portfolio/source files. Treat them as read-only.
 
@@ -31,16 +31,16 @@ You are a batch worker evaluating a job posting for the candidate (read the cand
 
 ## Placeholders (substituted by the orchestrator)
 
-| Placeholder | Description |
-| --- | --- |
-| `{{URL}}` | Original job-posting URL |
-| `{{JD_FILE}}` | Path to the file containing the JD text |
-| `{{REPORT_NUM}}` | Report number (3 digits, zero-padded: `001`, `002`, ...) |
-| `{{DATE}}` | Current date in `YYYY-MM-DD` |
-| `{{ID}}` | Unique batch item ID from `batch-input.tsv` |
+| Placeholder       | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| `{{URL}}`         | Original job-posting URL                                 |
+| `{{JD_FILE}}`     | Path to the file containing the JD text                  |
+| `{{REPORT_NUM}}`  | Report number (3 digits, zero-padded: `001`, `002`, ...) |
+| `{{DATE}}`        | Current date in `YYYY-MM-DD`                             |
+| `{{ID}}`          | Unique batch item ID from `batch-input.tsv`              |
 | `{{RESULT_FILE}}` | Absolute path where you must write the final JSON result |
 
-RESULT_FILE: `{{RESULT_FILE}}`
+RESULT_FILE: {{RESULT_FILE}}
 
 ---
 
@@ -60,27 +60,27 @@ Read `profile/cv.md` (legacy root `cv.md` also accepted during migration) and ex
 
 Classify the role into one of these 6 archetypes. If it is hybrid, name the 2 closest.
 
-| Archetype | Thematic axes | What they buy |
-| --- | --- | --- |
-| **AI Platform / LLMOps Engineer** | evaluation, observability, reliability, pipelines | someone who puts AI in production with metrics |
-| **Agentic Workflows / Automation** | HITL, tooling, orchestration, multi-agent | someone who builds reliable agent systems |
-| **Technical AI Product Manager** | GenAI/agents, PRDs, discovery, delivery | someone who translates business needs into AI product work |
-| **AI Solutions Architect** | hyperautomation, enterprise, integrations | someone who designs end-to-end AI architectures |
-| **AI Forward Deployed Engineer** | client-facing, fast delivery, prototyping | someone who delivers AI solutions directly to customers |
-| **AI Transformation Lead** | change management, adoption, organizational enablement | someone who leads AI change inside an organization |
+| Archetype                          | Thematic axes                                          | What they buy                                              |
+| ---------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------- |
+| **AI Platform / LLMOps Engineer**  | evaluation, observability, reliability, pipelines      | someone who puts AI in production with metrics             |
+| **Agentic Workflows / Automation** | HITL, tooling, orchestration, multi-agent              | someone who builds reliable agent systems                  |
+| **Technical AI Product Manager**   | GenAI/agents, PRDs, discovery, delivery                | someone who translates business needs into AI product work |
+| **AI Solutions Architect**         | hyperautomation, enterprise, integrations              | someone who designs end-to-end AI architectures            |
+| **AI Forward Deployed Engineer**   | client-facing, fast delivery, prototyping              | someone who delivers AI solutions directly to customers    |
+| **AI Transformation Lead**         | change management, adoption, organizational enablement | someone who leads AI change inside an organization         |
 
 **Adaptive framing**
 
 > Concrete metrics must be read from `profile/cv.md` + `profile/article-digest.md` during each evaluation. Never hardcode numbers here.
 
-| If the role is... | Emphasize about the candidate... | Proof-point sources |
-| --- | --- | --- |
-| Platform / LLMOps | builder of production systems, observability, evals, closed-loop quality | `profile/article-digest.md` + `profile/cv.md` |
-| Agentic / Automation | multi-agent orchestration, HITL, reliability, cost awareness | `profile/article-digest.md` + `profile/cv.md` |
-| Technical AI PM | product discovery, PRDs, metrics, stakeholder management | `profile/cv.md` + `profile/article-digest.md` |
-| Solutions Architect | system design, integrations, enterprise delivery | `profile/article-digest.md` + `profile/cv.md` |
-| Forward Deployed Engineer | fast delivery, client-facing work, prototype-to-production execution | `profile/cv.md` + `profile/article-digest.md` |
-| AI Transformation Lead | change management, enablement, adoption | `profile/cv.md` + `profile/article-digest.md` |
+| If the role is...         | Emphasize about the candidate...                                         | Proof-point sources                           |
+| ------------------------- | ------------------------------------------------------------------------ | --------------------------------------------- |
+| Platform / LLMOps         | builder of production systems, observability, evals, closed-loop quality | `profile/article-digest.md` + `profile/cv.md` |
+| Agentic / Automation      | multi-agent orchestration, HITL, reliability, cost awareness             | `profile/article-digest.md` + `profile/cv.md` |
+| Technical AI PM           | product discovery, PRDs, metrics, stakeholder management                 | `profile/cv.md` + `profile/article-digest.md` |
+| Solutions Architect       | system design, integrations, enterprise delivery                         | `profile/article-digest.md` + `profile/cv.md` |
+| Forward Deployed Engineer | fast delivery, client-facing work, prototype-to-production execution     | `profile/cv.md` + `profile/article-digest.md` |
+| AI Transformation Lead    | change management, enablement, adoption                                  | `profile/cv.md` + `profile/article-digest.md` |
 
 **Cross-cutting advantage**
 
@@ -151,8 +151,8 @@ Comp score (1-5):
 
 #### Block E -- Personalization Plan
 
-| # | Section | Current state | Proposed change | Why |
-| --- | --- | --- | --- | --- |
+| #   | Section | Current state | Proposed change | Why |
+| --- | ------- | ------------- | --------------- | --- |
 
 List:
 
@@ -163,8 +163,8 @@ List:
 
 Create 6-10 STAR stories mapped to JD requirements:
 
-| # | JD Requirement | STAR Story | S | T | A | R |
-| --- | --- | --- | --- | --- | --- | --- |
+| #   | JD Requirement | STAR Story | S   | T   | A   | R   |
+| --- | -------------- | ---------- | --- | --- | --- | --- |
 
 Adapt the story selection to the detected archetype.
 
@@ -200,14 +200,14 @@ If there are too few reliable signals, default to `Proceed with Caution` and exp
 
 #### Global Score
 
-| Dimension | Score |
-| --- | --- |
-| Match Against CV | X/5 |
-| North Star Alignment | X/5 |
-| Compensation | X/5 |
-| Cultural Signals | X/5 |
-| Red Flags | -X if any |
-| **Global** | **X/5** |
+| Dimension            | Score     |
+| -------------------- | --------- |
+| Match Against CV     | X/5       |
+| North Star Alignment | X/5       |
+| Compensation         | X/5       |
+| Cultural Signals     | X/5       |
+| Red Flags            | -X if any |
+| **Global**           | **X/5**   |
 
 ### Step 3 -- Save the report
 
@@ -327,31 +327,31 @@ node scripts/generate-pdf.mjs \
 
 **Template placeholders (`cv-template.html`)**
 
-| Placeholder | Content |
-| --- | --- |
-| `{{LANG}}` | `en` or `es` |
-| `{{PAGE_WIDTH}}` | `8.5in` or `210mm` |
-| `{{NAME}}` | from profile.yml |
-| `{{EMAIL}}` | from profile.yml |
-| `{{LINKEDIN_URL}}` | from profile.yml |
-| `{{LINKEDIN_DISPLAY}}` | from profile.yml |
-| `{{PORTFOLIO_URL}}` | from profile.yml |
-| `{{PORTFOLIO_DISPLAY}}` | from profile.yml |
-| `{{LOCATION}}` | from profile.yml |
-| `{{SECTION_SUMMARY}}` | Professional Summary / localized equivalent |
-| `{{SUMMARY_TEXT}}` | keyword-tailored summary |
-| `{{SECTION_COMPETENCIES}}` | Core Competencies / localized equivalent |
-| `{{COMPETENCIES}}` | `<span class="competency-tag">keyword</span>` x 6-8 |
-| `{{SECTION_EXPERIENCE}}` | Work Experience / localized equivalent |
-| `{{EXPERIENCE}}` | HTML for each job with reordered bullets |
-| `{{SECTION_PROJECTS}}` | Projects / localized equivalent |
-| `{{PROJECTS}}` | HTML for the top 3-4 projects |
-| `{{SECTION_EDUCATION}}` | Education / localized equivalent |
-| `{{EDUCATION}}` | education HTML |
-| `{{SECTION_CERTIFICATIONS}}` | Certifications / localized equivalent |
-| `{{CERTIFICATIONS}}` | certifications HTML |
-| `{{SECTION_SKILLS}}` | Skills / localized equivalent |
-| `{{SKILLS}}` | skills HTML |
+| Placeholder                  | Content                                             |
+| ---------------------------- | --------------------------------------------------- |
+| `{{LANG}}`                   | `en` or `es`                                        |
+| `{{PAGE_WIDTH}}`             | `8.5in` or `210mm`                                  |
+| `{{NAME}}`                   | from profile.yml                                    |
+| `{{EMAIL}}`                  | from profile.yml                                    |
+| `{{LINKEDIN_URL}}`           | from profile.yml                                    |
+| `{{LINKEDIN_DISPLAY}}`       | from profile.yml                                    |
+| `{{PORTFOLIO_URL}}`          | from profile.yml                                    |
+| `{{PORTFOLIO_DISPLAY}}`      | from profile.yml                                    |
+| `{{LOCATION}}`               | from profile.yml                                    |
+| `{{SECTION_SUMMARY}}`        | Professional Summary / localized equivalent         |
+| `{{SUMMARY_TEXT}}`           | keyword-tailored summary                            |
+| `{{SECTION_COMPETENCIES}}`   | Core Competencies / localized equivalent            |
+| `{{COMPETENCIES}}`           | `<span class="competency-tag">keyword</span>` x 6-8 |
+| `{{SECTION_EXPERIENCE}}`     | Work Experience / localized equivalent              |
+| `{{EXPERIENCE}}`             | HTML for each job with reordered bullets            |
+| `{{SECTION_PROJECTS}}`       | Projects / localized equivalent                     |
+| `{{PROJECTS}}`               | HTML for the top 3-4 projects                       |
+| `{{SECTION_EDUCATION}}`      | Education / localized equivalent                    |
+| `{{EDUCATION}}`              | education HTML                                      |
+| `{{SECTION_CERTIFICATIONS}}` | Certifications / localized equivalent               |
+| `{{CERTIFICATIONS}}`         | certifications HTML                                 |
+| `{{SECTION_SKILLS}}`         | Skills / localized equivalent                       |
+| `{{SKILLS}}`                 | skills HTML                                         |
 
 ### Step 5 -- Tracker line
 
@@ -369,17 +369,17 @@ Format: one line, no header, 9 tab-separated columns:
 
 **TSV columns (exact order):**
 
-| # | Field | Type | Example | Validation |
-| --- | --- | --- | --- | --- |
-| 1 | num | int | `647` | sequential, max existing + 1 |
-| 2 | date | YYYY-MM-DD | `2026-03-14` | evaluation date |
-| 3 | company | string | `Datadog` | short company name |
-| 4 | role | string | `Staff AI Engineer` | role title |
-| 5 | status | canonical | `Evaluated` | must be canonical per `templates/states.yml` |
-| 6 | score | X.XX/5 | `4.55/5` | or `N/A` if not evaluable |
-| 7 | pdf | emoji | `✅` or `❌` | whether the PDF was generated |
-| 8 | report | md link | `[647](reports/647-...)` | relative report link |
-| 9 | notes | string | `Apply high-priority...` | one-sentence summary |
+| #   | Field   | Type       | Example                  | Validation                                   |
+| --- | ------- | ---------- | ------------------------ | -------------------------------------------- |
+| 1   | num     | int        | `647`                    | sequential, max existing + 1                 |
+| 2   | date    | YYYY-MM-DD | `2026-03-14`             | evaluation date                              |
+| 3   | company | string     | `Datadog`                | short company name                           |
+| 4   | role    | string     | `Staff AI Engineer`      | role title                                   |
+| 5   | status  | canonical  | `Evaluated`              | must be canonical per `templates/states.yml` |
+| 6   | score   | X.XX/5     | `4.55/5`                 | or `N/A` if not evaluable                    |
+| 7   | pdf     | yes/no     | `Yes` or `No`            | whether the PDF was generated                |
+| 8   | report  | md link    | `[647](reports/647-...)` | relative report link                         |
+| 9   | notes   | string     | `Apply high-priority...` | one-sentence summary                         |
 
 **IMPORTANT:** In the TSV, status comes before score (col 5 -> status, col 6 -> score). In `applications.md`, the order is reversed. `scripts/merge-tracker.mjs` handles that conversion.
 

@@ -15,6 +15,12 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Dependency Review
+        # TODO: remove continue-on-error once the dependency graph is enabled in
+        # Settings > Security & Analysis. Until then, this is a temporary
+        # workaround to avoid noisy failures when dependency graph data is
+        # unavailable. fail-on-severity: high remains configured, but it will
+        # not block while continue-on-error is true.
+        continue-on-error: true
         uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high

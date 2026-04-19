@@ -6,6 +6,14 @@
 # - supports Greenhouse, Ashby, and Lever
 # - filters only on title_filter.positive and title_filter.negative
 # - ignores search_queries, seniority_boost, scan_method, and scan_query
+# - detects ATS families from explicit api: or ATS-shaped careers_url values
+#
+# careers_url rule:
+# - prefer the branded company careers URL whenever available
+# - if the branded page hides the ATS slug, also set api: explicitly so the
+#   scanner can still detect the supported ATS family
+# - use an ATS-hosted careers_url only as fallback when no branded page exists
+# - raw ATS URLs can cause false 410 or job-ID mismatch issues later
 #
 # Practical tuning loop:
 # 1. Narrow title_filter.positive to the exact roles you want
@@ -47,29 +55,29 @@ tracked_companies:
   - name: OpenAI
     careers_url: https://openai.com/careers/search
     api: https://boards-api.greenhouse.io/v1/boards/openai/jobs
-    notes: 'Explicit API example for a Greenhouse-backed board.'
+    notes: 'Branded careers page plus explicit Greenhouse API.'
     enabled: true
 
   - name: Anthropic
     careers_url: https://job-boards.greenhouse.io/anthropic
-    notes: 'Greenhouse board detected from careers_url.'
+    notes: 'ATS-hosted fallback example. Greenhouse board detected from careers_url.'
     enabled: true
 
   # Ashby examples
   - name: Cohere
     careers_url: https://jobs.ashbyhq.com/cohere
-    notes: 'Ashby board detected from careers_url.'
+    notes: 'ATS-hosted fallback example. Ashby board detected from careers_url.'
     enabled: true
 
   - name: WorkOS
     careers_url: https://jobs.ashbyhq.com/workos
-    notes: 'Ashby board detected from careers_url.'
+    notes: 'ATS-hosted fallback example. Ashby board detected from careers_url.'
     enabled: true
 
   # Lever example
   - name: Example Lever Company
     careers_url: https://jobs.lever.co/example-company
-    notes: 'Lever board detected from careers_url.'
+    notes: 'ATS-hosted fallback example. Lever board detected from careers_url.'
     enabled: false
 
   # Unsupported example kept disabled on purpose.
