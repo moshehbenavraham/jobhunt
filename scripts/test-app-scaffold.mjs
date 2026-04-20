@@ -117,7 +117,7 @@ assert(
   'API scaffold diagnostics reported an unexpected service name.',
 );
 assert(
-  diagnostics.sessionId === 'phase00-session02-workspace-adapter-contract',
+  diagnostics.sessionId === 'phase00-session03-prompt-loading-contract',
   'API scaffold diagnostics reported an unexpected session id.',
 );
 assert(
@@ -143,6 +143,20 @@ assert(
 assert(
   Array.isArray(diagnostics.runtimeMissing),
   'API scaffold diagnostics did not include runtime-missing details.',
+);
+assert(
+  diagnostics.promptContract?.cacheMode === 'read-through-mtime',
+  'API scaffold diagnostics did not report the prompt-contract cache mode.',
+);
+assert(
+  Array.isArray(diagnostics.promptContract?.supportedWorkflows) &&
+    diagnostics.promptContract.supportedWorkflows.includes('auto-pipeline'),
+  'API scaffold diagnostics did not report supported prompt workflows.',
+);
+assert(
+  Array.isArray(diagnostics.promptContract?.sourceOrder) &&
+    diagnostics.promptContract.sourceOrder[0] === 'agents-guide',
+  'API scaffold diagnostics did not report the prompt source order.',
 );
 
 if (!appStateExistedBefore) {

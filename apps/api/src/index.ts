@@ -1,5 +1,6 @@
 import { pathToFileURL } from 'node:url';
 import { type RepoPathOptions } from './config/repo-paths.js';
+import { getPromptContractSummary, type PromptContractSummary } from './prompt/index.js';
 import {
   createWorkspaceAdapter,
   type WorkspaceMissingSummary,
@@ -14,10 +15,11 @@ export type StartupDiagnostics = {
   mutationPolicy: 'app-owned-only';
   onboardingMissing: WorkspaceMissingSummary[];
   optionalMissing: WorkspaceMissingSummary[];
+  promptContract: PromptContractSummary;
   repoRoot: string;
   runtimeMissing: WorkspaceMissingSummary[];
   service: 'jobhunt-api-scaffold';
-  sessionId: 'phase00-session02-workspace-adapter-contract';
+  sessionId: 'phase00-session03-prompt-loading-contract';
   userLayerWrites: 'disabled';
   workspace: WorkspaceSummary;
 };
@@ -36,10 +38,11 @@ export async function getStartupDiagnostics(
     mutationPolicy: 'app-owned-only',
     onboardingMissing: summary.onboardingMissing,
     optionalMissing: summary.optionalMissing,
+    promptContract: getPromptContractSummary(),
     repoRoot: workspace.repoPaths.repoRoot,
     runtimeMissing: summary.runtimeMissing,
     service: 'jobhunt-api-scaffold',
-    sessionId: 'phase00-session02-workspace-adapter-contract',
+    sessionId: 'phase00-session03-prompt-loading-contract',
     userLayerWrites: 'disabled',
     workspace: summary,
   };

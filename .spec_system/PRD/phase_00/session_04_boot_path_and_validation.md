@@ -35,7 +35,8 @@ starts.
 
 ## Prerequisites
 
-- [ ] Sessions 01-03 completed
+- [ ] Sessions 01-02 completed
+- [ ] Session 03 prompt loading contract completed
 - [ ] Validation approach chosen for app bootstrap regressions
 
 ---
@@ -54,4 +55,3 @@ starts.
       resolution
 - [ ] Startup checks report missing prerequisites without mutating user files
 - [ ] Validation catches contract drift in the new bootstrap path
-

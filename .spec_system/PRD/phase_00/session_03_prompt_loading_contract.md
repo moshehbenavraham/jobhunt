@@ -2,7 +2,7 @@
 
 **Session ID**: `phase00-session03-prompt-loading-contract`
 **Package**: apps/api
-**Status**: Not Started
+**Status**: Complete
 **Estimated Tasks**: ~14
 **Estimated Duration**: 2-4 hours
 
@@ -36,8 +36,8 @@ of forking it into hidden prompts.
 
 ## Prerequisites
 
-- [ ] Session 02 workspace adapter contract completed
-- [ ] Master PRD, UX PRD, and Job-Hunt routing rules reviewed together
+- [x] Session 02 workspace adapter contract completed
+- [x] Master PRD, UX PRD, and Job-Hunt routing rules reviewed together
 
 ---
 
@@ -51,8 +51,7 @@ of forking it into hidden prompts.
 
 ## Success Criteria
 
-- [ ] The runtime has one explicit source order for checked-in instructions
-- [ ] Mode routing preserves the repo's existing workflow boundaries
-- [ ] Prompt loading stays inspectable and does not depend on hidden session
+- [x] The runtime has one explicit source order for checked-in instructions
+- [x] Mode routing preserves the repo's existing workflow boundaries
+- [x] Prompt loading stays inspectable and does not depend on hidden session
       state
-

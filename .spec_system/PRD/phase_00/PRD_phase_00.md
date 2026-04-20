@@ -4,7 +4,7 @@
 **Sessions**: 4
 **Estimated Duration**: 3-5 days
 
-**Progress**: 2/4 sessions (50%)
+**Progress**: 3/4 sessions (75%)
 
 ---
 
@@ -24,7 +24,7 @@ will build on.
 |---------|------|--------|------------|-----------|
 | 01 | Monorepo App Skeleton | Complete | ~14 | 2026-04-21 |
 | 02 | Workspace Adapter Contract | Complete | ~15 | 2026-04-21 |
-| 03 | Prompt Loading Contract | Not Started | ~14 | - |
+| 03 | Prompt Loading Contract | Complete | ~14 | 2026-04-21 |
 | 04 | Boot Path and Validation | Not Started | ~13 | - |
 
 ---
@@ -33,12 +33,13 @@ will build on.
 
 1. Session 01: Monorepo App Skeleton
 2. Session 02: Workspace Adapter Contract
+3. Session 03: Prompt Loading Contract
 
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Prompt Loading Contract
+- Session 04: Boot Path and Validation
 
 ---
 
