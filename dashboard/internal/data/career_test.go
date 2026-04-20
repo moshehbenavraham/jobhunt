@@ -136,14 +136,25 @@ func TestParseApplicationsFallbackAndMissing(t *testing.T) {
 		strings.Join([]string{
 			"| #   | Date | Company | Role | Score | Status | PDF | Report | Notes |",
 			"| 1 | 2026-04-01 | Acme | Engineer | 4.0/5 | Applied | ✅ | [001](reports/001.md) | note |",
+			"| 2 | 2026-04-02 | Beta | Strategist | 4.5/5 | Applied | ✅ | reports/002-beta.md | note 2 |",
 			"",
 		}, "\n"),
 	)
 	writeTestFile(t, filepath.Join(root, "reports", "001.md"), "**URL:** https://jobs.example.com/acme\n")
+	writeTestFile(t, filepath.Join(root, "reports", "002-beta.md"), "**URL:** https://jobs.example.com/beta\n")
 
 	apps := ParseApplications(root)
-	if len(apps) != 1 {
+	if len(apps) != 2 {
 		t.Fatalf("expected root tracker fallback, got %d apps", len(apps))
+	}
+	if apps[1].ReportPath != "reports/002-beta.md" {
+		t.Fatalf("expected bare report path parsing, got %q", apps[1].ReportPath)
+	}
+	if apps[1].ReportNumber != "002" {
+		t.Fatalf("expected report number derived from path, got %q", apps[1].ReportNumber)
+	}
+	if apps[1].JobURL != "https://jobs.example.com/beta" {
+		t.Fatalf("expected URL enrichment for bare report path, got %q", apps[1].JobURL)
 	}
 
 	if got := ParseApplications(filepath.Join(root, "missing")); got != nil {
@@ -322,6 +333,7 @@ func TestLoadReportSummaryAndStatusUpdate(t *testing.T) {
 		strings.Join([]string{
 			"| #   | Date | Company | Role | Score | Status | PDF | Report | Notes |",
 			"| 1 | 2026-04-01 | Acme | Engineer | 4.0/5 | Applied | ✅ | [001](reports/001.md) | note |",
+			"| 2 | 2026-04-02 | Beta | Strategist | 4.5/5 | Applied | ✅ | reports/002.md | note 2 |",
 			"",
 		}, "\n"),
 	)
@@ -340,6 +352,23 @@ func TestLoadReportSummaryAndStatusUpdate(t *testing.T) {
 	}
 	if !strings.Contains(string(updated), "| 1 | 2026-04-01 | Acme | Engineer | 4.0/5 | Offer |") {
 		t.Fatalf("expected updated status in tracker, got %q", string(updated))
+	}
+
+	err = UpdateApplicationStatus(root, model.CareerApplication{
+		ReportPath:   "reports/002.md",
+		ReportNumber: "002",
+		Status:       "Applied",
+	}, "Interview")
+	if err != nil {
+		t.Fatalf("unexpected bare-path update error: %v", err)
+	}
+
+	updated, err = os.ReadFile(filepath.Join(root, "data", "applications.md"))
+	if err != nil {
+		t.Fatalf("read updated tracker after bare-path update: %v", err)
+	}
+	if !strings.Contains(string(updated), "| 2 | 2026-04-02 | Beta | Strategist | 4.5/5 | Interview |") {
+		t.Fatalf("expected bare-path status update in tracker, got %q", string(updated))
 	}
 
 	err = UpdateApplicationStatus(root, model.CareerApplication{
