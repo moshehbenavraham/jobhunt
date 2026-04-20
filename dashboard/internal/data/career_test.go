@@ -278,8 +278,10 @@ func TestMetricsProgressAndStatusHelpers(t *testing.T) {
 		}
 	}
 
-	if replaceStatusInLine("| x | Applied |", "Applied", "Offer") != "| x | Offer |" {
-		t.Fatal("expected status replacement to update the first matching field")
+	line := "| 1 | 2026-04-01 | Applied Systems | Engineer | 4.0/5 | applied | ✅ | [001](reports/001.md) | applied via referral |"
+	want := "| 1 | 2026-04-01 | Applied Systems | Engineer | 4.0/5 | Offer | ✅ | [001](reports/001.md) | applied via referral |"
+	if got := replaceStatusInLine(line, "Applied", "Offer"); got != want {
+		t.Fatalf("replaceStatusInLine() = %q, want %q", got, want)
 	}
 	if cleanTableCell("  remote only |  ") != "remote only" {
 		t.Fatal("expected cleanTableCell to trim pipes and whitespace")

@@ -619,10 +619,22 @@ func lineMatchesApplication(line string, app model.CareerApplication) bool {
 	return false
 }
 
-// replaceStatusInLine replaces the old status with new status in a table line.
-func replaceStatusInLine(line, oldStatus, newStatus string) string {
-	// Case-insensitive replacement of the status field
-	return strings.Replace(line, oldStatus, newStatus, 1)
+// replaceStatusInLine replaces the status column in a tracker row.
+func replaceStatusInLine(line, _ string, newStatus string) string {
+	parts := strings.Split(line, "|")
+	if len(parts) > 6 {
+		parts[6] = replaceCellValue(parts[6], newStatus)
+		return strings.Join(parts, "|")
+	}
+
+	// Fallback for unexpected non-table rows.
+	return line
+}
+
+func replaceCellValue(cell, newValue string) string {
+	leading := len(cell) - len(strings.TrimLeft(cell, " "))
+	trailing := len(cell) - len(strings.TrimRight(cell, " "))
+	return strings.Repeat(" ", leading) + newValue + strings.Repeat(" ", trailing)
 }
 
 // cleanTableCell removes trailing pipes and whitespace from a table cell value.
