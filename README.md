@@ -48,6 +48,7 @@ The standard user-layer inputs are:
 - `npm run merge` - merge batch tracker additions
 - `npm run pdf` - generate an ATS-friendly PDF
 - `npm run latex` - validate and compile an optional LaTeX / Overleaf CV
+- `npm run dashboard` - build and launch the Go dashboard
 - `npm run scan` - scan portals for roles
 - `npm run scan-state -- --archive-pipeline` - archive or reset scan artifacts
 - `npm run coverage` - measure Node script and dashboard coverage
@@ -79,6 +80,11 @@ If you want discovery refreshed automatically on a machine that holds your user
 layer files, run `npm run cron:install`. That installs a daily `npm run scan`
 cron entry at `06:00` local host time, calling the checked-in
 `scripts/run-scheduled-scan.sh` runner and logging to `tmp/cron/scan.log`.
+
+To launch the dashboard from the repo root, run `npm run dashboard`. It wraps
+`./scripts/ux.sh`, builds `dashboard/career-dashboard`, and defaults `--path`
+to the repo root so the TUI can read the current tracker and reports
+immediately.
 
 ## Repository Layout
 

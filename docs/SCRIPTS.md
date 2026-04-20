@@ -1,6 +1,8 @@
 # Scripts Reference
 
-All scripts live in the project root as `.mjs` modules and are exposed via `npm run <name>`.
+Most script surfaces live in the project root as `.mjs` modules and are
+exposed via `npm run <name>`. Repo-local shell helpers such as
+`./scripts/ux.sh` also live under `scripts/`.
 
 ## Quick Reference
 
@@ -14,13 +16,16 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 | `npm run merge`        | `scripts/merge-tracker.mjs`          | Merge batch TSVs into applications.md      |
 | `npm run pdf`          | `scripts/generate-pdf.mjs`           | Convert HTML to ATS-optimized PDF          |
 | `npm run latex`        | `scripts/generate-latex.mjs`         | Validate and compile an optional LaTeX CV  |
+| `npm run dashboard`    | `scripts/ux.sh`                      | Build and launch the Go dashboard          |
 | `npm run sync-check`   | `scripts/cv-sync-check.mjs`          | Validate CV/profile consistency            |
 | `npm run coverage`     | `c8` + `go test -cover`              | Measure Node script and dashboard coverage |
 | `npm run update:check` | `scripts/update-system.mjs check`    | Check for upstream updates                 |
 | `npm run update`       | `scripts/update-system.mjs apply`    | Apply upstream update                      |
 | `npm run rollback`     | `scripts/update-system.mjs rollback` | Rollback last update                       |
 | `npm run liveness`     | `scripts/check-liveness.mjs`         | Test if job URLs are still active          |
+| `npm run extract-job`  | `scripts/extract-job.mjs`            | Extract one ATS-backed job as JSON         |
 | `npm run scan`         | `scripts/scan.mjs`                   | Zero-token portal scanner                  |
+| `./scripts/ux.sh`      | `scripts/ux.sh`                      | Direct shell entry point for the dashboard |
 
 ---
 
@@ -206,6 +211,32 @@ npm run coverage:dashboard:html
 
 ---
 
+## ux.sh
+
+Builds and launches the Go dashboard from the repo root without manually
+changing into `dashboard/`. The canonical operator entry point is
+`npm run dashboard`, which wraps this script.
+
+```bash
+npm run dashboard
+npm run dashboard -- --help
+./scripts/ux.sh
+./scripts/ux.sh --help
+./scripts/ux.sh --path /abs/path/to/another/jobhunt/clone
+```
+
+Notes:
+
+- requires `go` on `PATH`
+- builds `dashboard/career-dashboard`
+- defaults `--path` to the current repo root when you do not provide one
+- passes additional flags through to the dashboard binary
+
+**Exit codes:** `0` dashboard exited cleanly, `1` missing Go, build failure, or
+dashboard startup failure.
+
+---
+
 ## update:check
 
 Checks whether a newer version of jobhunt is available upstream. Outputs JSON to stdout:
@@ -248,6 +279,48 @@ npm run rollback
 ```
 
 **Exit codes:** `0` success, `1` no backup branch found or git error.
+
+---
+
+## extract-job
+
+Extracts a single job posting directly from a supported ATS URL and prints a
+normalized JSON payload. This is the repo-owned single-job counterpart to the
+scanner's ATS fetch logic.
+
+Supported hosted ATS URL families:
+
+- `jobs.ashbyhq.com`
+- `boards.greenhouse.io`
+- `job-boards.greenhouse.io`
+- `job-boards.eu.greenhouse.io`
+- `jobs.lever.co`
+
+```bash
+npm run extract-job -- https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb
+npm run extract-job -- https://job-boards.greenhouse.io/figma/jobs/5364702004
+npm run extract-job -- https://jobs.lever.co/entrata/3793997e-8983-4995-b896-4031c8169f63
+```
+
+Output fields include:
+
+- ATS type and source URL
+- normalized job URL and apply URL
+- company slug plus best-effort company name
+- title, location, department/team, employment type, workplace type
+- published date
+- normalized compensation object when the ATS exposes it
+- JD HTML and plain-text content
+
+`scripts/scan.mjs` and `scripts/extract-job.mjs` both reuse the shared
+`scripts/ats-core.mjs` module so ATS parsing stays aligned across batch scan
+and single-URL extraction.
+
+For supported Ashby, Greenhouse, and Lever job URLs, auto-pipeline uses this
+helper first. If the helper does not support the URL or extraction fails, fall
+back to Playwright, WebFetch, then WebSearch.
+
+**Exit codes:** `0` success, `1` unsupported URL or extraction failure.
 
 ---
 

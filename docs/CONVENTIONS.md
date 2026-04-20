@@ -118,7 +118,7 @@
 | Health    | `npm run doctor && node scripts/test-all.mjs --quick`                            | Repo health gate; validates setup, version consistency, and dashboard build |
 | Coverage  | `npm run coverage`                                                                | Measures Node script coverage via `c8` and dashboard package coverage via `go test -cover` |
 | Security  | `docs/SECURITY.md`                                                               | Local-tool security policy and disclosure path; no hosted service or WAF surface     |
-| Local Dev | `cd dashboard && go build -o career-dashboard . && ./career-dashboard --path ..` | Manual launch path for the Go TUI dashboard; run from the `dashboard/` directory     |
+| Local Dev | `npm run dashboard` | Preferred launcher for the Go TUI dashboard; builds in `dashboard/` and defaults `--path` to the repo root |
 
 ## When In Doubt
 

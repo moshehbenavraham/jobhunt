@@ -103,12 +103,17 @@ Use `cv-template.html`. Replace the `{{...}}` placeholders with tailored content
 
 ## Canva CV generation (optional)
 
-If `config/profile.yml` has `canva_resume_design_id`, offer the user a choice:
+In direct interactive `pdf` requests, if `config/profile.yml` has
+`canva_resume_design_id`, offer the user a choice:
 
 - **HTML/PDF (fast, ATS-optimized)**
 - **Canva CV (visual, design-preserving)**
 
 If no Canva design ID is configured, skip the prompt and use the HTML/PDF flow.
+
+In `auto-pipeline` or any other unattended flow, do not pause for this choice.
+Use the HTML/PDF path by default. Canva is opt-in only when the user explicitly
+asks for it.
 
 ### Canva workflow
 

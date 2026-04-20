@@ -8,13 +8,38 @@ If the input is a **URL** (not pasted JD text), extract the content in this orde
 
 **Priority order:**
 
-1. **Playwright (preferred):** Most job portals (Lever, Ashby, Greenhouse, Workday) are SPAs. Use `browser_navigate` + `browser_snapshot` to render and read the JD.
-2. **WebFetch (fallback):** For static pages such as ZipRecruiter, WeLoveProduct, or simple company careers pages.
-3. **WebSearch (last resort):** Search for role title + company on secondary sites that index the JD in static HTML.
+1. **ATS helper first for supported hosted ATS URLs:** If the URL is on
+   Ashby, Greenhouse, or Lever, run:
+
+   ```bash
+   node scripts/extract-job.mjs <url>
+   ```
+
+   Use the returned `descriptionText` as the primary JD text and reuse the
+   normalized fields (`title`, `company`, `location`, `datePosted`,
+   `compensation`, `applyUrl`) in the evaluation/report when they are present.
+2. **If the ATS helper fails, fall back to:**
+   - **Playwright (preferred):** Most job portals (Lever, Ashby, Greenhouse,
+     Workday) are SPAs. Use `browser_navigate` + `browser_snapshot` to render
+     and read the JD.
+   - **WebFetch (fallback):** For static pages such as ZipRecruiter,
+     WeLoveProduct, or simple company careers pages.
+   - **WebSearch (last resort):** Search for role title + company on secondary
+     sites that index the JD in static HTML.
+3. **Non-ATS URLs:** Start with Playwright, then WebFetch, then WebSearch.
 
 If none of these work, ask the candidate to paste the JD manually or share a screenshot.
 
 If the input is already pasted JD text, use it directly.
+
+## Step 0.5 -- Profile preflight
+
+Run `node scripts/cv-sync-check.mjs` on the first evaluation of the session.
+
+If the role is U.S.-based, U.S.-remote, or the posting/application asks about
+U.S. work authorization, and `config/profile.yml` is missing
+`location.visa_status`, stop here and ask the candidate to fill it in before
+continuing. Do not wait until form-answer drafting to discover that blocker.
 
 ## Step 1 -- Evaluation A-G
 
@@ -30,6 +55,10 @@ Always include Block G in the saved report and add `**Legitimacy:** {tier}` in t
 
 Run the full `pdf` pipeline from `modes/pdf.md`.
 
+Inside auto-pipeline, default to the HTML/PDF path. Do not pause to offer Canva
+inside this mode, even if `candidate.canva_resume_design_id` exists. Only use
+the Canva branch when the user explicitly asks for it.
+
 ## Step 4 -- Draft application answers (only if score >= 4.5)
 
 If the final score is `>= 4.5`, generate draft answers for the application form:
@@ -38,6 +67,10 @@ If the final score is `>= 4.5`, generate draft answers for the application form:
 2. Generate answers using the tone rules below.
 3. Treat them as working drafts for human review and editing, not final copy to submit unchanged.
 4. Save them in the report under `## H) Draft Application Answers`.
+
+If the form exposes a cover-letter field or upload, record that as a manual
+follow-up item in the report. Do not claim a cover letter was generated unless
+this workflow has a checked-in cover-letter artifact path.
 
 Application-form anti-AI language is not a reason to skip this step. The workflow assumes the candidate will review, personalize, and own the final submission before sending it.
 

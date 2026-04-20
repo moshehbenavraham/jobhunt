@@ -24,6 +24,14 @@ import {
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import {
+  detectApi,
+  fetchJson,
+  PARSERS,
+  parseAshby,
+  parseGreenhouse,
+  parseLever,
+} from './ats-core.mjs';
 
 const parseYaml = yaml.load;
 
@@ -41,7 +49,6 @@ const PIPELINE_PATH = resolve(DATA_DIR, 'pipeline.md');
 const APPLICATIONS_PATH = resolve(DATA_DIR, 'applications.md');
 
 const CONCURRENCY = 10;
-const FETCH_TIMEOUT_MS = 10_000;
 const PIPELINE_TEMPLATE = [
   '# Pipeline',
   '',
@@ -445,88 +452,6 @@ function formatDiscoverySummary(discoveryConfig) {
   }
 
   return lines;
-}
-
-function detectApi(company) {
-  if (company.api?.includes('greenhouse')) {
-    return { type: 'greenhouse', url: company.api };
-  }
-
-  const url = company.careers_url || '';
-
-  const ashbyMatch = url.match(/jobs\.ashbyhq\.com\/([^/?#]+)/);
-  if (ashbyMatch) {
-    return {
-      type: 'ashby',
-      url: `https://api.ashbyhq.com/posting-api/job-board/${ashbyMatch[1]}?includeCompensation=true`,
-    };
-  }
-
-  const leverMatch = url.match(/jobs\.lever\.co\/([^/?#]+)/);
-  if (leverMatch) {
-    return {
-      type: 'lever',
-      url: `https://api.lever.co/v0/postings/${leverMatch[1]}`,
-    };
-  }
-
-  const ghEuMatch = url.match(/job-boards(?:\.eu)?\.greenhouse\.io\/([^/?#]+)/);
-  if (ghEuMatch && !company.api) {
-    return {
-      type: 'greenhouse',
-      url: `https://boards-api.greenhouse.io/v1/boards/${ghEuMatch[1]}/jobs`,
-    };
-  }
-
-  return null;
-}
-
-function parseGreenhouse(json, companyName) {
-  const jobs = json.jobs || [];
-  return jobs.map((job) => ({
-    title: job.title || '',
-    url: job.absolute_url || '',
-    company: companyName,
-    location: job.location?.name || '',
-  }));
-}
-
-function parseAshby(json, companyName) {
-  const jobs = json.jobs || [];
-  return jobs.map((job) => ({
-    title: job.title || '',
-    url: job.jobUrl || '',
-    company: companyName,
-    location: job.location || '',
-  }));
-}
-
-function parseLever(json, companyName) {
-  if (!Array.isArray(json)) return [];
-  return json.map((job) => ({
-    title: job.text || '',
-    url: job.hostedUrl || '',
-    company: companyName,
-    location: job.categories?.location || '',
-  }));
-}
-
-const PARSERS = {
-  greenhouse: parseGreenhouse,
-  ashby: parseAshby,
-  lever: parseLever,
-};
-
-async function fetchJson(url) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-  try {
-    const response = await fetch(url, { signal: controller.signal });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  } finally {
-    clearTimeout(timer);
-  }
 }
 
 function buildTitleFilter(titleFilter) {

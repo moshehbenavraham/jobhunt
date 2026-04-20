@@ -82,6 +82,13 @@ location:
   country: "United States"
   city: "San Francisco"
   timezone: "PST"
+  # Keep this specific enough to answer work-authorization questions directly.
+  # Example prompts:
+  # - Are you legally authorized to work in the US?
+  # - Would you now or in the future require sponsorship support?
   visa_status: "No sponsorship needed"
+  # Optional structured helpers for future automation:
+  # us_work_authorized: true
+  # us_requires_sponsorship: false
   # For remote roles outside your country:
   # onsite_availability: "1 week/month in any city"

@@ -235,9 +235,33 @@ if (followupCadence !== null) {
   fail('Follow-up cadence regression tests failed');
 }
 
-// -- 3h. Portal scan regressions --------------------------------
+// -- 3h. ATS extraction regressions ------------------------------
 
-console.log('\n3h. Portal scan regressions');
+console.log('\n3h. ATS extraction regressions');
+
+const extractJob = run('node', ['scripts/test-extract-job.mjs']);
+if (extractJob !== null) {
+  pass('ATS extraction regression tests pass');
+} else {
+  fail('ATS extraction regression tests failed');
+}
+
+// -- 3i. Auto-pipeline ATS routing regressions ------------------
+
+console.log('\n3i. Auto-pipeline ATS routing regressions');
+
+const autoPipelineRouting = run('node', [
+  'scripts/test-auto-pipeline-routing.mjs',
+]);
+if (autoPipelineRouting !== null) {
+  pass('Auto-pipeline ATS routing regression tests pass');
+} else {
+  fail('Auto-pipeline ATS routing regression tests failed');
+}
+
+// -- 3j. Portal scan regressions --------------------------------
+
+console.log('\n3j. Portal scan regressions');
 
 const scanRegressions = run('node', ['scripts/test-scan.mjs']);
 if (scanRegressions !== null) {
@@ -246,9 +270,9 @@ if (scanRegressions !== null) {
   fail('Portal scan regression tests failed');
 }
 
-// -- 3i. Job liveness regressions -------------------------------
+// -- 3k. Job liveness regressions -------------------------------
 
-console.log('\n3i. Job liveness regressions');
+console.log('\n3k. Job liveness regressions');
 
 const checkLiveness = run('node', ['scripts/test-check-liveness.mjs']);
 if (checkLiveness !== null) {
@@ -257,9 +281,9 @@ if (checkLiveness !== null) {
   fail('Job liveness regression tests failed');
 }
 
-// -- 3j. Maintenance script regressions -------------------------
+// -- 3l. Maintenance script regressions -------------------------
 
-console.log('\n3j. Maintenance script regressions');
+console.log('\n3l. Maintenance script regressions');
 
 const maintenanceScripts = run('node', [
   'scripts/test-maintenance-scripts.mjs',
@@ -270,9 +294,9 @@ if (maintenanceScripts !== null) {
   fail('Maintenance script regression tests failed');
 }
 
-// -- 3k. Updater regressions ------------------------------------
+// -- 3m. Updater regressions ------------------------------------
 
-console.log('\n3k. Updater regressions');
+console.log('\n3m. Updater regressions');
 
 const updateSystem = run('node', ['scripts/test-update-system-cli.mjs']);
 if (updateSystem !== null) {
@@ -339,6 +363,25 @@ try {
         pass(`Updater keeps LaTeX system target out of user data: ${path}`);
       } else {
         fail(`Updater misclassifies LaTeX system target as user data: ${path}`);
+      }
+    }
+
+    const shellSystemTargets = [
+      'scripts/run-scheduled-scan.sh',
+      'scripts/ux.sh',
+    ];
+
+    for (const path of shellSystemTargets) {
+      if (updaterHarness.isUpdateTargetPath(path)) {
+        pass(`Updater ships shell system target: ${path}`);
+      } else {
+        fail(`Updater misses shell system target: ${path}`);
+      }
+
+      if (!updaterHarness.isUserPath(path)) {
+        pass(`Updater keeps shell system target out of user data: ${path}`);
+      } else {
+        fail(`Updater misclassifies shell system target as user data: ${path}`);
       }
     }
   } finally {
@@ -412,6 +455,61 @@ try {
   fail(`Legacy CV migration tests crashed: ${e.message}`);
 }
 
+try {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'jobhunt-visa-warning-'));
+  mkdirSync(join(tempRoot, 'scripts'), { recursive: true });
+  mkdirSync(join(tempRoot, 'config'), { recursive: true });
+  mkdirSync(join(tempRoot, 'profile'), { recursive: true });
+  symlinkSync(join(ROOT, 'node_modules'), join(tempRoot, 'node_modules'));
+  writeFileSync(
+    join(tempRoot, 'scripts', 'cv-sync-check.mjs'),
+    readFile('scripts/cv-sync-check.mjs'),
+  );
+  writeFileSync(
+    join(tempRoot, 'profile', 'cv.md'),
+    '# Test CV\n\n' + 'Experience\n'.repeat(20),
+  );
+  writeFileSync(
+    join(tempRoot, 'config', 'profile.yml'),
+    [
+      'candidate:',
+      '  full_name: "Test User"',
+      '  email: "test@example.com"',
+      '  location: "Remote"',
+      'location:',
+      '  country: "United States"',
+      '  city: "Remote"',
+      '  timezone: "America/New_York"',
+      '  visa_status: ""',
+      '',
+    ].join('\n'),
+  );
+
+  try {
+    const visaWarningOutput = run(
+      'node',
+      [join(tempRoot, 'scripts', 'cv-sync-check.mjs')],
+      {
+        cwd: tempRoot,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      },
+    );
+    if (
+      visaWarningOutput !== null &&
+      stripAnsi(visaWarningOutput).includes('location.visa_status') &&
+      !stripAnsi(visaWarningOutput).includes('ERRORS (')
+    ) {
+      pass('cv-sync-check warns when location.visa_status is blank');
+    } else {
+      fail('cv-sync-check did not warn on blank location.visa_status');
+    }
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+} catch (e) {
+  fail(`Visa-status warning tests crashed: ${e.message}`);
+}
+
 // -- 3m. LaTeX validation regressions ----------------------------
 
 console.log('\n3m. LaTeX validation regressions');
@@ -448,6 +546,8 @@ const systemFiles = [
   'AGENTS.md',
   '.codex/skills/career-ops/SKILL.md',
   'VERSION',
+  'scripts/run-scheduled-scan.sh',
+  'scripts/ux.sh',
   'data/follow-ups.example.md',
   'docs/DATA_CONTRACT.md',
   'interview-prep/README-interview-prep.md',

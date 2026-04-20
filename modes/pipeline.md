@@ -12,7 +12,9 @@ whenever they want, then run the pipeline to process them in a batch.
 3. Find unchecked items `- [ ]` under `## Pending`.
 4. For each pending URL you decide to process:
    a. Calculate the next sequential `REPORT_NUM` from `reports/`
-   b. Extract the JD using Playwright -> WebFetch -> WebSearch
+   b. Extract the JD using the ATS helper first for supported Ashby,
+      Greenhouse, and Lever URLs, then Playwright -> WebFetch -> WebSearch for
+      everything else
    c. If the URL is inaccessible, mark it as `- [!]` with a note and continue
    d. Run the full auto-pipeline: evaluation A-F, legitimacy check G, report, PDF when eligible, tracker update
    e. Move it from `## Pending` to `## Processed`:
@@ -67,9 +69,19 @@ Notes:
 
 ## Smart JD extraction
 
-1. **Playwright (preferred):** `browser_navigate` + `browser_snapshot`
-2. **WebFetch (fallback):** for static pages
-3. **WebSearch (last resort):** for secondary indexing sites
+1. **ATS helper first for supported hosted ATS URLs:** for Ashby, Greenhouse,
+   and Lever postings, run:
+
+   ```bash
+   node scripts/extract-job.mjs <url>
+   ```
+
+   Reuse the returned `descriptionText` and normalized metadata when present.
+2. **If the ATS helper does not support the URL or fails:** continue with the
+   generic extraction chain below.
+3. **Playwright (preferred):** `browser_navigate` + `browser_snapshot`
+4. **WebFetch (fallback):** for static pages
+5. **WebSearch (last resort):** for secondary indexing sites
 
 Special cases:
 

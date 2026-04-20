@@ -1,5 +1,42 @@
 # 2026-04-17 URL Auto-Pipeline Review
 
+## Status Checklist
+
+- [x] Finding 1: work-authorization preflight warning and gating contract.
+  Completed on 2026-04-17. Approx implementation time: 30-45 minutes.
+- [x] Session 1: repo-owned single-job ATS extraction helper. Completed on
+  2026-04-17. Approx implementation time: 2-2.5 hours.
+- [x] Session 2: ATS-first auto-pipeline integration and fallback regression
+  coverage. Completed on 2026-04-17. Approx implementation time: 2-2.5 hours.
+- [x] Finding 3: explicit auto-pipeline PDF default. Auto-pipeline now uses
+  HTML/PDF by default, and Canva is opt-in only. Completed on 2026-04-17.
+  Approx implementation time: 15-25 minutes.
+- [x] Finding 4: cover-letter contract cleanup. The repo now flags cover
+  letters as manual follow-up until a real generator and artifact path exist.
+  Completed on 2026-04-17. Approx implementation time: 20-30 minutes.
+- [x] Verification and safety fixes: quick-suite verification, `VERSION` sync,
+  and batch `RESULT_FILE` prompt-path fix. Completed on 2026-04-17. Approx
+  implementation time: 20-30 minutes.
+
+## Remaining Work Plan
+
+All review-scoped fixes are now complete on the manual pass branch.
+
+- [x] Session 1 (`~2.5h`): build the repo-owned single-job ATS extraction
+  helper. Completed on 2026-04-17.
+  Delivered: shared ATS runtime in `scripts/ats-core.mjs`, CLI entry point in
+  `scripts/extract-job.mjs`, scanner reuse of the shared parsing code, script
+  docs, and regression coverage in `scripts/test-extract-job.mjs`.
+- [x] Session 2 (`~2.5h`): integrate the helper into the URL auto-pipeline and
+  lock it down with regression coverage. Completed on 2026-04-17.
+  Delivered: ATS-first routing helper in `scripts/ats-core.mjs`, explicit
+  auto-pipeline and inbox-pipeline ordering in `modes/auto-pipeline.md` and
+  `modes/pipeline.md`, script-surface documentation in `docs/SCRIPTS.md`, and
+  regression coverage in `scripts/test-auto-pipeline-routing.mjs`.
+
+Follow-on feature work that is intentionally out of scope for this review is
+tracked separately in `docs/ongoing-projects/2026-04-17-cover-letter-support-gap.md`.
+
 ## Scope
 
 This review covers the end-to-end path exercised when a user pasted a single
@@ -181,6 +218,137 @@ Choose one of these directions:
 2. downgrade the global rule from "ALWAYS include one" to a recommendation until
    the feature exists
 
+## Resolution Update (2026-04-17)
+
+The first three low-risk fixes from this review have now landed on the manual
+pass branch:
+
+1. **Finding 1 resolved:** `scripts/cv-sync-check.mjs` now warns when
+   `location.visa_status` is missing or blank, `config/profile.example.yml` now
+   tells the user to make that field specific enough for work-authorization
+   forms, and `modes/auto-pipeline.md` now requires this preflight check before
+   continuing on U.S.-restricted flows.
+2. **Finding 2 resolved:** the repo now has a shared single-job ATS extraction
+   helper (`scripts/ats-core.mjs` + `scripts/extract-job.mjs`), an
+   ATS-first routing helper for auto-pipeline URL handling, explicit mode
+   instructions that route supported ATS URLs through the helper before generic
+   extraction, and regression tests for both the ATS-first path and generic
+   fallback behavior.
+3. **Finding 3 resolved:** `modes/auto-pipeline.md` and `modes/pdf.md` now make
+   the default explicit: unattended auto-pipeline runs the HTML/PDF branch, and
+   Canva is opt-in only when the user explicitly asks for it.
+4. **Finding 4 resolved:** `modes/_shared.md`, `modes/auto-pipeline.md`, and
+   `modes/apply.md` no longer pretend cover letters are automatic in this flow.
+   Cover-letter fields are now treated as manual follow-up items until the repo
+   has a checked-in generator and artifact path.
+
+Verification run after these edits:
+
+- `npm run test:quick` -> passed (`120 passed, 0 failed`)
+
+Additional safety fixes discovered during verification:
+
+- synced `VERSION` to `1.5.25` so it matches `package.json` and
+  `package-lock.json`
+- removed markdown backticks from the `RESULT_FILE` line in
+  `batch/batch-prompt.md` so batch workers receive a literal writable path
+
+## Session 1 Update (2026-04-17)
+
+Session 1 of Finding 2 is now complete.
+
+What landed in this session:
+
+- added `scripts/ats-core.mjs` as the shared ATS runtime for board detection,
+  ATS API fetches, HTML/text normalization, and single-job extraction
+- added `scripts/extract-job.mjs` so a pasted hosted ATS URL can be resolved by
+  the repo itself with:
+
+  ```bash
+  node scripts/extract-job.mjs <url>
+  ```
+
+- supported hosted URL families:
+  - Ashby: `jobs.ashbyhq.com`
+  - Greenhouse: `boards.greenhouse.io`,
+    `job-boards.greenhouse.io`, `job-boards.eu.greenhouse.io`
+  - Lever: `jobs.lever.co`
+- normalized output now includes:
+  - ATS type
+  - normalized job/apply URL
+  - company key plus best-effort company name
+  - title, location, department/team, employment type, workplace type
+  - published date
+  - compensation object when exposed by the ATS
+  - JD HTML and plain-text content
+- `scripts/scan.mjs` now reuses the shared ATS parsing helpers so the scanner
+  and the single-job extractor do not drift apart
+- added regression coverage in `scripts/test-extract-job.mjs` for one known
+  fixture per supported ATS (Ashby, Greenhouse, Lever)
+- documented the new script in `docs/SCRIPTS.md` and exposed it as
+  `npm run extract-job`
+
+Verification completed in this session:
+
+- `node scripts/test-extract-job.mjs`
+- `npm run test:quick`
+- targeted live extraction checks for one public URL each from Ashby,
+  Greenhouse, and Lever using `node scripts/extract-job.mjs <url>`
+
+Remaining work for Session 2:
+
+- route ATS URLs through `scripts/extract-job.mjs` before generic URL/JD
+  extraction in the auto-pipeline
+- update `modes/auto-pipeline.md` to make that ordering explicit
+- add tests for the ATS-first path plus generic fallback behavior
+
+## Session 2 Update (2026-04-17)
+
+Session 2 of Finding 2 is now complete.
+
+What landed in this session:
+
+- added `extractUrlForAutoPipeline(...)` to `scripts/ats-core.mjs` so the repo
+  has a checked-in ATS-first routing helper instead of relying on prose alone
+- the routing helper now:
+  - uses the ATS extractor first for supported Ashby, Greenhouse, and Lever
+    URLs
+  - returns the normalized ATS extraction on success
+  - falls back to the generic extraction path when ATS extraction fails
+  - routes unsupported URLs straight to the generic extraction path
+- updated `modes/auto-pipeline.md` so the first extraction step is now:
+  `node scripts/extract-job.mjs <url>` for supported ATS URLs before
+  Playwright/WebFetch/WebSearch
+- updated `modes/pipeline.md` so inbox processing uses the same ATS-first
+  ordering and does not drift from `auto-pipeline`
+- updated `docs/SCRIPTS.md` to document that auto-pipeline uses
+  `extract-job` first for supported ATS URLs and only falls back to the generic
+  chain when needed
+- added regression coverage in `scripts/test-auto-pipeline-routing.mjs` for:
+  - ATS-first success without invoking the generic extractor
+  - ATS extraction failure falling back to the generic extractor
+  - unsupported URLs going directly to the generic extractor
+  - mode/docs contract markers so the prompt layer does not silently drift from
+    the checked-in routing contract
+
+Verification completed in this session:
+
+- `node scripts/test-auto-pipeline-routing.mjs`
+- `node scripts/test-extract-job.mjs`
+- `npm run test:quick`
+- targeted live check with `extractUrlForAutoPipeline(...)` against a public
+  Ashby posting, which returned strategy `ats` with normalized `company` and
+  `title`
+
+Current state after Session 2:
+
+- Finding 2 is fully resolved for the supported hosted ATS families already in
+  scope for this repo: Ashby, Greenhouse, and Lever
+- the auto-pipeline contract is now deterministic about when to use the
+  repo-owned ATS helper versus the generic browser/fetch/search chain
+- the remaining larger product gap around actual cover-letter generation is
+  tracked separately and is no longer mixed into this review
+
 ## What worked
 
 These parts of the flow behaved well in the reviewed run:
@@ -194,14 +362,16 @@ These parts of the flow behaved well in the reviewed run:
 
 ## Summary
 
-The URL-to-report/PDF/tracker path is usable today, but the main imperfections
-are at the boundaries:
+The URL-to-report/PDF/tracker path is now materially more deterministic than it
+was at the start of this review:
 
-- late discovery of authorization blockers
-- lack of a shared single-job ATS extraction path
-- ambiguity in the Canva decision branch
-- a global cover-letter rule with no real implementation behind it
+- authorization blockers surface earlier
+- supported ATS URLs now use a repo-owned extraction path before generic
+  browser/fetch/search fallbacks
+- the auto-pipeline PDF default is explicit
+- the cover-letter contract no longer over-promises behavior that does not yet
+  exist
 
-The highest-priority fix is Finding 1, because it affects role viability and
-preflight correctness. The remaining findings are workflow determinism and
-policy-implementation gaps.
+The main follow-on item is no longer a bug in this review path; it is the
+separate product feature tracked in
+`docs/ongoing-projects/2026-04-17-cover-letter-support-gap.md`.

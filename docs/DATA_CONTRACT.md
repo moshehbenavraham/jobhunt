@@ -47,7 +47,7 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `modes/followup.md`      | Follow-up cadence instructions      |
 | `modes/de/*`             | German language modes               |
 | `AGENTS.md`              | Codex instructions                  |
-| `scripts/*.mjs`          | Utility scripts                     |
+| `scripts/*`              | Utility scripts and shell helpers   |
 | `batch/batch-prompt.md`  | Batch worker prompt                 |
 | `batch/batch-runner.sh`  | Batch orchestrator                  |
 | `dashboard/*`            | Go TUI dashboard                    |

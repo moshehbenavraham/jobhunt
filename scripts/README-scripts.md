@@ -1,6 +1,10 @@
 # Scripts
 
-This directory contains the project’s Node.js utility scripts.
+This directory contains the project's utility scripts.
 
-- These scripts handle setup checks, tracker maintenance, portal scanning, PDF generation, liveness checks, updates, and verification.
-- Most operational commands exposed through `package.json` resolve here.
+- Node.js scripts handle setup checks, tracker maintenance, portal scanning,
+  PDF generation, liveness checks, updates, and verification.
+- Shell helpers handle repo-local workflows such as scheduled scans and the
+  dashboard launcher.
+- Most operational commands exposed through `package.json` resolve here, and
+  some direct entry points such as `./scripts/ux.sh` do too.

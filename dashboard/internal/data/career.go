@@ -15,6 +15,7 @@ import (
 
 var (
 	reReportLink     = regexp.MustCompile(`\[(\d+)\]\(([^)]+)\)`)
+	reReportNumber   = regexp.MustCompile(`^(\d+)`)
 	reScoreValue     = regexp.MustCompile(`(\d+\.?\d*)/5`)
 	reArchetype      = regexp.MustCompile(`(?i)\*\*Arquetipo(?:\s+detectado)?\*\*\s*\|\s*(.+)`)
 	reTlDr           = regexp.MustCompile(`(?i)\*\*TL;DR\*\*\s*\|\s*(.+)`)
@@ -92,11 +93,9 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 			app.Score, _ = strconv.ParseFloat(sm[1], 64)
 		}
 
-		// Parse report link
-		if rm := reReportLink.FindStringSubmatch(fields[7]); rm != nil {
-			app.ReportNumber = rm[1]
-			app.ReportPath = rm[2]
-		}
+		// Parse report field. Accept both markdown links like
+		// [001](reports/001-acme.md) and bare paths like reports/002-beta.md.
+		app.ReportNumber, app.ReportPath = parseReportCell(fields[7])
 
 		// Notes (field 8 if exists)
 		if len(fields) > 8 {
@@ -556,8 +555,7 @@ func UpdateApplicationStatus(careerOpsPath string, app model.CareerApplication, 
 		if !strings.HasPrefix(strings.TrimSpace(line), "|") {
 			continue
 		}
-		// Match by report number
-		if app.ReportNumber != "" && strings.Contains(line, fmt.Sprintf("[%s]", app.ReportNumber)) {
+		if lineMatchesApplication(line, app) {
 			// Replace the status field
 			lines[i] = replaceStatusInLine(line, app.Status, newStatus)
 			found = true
@@ -566,10 +564,59 @@ func UpdateApplicationStatus(careerOpsPath string, app model.CareerApplication, 
 	}
 
 	if !found {
-		return fmt.Errorf("application not found: report %s", app.ReportNumber)
+		return fmt.Errorf(
+			"application not found: report %s path %s",
+			app.ReportNumber,
+			app.ReportPath,
+		)
 	}
 
 	return os.WriteFile(filePath, []byte(strings.Join(lines, "\n")), 0644)
+}
+
+func parseReportCell(cell string) (reportNumber, reportPath string) {
+	cell = cleanTableCell(cell)
+	if cell == "" {
+		return "", ""
+	}
+
+	if rm := reReportLink.FindStringSubmatch(cell); rm != nil {
+		reportNumber = strings.TrimSpace(rm[1])
+		reportPath = cleanTableCell(rm[2])
+		if reportNumber == "" {
+			reportNumber = reportNumberFromPath(reportPath)
+		}
+		return reportNumber, reportPath
+	}
+
+	reportPath = cell
+	reportNumber = reportNumberFromPath(reportPath)
+	return reportNumber, reportPath
+}
+
+func reportNumberFromPath(reportPath string) string {
+	base := filepath.Base(strings.TrimSpace(reportPath))
+	if m := reReportNumber.FindStringSubmatch(base); m != nil {
+		return m[1]
+	}
+	return ""
+}
+
+func lineMatchesApplication(line string, app model.CareerApplication) bool {
+	if app.ReportPath != "" && strings.Contains(line, app.ReportPath) {
+		return true
+	}
+	if app.ReportNumber != "" && strings.Contains(line, fmt.Sprintf("[%s]", app.ReportNumber)) {
+		return true
+	}
+	if app.Company != "" && app.Role != "" {
+		fields := strings.Split(strings.Trim(line, "|"), "|")
+		if len(fields) > 3 {
+			return strings.TrimSpace(fields[2]) == app.Company &&
+				strings.TrimSpace(fields[3]) == app.Role
+		}
+	}
+	return false
 }
 
 // replaceStatusInLine replaces the old status with new status in a table line.
