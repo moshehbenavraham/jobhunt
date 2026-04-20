@@ -34,8 +34,8 @@
      | Platform / LLMOps | My monitoring dashboard project | profile/article-digest.md |
      | Agentic | My chatbot with HITL escalation | profile/cv.md section 3 | -->
 
-| If the role is...         | Emphasize about you...                           | Proof point sources       |
-| ------------------------- | ------------------------------------------------ | ------------------------- |
+| If the role is...         | Emphasize about you...                           | Proof point sources                       |
+| ------------------------- | ------------------------------------------------ | ----------------------------------------- |
 | Platform / LLMOps         | Production systems builder, observability, evals | profile/article-digest.md + profile/cv.md |
 | Agentic / Automation      | Multi-agent orchestration, HITL, reliability     | profile/article-digest.md + profile/cv.md |
 | Technical AI PM           | Product discovery, PRDs, metrics                 | profile/cv.md + profile/article-digest.md |

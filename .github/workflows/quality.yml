@@ -25,6 +25,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install shell tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck shfmt
+
+      - name: Lint
+        run: npm run lint
+
       - name: Check formatting
         run: npm run format:check
 

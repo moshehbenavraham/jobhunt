@@ -40,7 +40,10 @@ function buildArchiveDir() {
 function archiveFile(src, destinationDir) {
   if (!existsSync(src)) return null;
   mkdirSync(destinationDir, { recursive: true });
-  const destination = resolve(destinationDir, src.endsWith('pipeline.md') ? 'pipeline.md' : 'scan-history.tsv');
+  const destination = resolve(
+    destinationDir,
+    src.endsWith('pipeline.md') ? 'pipeline.md' : 'scan-history.tsv',
+  );
   renameSync(src, destination);
   return destination;
 }
@@ -74,7 +77,9 @@ function main(args = process.argv.slice(2)) {
   ].filter((flag) => args.includes(flag));
 
   if (actionFlags.length !== 1) {
-    console.error('Choose exactly one scan-state action. Use --help for usage.');
+    console.error(
+      'Choose exactly one scan-state action. Use --help for usage.',
+    );
     return 1;
   }
 
@@ -130,4 +135,3 @@ const exitCode = main();
 if (exitCode !== 0) {
   process.exit(exitCode);
 }
-

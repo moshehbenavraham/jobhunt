@@ -223,7 +223,13 @@ function buildCompensation(summary, fields = {}) {
   const currency = fields.currency || null;
   const interval = fields.interval || null;
 
-  if (!normalizedSummary && min === null && max === null && !currency && !interval) {
+  if (
+    !normalizedSummary &&
+    min === null &&
+    max === null &&
+    !currency &&
+    !interval
+  ) {
     return null;
   }
 
@@ -260,12 +266,15 @@ function normalizeGreenhouseCompensation(job) {
 
 function normalizeLeverCompensation(job) {
   const range = job.salaryRange || {};
-  return buildCompensation(job.salaryDescriptionPlain || job.salaryDescription, {
-    currency: range.currency,
-    min: range.min,
-    max: range.max,
-    interval: range.interval,
-  });
+  return buildCompensation(
+    job.salaryDescriptionPlain || job.salaryDescription,
+    {
+      currency: range.currency,
+      min: range.min,
+      max: range.max,
+      interval: range.interval,
+    },
+  );
 }
 
 function buildLeverDescriptionHtml(job) {
@@ -322,7 +331,10 @@ function buildLeverDescriptionText(job) {
   return normalizeWhitespace(parts.filter(Boolean).join('\n\n'));
 }
 
-async function fetchWithTimeout(url, { fetchImpl = fetch, timeoutMs = ATS_FETCH_TIMEOUT_MS } = {}) {
+async function fetchWithTimeout(
+  url,
+  { fetchImpl = fetch, timeoutMs = ATS_FETCH_TIMEOUT_MS } = {},
+) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -624,7 +636,10 @@ export async function extractAtsJob(
   }
 
   if (detection.type === 'ashby') {
-    return extractAshbyJob(detection, sourceUrl, { fetchJsonImpl, fetchTextImpl });
+    return extractAshbyJob(detection, sourceUrl, {
+      fetchJsonImpl,
+      fetchTextImpl,
+    });
   }
   if (detection.type === 'greenhouse') {
     return extractGreenhouseJob(detection, sourceUrl, {
@@ -633,7 +648,10 @@ export async function extractAtsJob(
     });
   }
   if (detection.type === 'lever') {
-    return extractLeverJob(detection, sourceUrl, { fetchJsonImpl, fetchTextImpl });
+    return extractLeverJob(detection, sourceUrl, {
+      fetchJsonImpl,
+      fetchTextImpl,
+    });
   }
 
   throw new Error(`Unsupported ATS URL: ${sourceUrl}`);

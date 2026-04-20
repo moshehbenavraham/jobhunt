@@ -15,7 +15,6 @@ RESULT_SCHEMA_FILE="$BATCH_DIR/worker-result.schema.json"
 LOGS_DIR="$BATCH_DIR/logs"
 TRACKER_DIR="$BATCH_DIR/tracker-additions"
 REPORTS_DIR="$PROJECT_DIR/reports"
-APPLICATIONS_FILE="$PROJECT_DIR/data/applications.md"
 LOCK_FILE="$BATCH_DIR/batch-runner.pid"
 STATE_LOCK_DIR="$BATCH_DIR/.batch-state.lock"
 STATE_LOCK_PID_FILE="$STATE_LOCK_DIR/pid"
@@ -31,7 +30,7 @@ MAX_RETRIES=2
 MIN_SCORE=0
 
 usage() {
-  cat <<'USAGE'
+  cat << 'USAGE'
 jobhunt batch runner - process job offers in batch via codex exec workers
 Uses your default Codex CLI configuration.
 
@@ -71,14 +70,39 @@ USAGE
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --parallel) PARALLEL="$2"; shift 2 ;;
-    --dry-run) DRY_RUN=true; shift ;;
-    --retry-failed) RETRY_FAILED=true; shift ;;
-    --start-from) START_FROM="$2"; shift 2 ;;
-    --max-retries) MAX_RETRIES="$2"; shift 2 ;;
-    --min-score) MIN_SCORE="$2"; shift 2 ;;
-    -h|--help) usage; exit 0 ;;
-    *) echo "Unknown option: $1"; usage; exit 1 ;;
+    --parallel)
+      PARALLEL="$2"
+      shift 2
+      ;;
+    --dry-run)
+      DRY_RUN=true
+      shift
+      ;;
+    --retry-failed)
+      RETRY_FAILED=true
+      shift
+      ;;
+    --start-from)
+      START_FROM="$2"
+      shift 2
+      ;;
+    --max-retries)
+      MAX_RETRIES="$2"
+      shift 2
+      ;;
+    --min-score)
+      MIN_SCORE="$2"
+      shift 2
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      usage
+      exit 1
+      ;;
   esac
 done
 
@@ -87,7 +111,7 @@ acquire_lock() {
   if [[ -f "$LOCK_FILE" ]]; then
     local old_pid
     old_pid=$(cat "$LOCK_FILE")
-    if kill -0 "$old_pid" 2>/dev/null; then
+    if kill -0 "$old_pid" 2> /dev/null; then
       echo "ERROR: Another batch-runner is already running (PID $old_pid)"
       echo "If this is stale, remove $LOCK_FILE"
       exit 1
@@ -125,17 +149,17 @@ check_prerequisites() {
     exit 1
   fi
 
-  if ! command -v codex &>/dev/null; then
+  if ! command -v codex &> /dev/null; then
     echo "ERROR: 'codex' CLI not found in PATH."
     exit 1
   fi
 
-  if ! command -v jq &>/dev/null; then
+  if ! command -v jq &> /dev/null; then
     echo "ERROR: 'jq' is required to validate worker results."
     exit 1
   fi
 
-  if ! jq empty "$RESULT_SCHEMA_FILE" >/dev/null 2>&1; then
+  if ! jq empty "$RESULT_SCHEMA_FILE" > /dev/null 2>&1; then
     echo "ERROR: $RESULT_SCHEMA_FILE is not valid JSON."
     exit 1
   fi
@@ -155,12 +179,12 @@ acquire_state_lock() {
   local max_waits=$((STATE_LOCK_TIMEOUT_SECONDS * 10))
 
   while true; do
-    if mkdir "$STATE_LOCK_DIR" 2>/dev/null; then
+    if mkdir "$STATE_LOCK_DIR" 2> /dev/null; then
       if printf '%s\n' "${BASHPID:-$$}" > "$STATE_LOCK_PID_FILE"; then
         return 0
       fi
-      rm -f "$STATE_LOCK_PID_FILE" 2>/dev/null || true
-      rmdir "$STATE_LOCK_DIR" 2>/dev/null || true
+      rm -f "$STATE_LOCK_PID_FILE" 2> /dev/null || true
+      rmdir "$STATE_LOCK_DIR" 2> /dev/null || true
       echo "ERROR: Failed to initialize state lock metadata at $STATE_LOCK_DIR"
       return 1
     fi
@@ -172,17 +196,17 @@ acquire_state_lock() {
 
     if [[ -f "$STATE_LOCK_PID_FILE" ]]; then
       local lock_pid
-      lock_pid=$(cat "$STATE_LOCK_PID_FILE" 2>/dev/null || true)
-      if [[ -n "$lock_pid" ]] && ! kill -0 "$lock_pid" 2>/dev/null; then
+      lock_pid=$(cat "$STATE_LOCK_PID_FILE" 2> /dev/null || true)
+      if [[ -n "$lock_pid" ]] && ! kill -0 "$lock_pid" 2> /dev/null; then
         rm -f "$STATE_LOCK_PID_FILE"
-        if rmdir "$STATE_LOCK_DIR" 2>/dev/null; then
+        if rmdir "$STATE_LOCK_DIR" 2> /dev/null; then
           echo "WARN: Recovered stale state lock (PID $lock_pid not running)."
           continue
         fi
       fi
     fi
 
-    if (( waited >= max_waits )); then
+    if ((waited >= max_waits)); then
       echo "ERROR: Timed out waiting for state lock at $STATE_LOCK_DIR"
       echo "If no batch-runner worker is active, remove the stale lock directory."
       return 1
@@ -194,8 +218,8 @@ acquire_state_lock() {
 }
 
 release_state_lock() {
-  rm -f "$STATE_LOCK_PID_FILE" 2>/dev/null || true
-  rmdir "$STATE_LOCK_DIR" 2>/dev/null || true
+  rm -f "$STATE_LOCK_PID_FILE" 2> /dev/null || true
+  rmdir "$STATE_LOCK_DIR" 2> /dev/null || true
 }
 
 run_with_state_lock() {
@@ -258,7 +282,7 @@ next_report_num_unlocked() {
       basename=$(basename "$f")
       local num="${basename%%-*}"
       num=$((10#$num)) # Remove leading zeros for arithmetic
-      if (( num > max_num )); then
+      if ((num > max_num)); then
         max_num=$num
       fi
     done
@@ -268,7 +292,7 @@ next_report_num_unlocked() {
     while IFS=$'\t' read -r _ _ _ _ _ rnum _ _ _; do
       [[ "$rnum" == "report_num" || "$rnum" == "-" || -z "$rnum" ]] && continue
       local n=$((10#$rnum))
-      if (( n > max_num )); then
+      if ((n > max_num)); then
         max_num=$n
       fi
     done < "$STATE_FILE"
@@ -293,7 +317,7 @@ update_state_unlocked() {
 
   # Process existing lines
   while IFS=$'\t' read -r sid surl sstatus sstarted scompleted sreport sscore serror sretries; do
-    [[ "$sid" == "id" ]] && continue  # skip header
+    [[ "$sid" == "id" ]] && continue # skip header
     if [[ "$sid" == "$id" ]]; then
       printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
         "$id" "$url" "$status" "$started" "$completed" "$report_num" "$score" "$error" "$retries" >> "$tmp"
@@ -395,7 +419,7 @@ classify_structured_result() {
   worker_status=$(structured_result_status "$result_file")
 
   case "$worker_status" in
-    completed|partial|failed)
+    completed | partial | failed)
       printf '%s\n' "$worker_status"
       ;;
     *)
@@ -432,7 +456,7 @@ infrastructure_failure_summary() {
   if [[ -n "$contract_error" ]]; then
     detail=$(normalize_state_message_text "$contract_error")
   else
-    detail=$(tail -5 "$event_log_file" 2>/dev/null || true)
+    detail=$(tail -5 "$event_log_file" 2> /dev/null || true)
     detail=$(normalize_state_message_text "$detail")
   fi
 
@@ -450,7 +474,7 @@ is_retryable_failed_row() {
     retries=0
   fi
 
-  if [[ "$error" == infrastructure:* ]] && (( retries < MAX_RETRIES )); then
+  if [[ "$error" == infrastructure:* ]] && ((retries < MAX_RETRIES)); then
     return 0
   fi
 
@@ -491,7 +515,7 @@ validate_worker_result_contract() {
     return 1
   fi
 
-  if ! jq empty "$result_file" >/dev/null 2>&1; then
+  if ! jq empty "$result_file" > /dev/null 2>&1; then
     echo "Worker result file is not valid JSON: $result_file"
     return 1
   fi
@@ -584,7 +608,7 @@ validate_worker_result_contract() {
           and (.error | nonEmptyString)
         )
       )
-    ' "$result_file" >/dev/null 2>&1; then
+    ' "$result_file" > /dev/null 2>&1; then
     echo "Worker result file failed contract validation: $result_file"
     return 1
   fi
@@ -667,8 +691,8 @@ process_offer() {
     score=$(structured_result_score "$result_file")
 
     # Check min-score gate
-    if [[ "$score" != "-" && -n "$score" ]] && (( $(echo "$MIN_SCORE > 0" | bc -l) )); then
-      if (( $(echo "$score < $MIN_SCORE" | bc -l) )); then
+    if [[ "$score" != "-" && -n "$score" ]] && (($(echo "$MIN_SCORE > 0" | bc -l))); then
+      if (($(echo "$score < $MIN_SCORE" | bc -l))); then
         update_state "$id" "$url" "skipped" "$started_at" "$completed_at" "$report_num" "$score" "below-min-score" "$retries"
         echo "    Skipped (score: $score < min-score: $MIN_SCORE)"
         return
@@ -761,16 +785,16 @@ print_summary() {
     esac
 
     if [[ "$sscore" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
-      score_sum=$(echo "$score_sum + $sscore" | bc 2>/dev/null || echo "$score_sum")
+      score_sum=$(echo "$score_sum + $sscore" | bc 2> /dev/null || echo "$score_sum")
       score_count=$((score_count + 1))
     fi
   done < "$STATE_FILE"
 
   echo "Total: $total | Completed: $completed | Partial: $partial | Failed: $failed | Retryable Failed: $retryable_failed | Skipped: $skipped | Pending: $pending"
 
-  if (( score_count > 0 )); then
+  if ((score_count > 0)); then
     local avg
-    avg=$(echo "scale=1; $score_sum / $score_count" | bc 2>/dev/null || echo "N/A")
+    avg=$(echo "scale=1; $score_sum / $score_count" | bc 2> /dev/null || echo "N/A")
     echo "Average score: $avg/5 ($score_count scored)"
   fi
 }
@@ -787,10 +811,10 @@ main() {
 
   # Count input offers (skip header, ignore blank lines)
   local total_input
-  total_input=$(tail -n +2 "$INPUT_FILE" | grep -c '[^[:space:]]' 2>/dev/null || true)
+  total_input=$(tail -n +2 "$INPUT_FILE" | grep -c '[^[:space:]]' 2> /dev/null || true)
   total_input="${total_input:-0}"
 
-  if (( total_input == 0 )); then
+  if ((total_input == 0)); then
     echo "No offers in $INPUT_FILE. Add offers first."
     exit 0
   fi
@@ -807,14 +831,14 @@ main() {
   local -a pending_notes=()
 
   while IFS=$'\t' read -r id url source notes; do
-    [[ "$id" == "id" ]] && continue  # skip header
+    [[ "$id" == "id" ]] && continue # skip header
     [[ -z "$id" || -z "$url" ]] && continue
 
     # Guard against non-numeric id values
     [[ "$id" =~ ^[0-9]+$ ]] || continue
 
     # Skip if before start-from
-    if (( id < START_FROM )); then
+    if ((id < START_FROM)); then
       continue
     fi
 
@@ -856,7 +880,7 @@ main() {
 
   local pending_count=${#pending_ids[@]}
 
-  if (( pending_count == 0 )); then
+  if ((pending_count == 0)); then
     echo "No offers to process."
     print_summary
     exit 0
@@ -879,7 +903,7 @@ main() {
   fi
 
   # Process offers
-  if (( PARALLEL <= 1 )); then
+  if ((PARALLEL <= 1)); then
     # Sequential processing
     for i in "${!pending_ids[@]}"; do
       process_offer "${pending_ids[$i]}" "${pending_urls[$i]}" "${pending_sources[$i]}" "${pending_notes[$i]}"
@@ -892,11 +916,11 @@ main() {
 
     for i in "${!pending_ids[@]}"; do
       # Wait if we're at parallel limit
-      while (( running >= PARALLEL )); do
+      while ((running >= PARALLEL)); do
         # Wait for any child to finish
         for j in "${!pids[@]}"; do
-          if ! kill -0 "${pids[$j]}" 2>/dev/null; then
-            wait "${pids[$j]}" 2>/dev/null || true
+          if ! kill -0 "${pids[$j]}" 2> /dev/null; then
+            wait "${pids[$j]}" 2> /dev/null || true
             unset 'pids[j]'
             unset 'pid_ids[j]'
             running=$((running - 1))
@@ -917,7 +941,7 @@ main() {
 
     # Wait for remaining workers
     for pid in "${pids[@]}"; do
-      wait "$pid" 2>/dev/null || true
+      wait "$pid" 2> /dev/null || true
     done
   fi
 

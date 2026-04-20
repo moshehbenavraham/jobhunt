@@ -22,8 +22,8 @@
 
 ## B) CV Match
 
-| JD Requirement                       | CV Match                                                 | Source                  |
-| ------------------------------------ | -------------------------------------------------------- | ----------------------- |
+| JD Requirement                       | CV Match                                                 | Source                          |
+| ------------------------------------ | -------------------------------------------------------- | ------------------------------- |
 | "Production LLM systems"             | Built real-time fraud detection + LLM eval toolkit       | profile/cv.md: TechFin Corp     |
 | "Model monitoring and observability" | Drift detection, Grafana dashboards, retraining triggers | profile/cv.md: ML Platform Lead |
 | "Python + distributed systems"       | Python, Kafka, Kubernetes, Redis                         | profile/cv.md: Skills           |

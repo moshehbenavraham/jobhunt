@@ -21,7 +21,7 @@ raw_args=("$@")
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -C|--cd)
+    -C | --cd)
       cd_dir="$2"
       shift 2
       ;;
@@ -29,7 +29,7 @@ while [[ $# -gt 0 ]]; do
       output_schema="$2"
       shift 2
       ;;
-    -o|--output-last-message)
+    -o | --output-last-message)
       last_message_file="$2"
       shift 2
       ;;

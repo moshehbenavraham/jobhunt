@@ -6,13 +6,13 @@ the diagnostics needed to reproduce the problem.
 
 ## Where to Ask
 
-| Need                              | Best path                                                                                                                                                                                                 |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Setup or validation issue**     | Read [SETUP.md](SETUP.md), rerun `npm run doctor`, then ask in [GitHub Discussions](https://github.com/moshehbenavraham/jobhunt/discussions) with the failing step |
-| **Reproducible bug**              | Open a [GitHub Issue](https://github.com/moshehbenavraham/jobhunt/issues) with steps, expected behavior, actual behavior, and validation notes                                                                 |
-| **Feature idea or docs gap**      | Open a [GitHub Issue](https://github.com/moshehbenavraham/jobhunt/issues) or start in [GitHub Discussions](https://github.com/moshehbenavraham/jobhunt/discussions)                                                 |
+| Need                              | Best path                                                                                                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Setup or validation issue**     | Read [SETUP.md](SETUP.md), rerun `npm run doctor`, then ask in [GitHub Discussions](https://github.com/moshehbenavraham/jobhunt/discussions) with the failing step  |
+| **Reproducible bug**              | Open a [GitHub Issue](https://github.com/moshehbenavraham/jobhunt/issues) with steps, expected behavior, actual behavior, and validation notes                      |
+| **Feature idea or docs gap**      | Open a [GitHub Issue](https://github.com/moshehbenavraham/jobhunt/issues) or start in [GitHub Discussions](https://github.com/moshehbenavraham/jobhunt/discussions) |
 | **Contributor workflow question** | Start with [CONTRIBUTING.md](CONTRIBUTING.md), then ask in [GitHub Discussions](https://github.com/moshehbenavraham/jobhunt/discussions)                            |
-| **Security vulnerability**        | Email `max@aiwithapex.com` and follow [SECURITY.md](SECURITY.md); do not open a public issue                                                                                                                  |
+| **Security vulnerability**        | Email `max@aiwithapex.com` and follow [SECURITY.md](SECURITY.md); do not open a public issue                                                                        |
 
 ## Before Opening an Issue
 

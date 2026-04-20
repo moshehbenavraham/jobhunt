@@ -3,36 +3,36 @@
 ## Status Checklist
 
 - [x] Finding 1: work-authorization preflight warning and gating contract.
-  Completed on 2026-04-17. Approx implementation time: 30-45 minutes.
+      Completed on 2026-04-17. Approx implementation time: 30-45 minutes.
 - [x] Session 1: repo-owned single-job ATS extraction helper. Completed on
-  2026-04-17. Approx implementation time: 2-2.5 hours.
+      2026-04-17. Approx implementation time: 2-2.5 hours.
 - [x] Session 2: ATS-first auto-pipeline integration and fallback regression
-  coverage. Completed on 2026-04-17. Approx implementation time: 2-2.5 hours.
+      coverage. Completed on 2026-04-17. Approx implementation time: 2-2.5 hours.
 - [x] Finding 3: explicit auto-pipeline PDF default. Auto-pipeline now uses
-  HTML/PDF by default, and Canva is opt-in only. Completed on 2026-04-17.
-  Approx implementation time: 15-25 minutes.
+      HTML/PDF by default, and Canva is opt-in only. Completed on 2026-04-17.
+      Approx implementation time: 15-25 minutes.
 - [x] Finding 4: cover-letter contract cleanup. The repo now flags cover
-  letters as manual follow-up until a real generator and artifact path exist.
-  Completed on 2026-04-17. Approx implementation time: 20-30 minutes.
+      letters as manual follow-up until a real generator and artifact path exist.
+      Completed on 2026-04-17. Approx implementation time: 20-30 minutes.
 - [x] Verification and safety fixes: quick-suite verification, `VERSION` sync,
-  and batch `RESULT_FILE` prompt-path fix. Completed on 2026-04-17. Approx
-  implementation time: 20-30 minutes.
+      and batch `RESULT_FILE` prompt-path fix. Completed on 2026-04-17. Approx
+      implementation time: 20-30 minutes.
 
 ## Remaining Work Plan
 
 All review-scoped fixes are now complete on the manual pass branch.
 
 - [x] Session 1 (`~2.5h`): build the repo-owned single-job ATS extraction
-  helper. Completed on 2026-04-17.
-  Delivered: shared ATS runtime in `scripts/ats-core.mjs`, CLI entry point in
-  `scripts/extract-job.mjs`, scanner reuse of the shared parsing code, script
-  docs, and regression coverage in `scripts/test-extract-job.mjs`.
+      helper. Completed on 2026-04-17.
+      Delivered: shared ATS runtime in `scripts/ats-core.mjs`, CLI entry point in
+      `scripts/extract-job.mjs`, scanner reuse of the shared parsing code, script
+      docs, and regression coverage in `scripts/test-extract-job.mjs`.
 - [x] Session 2 (`~2.5h`): integrate the helper into the URL auto-pipeline and
-  lock it down with regression coverage. Completed on 2026-04-17.
-  Delivered: ATS-first routing helper in `scripts/ats-core.mjs`, explicit
-  auto-pipeline and inbox-pipeline ordering in `modes/auto-pipeline.md` and
-  `modes/pipeline.md`, script-surface documentation in `docs/SCRIPTS.md`, and
-  regression coverage in `scripts/test-auto-pipeline-routing.mjs`.
+      lock it down with regression coverage. Completed on 2026-04-17.
+      Delivered: ATS-first routing helper in `scripts/ats-core.mjs`, explicit
+      auto-pipeline and inbox-pipeline ordering in `modes/auto-pipeline.md` and
+      `modes/pipeline.md`, script-surface documentation in `docs/SCRIPTS.md`, and
+      regression coverage in `scripts/test-auto-pipeline-routing.mjs`.
 
 Follow-on feature work that is intentionally out of scope for this review is
 tracked separately in `docs/ongoing-projects/2026-04-17-cover-letter-support-gap.md`.

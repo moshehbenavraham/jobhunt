@@ -10,7 +10,9 @@ exposed via `npm run <name>`. Repo-local shell helpers such as
 | ---------------------- | ------------------------------------ | ------------------------------------------ |
 | `npm run cron:install` | `scripts/install-scan-cron.mjs`      | Install repo-managed daily scan cron       |
 | `npm run doctor`       | `scripts/doctor.mjs`                 | Validate setup prerequisites               |
+| `npm run lint:shell`   | `shellcheck`                         | Lint repo shell scripts                    |
 | `npm run verify`       | `scripts/verify-pipeline.mjs`        | Check pipeline data integrity              |
+| `npm run format:shell` | `shfmt`                              | Format repo shell scripts                  |
 | `npm run normalize`    | `scripts/normalize-statuses.mjs`     | Fix non-canonical statuses                 |
 | `npm run dedup`        | `scripts/dedup-tracker.mjs`          | Remove duplicate tracker entries           |
 | `npm run merge`        | `scripts/merge-tracker.mjs`          | Merge batch TSVs into applications.md      |
@@ -62,6 +64,53 @@ npm run doctor
 ```
 
 **Exit codes:** `0` all checks passed, `1` one or more checks failed (fix messages printed).
+
+---
+
+## lint:shell
+
+Runs `shellcheck` against the repo-owned shell scripts:
+
+- `batch/batch-runner.sh`
+- `batch/test-fixtures/mock-codex-exec.sh`
+- `scripts/analyze-project.sh`
+- `scripts/run-scheduled-scan.sh`
+- `scripts/ux.sh`
+
+```bash
+npm run lint:shell
+```
+
+Notes:
+
+- requires `shellcheck` on `PATH`
+- `npm run lint` includes this check together with `biome lint scripts`
+
+**Exit codes:** `0` no shell lint findings, `1` one or more findings or missing tool.
+
+---
+
+## format:shell
+
+Formats the repo-owned shell scripts with `shfmt` using the checked-in style:
+
+- indent size `2`
+- switch-case indentation enabled
+- simplified redirections where possible
+
+```bash
+npm run format:shell
+npm run format:shell:check
+```
+
+Notes:
+
+- requires `shfmt` on `PATH`
+- `format:shell` writes changes in place
+- `format:shell:check` prints diffs and exits non-zero if formatting is needed
+- `npm run format` and `npm run format:check` now include the shell formatting pass
+
+**Exit codes:** `0` success or already formatted, `1` formatting drift or missing tool.
 
 ---
 

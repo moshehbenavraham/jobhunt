@@ -86,8 +86,8 @@ For each: the likely question, why it comes up, and a recommended framing (hones
 ## Step 5 — Story Bank Mapping
 
 | #   | Likely question/topic | Best story from `interview-prep/story-bank.md` | Fit                 | Gap? |
-| --- | --------------------- | ----------------------------- | ------------------- | ---- |
-| 1   | ...                   | [Story Title]                 | strong/partial/none |      |
+| --- | --------------------- | ---------------------------------------------- | ------------------- | ---- |
+| 1   | ...                   | [Story Title]                                  | strong/partial/none |      |
 
 - **strong**: story directly answers the question
 - **partial**: story is adjacent, needs reframing

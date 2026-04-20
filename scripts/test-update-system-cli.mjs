@@ -6,7 +6,6 @@ import {
   existsSync,
   mkdtempSync,
   mkdirSync,
-  readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -23,11 +22,15 @@ function writeFile(path, content) {
 }
 
 function runUpdate(sandbox, args = []) {
-  return spawnSync('node', [join(ROOT, 'scripts', 'update-system.mjs'), ...args], {
-    cwd: ROOT,
-    env: { ...process.env, JOBHUNT_ROOT: sandbox },
-    encoding: 'utf8',
-  });
+  return spawnSync(
+    'node',
+    [join(ROOT, 'scripts', 'update-system.mjs'), ...args],
+    {
+      cwd: ROOT,
+      env: { ...process.env, JOBHUNT_ROOT: sandbox },
+      encoding: 'utf8',
+    },
+  );
 }
 
 function git(sandbox, ...args) {
@@ -51,7 +54,9 @@ function git(sandbox, ...args) {
 }
 
 {
-  const sandbox = mkdtempSync(join(tmpdir(), 'jobhunt-update-invalid-version-'));
+  const sandbox = mkdtempSync(
+    join(tmpdir(), 'jobhunt-update-invalid-version-'),
+  );
   writeFile(join(sandbox, 'VERSION'), 'bad-version\n');
 
   const invalidVersion = runUpdate(sandbox, ['check']);
@@ -65,7 +70,10 @@ function git(sandbox, ...args) {
   const sandbox = mkdtempSync(join(tmpdir(), 'jobhunt-update-git-'));
   writeFile(join(sandbox, 'VERSION'), '1.0.0\n');
   writeFile(join(sandbox, 'README.md'), 'initial\n');
-  writeFile(join(sandbox, 'package.json'), '{"name":"jobhunt","version":"1.0.0"}\n');
+  writeFile(
+    join(sandbox, 'package.json'),
+    '{"name":"jobhunt","version":"1.0.0"}\n',
+  );
   git(sandbox, 'init');
   git(sandbox, 'config', 'user.name', 'Test User');
   git(sandbox, 'config', 'user.email', 'test@example.com');
@@ -83,7 +91,10 @@ function git(sandbox, ...args) {
 
   const invalidCommand = runUpdate(sandbox, ['wat']);
   assert.equal(invalidCommand.status, 1);
-  assert.match(invalidCommand.stdout, /Usage: node scripts\/update-system\.mjs/);
+  assert.match(
+    invalidCommand.stdout,
+    /Usage: node scripts\/update-system\.mjs/,
+  );
 
   rmSync(sandbox, { recursive: true, force: true });
 }

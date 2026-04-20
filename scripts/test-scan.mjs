@@ -98,7 +98,9 @@ const server = http.createServer((req, res) => {
   res.end(JSON.stringify({ error: 'missing' }));
 });
 
-await new Promise((resolveListen) => server.listen(0, '127.0.0.1', resolveListen));
+await new Promise((resolveListen) =>
+  server.listen(0, '127.0.0.1', resolveListen),
+);
 const { port } = server.address();
 const baseUrl = `http://127.0.0.1:${port}`;
 
@@ -204,29 +206,59 @@ assert.deepEqual(scanModule.detectApi({ api: `${baseUrl}/greenhouse` }), {
   type: 'greenhouse',
   url: `${baseUrl}/greenhouse`,
 });
-assert.deepEqual(scanModule.detectApi({ careers_url: 'https://jobs.ashbyhq.com/acme' }), {
-  type: 'ashby',
-  url: 'https://api.ashbyhq.com/posting-api/job-board/acme?includeCompensation=true',
-});
-assert.deepEqual(scanModule.detectApi({ careers_url: 'https://jobs.lever.co/acme' }), {
-  type: 'lever',
-  url: 'https://api.lever.co/v0/postings/acme',
-});
-assert.deepEqual(scanModule.detectApi({ careers_url: 'https://job-boards.greenhouse.io/acme' }), {
-  type: 'greenhouse',
-  url: 'https://boards-api.greenhouse.io/v1/boards/acme/jobs',
-});
-assert.equal(scanModule.detectApi({ careers_url: 'https://example.com/jobs' }), null);
+assert.deepEqual(
+  scanModule.detectApi({ careers_url: 'https://jobs.ashbyhq.com/acme' }),
+  {
+    type: 'ashby',
+    url: 'https://api.ashbyhq.com/posting-api/job-board/acme?includeCompensation=true',
+  },
+);
+assert.deepEqual(
+  scanModule.detectApi({ careers_url: 'https://jobs.lever.co/acme' }),
+  {
+    type: 'lever',
+    url: 'https://api.lever.co/v0/postings/acme',
+  },
+);
+assert.deepEqual(
+  scanModule.detectApi({
+    careers_url: 'https://job-boards.greenhouse.io/acme',
+  }),
+  {
+    type: 'greenhouse',
+    url: 'https://boards-api.greenhouse.io/v1/boards/acme/jobs',
+  },
+);
+assert.equal(
+  scanModule.detectApi({ careers_url: 'https://example.com/jobs' }),
+  null,
+);
 
-assert.deepEqual(scanModule.parseGreenhouse({ jobs: [{ title: 'Role', absolute_url: 'u', location: { name: 'Remote' } }] }, 'Acme'), [
-  { title: 'Role', url: 'u', company: 'Acme', location: 'Remote' },
-]);
-assert.deepEqual(scanModule.parseAshby({ jobs: [{ title: 'Role', jobUrl: 'u', location: 'Remote' }] }, 'Acme'), [
-  { title: 'Role', url: 'u', company: 'Acme', location: 'Remote' },
-]);
-assert.deepEqual(scanModule.parseLever([{ text: 'Role', hostedUrl: 'u', categories: { location: 'Remote' } }], 'Acme'), [
-  { title: 'Role', url: 'u', company: 'Acme', location: 'Remote' },
-]);
+assert.deepEqual(
+  scanModule.parseGreenhouse(
+    {
+      jobs: [
+        { title: 'Role', absolute_url: 'u', location: { name: 'Remote' } },
+      ],
+    },
+    'Acme',
+  ),
+  [{ title: 'Role', url: 'u', company: 'Acme', location: 'Remote' }],
+);
+assert.deepEqual(
+  scanModule.parseAshby(
+    { jobs: [{ title: 'Role', jobUrl: 'u', location: 'Remote' }] },
+    'Acme',
+  ),
+  [{ title: 'Role', url: 'u', company: 'Acme', location: 'Remote' }],
+);
+assert.deepEqual(
+  scanModule.parseLever(
+    [{ text: 'Role', hostedUrl: 'u', categories: { location: 'Remote' } }],
+    'Acme',
+  ),
+  [{ title: 'Role', url: 'u', company: 'Acme', location: 'Remote' }],
+);
 assert.deepEqual(scanModule.parseLever({}, 'Acme'), []);
 
 const titleFilter = scanModule.buildTitleFilter({
@@ -262,12 +294,18 @@ const discoveryConfig = scanModule.buildDiscoveryConfig({
 });
 assert.equal(discoveryConfig.remotePolicy, 'remote_or_allowed_locations');
 assert.deepEqual(discoveryConfig.allowedLocationTerms, ['United States', 'US']);
-assert.deepEqual(scanModule.classifyLocation('Remote - US').regions, ['REMOTE', 'US']);
+assert.deepEqual(scanModule.classifyLocation('Remote - US').regions, [
+  'REMOTE',
+  'US',
+]);
 assert.equal(
   scanModule.evaluateLocation('Remote - US', discoveryConfig).allowed,
   true,
 );
-assert.equal(scanModule.evaluateLocation('London', discoveryConfig).allowed, false);
+assert.equal(
+  scanModule.evaluateLocation('London', discoveryConfig).allowed,
+  false,
+);
 assert.equal(
   scanModule.describeLocationDecision(
     scanModule.evaluateLocation('Remote - Japan', discoveryConfig),
@@ -463,10 +501,7 @@ assert.match(
   /tracked_companies\.scan_method\/scan_query are ignored for 1 entries: UnknownCo/,
 );
 assert.match(dryRun.output, /Profile constraints \(3\):/);
-assert.match(
-  dryRun.output,
-  /Allowed location terms: US, United States/,
-);
+assert.match(dryRun.output, /Allowed location terms: US, United States/);
 assert.match(dryRun.output, /Blocked regions: APAC/);
 assert.match(dryRun.output, /Location rejections \(2\):/);
 assert.match(dryRun.output, /outside allowed geography: London/);
@@ -528,7 +563,7 @@ writeFile(
 );
 
 const freshScanModule = await import(
-  `${pathToFileURL(join(ROOT, 'scripts', 'scan.mjs')).href}?fresh=${Date.now()}`,
+  `${pathToFileURL(join(ROOT, 'scripts', 'scan.mjs')).href}?fresh=${Date.now()}`
 );
 
 assert.equal(existsSync(join(freshSandbox, 'data', 'pipeline.md')), false);

@@ -136,13 +136,31 @@ const analyzeModule = await import(
 assert.equal(analyzeModule.normalizeStatus('Aplicada 2026-04-01'), 'applied');
 assert.equal(analyzeModule.classifyOutcome('Offer'), 'positive');
 assert.equal(analyzeModule.classifyOutcome('Rechazada'), 'negative');
-assert.equal(analyzeModule.classifyRemote('US only remote role'), 'geo-restricted');
-assert.equal(analyzeModule.classifyRemote('hybrid office in Columbus'), 'hybrid/onsite');
-assert.equal(analyzeModule.classifyRemote('work from anywhere worldwide'), 'global remote');
-assert.equal(analyzeModule.classifyRemote('LATAM fully remote'), 'regional remote');
-assert.equal(analyzeModule.classifyCompanySize('founding team of 6'), 'startup');
+assert.equal(
+  analyzeModule.classifyRemote('US only remote role'),
+  'geo-restricted',
+);
+assert.equal(
+  analyzeModule.classifyRemote('hybrid office in Columbus'),
+  'hybrid/onsite',
+);
+assert.equal(
+  analyzeModule.classifyRemote('work from anywhere worldwide'),
+  'global remote',
+);
+assert.equal(
+  analyzeModule.classifyRemote('LATAM fully remote'),
+  'regional remote',
+);
+assert.equal(
+  analyzeModule.classifyCompanySize('founding team of 6'),
+  'startup',
+);
 assert.equal(analyzeModule.classifyCompanySize('team of 150'), 'scaleup');
-assert.equal(analyzeModule.classifyCompanySize('enterprise org of 1200'), 'enterprise');
+assert.equal(
+  analyzeModule.classifyCompanySize('enterprise org of 1200'),
+  'enterprise',
+);
 assert.equal(
   analyzeModule.extractBlockerType({
     description: 'US residency required',
@@ -179,7 +197,9 @@ assert.equal(
   null,
 );
 
-const parsedReport = analyzeModule.parseReport(join(sandbox, 'reports', '001-acme.md'));
+const parsedReport = analyzeModule.parseReport(
+  join(sandbox, 'reports', '001-acme.md'),
+);
 assert.equal(parsedReport.archetype, 'Platform Builder');
 assert.equal(parsedReport.remote, 'Global remote');
 assert.equal(parsedReport.scores.global, 4.8);

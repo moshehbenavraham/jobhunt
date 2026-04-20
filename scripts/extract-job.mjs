@@ -31,7 +31,11 @@ export async function runExtractJob({
 
 if (process.argv[1] && resolve(process.argv[1]) === SCRIPT_PATH) {
   runExtractJob().catch((error) => {
-    console.error(error.message.startsWith('Usage:') ? error.message : `Fatal: ${error.message}`);
+    console.error(
+      error.message.startsWith('Usage:')
+        ? error.message
+        : `Fatal: ${error.message}`,
+    );
     process.exit(1);
   });
 }

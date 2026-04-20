@@ -13,8 +13,8 @@ whenever they want, then run the pipeline to process them in a batch.
 4. For each pending URL you decide to process:
    a. Calculate the next sequential `REPORT_NUM` from `reports/`
    b. Extract the JD using the ATS helper first for supported Ashby,
-      Greenhouse, and Lever URLs, then Playwright -> WebFetch -> WebSearch for
-      everything else
+   Greenhouse, and Lever URLs, then Playwright -> WebFetch -> WebSearch for
+   everything else
    c. If the URL is inaccessible, mark it as `- [!]` with a note and continue
    d. Run the full auto-pipeline: evaluation A-F, legitimacy check G, report, PDF when eligible, tracker update
    e. Move it from `## Pending` to `## Processed`:
@@ -42,11 +42,13 @@ Last refreshed: 2026-04-16 by npm run scan.
 Campaign guidance: Current strongest lane cluster: Forward Deployed + Solutions. Use the top of the list below before touching adjacent/noisy roles.
 
 Bucket counts:
+
 - Strongest fit: 4
 - Possible fit: 9
 - Adjacent or noisy: 2
 
 Top 10 to evaluate first:
+
 1. Strongest fit | https://jobs.example.com/posting/123 | Example Co | Forward Deployed Engineer | direct forward-deployed title; remote-compatible
 
 ## Pending
@@ -77,6 +79,7 @@ Notes:
    ```
 
    Reuse the returned `descriptionText` and normalized metadata when present.
+
 2. **If the ATS helper does not support the URL or fails:** continue with the
    generic extraction chain below.
 3. **Playwright (preferred):** `browser_navigate` + `browser_snapshot`

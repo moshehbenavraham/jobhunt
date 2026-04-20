@@ -2,14 +2,14 @@
 
 Score each project idea across 6 dimensions (1-5):
 
-| Dimension | Weight | 5 = ... | 1 = ... |
-| --- | --- | --- | --- |
-| Signal for target roles | 25% | directly proves JD-relevant skill | unrelated |
-| Uniqueness | 20% | rare and differentiated | everybody has it |
-| Demo-ability | 20% | live demo in 2 minutes | code only, not visual |
-| Metric potential | 15% | clear latency / cost / accuracy metrics | no measurable angle |
-| Time to MVP | 10% | 1 week | 3+ months |
-| STAR-story potential | 10% | rich tradeoffs and decisions | plain implementation only |
+| Dimension               | Weight | 5 = ...                                 | 1 = ...                   |
+| ----------------------- | ------ | --------------------------------------- | ------------------------- |
+| Signal for target roles | 25%    | directly proves JD-relevant skill       | unrelated                 |
+| Uniqueness              | 20%    | rare and differentiated                 | everybody has it          |
+| Demo-ability            | 20%    | live demo in 2 minutes                  | code only, not visual     |
+| Metric potential        | 15%    | clear latency / cost / accuracy metrics | no measurable angle       |
+| Time to MVP             | 10%    | 1 week                                  | 3+ months                 |
+| STAR-story potential    | 10%    | rich tradeoffs and decisions            | plain implementation only |
 
 ## Interview-pack requirements
 

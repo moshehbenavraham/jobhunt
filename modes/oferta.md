@@ -60,9 +60,9 @@ Present the data in a table with cited sources. If data is unavailable, say so i
 
 ## Block E -- Personalization plan
 
-| # | Section | Current state | Proposed change | Why |
-| --- | --- | --- | --- | --- |
-| 1 | Summary | ... | ... | ... |
+| #   | Section | Current state | Proposed change | Why |
+| --- | ------- | ------------- | --------------- | --- |
+| 1   | Summary | ...           | ...             | ... |
 
 List the top 5 CV changes and top 5 LinkedIn changes that would improve fit.
 
@@ -70,8 +70,8 @@ List the top 5 CV changes and top 5 LinkedIn changes that would improve fit.
 
 Build 6-10 STAR+R stories mapped to JD requirements (STAR + **Reflection**):
 
-| # | JD requirement | STAR+R story | S | T | A | R | Reflection |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| #   | JD requirement | STAR+R story | S   | T   | A   | R   | Reflection |
+| --- | -------------- | ------------ | --- | --- | --- | --- | ---------- |
 
 The **Reflection** column should capture what was learned or what would be done differently. That is a seniority signal.
 

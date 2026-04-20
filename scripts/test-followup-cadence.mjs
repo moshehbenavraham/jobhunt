@@ -162,7 +162,12 @@ assert.equal(overdueOnly.entries.length, 3);
 assert.ok(overdueOnly.entries.every((entry) => entry.urgency !== 'cold'));
 
 const summary = withCapturedLogs(() =>
-  followupModule.runFollowupCli(['--summary', '--overdue-only', '--applied-days', '10']),
+  followupModule.runFollowupCli([
+    '--summary',
+    '--overdue-only',
+    '--applied-days',
+    '10',
+  ]),
 );
 assert.match(summary.output, /Follow-up Cadence Dashboard/);
 assert.match(summary.output, /OVERDUE/);
@@ -172,9 +177,11 @@ rmSync(sandbox, { recursive: true, force: true });
 const emptySandbox = mkdtempSync(join(tmpdir(), 'jobhunt-followup-empty-'));
 process.env.JOBHUNT_ROOT = emptySandbox;
 const emptyModule = await import(
-  `${pathToFileURL(join(ROOT, 'scripts', 'followup-cadence.mjs')).href}?empty`,
+  `${pathToFileURL(join(ROOT, 'scripts', 'followup-cadence.mjs')).href}?empty`
 );
-const emptyResult = withCapturedLogs(() => emptyModule.runFollowupCli(['--summary']));
+const emptyResult = withCapturedLogs(() =>
+  emptyModule.runFollowupCli(['--summary']),
+);
 assert.match(emptyResult.output, /No applications found/);
 assert.equal(emptyResult.result.error, 'No applications found in tracker.');
 rmSync(emptySandbox, { recursive: true, force: true });

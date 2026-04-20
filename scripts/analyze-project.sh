@@ -8,7 +8,7 @@ fi
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-REPO_ROOT="$repo_root" node --input-type=module <<'NODE'
+REPO_ROOT="$repo_root" node --input-type=module << 'NODE'
 import fs from "fs";
 import path from "path";
 

@@ -21,14 +21,14 @@ negotiation posture.
 | Archetypes and narrative | `modes/_profile.md`            | Role archetypes, adaptive framing, negotiation scripts, location policy, scoring preferences                |
 | CV content               | `profile/cv.md`                | Summary, experience, projects, education, skills                                                            |
 | Proof points             | `profile/article-digest.md`    | Public metrics, portfolio evidence, proof-point wording that should override weaker CV phrasing             |
-| Job-search targeting     | `portals.yml`                  | Positive and negative title filters, tracked companies, and optional manual search notes                     |
+| Job-search targeting     | `portals.yml`                  | Positive and negative title filters, tracked companies, and optional manual search notes                    |
 | Interview story bank     | `interview-prep/story-bank.md` | Accumulated STAR-style stories and interview examples                                                       |
 
 ### Common User-Layer Changes
 
 - Add or adjust identity, role targets, or salary policy in `config/profile.yml`
 - Add or adjust scan-time geography constraints in `config/profile.yml ->
-  discovery`
+discovery`
 - Update archetypes, negotiation language, or search narrative in
   `modes/_profile.md`
 - Refresh resume bullets in `profile/cv.md`

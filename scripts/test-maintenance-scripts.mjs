@@ -62,13 +62,31 @@ function runScript(script, sandbox, args = []) {
   const live = runScript('normalize-statuses.mjs', sandbox);
   assert.equal(live.status, 0, live.stderr);
   assert.equal(existsSync(join(sandbox, 'data', 'applications.md.bak')), true);
-  const normalized = readFileSync(join(sandbox, 'data', 'applications.md'), 'utf8');
-  assert.match(normalized, /\| 1 \| 2026-04-01 \| Acme \| Engineer \| 4.2\/5 \| Applied \|/);
-  assert.match(normalized, /\| 2 \| 2026-04-02 \| Beta \| Engineer \| 3.8\/5 \| Discarded \|/);
+  const normalized = readFileSync(
+    join(sandbox, 'data', 'applications.md'),
+    'utf8',
+  );
+  assert.match(
+    normalized,
+    /\| 1 \| 2026-04-01 \| Acme \| Engineer \| 4.2\/5 \| Applied \|/,
+  );
+  assert.match(
+    normalized,
+    /\| 2 \| 2026-04-02 \| Beta \| Engineer \| 3.8\/5 \| Discarded \|/,
+  );
   assert.match(normalized, /DUP 002/);
-  assert.match(normalized, /\| 3 \| 2026-04-03 \| Gamma \| Engineer \| 3.5\/5 \| SKIP \|/);
-  assert.match(normalized, /\| 5 \| 2026-04-05 \| Echo \| Engineer \| 2.9\/5 \| Discarded \|/);
-  assert.match(normalized, /\| 6 \| 2026-04-06 \| Zeta \| Engineer \| 2.5\/5 \| Discarded \|/);
+  assert.match(
+    normalized,
+    /\| 3 \| 2026-04-03 \| Gamma \| Engineer \| 3.5\/5 \| SKIP \|/,
+  );
+  assert.match(
+    normalized,
+    /\| 5 \| 2026-04-05 \| Echo \| Engineer \| 2.9\/5 \| Discarded \|/,
+  );
+  assert.match(
+    normalized,
+    /\| 6 \| 2026-04-06 \| Zeta \| Engineer \| 2.5\/5 \| Discarded \|/,
+  );
 
   rmSync(sandbox, { recursive: true, force: true });
 }
@@ -97,9 +115,15 @@ function runScript(script, sandbox, args = []) {
   const live = runScript('dedup-tracker.mjs', sandbox);
   assert.equal(live.status, 0, live.stderr);
   assert.equal(existsSync(join(sandbox, 'data', 'applications.md.bak')), true);
-  const deduped = readFileSync(join(sandbox, 'data', 'applications.md'), 'utf8');
+  const deduped = readFileSync(
+    join(sandbox, 'data', 'applications.md'),
+    'utf8',
+  );
   assert.doesNotMatch(deduped, /\| 2 \| 2026-04-02 \|/);
-  assert.match(deduped, /\| 1 \| 2026-04-01 \| Acme, Inc\. \| Senior Data Platform Systems Engineer \| 4.5\/5 \| Interview \|/);
+  assert.match(
+    deduped,
+    /\| 1 \| 2026-04-01 \| Acme, Inc\. \| Senior Data Platform Systems Engineer \| 4.5\/5 \| Interview \|/,
+  );
 
   rmSync(sandbox, { recursive: true, force: true });
 }
@@ -118,7 +142,10 @@ function runScript(script, sandbox, args = []) {
       '',
     ].join('\n'),
   );
-  writeFile(join(sandbox, 'batch', 'tracker-additions', '001-acme.tsv'), '1\t2026-04-03\tAcme\tEngineer\tApplied\t4.5/5\t✅\t[003](reports/003.md)\n');
+  writeFile(
+    join(sandbox, 'batch', 'tracker-additions', '001-acme.tsv'),
+    '1\t2026-04-03\tAcme\tEngineer\tApplied\t4.5/5\t✅\t[003](reports/003.md)\n',
+  );
   writeFile(join(sandbox, 'reports', '002.md'), '# ok\n');
 
   const bad = runScript('verify-pipeline.mjs', sandbox);
@@ -189,7 +216,10 @@ function runScript(script, sandbox, args = []) {
     join(sandbox, 'batch', 'tracker-additions', '005-swapped.tsv'),
     '5\t2026-04-06\tDelta\tML Engineer\t4.2/5\tEntrevista\t✅\t[005](reports/005.md)\tswapped order\n',
   );
-  writeFile(join(sandbox, 'batch', 'tracker-additions', '006-bad.tsv'), 'broken');
+  writeFile(
+    join(sandbox, 'batch', 'tracker-additions', '006-bad.tsv'),
+    'broken',
+  );
   writeFile(
     join(sandbox, 'scripts', 'verify-pipeline.mjs'),
     `import { writeFileSync } from 'node:fs'; writeFileSync(${JSON.stringify(join(sandbox, 'verify-ran.txt'))}, 'yes'); process.exit(0);\n`,
@@ -200,18 +230,43 @@ function runScript(script, sandbox, args = []) {
   assert.match(dryRun.stdout, /Found 6 pending additions/);
   assert.match(dryRun.stdout, /Add #2: Beta/);
   assert.match(dryRun.stdout, /Update: #1 Acme/);
-  assert.equal(existsSync(join(sandbox, 'batch', 'tracker-additions', 'merged')), false);
+  assert.equal(
+    existsSync(join(sandbox, 'batch', 'tracker-additions', 'merged')),
+    false,
+  );
 
   const live = runScript('merge-tracker.mjs', sandbox, ['--verify']);
   assert.equal(live.status, 0, live.stderr);
   assert.equal(existsSync(join(sandbox, 'verify-ran.txt')), true);
-  const mergedTracker = readFileSync(join(sandbox, 'data', 'applications.md'), 'utf8');
-  assert.match(mergedTracker, /\| 2 \| 2026-04-02 \| Beta \| Data Engineer \| 4.1\/5 \| Applied \|/);
-  assert.match(mergedTracker, /\| 4 \| 2026-04-05 \| Gamma \| Backend Engineer \| 4.3\/5 \| Evaluated \|/);
-  assert.match(mergedTracker, /\| 5 \| 2026-04-06 \| Delta \| ML Engineer \| 4.2\/5 \| Interview \|/);
+  const mergedTracker = readFileSync(
+    join(sandbox, 'data', 'applications.md'),
+    'utf8',
+  );
+  assert.match(
+    mergedTracker,
+    /\| 2 \| 2026-04-02 \| Beta \| Data Engineer \| 4.1\/5 \| Applied \|/,
+  );
+  assert.match(
+    mergedTracker,
+    /\| 4 \| 2026-04-05 \| Gamma \| Backend Engineer \| 4.3\/5 \| Evaluated \|/,
+  );
+  assert.match(
+    mergedTracker,
+    /\| 5 \| 2026-04-06 \| Delta \| ML Engineer \| 4.2\/5 \| Interview \|/,
+  );
   assert.match(mergedTracker, /Re-eval 2026-04-03 \(4→4.7\)\. higher score/);
-  assert.equal(existsSync(join(sandbox, 'batch', 'tracker-additions', 'merged', '001-new.tsv')), true);
-  assert.equal(existsSync(join(sandbox, 'batch', 'tracker-additions', 'merged', '006-bad.tsv')), true);
+  assert.equal(
+    existsSync(
+      join(sandbox, 'batch', 'tracker-additions', 'merged', '001-new.tsv'),
+    ),
+    true,
+  );
+  assert.equal(
+    existsSync(
+      join(sandbox, 'batch', 'tracker-additions', 'merged', '006-bad.tsv'),
+    ),
+    true,
+  );
 
   rmSync(sandbox, { recursive: true, force: true });
 }
@@ -286,10 +341,7 @@ function runScript(script, sandbox, args = []) {
     readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
     /https:\/\/jobs\.example\.com\/acme/,
   );
-  assert.equal(
-    existsSync(join(sandbox, 'tmp', 'scan-state')),
-    true,
-  );
+  assert.equal(existsSync(join(sandbox, 'tmp', 'scan-state')), true);
 
   rmSync(sandbox, { recursive: true, force: true });
 }
@@ -309,7 +361,9 @@ function runScript(script, sandbox, args = []) {
     ].join('\n'),
   );
 
-  const archived = runScript('manage-scan-state.mjs', sandbox, ['--archive-all']);
+  const archived = runScript('manage-scan-state.mjs', sandbox, [
+    '--archive-all',
+  ]);
   assert.equal(archived.status, 0, archived.stdout + archived.stderr);
   assert.match(archived.stdout, /Archived data\/pipeline\.md ->/);
   assert.match(archived.stdout, /Archived data\/scan-history\.tsv ->/);
@@ -321,10 +375,7 @@ function runScript(script, sandbox, args = []) {
     readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
     'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n',
   );
-  assert.equal(
-    existsSync(join(sandbox, 'tmp', 'scan-state')),
-    true,
-  );
+  assert.equal(existsSync(join(sandbox, 'tmp', 'scan-state')), true);
 
   rmSync(sandbox, { recursive: true, force: true });
 }
@@ -344,9 +395,14 @@ function runScript(script, sandbox, args = []) {
     ].join('\n'),
   );
 
-  const refused = runScript('manage-scan-state.mjs', sandbox, ['--reset-history']);
+  const refused = runScript('manage-scan-state.mjs', sandbox, [
+    '--reset-history',
+  ]);
   assert.equal(refused.status, 1);
-  assert.match(refused.stderr, /Refusing to reset data\/scan-history\.tsv without --yes\./);
+  assert.match(
+    refused.stderr,
+    /Refusing to reset data\/scan-history\.tsv without --yes\./,
+  );
   assert.match(
     readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
     /https:\/\/jobs\.example\.com\/acme/,
@@ -355,7 +411,11 @@ function runScript(script, sandbox, args = []) {
   const resetPipeline = runScript('manage-scan-state.mjs', sandbox, [
     '--reset-pipeline',
   ]);
-  assert.equal(resetPipeline.status, 0, resetPipeline.stdout + resetPipeline.stderr);
+  assert.equal(
+    resetPipeline.status,
+    0,
+    resetPipeline.stdout + resetPipeline.stderr,
+  );
   assert.match(resetPipeline.stdout, /Reset data\/pipeline\.md ->/);
   assert.doesNotMatch(
     readFileSync(join(sandbox, 'data', 'pipeline.md'), 'utf8'),
@@ -367,7 +427,11 @@ function runScript(script, sandbox, args = []) {
     '--reset-history',
     '--yes',
   ]);
-  assert.equal(resetHistory.status, 0, resetHistory.stdout + resetHistory.stderr);
+  assert.equal(
+    resetHistory.status,
+    0,
+    resetHistory.stdout + resetHistory.stderr,
+  );
   assert.match(resetHistory.stdout, /Reset data\/scan-history\.tsv ->/);
   assert.equal(
     readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),

@@ -408,7 +408,7 @@ try {
   );
   writeFileSync(
     join(tempRoot, 'cv.md'),
-    '# Legacy CV\n\n' + 'Experience\n'.repeat(20),
+    `# Legacy CV\n\n${'Experience\n'.repeat(20)}`,
   );
   writeFileSync(
     join(tempRoot, 'config', 'profile.yml'),
@@ -467,7 +467,7 @@ try {
   );
   writeFileSync(
     join(tempRoot, 'profile', 'cv.md'),
-    '# Test CV\n\n' + 'Experience\n'.repeat(20),
+    `# Test CV\n\n${'Experience\n'.repeat(20)}`,
   );
   writeFileSync(
     join(tempRoot, 'config', 'profile.yml'),

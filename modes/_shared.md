@@ -120,16 +120,16 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 
 ### Tools
 
-| Tool       | Use                                                                                                                            |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| WebSearch  | Comp research, trends, company culture, LinkedIn contacts, fallback for JDs                                                    |
-| WebFetch   | Fallback for extracting JDs from static pages                                                                                  |
-| Playwright | Verify offers (browser_navigate + browser_snapshot). **NEVER 2+ agents with Playwright in parallel.**                          |
+| Tool       | Use                                                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| WebSearch  | Comp research, trends, company culture, LinkedIn contacts, fallback for JDs                                                          |
+| WebFetch   | Fallback for extracting JDs from static pages                                                                                        |
+| Playwright | Verify offers (browser_navigate + browser_snapshot). **NEVER 2+ agents with Playwright in parallel.**                                |
 | Read       | `profile/cv.md` (legacy root `cv.md` also accepted during migration), `_profile.md`, `profile/article-digest.md`, `cv-template.html` |
-| Write      | Temporary HTML for PDF, applications.md, reports .md                                                                           |
-| Edit       | Update tracker                                                                                                                 |
-| Canva MCP  | Optional visual CV generation. Duplicate base design, edit text, export PDF. Requires `canva_resume_design_id` in profile.yml. |
-| Bash       | `node scripts/generate-pdf.mjs`                                                                                                |
+| Write      | Temporary HTML for PDF, applications.md, reports .md                                                                                 |
+| Edit       | Update tracker                                                                                                                       |
+| Canva MCP  | Optional visual CV generation. Duplicate base design, edit text, export PDF. Requires `canva_resume_design_id` in profile.yml.       |
+| Bash       | `node scripts/generate-pdf.mjs`                                                                                                      |
 
 ### Time-to-offer priority
 

@@ -6,7 +6,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 DASHBOARD_DIR="$PROJECT_ROOT/dashboard"
 BINARY_PATH="$DASHBOARD_DIR/career-dashboard"
 
-if ! command -v go >/dev/null 2>&1; then
+if ! command -v go > /dev/null 2>&1; then
   echo "Error: Go is not installed or not on PATH." >&2
   echo "Install Go, then run ./scripts/ux.sh again." >&2
   exit 1
@@ -25,7 +25,7 @@ fi
 has_path_flag=0
 for arg in "$@"; do
   case "$arg" in
-    --path|--path=*)
+    --path | --path=*)
       has_path_flag=1
       ;;
   esac

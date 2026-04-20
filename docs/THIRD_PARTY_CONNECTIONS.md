@@ -32,7 +32,7 @@ The repo treats these as in-scope third-party surfaces:
 
 These are the recruiting platforms and patterns explicitly handled or documented by the repo.
 
-| Family               | Common domains / patterns                                                             | Typical use in Job Hunt                       |
+| Family               | Common domains / patterns                                                             | Typical use in Job Hunt                         |
 | -------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | Greenhouse           | `job-boards.greenhouse.io`, `job-boards.eu.greenhouse.io`, `boards-api.greenhouse.io` | direct scan, JD extraction, liveness            |
 | Ashby                | `jobs.ashbyhq.com`, `api.ashbyhq.com`                                                 | direct scan, JD extraction, liveness            |

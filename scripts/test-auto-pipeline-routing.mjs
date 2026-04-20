@@ -8,7 +8,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
 
-const atsModule = await import(pathToFileURL(join(ROOT, 'scripts', 'ats-core.mjs')).href);
+const atsModule = await import(
+  pathToFileURL(join(ROOT, 'scripts', 'ats-core.mjs')).href
+);
 
 const supportedUrl =
   'https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb';
@@ -77,16 +79,19 @@ assert.equal(fallbackCalls[0].context.reason, 'ATS extractor failed');
 assert.equal(fallbackCalls[0].context.detection.type, 'ashby');
 
 const genericOnlyCalls = [];
-const genericResult = await atsModule.extractUrlForAutoPipeline(unsupportedUrl, {
-  genericExtractImpl: async (url, context) => {
-    genericOnlyCalls.push({ url, context });
-    return {
-      title: 'Generic title',
-      descriptionText: 'Generic JD',
-      extractionMethod: 'webfetch',
-    };
+const genericResult = await atsModule.extractUrlForAutoPipeline(
+  unsupportedUrl,
+  {
+    genericExtractImpl: async (url, context) => {
+      genericOnlyCalls.push({ url, context });
+      return {
+        title: 'Generic title',
+        descriptionText: 'Generic JD',
+        extractionMethod: 'webfetch',
+      };
+    },
   },
-});
+);
 
 assert.equal(genericResult.strategy, 'generic');
 assert.equal(genericResult.title, 'Generic title');
@@ -115,10 +120,16 @@ assert.match(autoPipelineMode, /WebSearch \(last resort\)/);
 
 const pipelineMode = read('modes/pipeline.md');
 assert.match(pipelineMode, /node scripts\/extract-job\.mjs <url>/);
-assert.match(pipelineMode, /If the ATS helper does not support the URL or fails/);
+assert.match(
+  pipelineMode,
+  /If the ATS helper does not support the URL or fails/,
+);
 
 const scriptsDoc = read('docs/SCRIPTS.md');
 assert.match(scriptsDoc, /auto-pipeline uses this\s+helper first/i);
-assert.match(scriptsDoc, /fall\s+back to Playwright, WebFetch, then WebSearch/i);
+assert.match(
+  scriptsDoc,
+  /fall\s+back to Playwright, WebFetch, then WebSearch/i,
+);
 
 console.log('auto-pipeline ATS routing regression tests pass');

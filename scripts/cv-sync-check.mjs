@@ -199,7 +199,9 @@ if (existsSync(digestPath)) {
   const daysSinceModified =
     (Date.now() - stats.mtimeMs) / (1000 * 60 * 60 * 24);
   if (daysSinceModified > 30) {
-    const digestLabel = digestPath.includes(join('profile', 'article-digest.md'))
+    const digestLabel = digestPath.includes(
+      join('profile', 'article-digest.md'),
+    )
       ? 'profile/article-digest.md'
       : 'article-digest.md';
     warnings.push(

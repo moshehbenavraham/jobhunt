@@ -96,11 +96,11 @@ Each worker should produce:
 
 ## Error handling
 
-| Error | Recovery |
-| --- | --- |
-| URL inaccessible | worker fails semantically or infrastructurally depending on the case |
-| JD behind login | conductor tries the DOM first; otherwise mark failed |
-| portal layout changed | conductor adapts based on HTML structure |
-| worker crashed | runner marks infrastructure failure and allows retry |
-| conductor crashed | rerun and resume from state |
-| PDF failed | mark the job `partial`; the report may still be useful |
+| Error                 | Recovery                                                             |
+| --------------------- | -------------------------------------------------------------------- |
+| URL inaccessible      | worker fails semantically or infrastructurally depending on the case |
+| JD behind login       | conductor tries the DOM first; otherwise mark failed                 |
+| portal layout changed | conductor adapts based on HTML structure                             |
+| worker crashed        | runner marks infrastructure failure and allows retry                 |
+| conductor crashed     | rerun and resume from state                                          |
+| PDF failed            | mark the job `partial`; the report may still be useful               |

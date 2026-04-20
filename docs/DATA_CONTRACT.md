@@ -27,40 +27,40 @@ These files contain your personal data, customizations, and work product. Update
 
 These files contain system logic, scripts, templates, and instructions that improve with each release.
 
-| File                     | Purpose                             |
-| ------------------------ | ----------------------------------- |
-| `modes/_shared.md`       | Scoring system, global rules, tools |
-| `modes/oferta.md`        | Evaluation mode instructions        |
-| `modes/pdf.md`           | PDF generation instructions         |
-| `modes/scan.md`          | Portal scanner instructions         |
-| `modes/batch.md`         | Batch processing instructions       |
-| `modes/apply.md`         | Application assistant instructions  |
-| `modes/auto-pipeline.md` | Auto-pipeline instructions          |
-| `modes/contacto.md`      | LinkedIn outreach instructions      |
-| `modes/deep.md`          | Research prompt instructions        |
-| `modes/ofertas.md`       | Comparison instructions             |
-| `modes/pipeline.md`      | Pipeline processing instructions    |
-| `modes/project.md`       | Project evaluation instructions     |
-| `modes/tracker.md`       | Tracker instructions                |
-| `modes/training.md`      | Training evaluation instructions    |
-| `modes/patterns.md`      | Pattern analysis instructions       |
-| `modes/followup.md`      | Follow-up cadence instructions      |
-| `modes/de/*`             | German language modes               |
-| `AGENTS.md`              | Codex instructions                  |
-| `scripts/*`              | Utility scripts and shell helpers   |
-| `batch/batch-prompt.md`  | Batch worker prompt                 |
-| `batch/batch-runner.sh`  | Batch orchestrator                  |
-| `dashboard/*`            | Go TUI dashboard                    |
-| `data/follow-ups.example.md` | Optional follow-up history scaffold  |
-| `interview-prep/story-bank.example.md` | Optional story bank scaffold |
-| `profile/article-digest.example.md` | Optional proof-point scaffold    |
-| `profile/cv.example.md`  | Starter CV template                 |
-| `templates/*`            | Base templates                      |
-| `fonts/*`                | Self-hosted fonts                   |
-| `.codex/skills/*`        | Skill definitions                   |
-| `docs/*`                 | Documentation                       |
-| `VERSION`                | Current version number              |
-| `docs/DATA_CONTRACT.md`  | This file                           |
+| File                                   | Purpose                             |
+| -------------------------------------- | ----------------------------------- |
+| `modes/_shared.md`                     | Scoring system, global rules, tools |
+| `modes/oferta.md`                      | Evaluation mode instructions        |
+| `modes/pdf.md`                         | PDF generation instructions         |
+| `modes/scan.md`                        | Portal scanner instructions         |
+| `modes/batch.md`                       | Batch processing instructions       |
+| `modes/apply.md`                       | Application assistant instructions  |
+| `modes/auto-pipeline.md`               | Auto-pipeline instructions          |
+| `modes/contacto.md`                    | LinkedIn outreach instructions      |
+| `modes/deep.md`                        | Research prompt instructions        |
+| `modes/ofertas.md`                     | Comparison instructions             |
+| `modes/pipeline.md`                    | Pipeline processing instructions    |
+| `modes/project.md`                     | Project evaluation instructions     |
+| `modes/tracker.md`                     | Tracker instructions                |
+| `modes/training.md`                    | Training evaluation instructions    |
+| `modes/patterns.md`                    | Pattern analysis instructions       |
+| `modes/followup.md`                    | Follow-up cadence instructions      |
+| `modes/de/*`                           | German language modes               |
+| `AGENTS.md`                            | Codex instructions                  |
+| `scripts/*`                            | Utility scripts and shell helpers   |
+| `batch/batch-prompt.md`                | Batch worker prompt                 |
+| `batch/batch-runner.sh`                | Batch orchestrator                  |
+| `dashboard/*`                          | Go TUI dashboard                    |
+| `data/follow-ups.example.md`           | Optional follow-up history scaffold |
+| `interview-prep/story-bank.example.md` | Optional story bank scaffold        |
+| `profile/article-digest.example.md`    | Optional proof-point scaffold       |
+| `profile/cv.example.md`                | Starter CV template                 |
+| `templates/*`                          | Base templates                      |
+| `fonts/*`                              | Self-hosted fonts                   |
+| `.codex/skills/*`                      | Skill definitions                   |
+| `docs/*`                               | Documentation                       |
+| `VERSION`                              | Current version number              |
+| `docs/DATA_CONTRACT.md`                | This file                           |
 
 ## The Rule
 

@@ -89,14 +89,17 @@ Based on: Report #NNN | Score: X.X/5 | Archetype: [type]
 ---
 
 ### 1. [Exact form question]
+
 > [Copy-paste-ready answer]
 
 ### 2. [Next question]
+
 > [Answer]
 
 ---
 
 Notes:
+
 - [Role-change or context note]
 - [Cover-letter manual follow-up note, if applicable]
 - [Any final customization suggestion]

@@ -11,7 +11,8 @@ const extractorModule = await import(
   pathToFileURL(join(ROOT, 'scripts', 'ats-core.mjs')).href
 );
 
-const ashbyUrl = 'https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb/application';
+const ashbyUrl =
+  'https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb/application';
 const greenhouseUrl =
   'https://job-boards.greenhouse.io/figma/jobs/5364702004?gh_jid=5364702004';
 const leverUrl =
@@ -60,7 +61,8 @@ const fixtures = new Map([
             'https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb',
           applyUrl:
             'https://jobs.ashbyhq.com/livekit/1757f49e-7e19-4c45-85f7-e4637dff66fb/application',
-          descriptionHtml: '<p>Build realtime agents.</p><ul><li>Own APIs</li></ul>',
+          descriptionHtml:
+            '<p>Build realtime agents.</p><ul><li>Own APIs</li></ul>',
           compensationTierSummary: 'USD 200000 - 260000 per year',
         },
       ],
@@ -182,7 +184,10 @@ const greenhouseJob = await extractorModule.extractAtsJob(greenhouseUrl, {
 assert.equal(greenhouseJob.ats, 'greenhouse');
 assert.equal(greenhouseJob.company, 'Figma');
 assert.equal(greenhouseJob.department, 'Sales');
-assert.equal(greenhouseJob.descriptionText, 'Grow the enterprise book.\n\n- Close deals');
+assert.equal(
+  greenhouseJob.descriptionText,
+  'Grow the enterprise book.\n\n- Close deals',
+);
 assert.deepEqual(greenhouseJob.compensation, {
   summary: '$150,000 - $200,000 USD OTE',
   currency: null,

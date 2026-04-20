@@ -15,4 +15,4 @@ mkdir -p "$LOG_DIR"
   echo "=== $(date '+%Y-%m-%d %H:%M:%S %Z %z') :: jobhunt scheduled scan ==="
   cd "$PROJECT_ROOT"
   npm run scan
-} >>"$LOG_FILE" 2>&1
+} >> "$LOG_FILE" 2>&1

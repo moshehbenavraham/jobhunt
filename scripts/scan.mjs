@@ -207,14 +207,14 @@ function normalizeMatchText(value) {
 
 function includesNormalizedTerm(normalizedText, term) {
   const normalizedTerm = normalizeMatchText(term);
-  return normalizedTerm.trim().length > 0 && normalizedText.includes(normalizedTerm);
+  return (
+    normalizedTerm.trim().length > 0 && normalizedText.includes(normalizedTerm)
+  );
 }
 
 function normalizeStringList(values) {
   const source = Array.isArray(values) ? values : values ? [values] : [];
-  return source
-    .map((value) => String(value || '').trim())
-    .filter(Boolean);
+  return source.map((value) => String(value || '').trim()).filter(Boolean);
 }
 
 function splitProfileTerms(value) {
@@ -242,9 +242,15 @@ function buildDiscoveryConfig(profileConfig) {
   const allowedLocationTerms = normalizeStringList(
     discovery.allowed_location_terms,
   );
-  const blockedLocationTerms = normalizeStringList(discovery.blocked_location_terms);
-  const allowedRegions = new Set(normalizeRegionList(discovery.allowed_regions));
-  const blockedRegions = new Set(normalizeRegionList(discovery.blocked_regions));
+  const blockedLocationTerms = normalizeStringList(
+    discovery.blocked_location_terms,
+  );
+  const allowedRegions = new Set(
+    normalizeRegionList(discovery.allowed_regions),
+  );
+  const blockedRegions = new Set(
+    normalizeRegionList(discovery.blocked_regions),
+  );
   const allowUnknownLocations = discovery.allow_unknown_locations !== false;
   const allowRemoteUnknownLocations =
     discovery.allow_remote_unknown_locations !== false;
@@ -465,7 +471,8 @@ function buildTitleFilter(titleFilter) {
   return (title) => {
     const lower = title.toLowerCase();
     const hasPositive =
-      positive.length === 0 || positive.some((keyword) => lower.includes(keyword));
+      positive.length === 0 ||
+      positive.some((keyword) => lower.includes(keyword));
     const hasNegative = negative.some((keyword) => lower.includes(keyword));
     return hasPositive && !hasNegative;
   };
@@ -532,7 +539,9 @@ function appendToPipeline(offers) {
     const block =
       `\n${marker}\n\n` +
       offers
-        .map((offer) => `- [ ] ${offer.url} | ${offer.company} | ${offer.title}`)
+        .map(
+          (offer) => `- [ ] ${offer.url} | ${offer.company} | ${offer.title}`,
+        )
         .join('\n') +
       '\n\n';
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
@@ -543,7 +552,9 @@ function appendToPipeline(offers) {
     const block =
       '\n' +
       offers
-        .map((offer) => `- [ ] ${offer.url} | ${offer.company} | ${offer.title}`)
+        .map(
+          (offer) => `- [ ] ${offer.url} | ${offer.company} | ${offer.title}`,
+        )
         .join('\n') +
       '\n';
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
@@ -682,13 +693,20 @@ function inferLaneFromKeyword(keyword) {
 
 function describePositiveKeyword(keyword) {
   const lower = String(keyword || '').toLowerCase();
-  if (lower.includes('forward deployed')) return 'direct forward-deployed title';
+  if (lower.includes('forward deployed'))
+    return 'direct forward-deployed title';
   if (lower.includes('deployment strategist')) return 'direct deployment title';
   if (lower.includes('deployment')) return 'direct deployment title';
-  if (lower.includes('solutions architect') || lower.includes('solution architect')) {
+  if (
+    lower.includes('solutions architect') ||
+    lower.includes('solution architect')
+  ) {
     return 'direct solutions-architect title';
   }
-  if (lower.includes('solutions engineer') || lower.includes('solution engineer')) {
+  if (
+    lower.includes('solutions engineer') ||
+    lower.includes('solution engineer')
+  ) {
     return 'direct solutions-engineer title';
   }
   if (lower.includes('customer engineer')) return 'customer-engineering title';
@@ -699,10 +717,16 @@ function scorePositiveKeyword(keyword) {
   const lower = String(keyword || '').toLowerCase();
   if (lower.includes('forward deployed')) return 6;
   if (lower.includes('deployment')) return 5.5;
-  if (lower.includes('solutions architect') || lower.includes('solution architect')) {
+  if (
+    lower.includes('solutions architect') ||
+    lower.includes('solution architect')
+  ) {
     return 5;
   }
-  if (lower.includes('solutions engineer') || lower.includes('solution engineer')) {
+  if (
+    lower.includes('solutions engineer') ||
+    lower.includes('solution engineer')
+  ) {
     return 4.5;
   }
   if (lower.includes('customer engineer')) return 4;
@@ -738,9 +762,10 @@ function scoreOfferForShortlist(offer, shortlistContext) {
 
   if (offer.location) {
     const locationInfo = classifyLocation(offer.location);
-    const matchedAllowedTerm = shortlistContext.discovery.allowedLocationTerms.find(
-      (term) => includesNormalizedTerm(locationInfo.normalized, term),
-    );
+    const matchedAllowedTerm =
+      shortlistContext.discovery.allowedLocationTerms.find((term) =>
+        includesNormalizedTerm(locationInfo.normalized, term),
+      );
     const matchedAllowedRegion = locationInfo.regions.find((region) =>
       shortlistContext.discovery.allowedRegions.has(region),
     );
@@ -775,7 +800,8 @@ function scoreOfferForShortlist(offer, shortlistContext) {
     ...normalizePendingOffer(offer),
     bucket,
     bucketLabel:
-      SHORTLIST_BUCKETS.find((entry) => entry.id === bucket)?.label || 'Possible fit',
+      SHORTLIST_BUCKETS.find((entry) => entry.id === bucket)?.label ||
+      'Possible fit',
     lane,
     score: roundedScore,
     why: [...new Set(why)].slice(0, 3),
@@ -820,7 +846,8 @@ function buildCampaignGuidance(topOffers) {
     return 'Use the shortlist order below and defer adjacent/noisy roles until stronger matches are exhausted.';
   }
 
-  const primary = SHORTLIST_LANE_LABELS[rankedLanes[0][0]] || 'top-priority roles';
+  const primary =
+    SHORTLIST_LANE_LABELS[rankedLanes[0][0]] || 'top-priority roles';
   const secondary =
     rankedLanes.length > 1 && rankedLanes[1][1] >= 2
       ? SHORTLIST_LANE_LABELS[rankedLanes[1][0]] || null
@@ -859,10 +886,17 @@ function buildShortlist(offers, shortlistContext) {
 }
 
 function renderShortlistSection(shortlist, date) {
-  const lines = ['## Shortlist', '', `Last refreshed: ${date} by npm run scan.`, ''];
+  const lines = [
+    '## Shortlist',
+    '',
+    `Last refreshed: ${date} by npm run scan.`,
+    '',
+  ];
 
   if (shortlist.totalOffers === 0) {
-    lines.push('No pending roles yet. Run `npm run scan` or paste a job URL into Codex.');
+    lines.push(
+      'No pending roles yet. Run `npm run scan` or paste a job URL into Codex.',
+    );
     lines.push('');
     return lines.join('\n');
   }
@@ -906,11 +940,13 @@ function upsertPipelineShortlist(shortlist, date) {
   const existing = getSectionRange(text, '## Shortlist');
 
   if (existing) {
-    text = text.slice(0, existing.start) + sectionText + text.slice(existing.end);
+    text =
+      text.slice(0, existing.start) + sectionText + text.slice(existing.end);
   } else {
     const pending = text.indexOf('## Pending');
     const insertAt = pending === -1 ? text.length : pending;
-    const prefix = insertAt > 0 && !text.slice(0, insertAt).endsWith('\n') ? '\n' : '';
+    const prefix =
+      insertAt > 0 && !text.slice(0, insertAt).endsWith('\n') ? '\n' : '';
     text =
       text.slice(0, insertAt) +
       prefix +
@@ -1034,7 +1070,10 @@ export async function runScan(args = process.argv.slice(2)) {
     companies,
     filterCompany,
   );
-  const inactiveConfigNotes = collectInactiveConfigNotes(config, scopedCompanies);
+  const inactiveConfigNotes = collectInactiveConfigNotes(
+    config,
+    scopedCompanies,
+  );
 
   if (!dryRun) ensureScanArtifacts();
 
@@ -1080,10 +1119,17 @@ export async function runScan(args = process.argv.slice(2)) {
           continue;
         }
 
-        const locationDecision = evaluateLocation(job.location, discoveryConfig);
+        const locationDecision = evaluateLocation(
+          job.location,
+          discoveryConfig,
+        );
         if (!locationDecision.allowed) {
           totalLocationFiltered++;
-          locationRejections.push({ ...locationDecision, company: job.company, title: job.title });
+          locationRejections.push({
+            ...locationDecision,
+            company: job.company,
+            title: job.title,
+          });
           continue;
         }
 
@@ -1092,8 +1138,7 @@ export async function runScan(args = process.argv.slice(2)) {
           continue;
         }
 
-        const companyRoleKey =
-          `${job.company.toLowerCase()}::${job.title.toLowerCase()}`;
+        const companyRoleKey = `${job.company.toLowerCase()}::${job.title.toLowerCase()}`;
         if (seenCompanyRoles.has(companyRoleKey)) {
           totalDupes++;
           continue;
@@ -1140,14 +1185,18 @@ export async function runScan(args = process.argv.slice(2)) {
 
   if (targets.length > 0) {
     console.log('\nScanned companies:');
-    for (const company of [...targets].sort((a, b) => a.name.localeCompare(b.name))) {
+    for (const company of [...targets].sort((a, b) =>
+      a.name.localeCompare(b.name),
+    )) {
       console.log(`  - ${company.name} (${company._api.type})`);
     }
   }
 
   if (skipped.length > 0) {
     console.log(`\nSkipped companies (${skipped.length}):`);
-    for (const company of [...skipped].sort((a, b) => a.name.localeCompare(b.name))) {
+    for (const company of [...skipped].sort((a, b) =>
+      a.name.localeCompare(b.name),
+    )) {
       console.log(`  - ${company.name}: ${company.reason}`);
     }
   }
@@ -1176,7 +1225,9 @@ export async function runScan(args = process.argv.slice(2)) {
 
   if (errors.length > 0) {
     console.log(`\nErrors (${errors.length}):`);
-    for (const error of errors.sort((a, b) => a.company.localeCompare(b.company))) {
+    for (const error of errors.sort((a, b) =>
+      a.company.localeCompare(b.company),
+    )) {
       console.log(`  - ${error.company}: ${error.error}`);
     }
   }
@@ -1184,13 +1235,17 @@ export async function runScan(args = process.argv.slice(2)) {
   if (newOffers.length > 0) {
     console.log('\nNew offers:');
     for (const offer of newOffers) {
-      console.log(`  + ${offer.company} | ${offer.title} | ${offer.location || 'N/A'}`);
+      console.log(
+        `  + ${offer.company} | ${offer.title} | ${offer.location || 'N/A'}`,
+      );
     }
 
     if (dryRun) {
       console.log('\n(dry run - run without --dry-run to save results)');
     } else {
-      console.log(`\nResults saved to ${PIPELINE_PATH} and ${SCAN_HISTORY_PATH}`);
+      console.log(
+        `\nResults saved to ${PIPELINE_PATH} and ${SCAN_HISTORY_PATH}`,
+      );
     }
   }
 

@@ -27,7 +27,7 @@ const _REPORTS_DIR = join(CAREER_OPS, 'reports');
 
 // --- CLI args ---
 const args = process.argv.slice(2);
-const summaryMode = args.includes('--summary');
+const _summaryMode = args.includes('--summary');
 const minThresholdIdx = args.indexOf('--min-threshold');
 const MIN_THRESHOLD =
   minThresholdIdx !== -1 && args[minThresholdIdx + 1] !== undefined

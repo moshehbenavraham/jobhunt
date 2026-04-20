@@ -27,7 +27,7 @@ const FOLLOWUPS_FILE = join(CAREER_OPS, 'data/follow-ups.md');
 
 // --- CLI args ---
 const args = process.argv.slice(2);
-const summaryMode = args.includes('--summary');
+const _summaryMode = args.includes('--summary');
 const overdueOnly = args.includes('--overdue-only');
 const appliedDaysIdx = args.indexOf('--applied-days');
 const APPLIED_FIRST =
@@ -240,13 +240,11 @@ function computeNextFollowupDate(
 }
 
 // --- Main analysis ---
-function analyze(
-  {
-    appliedFirst = APPLIED_FIRST,
-    overdueOnlyFilter = overdueOnly,
-    now = today(),
-  } = {},
-) {
+function analyze({
+  appliedFirst = APPLIED_FIRST,
+  overdueOnlyFilter = overdueOnly,
+  now = today(),
+} = {}) {
   const cadence = {
     ...CADENCE,
     applied_first: appliedFirst,
@@ -426,9 +424,7 @@ export function runFollowupCli(cliArgs = args) {
   const cliOverdueOnly = cliArgs.includes('--overdue-only');
   const appliedDaysIdx = cliArgs.indexOf('--applied-days');
   const appliedFirst =
-    appliedDaysIdx !== -1
-      ? parseInt(cliArgs[appliedDaysIdx + 1], 10) || 7
-      : 7;
+    appliedDaysIdx !== -1 ? parseInt(cliArgs[appliedDaysIdx + 1], 10) || 7 : 7;
 
   const result = analyze({
     appliedFirst,

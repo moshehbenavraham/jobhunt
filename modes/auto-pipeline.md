@@ -18,6 +18,7 @@ If the input is a **URL** (not pasted JD text), extract the content in this orde
    Use the returned `descriptionText` as the primary JD text and reuse the
    normalized fields (`title`, `company`, `location`, `datePosted`,
    `compensation`, `applyUrl`) in the evaluation/report when they are present.
+
 2. **If the ATS helper fails, fall back to:**
    - **Playwright (preferred):** Most job portals (Lever, Ashby, Greenhouse,
      Workday) are SPAs. Use `browser_navigate` + `browser_snapshot` to render

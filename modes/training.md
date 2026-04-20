@@ -2,14 +2,14 @@
 
 For each course or certification the candidate asks about, score 6 dimensions:
 
-| Dimension | What it evaluates |
-| --- | --- |
+| Dimension            | What it evaluates                                   |
+| -------------------- | --------------------------------------------------- |
 | North Star alignment | does it move the candidate toward the target roles? |
-| Recruiter signal | how will hiring managers read it on the CV? |
-| Time and effort | weeks x hours per week |
-| Opportunity cost | what work will not get done while doing it? |
-| Risks | outdated content, weak brand, too basic, etc. |
-| Portfolio output | does it create a demonstrable artifact? |
+| Recruiter signal     | how will hiring managers read it on the CV?         |
+| Time and effort      | weeks x hours per week                              |
+| Opportunity cost     | what work will not get done while doing it?         |
+| Risks                | outdated content, weak brand, too basic, etc.       |
+| Portfolio output     | does it create a demonstrable artifact?             |
 
 ## Verdicts
 

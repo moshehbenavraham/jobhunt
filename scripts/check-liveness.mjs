@@ -143,7 +143,8 @@ if (process.argv[1] && resolve(process.argv[1]) === SCRIPT_PATH) {
     },
     (err) => {
       if (
-        err.message === 'Usage: node scripts/check-liveness.mjs <url1> [url2] ...'
+        err.message ===
+        'Usage: node scripts/check-liveness.mjs <url1> [url2] ...'
       ) {
         console.error(err.message);
         console.error('       node scripts/check-liveness.mjs --file urls.txt');
