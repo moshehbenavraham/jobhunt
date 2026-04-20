@@ -342,6 +342,17 @@ if (openaiAgentsCodexProvider !== null) {
   fail('OpenAI Agents Codex provider regression tests failed');
 }
 
+// -- 3q. App scaffold regressions -------------------------------
+
+console.log('\n3q. App scaffold regressions');
+
+const appScaffold = run('node', ['scripts/test-app-scaffold.mjs']);
+if (appScaffold !== null) {
+  pass('App scaffold regression tests pass');
+} else {
+  fail('App scaffold regression tests failed');
+}
+
 // -- 3l. UPGRADE SAFETY REGRESSIONS ------------------------------
 
 console.log('\n3l. Upgrade safety regressions');

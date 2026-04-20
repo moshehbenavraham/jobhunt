@@ -707,7 +707,7 @@ Planning assumptions for this PRD:
 ### Phase 00: Foundation and Repo Contract
 
 - Objective: establish the app skeleton and lock the repo and app boundary
-- Sessions: `3-4`
+- Sessions: `4`
 - Key outcomes: backend and frontend package structure, app-owned state
   directory, repo workspace adapter, prompt-loading contract from checked-in
   files
@@ -783,7 +783,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 
 | Phase | Name | Sessions | Status |
 |-------|------|----------|--------|
-| 00 | Foundation and Repo Contract | 3-4 | Not Started |
+| 00 | Foundation and Repo Contract | 4 | In Progress |
 | 01 | Backend Runtime and Job Infrastructure | 4-5 | Not Started |
 | 02 | Typed Tools and Agent Orchestration | 4-5 | Not Started |
 | 03 | Chat, Onboarding, and Approvals UX | 3-5 | Not Started |
@@ -799,13 +799,14 @@ multiple 2-4 hour sessions (12-25 tasks each).
 2. Define the frontend and backend package structure and workspace adapter.
 3. Codify prompt-loading and repo path resolution from checked-in files.
 
-### Sessions (To Be Defined)
+### Planned Sessions
 
-Sessions are defined via `phasebuild` as session stubs under
-`.spec_system/PRD/phase_00/`.
+1. Session 01: Monorepo App Skeleton
+2. Session 02: Workspace Adapter Contract
+3. Session 03: Prompt Loading Contract
+4. Session 04: Boot Path and Validation
 
-**Note**: This command does NOT create phase directories or session stubs. Run
-`phasebuild` after reviewing this PRD.
+Session stubs live under `.spec_system/PRD/phase_00/`.
 
 ## Technical Stack
 

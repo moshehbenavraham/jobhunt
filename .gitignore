@@ -39,6 +39,9 @@ interview-prep/*.md
 # Generated
 .resolved-prompt-*
 node_modules/
+.jobhunt-app/
+apps/web/dist/
+apps/api/dist/
 bun.lock
 
 # OS

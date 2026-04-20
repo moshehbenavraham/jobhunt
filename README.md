@@ -66,6 +66,23 @@ The standard user-layer inputs are:
 `pdflatex` available locally, or when you want to hand off the generated `.tex`
 file to Overleaf.
 
+## App Scaffold
+
+Phase 00 adds a minimal app scaffold under `apps/` so later local-parity
+sessions have explicit package boundaries instead of process-relative runtime
+assumptions.
+
+- `npm run app:web:dev` - start the placeholder React shell with Vite
+- `npm run app:web:build` - build the web scaffold into `apps/web/dist`
+- `npm run app:api:dev` - run the API scaffold entrypoint with `tsx`
+- `npm run app:api:build` - compile the API scaffold into `apps/api/dist`
+- `npm run app:check` - run TypeScript checks for both app packages from the repo root
+
+The scaffold owns only `apps/web`, `apps/api`, and the repo-root
+`.jobhunt-app/` runtime directory. App commands must not create or mutate
+user-layer files under `profile/`, `config/`, `data/`, `reports/`, `output/`,
+`interview-prep/`, or `jds/`.
+
 `npm run scan` is currently an API-first scanner. It uses
 `tracked_companies`, `title_filter.positive`, and `title_filter.negative` from
 `config/portals.yml`, plus optional scan-time discovery constraints from

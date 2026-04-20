@@ -3,7 +3,7 @@
   "project_name": "Job-Hunt",
   "description": "Local-first single-user app parity effort for jobhunt",
   "current_phase": 0,
-  "current_session": null,
+  "current_session": "phase00-session01-monorepo-app-skeleton",
   "monorepo": true,
   "packages": [
     {
@@ -20,8 +20,9 @@
   "phases": {
     "0": {
       "name": "Foundation and Repo Contract",
-      "status": "not_started",
-      "session_count": 0
+      "description": "Establish the app skeleton, workspace adapter, and prompt-loading contract for the local app parity effort.",
+      "status": "in_progress",
+      "session_count": 4
     },
     "1": {
       "name": "Backend Runtime and Job Infrastructure",
@@ -54,6 +55,19 @@
       "session_count": 0
     }
   },
-  "completed_sessions": [],
-  "next_session_history": []
+  "completed_sessions": [
+    {
+      "id": "phase00-session01-monorepo-app-skeleton",
+      "package": null
+    }
+  ],
+  "current_session": null,
+  "next_session_history": [
+    {
+      "date": "2026-04-21",
+      "session": "phase00-session01-monorepo-app-skeleton",
+      "package": null,
+      "status": "completed"
+    }
+  ]
 }
