@@ -55,6 +55,19 @@ The repository is organized around a Codex-first agent contract, repo-owned scri
 - It reads the same tracker and report artifacts as the rest of the repo,
   including report-bearing partial outcomes.
 
+### OpenAI account runtime
+
+- Repo-owned OpenAI runtime paths use stored OpenAI account credentials, not
+  `OPENAI_API_KEY`.
+- `scripts/openai-account-auth.mjs` owns first-run login, refresh, reauth, and
+  logout behavior.
+- `scripts/lib/openai-account-auth/codex-transport.mjs` owns the authenticated
+  SSE transport to `chatgpt.com/backend-api/codex/responses`.
+- `scripts/lib/openai-account-auth/agents-provider.mjs` adapts that transport
+  into the `@openai/agents` provider surface.
+- The stable operator and maintenance reference for this subsystem lives in
+  [OPENAI_ACCOUNT_AUTH.md](OPENAI_ACCOUNT_AUTH.md).
+
 ## Integrity Scripts
 
 | Script                           | Purpose                       |
@@ -74,7 +87,12 @@ profile/cv.md
 profile/article-digest.md
 config/profile.yml
 config/portals.yml
+data/openai-account-auth.json
   -> evaluation and scan workflows
+  -> scripts/openai-account-auth.mjs
+  -> scripts/lib/openai-account-auth/codex-transport.mjs
+     -> chatgpt.com/backend-api/codex/responses
+  -> scripts/lib/openai-account-auth/agents-provider.mjs
   -> batch/batch-input.tsv
   -> batch/batch-runner.sh
      -> batch/batch-state.tsv

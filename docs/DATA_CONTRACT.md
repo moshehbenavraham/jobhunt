@@ -19,6 +19,7 @@ These files contain your personal data, customizations, and work product. Update
 | `data/pipeline.md`             | Your URL inbox                                  |
 | `data/scan-history.tsv`        | Your scan history                               |
 | `data/follow-ups.md`           | Your follow-up history                          |
+| `data/openai-account-auth.json`| Your stored OpenAI account credentials          |
 | `reports/*`                    | Your evaluation reports                         |
 | `output/*`                     | Your generated PDFs                             |
 | `jds/*`                        | Your saved job descriptions                     |
@@ -52,6 +53,8 @@ These files contain system logic, scripts, templates, and instructions that impr
 | `batch/batch-runner.sh`                | Batch orchestrator                  |
 | `dashboard/*`                          | Go TUI dashboard                    |
 | `data/follow-ups.example.md`           | Optional follow-up history scaffold |
+| `data/openai-account-auth.example.json`| OpenAI auth credential example      |
+| `data/openai-account-auth.example.json.lock` | OpenAI auth lock example      |
 | `interview-prep/story-bank.example.md` | Optional story bank scaffold        |
 | `profile/article-digest.example.md`    | Optional proof-point scaffold       |
 | `profile/cv.example.md`                | Starter CV template                 |

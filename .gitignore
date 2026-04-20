@@ -3,12 +3,15 @@ data/applications.md
 data/pipeline.md
 data/scan-history.tsv
 data/follow-ups.md
+data/openai-account-auth.json
+data/openai-account-auth.json.lock
 reports/*.md
 !reports/.gitkeep
 output/*
 !output/.gitkeep
 tmp/
 coverage/
+experimental/
 batch/logs/*
 !batch/logs/.gitkeep
 batch/batch-state.tsv

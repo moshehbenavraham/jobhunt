@@ -16,7 +16,10 @@ Items requiring attention in upcoming phases. Review before each session.
 
 ### External Dependencies <!-- Max 5 items -->
 
-_None yet - no external API or service risk surfaced in Phases 00-02._
+- [P03] **OpenAI account runtime is product-coupled**: The auth and transport
+  path depends on `auth.openai.com` plus
+  `chatgpt.com/backend-api/codex/responses`. Keep smoke tests and docs aligned
+  because upstream behavior may drift.
 
 ### Performance / Security <!-- Max 5 items -->
 
@@ -67,6 +70,9 @@ Proven patterns and anti-patterns. Reference during implementation.
 - [P02] **`scripts/test-batch-runner-contract.mjs`**: Covers CLI args, schema wiring, and result-file behavior.
 - [P02] **`scripts/test-batch-runner-state-semantics.mjs`**: Covers rerun gating and summary semantics.
 - [P02] **`scripts/test-batch-runner-closeout.mjs`**: Covers dry-run closeout and merge/verify sequencing.
+- [P03] **`@openai/agents` tracing warning**: The package may print a
+  tracing-exporter warning when no tracing key is configured. Treat it as
+  non-blocking unless runtime behavior changes.
 
 ---
 

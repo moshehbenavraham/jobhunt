@@ -15,6 +15,7 @@ cp config/profile.example.yml config/profile.yml
 cp config/portals.example.yml config/portals.yml
 cp profile/cv.example.md profile/cv.md
 npm run doctor
+npm run auth:openai -- login
 codex
 ```
 
@@ -24,10 +25,11 @@ If you have public proof points, optionally copy `profile/article-digest.example
 
 See the [Setup Guide](docs/SETUP.md) for the detailed walkthrough.
 
-`npm run doctor` validates Node.js, installed dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `config/portals.yml`.
+`npm run doctor` validates Node.js, installed dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `config/portals.yml`, then shows the current OpenAI account auth state and the next command to run.
 
 After it passes, you have two normal next steps:
 
+- if you want repo-owned OpenAI runtime flows, run `npm run auth:openai -- login` once from the repo root
 - if you already have a job URL or JD, launch `codex` from the repo root and paste it
 - if you need discovery first, run `npm run scan`, then review `data/pipeline.md -> ## Shortlist` and start with the top 3 roles
 
@@ -42,6 +44,9 @@ The standard user-layer inputs are:
 ## Core Commands
 
 - `npm run doctor` - validate local prerequisites
+- `npm run auth:openai -- login` - log in with your OpenAI account for repo-owned Codex runtime flows
+- `npm run auth:openai -- status` - inspect whether stored account auth is present or expired
+- `npm run auth:openai -- reauth` - replace stored credentials with a fresh login
 - `npm run cron:install` - install the repo-managed daily scan cron entry
 - `npm run sync-check` - validate CV/profile consistency
 - `npm run verify` - check tracker integrity
@@ -51,6 +56,8 @@ The standard user-layer inputs are:
 - `npm run dashboard` - build and launch the Go dashboard
 - `npm run scan` - scan portals for roles
 - `npm run scan-state -- --archive-pipeline` - archive or reset scan artifacts
+- `npm run codex:smoke -- --json` - validate the raw Codex transport with stored account auth
+- `npm run agents:codex:smoke -- --json` - validate the `@openai/agents` runtime path with stored account auth
 - `npm run coverage` - measure Node script and dashboard coverage
 - `npm run update:check` - check for updater changes
 

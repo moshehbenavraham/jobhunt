@@ -289,12 +289,75 @@ function runScript(script, sandbox, args = []) {
   const passed = runScript('doctor.mjs', passing);
   assert.equal(passed.status, 0, passed.stdout + passed.stderr);
   assert.match(passed.stdout, /All checks passed/);
+  assert.match(passed.stdout, /OpenAI account auth not set up yet/);
+  assert.match(passed.stdout, /npm run auth:openai -- login/);
   assert.equal(existsSync(join(passing, 'data')), true);
   assert.equal(existsSync(join(passing, 'output')), true);
   assert.equal(existsSync(join(passing, 'reports')), true);
 
+  writeFile(
+    join(passing, 'data', 'openai-account-auth.json'),
+    JSON.stringify(
+      {
+        version: 1,
+        provider: 'openai-codex',
+        updatedAt: new Date().toISOString(),
+        credentials: {
+          accessToken: 'token',
+          refreshToken: 'refresh',
+          expiresAt: Date.now() + 60_000,
+          accountId: 'acct-doctor',
+        },
+      },
+      null,
+      2,
+    ),
+  );
+
+  const passedWithAuth = runScript('doctor.mjs', passing);
+  assert.equal(passedWithAuth.status, 0, passedWithAuth.stdout + passedWithAuth.stderr);
+  assert.match(passedWithAuth.stdout, /OpenAI account auth ready \(acct-doctor\)/);
+
   rmSync(failing, { recursive: true, force: true });
   rmSync(passing, { recursive: true, force: true });
+}
+
+{
+  const sandbox = createSandbox('jobhunt-doctor-preinstall-');
+  mkdirSync(join(sandbox, 'scripts', 'lib', 'openai-account-auth'), {
+    recursive: true,
+  });
+  writeFile(join(sandbox, 'scripts', 'doctor.mjs'), readFileSync(join(ROOT, 'scripts', 'doctor.mjs'), 'utf8'));
+  for (const authLibFile of ['common.mjs', 'storage.mjs']) {
+    writeFile(
+      join(sandbox, 'scripts', 'lib', 'openai-account-auth', authLibFile),
+      readFileSync(
+        join(
+          ROOT,
+          'scripts',
+          'lib',
+          'openai-account-auth',
+          authLibFile,
+        ),
+        'utf8',
+      ),
+    );
+  }
+
+  const preinstall = spawnSync(
+    'node',
+    [join(sandbox, 'scripts', 'doctor.mjs')],
+    {
+      cwd: sandbox,
+      encoding: 'utf8',
+    },
+  );
+
+  assert.equal(preinstall.status, 1, preinstall.stdout + preinstall.stderr);
+  assert.match(preinstall.stdout, /Dependencies not installed/);
+  assert.doesNotMatch(preinstall.stdout + preinstall.stderr, /@openai\/agents-core/);
+
+  rmSync(sandbox, { recursive: true, force: true });
 }
 
 {

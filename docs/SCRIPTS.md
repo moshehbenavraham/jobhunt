@@ -10,6 +10,7 @@ exposed via `npm run <name>`. Repo-local shell helpers such as
 | ---------------------- | ------------------------------------ | ------------------------------------------ |
 | `npm run cron:install` | `scripts/install-scan-cron.mjs`      | Install repo-managed daily scan cron       |
 | `npm run doctor`       | `scripts/doctor.mjs`                 | Validate setup prerequisites               |
+| `npm run auth:openai`  | `scripts/openai-account-auth.mjs`    | Manage stored OpenAI account auth          |
 | `npm run lint:shell`   | `shellcheck`                         | Lint repo shell scripts                    |
 | `npm run verify`       | `scripts/verify-pipeline.mjs`        | Check pipeline data integrity              |
 | `npm run format:shell` | `shfmt`                              | Format repo shell scripts                  |
@@ -27,6 +28,8 @@ exposed via `npm run <name>`. Repo-local shell helpers such as
 | `npm run liveness`     | `scripts/check-liveness.mjs`         | Test if job URLs are still active          |
 | `npm run extract-job`  | `scripts/extract-job.mjs`            | Extract one ATS-backed job as JSON         |
 | `npm run scan`         | `scripts/scan.mjs`                   | Zero-token portal scanner                  |
+| `npm run codex:smoke`  | `scripts/openai-codex-smoke.mjs`     | Test the account-authenticated Codex path  |
+| `npm run agents:codex:smoke` | `scripts/openai-agents-codex-smoke.mjs` | Test the `@openai/agents` account-auth path |
 | `./scripts/ux.sh`      | `scripts/ux.sh`                      | Direct shell entry point for the dashboard |
 
 ---
@@ -57,13 +60,76 @@ Notes:
 
 ## doctor
 
-Validates that all prerequisites are in place: Node.js >= 18, dependencies installed, Playwright chromium, required files (`profile/cv.md`, `config/profile.yml`, `config/portals.yml`), fonts directory, and auto-creates `data/`, `output/`, `reports/` if missing.
+Validates that all prerequisites are in place: Node.js >= 18, dependencies
+installed, Playwright chromium, required files (`profile/cv.md`,
+`config/profile.yml`, `config/portals.yml`), fonts directory, and auto-creates
+`data/`, `output/`, `reports/` if missing. It also reports whether stored
+OpenAI account auth is ready, missing, expired, or needs repair, along with the
+next repo command to run.
 
 ```bash
 npm run doctor
 ```
 
 **Exit codes:** `0` all checks passed, `1` one or more checks failed (fix messages printed).
+
+---
+
+## auth:openai
+
+Manages the stored OpenAI account auth state used by the repo-owned Codex and
+Agents runtime paths.
+
+```bash
+npm run auth:openai -- login
+npm run auth:openai -- status
+npm run auth:openai -- refresh
+npm run auth:openai -- reauth
+npm run auth:openai -- logout
+```
+
+Notes:
+
+- stored credentials live in `data/openai-account-auth.json` by default
+- `reauth` replaces the current stored credentials with a fresh login
+- `status` prints the auth file path plus the next recommended command
+- `print-access-token` exists for debugging only and should stay out of normal workflows
+
+**Exit codes:** `0` success, `1` command failure or missing auth state for
+commands that require stored credentials.
+
+---
+
+## codex:smoke
+
+Validates the raw account-authenticated Codex transport against the configured
+OpenAI account state.
+
+```bash
+npm run codex:smoke -- --json
+```
+
+If auth is missing or invalid, the command exits non-zero and prints the exact
+recovery command to run next.
+
+**Exit codes:** `0` success, `1` transport or auth failure.
+
+---
+
+## agents:codex:smoke
+
+Validates the repo-owned `@openai/agents` provider path through the stored
+OpenAI account auth state.
+
+```bash
+npm run agents:codex:smoke -- --json
+npm run agents:codex:smoke -- --json --stream
+```
+
+If auth is missing or invalid, the command exits non-zero and prints the exact
+recovery command to run next.
+
+**Exit codes:** `0` success, `1` provider, transport, or auth failure.
 
 ---
 

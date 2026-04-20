@@ -55,10 +55,36 @@ npm run doctor
 ```
 
 `npm run doctor` validates Node.js, installed dependencies, Playwright
-Chromium, `profile/cv.md`, `config/profile.yml`, and `config/portals.yml`. If it reports an
-issue, fix the listed item and rerun the command.
+Chromium, `profile/cv.md`, `config/profile.yml`, and `config/portals.yml`.
+It also reports whether the repo already has stored OpenAI account auth and
+which auth command to run next. If it reports an issue, fix the listed item and
+rerun the command.
 
-### 5. Start the repo in Codex
+### 5. Log in with your OpenAI account
+
+Jobhunt's repo-owned OpenAI runtime path uses stored OpenAI account auth. The
+project does not use `OPENAI_API_KEY` for normal onboarding or smoke tests.
+
+```bash
+npm run auth:openai -- login
+```
+
+Useful follow-ups:
+
+```bash
+npm run auth:openai -- status
+npm run auth:openai -- refresh
+npm run auth:openai -- reauth
+npm run auth:openai -- logout
+```
+
+If you want a direct repo-owned runtime check after login, run:
+
+```bash
+npm run agents:codex:smoke -- --json
+```
+
+### 6. Start the repo in Codex
 
 ```bash
 codex
@@ -73,6 +99,7 @@ Run these after the initial setup path is working:
 ```bash
 npm run sync-check
 npm run verify
+npm run auth:openai -- status
 ```
 
 ## Optional Dashboard

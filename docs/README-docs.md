@@ -11,6 +11,7 @@ runtime policy, and repo reference material.
 - [Data Contract](DATA_CONTRACT.md)
 - [Customization Guide](CUSTOMIZATION.md)
 - [Scripts Reference](SCRIPTS.md)
+- [OpenAI Account Auth](OPENAI_ACCOUNT_AUTH.md)
 
 ## Contributor and Support
 

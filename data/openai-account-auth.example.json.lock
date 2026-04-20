@@ -1,0 +1,5 @@
+{
+  "pid": 12345,
+  "createdAt": "2026-04-20T00:00:00.000Z",
+  "note": "Example only. The real .lock file is ephemeral and should not be copied or edited by hand."
+}

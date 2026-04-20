@@ -305,6 +305,43 @@ if (updateSystem !== null) {
   fail('Updater regression tests failed');
 }
 
+// -- 3n. OpenAI account auth regressions ------------------------
+
+console.log('\n3n. OpenAI account auth regressions');
+
+const openaiAccountAuth = run('node', ['scripts/test-openai-account-auth.mjs']);
+if (openaiAccountAuth !== null) {
+  pass('OpenAI account auth regression tests pass');
+} else {
+  fail('OpenAI account auth regression tests failed');
+}
+
+// -- 3o. OpenAI Codex transport regressions ---------------------
+
+console.log('\n3o. OpenAI Codex transport regressions');
+
+const openaiCodexTransport = run('node', [
+  'scripts/test-openai-codex-transport.mjs',
+]);
+if (openaiCodexTransport !== null) {
+  pass('OpenAI Codex transport regression tests pass');
+} else {
+  fail('OpenAI Codex transport regression tests failed');
+}
+
+// -- 3p. OpenAI Agents Codex provider regressions ---------------
+
+console.log('\n3p. OpenAI Agents Codex provider regressions');
+
+const openaiAgentsCodexProvider = run('node', [
+  'scripts/test-openai-agents-provider.mjs',
+]);
+if (openaiAgentsCodexProvider !== null) {
+  pass('OpenAI Agents Codex provider regression tests pass');
+} else {
+  fail('OpenAI Agents Codex provider regression tests failed');
+}
+
 // -- 3l. UPGRADE SAFETY REGRESSIONS ------------------------------
 
 console.log('\n3l. Upgrade safety regressions');
@@ -396,6 +433,30 @@ try {
         fail(`Updater misclassifies shell system target as user data: ${path}`);
       }
     }
+
+    const authSystemTargets = [
+      'scripts/lib/openai-account-auth/',
+      'scripts/openai-account-auth.mjs',
+      'scripts/openai-codex-smoke.mjs',
+      'scripts/openai-agents-codex-smoke.mjs',
+      'scripts/test-openai-account-auth.mjs',
+      'scripts/test-openai-codex-transport.mjs',
+      'scripts/test-openai-agents-provider.mjs',
+    ];
+
+    for (const path of authSystemTargets) {
+      if (updaterHarness.isUpdateTargetPath(path)) {
+        pass(`Updater ships OpenAI auth system target: ${path}`);
+      } else {
+        fail(`Updater misses OpenAI auth system target: ${path}`);
+      }
+
+      if (!updaterHarness.isUserPath(path)) {
+        pass(`Updater keeps OpenAI auth target out of user data: ${path}`);
+      } else {
+        fail(`Updater misclassifies OpenAI auth target as user data: ${path}`);
+      }
+    }
   } finally {
     rmSync(updaterHarnessPath, { force: true });
   }
@@ -406,6 +467,9 @@ try {
 try {
   const tempRoot = mkdtempSync(join(tmpdir(), 'jobhunt-legacy-cv-'));
   mkdirSync(join(tempRoot, 'scripts'), { recursive: true });
+  mkdirSync(join(tempRoot, 'scripts', 'lib', 'openai-account-auth'), {
+    recursive: true,
+  });
   mkdirSync(join(tempRoot, 'config'), { recursive: true });
   mkdirSync(join(tempRoot, 'fonts'), { recursive: true });
   mkdirSync(join(tempRoot, 'profile'), { recursive: true });
@@ -418,6 +482,19 @@ try {
     join(tempRoot, 'scripts', 'cv-sync-check.mjs'),
     readFile('scripts/cv-sync-check.mjs'),
   );
+  for (const authLibFile of [
+    'agents-provider.mjs',
+    'codex-transport.mjs',
+    'common.mjs',
+    'index.mjs',
+    'oauth.mjs',
+    'storage.mjs',
+  ]) {
+    writeFileSync(
+      join(tempRoot, 'scripts', 'lib', 'openai-account-auth', authLibFile),
+      readFile(join('scripts', 'lib', 'openai-account-auth', authLibFile)),
+    );
+  }
   writeFileSync(
     join(tempRoot, 'cv.md'),
     `# Legacy CV\n\n${'Experience\n'.repeat(20)}`,
@@ -465,6 +542,59 @@ try {
   }
 } catch (e) {
   fail(`Legacy CV migration tests crashed: ${e.message}`);
+}
+
+try {
+  const tempRoot = mkdtempSync(join(tmpdir(), 'jobhunt-doctor-no-deps-'));
+  mkdirSync(join(tempRoot, 'scripts', 'lib', 'openai-account-auth'), {
+    recursive: true,
+  });
+  writeFileSync(
+    join(tempRoot, 'scripts', 'doctor.mjs'),
+    readFile('scripts/doctor.mjs'),
+  );
+  for (const authLibFile of ['common.mjs', 'storage.mjs']) {
+    writeFileSync(
+      join(tempRoot, 'scripts', 'lib', 'openai-account-auth', authLibFile),
+      readFile(join('scripts', 'lib', 'openai-account-auth', authLibFile)),
+    );
+  }
+
+  try {
+    let doctorNoDepsFailed = false;
+    let doctorNoDepsOutput = '';
+
+    try {
+      doctorNoDepsOutput = execFileSync(
+        'node',
+        [join(tempRoot, 'scripts', 'doctor.mjs')],
+        {
+          cwd: tempRoot,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+        },
+      );
+    } catch (error) {
+      doctorNoDepsFailed = true;
+      doctorNoDepsOutput = `${error.stdout || ''}${error.stderr || ''}`;
+    }
+
+    const normalizedDoctorNoDeps = stripAnsi(doctorNoDepsOutput);
+
+    if (
+      doctorNoDepsFailed &&
+      normalizedDoctorNoDeps.includes('Dependencies not installed') &&
+      !normalizedDoctorNoDeps.includes('@openai/agents-core')
+    ) {
+      pass('doctor stays runnable before npm install');
+    } else {
+      fail('doctor no longer stays runnable before npm install');
+    }
+  } finally {
+    rmSync(tempRoot, { recursive: true, force: true });
+  }
+} catch (e) {
+  fail(`Doctor pre-install regression tests crashed: ${e.message}`);
 }
 
 try {
@@ -558,9 +688,15 @@ const systemFiles = [
   'AGENTS.md',
   '.codex/skills/career-ops/SKILL.md',
   'VERSION',
+  'scripts/lib/openai-account-auth',
+  'scripts/openai-account-auth.mjs',
+  'scripts/openai-codex-smoke.mjs',
+  'scripts/openai-agents-codex-smoke.mjs',
   'scripts/run-scheduled-scan.sh',
   'scripts/ux.sh',
   'data/follow-ups.example.md',
+  'data/openai-account-auth.example.json',
+  'data/openai-account-auth.example.json.lock',
   'docs/DATA_CONTRACT.md',
   'interview-prep/README-interview-prep.md',
   'interview-prep/story-bank.example.md',
@@ -594,6 +730,7 @@ const userFiles = [
   'portals.yml',
   'config/profile.yml',
   'data/follow-ups.md',
+  'data/openai-account-auth.json',
   'interview-prep/story-bank.md',
   'modes/_profile.md',
   'config/portals.yml',
@@ -937,11 +1074,14 @@ if (doctorOutput === null) {
   const hasCodexFooter = normalizedDoctorOutput.includes(
     'Run `codex` to start.',
   );
+  const hasOpenAIAuthGuidance = normalizedDoctorOutput.includes(
+    'npm run auth:openai -- status',
+  );
   const hasLegacyRuntimeHint =
     normalizedDoctorOutput.includes('`claude`') &&
     normalizedDoctorOutput.includes('to start.');
 
-  if (hasCodexFooter && !hasLegacyRuntimeHint) {
+  if (hasCodexFooter && hasOpenAIAuthGuidance && !hasLegacyRuntimeHint) {
     pass('Doctor success output points to codex');
   } else {
     fail(

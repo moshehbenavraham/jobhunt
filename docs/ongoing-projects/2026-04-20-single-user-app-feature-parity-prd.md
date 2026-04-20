@@ -1,5 +1,84 @@
 # 2026-04-20 Single-User App Feature-Parity PRD
 
+## Recommended 7-Phase Plan
+
+Planning assumption for this PRD:
+
+- `1 session = 1 spec = 1 clear objective = 2-4 hours = ~12-25 tasks`
+- `1 phase = 3-8 sessions`
+- recommended total scope: `26-37 sessions` across `7 phases`
+
+### Phase 1: foundation and repo contract
+
+- Objective: establish the app skeleton and lock the repo/app boundary.
+- Sessions: `3-4`
+- Key outcomes: backend/frontend package structure, app-owned state
+  directory, repo workspace adapter, prompt-loading contract from checked-in
+  files.
+- Exit: the app can boot against the repo and resolve canonical paths without
+  mutating user artifacts.
+
+### Phase 2: backend runtime and job infrastructure
+
+- Objective: make the runtime explicit and resumable before building broad UI
+  parity.
+- Sessions: `4-5`
+- Key outcomes: local Node/TypeScript API, SQLite store, background job
+  runner, sessions, approvals, logs, traces.
+- Exit: long-running runs can start, persist, resume, and fail in a structured
+  way.
+
+### Phase 3: typed tools and agent orchestration
+
+- Objective: replace implicit shell-heavy orchestration with app-owned tools
+  and agent wiring.
+- Sessions: `4-5`
+- Key outcomes: typed wrappers around existing scripts, deterministic error
+  mapping, router/specialist agent topology, unit coverage for tool wrappers.
+- Exit: the app runtime can call repo logic safely without depending on
+  Codex-specific execution semantics.
+
+### Phase 4: chat, onboarding, and approvals UX
+
+- Objective: make the app usable as the primary operator surface for startup
+  and interactive runs.
+- Sessions: `3-5`
+- Key outcomes: chat/run console, startup checklist, onboarding wizard,
+  approval UI, resumable conversations, settings basics.
+- Exit: a user can launch the app, satisfy prerequisites, start a run, and
+  resume interrupted work.
+
+### Phase 5: evaluation, artifacts, and tracker parity
+
+- Objective: land the core evaluate-to-artifact loop end to end.
+- Sessions: `4-6`
+- Key outcomes: auto-pipeline, single evaluation, PDF generation triggers,
+  report viewer, pipeline/tracker page, tracker status editing, merge and
+  verify semantics.
+- Exit: the main JD/URL workflow produces the same durable artifacts and
+  tracker behavior as the current Codex-primary path.
+
+### Phase 6: scan, batch, and application-help parity
+
+- Objective: cover the highest-value async and review-heavy workflows.
+- Sessions: `4-6`
+- Key outcomes: portal scan flows, shortlist review, batch orchestration and
+  state visibility, failure/retry handling, application-help flows, approval
+  checkpoints.
+- Exit: the app can run the current scan and batch loops without requiring the
+  existing batch runner UX.
+
+### Phase 7: specialist workflows, dashboard replacement, and cutover
+
+- Objective: close the remaining parity gaps and make the app the primary
+  single-user operator path.
+- Sessions: `4-6`
+- Key outcomes: parity for deep research, outreach, interview-prep, training,
+  project review, follow-up, patterns, dashboard-equivalent views, settings
+  and maintenance polish, deprecation decision for the Go dashboard.
+- Exit: the app satisfies the PRD definition of done and `codex` is no longer
+  required for normal single-user operation.
+
 ## Overview
 
 jobhunt is currently a local-first, Codex-primary repository. The product's
@@ -87,6 +166,9 @@ This estimate assumes:
 - a web app plus local backend, not a cloud multi-tenant system
 - no rewrite of the current scanner, PDF, tracker, or report logic
 
+For planning purposes, the concrete sequencing in this document uses the
+conservative `7-phase` breakdown above.
+
 ## Goals
 
 1. Replace Codex CLI as the primary runtime for single-user operation.
@@ -126,6 +208,8 @@ The user launches the app and can:
 - paste a JD or job URL into chat and run the full pipeline
 - trigger evaluation-only, scan, PDF, tracker, deep research, apply-help,
   interview-prep, patterns, and follow-up flows
+- compare multiple evaluated roles or offers before deciding where to invest
+  time
 - inspect generated reports and PDFs
 - review and update tracker status
 - run batch jobs and observe structured progress
@@ -158,6 +242,7 @@ The app must reach parity for these current surfaces:
 
 - raw JD / URL full auto-pipeline
 - single evaluation
+- compare offers
 - portal scan
 - PDF generation
 - live application help
@@ -208,7 +293,8 @@ Python service boundary.
 ```text
 Frontend (React)
   -> Local API server (Node/TypeScript)
-     -> Agent runtime (@openai/agents)
+     -> Repo-owned OpenAI account auth (`scripts/lib/openai-account-auth/`)
+     -> Agent runtime (@openai/agents via custom Codex provider)
      -> Typed tool adapters around scripts/*.mjs
      -> Background job runner
      -> Session / approval / job store (SQLite)
@@ -251,6 +337,11 @@ Owns:
 
 Use `@openai/agents` as the primary orchestration layer for interactive and
 multi-step workflows.
+
+Use the repo-owned OpenAI account auth path documented in
+`docs/OPENAI_ACCOUNT_AUTH.md` and implemented under
+`scripts/lib/openai-account-auth/` as the required model-access layer for the
+Agents SDK.
 
 Use direct Responses API calls only where the full SDK loop adds no value, such
 as small one-shot classification or extraction helpers.
@@ -296,7 +387,8 @@ Use SQLite for app-owned operational state:
 - UI metadata
 - cached run summaries
 
-Do not migrate the core user-layer files into SQLite in this phase.
+Do not migrate the core user-layer files into SQLite during the initial
+parity migration.
 
 #### 7. Workspace adapter
 
@@ -307,12 +399,23 @@ and exposes deterministic read/write primitives to the agent runtime.
 
 ### Source-of-truth policy
 
-Keep the current file-based contract as the source of truth for domain data:
+Keep the current file-based contract as the source of truth for domain data.
+`docs/DATA_CONTRACT.md` remains the authoritative superset for what is
+user-layer versus system-layer.
+
+At minimum, the app must treat these current file surfaces as canonical:
 
 - `profile/cv.md`
+- `profile/article-digest.md`
 - `config/profile.yml`
 - `modes/_profile.md`
 - `config/portals.yml`
+- `data/pipeline.md`
+- `data/scan-history.tsv`
+- `data/follow-ups.md`
+- `interview-prep/story-bank.md`
+- `interview-prep/*.md`
+- `jds/*`
 - `reports/*`
 - `output/*`
 - `batch/tracker-additions/*`
@@ -403,6 +506,12 @@ current repo workflows unless a workflow truly requires open-ended page
 interaction. The current repo already has deterministic browser-backed logic
 for specific tasks, and the app should preserve that bias.
 
+For URL-based workflows, preserve the current verification bias:
+
+- browser-backed live posting verification first when available
+- repo-owned liveness helpers second
+- weaker fetch/search fallback only when the stronger checks are unavailable
+
 ## UI Requirements
 
 ### Required app surfaces
@@ -465,6 +574,7 @@ without requiring manual CLI interpretation.
 Given a pasted job URL or JD text, the app must be able to:
 
 - extract the JD
+- verify the posting status when the input is a live URL
 - run evaluation A-G
 - save the report
 - generate the PDF
@@ -486,6 +596,13 @@ compatible until a deliberate contract migration is approved.
 
 Generated files must remain deterministic and discoverable in their current
 locations unless a migration path is explicitly designed and versioned.
+
+This includes current report and workflow invariants such as:
+
+- report headers preserving `**URL:**` and `**Legitimacy:**`
+- tracker additions remaining TSV-first before merge
+- scan and follow-up workflows continuing to use their existing file surfaces
+  such as `data/pipeline.md`, `data/scan-history.tsv`, and `data/follow-ups.md`
 
 ### FR5. Tracker integrity
 
@@ -514,6 +631,12 @@ The app must support explicit pause / resume behavior for human-review steps.
 The app must expose enough logs, traces, and run metadata to debug failures
 without reading raw model output blindly.
 
+### FR10. Compare-offers parity
+
+The app must preserve the current ability to compare multiple evaluated roles
+or offers side by side using existing report artifacts and user-provided offer
+details.
+
 ## Non-Functional Requirements
 
 - local-first by default
@@ -524,72 +647,109 @@ without reading raw model output blindly.
 - no hidden dependence on Codex CLI after parity is reached
 - testable parity against current report / tracker / PDF behavior
 
-## Recommended OpenAI Runtime Choices
+## Required OpenAI Runtime Architecture
 
-As of `2026-04-20`, the current OpenAI docs support the following choices that
-fit this migration:
+As of `2026-04-20`, the current OpenAI docs still describe the default Agents
+SDK OpenAI path in API-key/client terms. That is not the supported auth model
+for this project.
 
-- Agents SDK for managed turns, tools, sessions, handoffs, resumable runs, and
-  tracing
-- JavaScript SDK for Node-native integration
-- sessions for persistent memory and resumable approval flows
-- background Responses for long-running tasks that outlive a single request
+Project requirement:
 
-Recommended use in this project:
+- OpenAI account login is the primary and only supported OpenAI access path
+- OpenAI Platform API key setup is not part of normal onboarding
+- no API-key fallback is treated as supported project behavior
+- `docs/OPENAI_ACCOUNT_AUTH.md` is the source-of-truth auth/runtime contract
+  for repo-owned OpenAI access
+- `scripts/lib/openai-account-auth/` is the required implementation basis for
+  Agents SDK model access, transport, refresh, and credential storage unless it
+  is deliberately superseded in-place
 
-- Agents SDK for interactive app workflows and managed multi-step runs
+Required use in this project:
+
+- Agents SDK only as the orchestration/runtime layer
+- a custom account-authenticated Codex provider for model access
+- Pi-style login, refresh, storage, account-id extraction, and Codex transport
+  adapted into app-owned infrastructure
 - explicit sessions for persistent single-user conversations
-- background mode for long-running evaluation or batch tasks where request
-  timeouts would otherwise be a risk
+- prefer a local/custom session backend by default for local-first parity;
+  evaluate `OpenAIConversationsSession` only if server-managed memory is a
+  deliberate product choice
+- background mode or equivalent long-running job handling for evaluation and
+  batch work where request timeouts would otherwise be a risk
+
+Architecture implication:
+
+- the app must not depend on `OPENAI_API_KEY` for development, onboarding, or
+  primary runtime execution
+- the app should extend or directly reuse the checked-in account-auth stack,
+  not introduce a parallel OpenAI auth implementation with different runtime
+  behavior
 
 ## Migration Plan
 
-### Phase 0: contracts and scaffolding
+### Phase 1: foundation and repo contract
 
 - define backend / frontend package structure
 - add app-owned state directory
 - formalize repo workspace adapter
 - codify prompt-loading strategy from existing files
 
-### Phase 1: local backend and job runner
+### Phase 2: backend runtime and job infrastructure
 
 - build the Node/TypeScript API
 - add SQLite store for sessions, jobs, and approvals
 - implement the background job runner
+- integrate the checked-in OpenAI account auth/provider stack from
+  `scripts/lib/openai-account-auth/`
 - add trace and log plumbing
 
-### Phase 2: typed tool layer
+### Phase 3: typed tools and agent orchestration
 
 - wrap existing scripts as explicit tools
 - preserve current file outputs
 - add deterministic error mapping
 - add unit coverage for tool wrappers
+- wire router and specialist agent boundaries
 
-### Phase 3: chat and onboarding app
+### Phase 4: chat, onboarding, and approvals UX
 
 - implement chat / run console
 - implement startup checklist and onboarding wizard
-- wire router agent and onboarding agent
+- implement resumable conversations and approval prompts
+- add settings basics for prerequisite visibility and maintenance actions
 
-### Phase 4: evaluation and tracker parity
+### Phase 5: evaluation, artifacts, and tracker parity
 
 - implement auto-pipeline and evaluation flows
 - implement report viewer
+- preserve PDF generation triggers and output placement
 - implement pipeline / tracker page
 - preserve tracker-addition and verification semantics
 
-### Phase 5: scan, batch, and apply-help parity
+### Phase 6: scan, batch, and application-help parity
 
 - implement scan flows and shortlist review
 - replace batch runner UI and orchestration
 - support application-help flows and approval checkpoints
+- add job-level failure, warning, retry, and resume visibility
 
-### Phase 6: dashboard replacement and deprecation path
+### Phase 7: specialist workflows, dashboard replacement, and cutover
 
+- implement remaining specialist flows:
+  - compare offers
+  - deep company research
+  - LinkedIn outreach drafting
+  - interview prep
+  - training / certification review
+  - project idea review
+  - follow-up cadence
+  - rejection pattern analysis
 - reach parity with the current Go dashboard views
+- finalize settings, maintenance, and update-check surfaces
 - decide whether to retire or keep the Go dashboard as a secondary operator
   surface
 - remove Codex CLI from primary onboarding
+- run final parity validation and close migration gaps
 
 ## Validation Strategy
 
@@ -598,14 +758,23 @@ Recommended use in this project:
 Create golden-path tests that compare:
 
 - report creation
+- report header invariants such as `URL` and `Legitimacy`
 - tracker TSV creation
 - merge + verify behavior
 - PDF generation triggers and file placement
+- scan / pipeline / follow-up file placement and update semantics
 
 ### 2. Workflow parity
 
 For each major mode, verify that the app can complete the same workflow class
 that the current Codex path supports.
+
+This should explicitly include:
+
+- auto-pipeline from a pasted URL
+- scan -> shortlist -> pipeline round-trip
+- compare-offers review from existing artifacts
+- follow-up tracking round-trip with `data/follow-ups.md`
 
 ### 3. Failure semantics
 
@@ -616,6 +785,7 @@ Test:
 - infrastructure failures
 - resumable approvals
 - invalid tracker writes
+- conflicting or stale job-verification signals
 
 ### 4. UX validation
 
@@ -688,8 +858,8 @@ Mitigation:
   the web pipeline page is stable?
 - Should batch workers keep writing the exact current state files, or should
   the app introduce a versioned state contract after initial parity is reached?
-- Should the app use OpenAI-hosted conversation state, local sessions, or a
-  hybrid model?
+- Which session backend should own conversation memory: custom local storage,
+  `OpenAIConversationsSession`, or a hybrid model?
 
 ## Recommendation
 

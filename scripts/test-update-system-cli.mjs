@@ -124,6 +124,22 @@ function initRepo(path) {
     join(upstream, 'config', 'portals.example.yml'),
     '# new portals template\n',
   );
+  writeFile(
+    join(upstream, 'scripts', 'openai-account-auth.mjs'),
+    '#!/usr/bin/env node\nconsole.log("auth");\n',
+  );
+  writeFile(
+    join(upstream, 'scripts', 'openai-codex-smoke.mjs'),
+    '#!/usr/bin/env node\nconsole.log("codex");\n',
+  );
+  writeFile(
+    join(upstream, 'scripts', 'openai-agents-codex-smoke.mjs'),
+    '#!/usr/bin/env node\nconsole.log("agents");\n',
+  );
+  writeFile(
+    join(upstream, 'scripts', 'lib', 'openai-account-auth', 'common.mjs'),
+    'export const marker = "auth-lib";\n',
+  );
   git(upstream, 'add', '.');
   git(upstream, 'commit', '-m', 'upstream init');
 
@@ -157,6 +173,24 @@ function initRepo(path) {
   );
   assert.equal(
     existsSync(join(sandbox, 'config', 'portals.example.yml')),
+    true,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'scripts', 'openai-account-auth.mjs')),
+    true,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'scripts', 'openai-codex-smoke.mjs')),
+    true,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'scripts', 'openai-agents-codex-smoke.mjs')),
+    true,
+  );
+  assert.equal(
+    existsSync(
+      join(sandbox, 'scripts', 'lib', 'openai-account-auth', 'common.mjs'),
+    ),
     true,
   );
   assert.equal(existsSync(join(sandbox, 'portals.yml')), true);

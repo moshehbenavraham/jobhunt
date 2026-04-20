@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.33",
+  "version": "1.5.34",
   "description": "AI-powered job search pipeline",
   "scripts": {
     "cron:install": "node scripts/install-scan-cron.mjs",
@@ -30,7 +30,10 @@
     "rollback": "node scripts/update-system.mjs rollback",
     "liveness": "node scripts/check-liveness.mjs",
     "extract-job": "node scripts/extract-job.mjs",
-    "scan": "node scripts/scan.mjs"
+    "scan": "node scripts/scan.mjs",
+    "auth:openai": "node scripts/openai-account-auth.mjs",
+    "codex:smoke": "node scripts/openai-codex-smoke.mjs",
+    "agents:codex:smoke": "node scripts/openai-agents-codex-smoke.mjs"
   },
   "keywords": [
     "ai",
@@ -41,8 +44,10 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@openai/agents": "^0.8.4",
     "js-yaml": "^4.1.1",
-    "playwright": "^1.59.1"
+    "playwright": "^1.59.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",

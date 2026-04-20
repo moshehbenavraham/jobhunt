@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "provider": "openai-codex",
+  "updatedAt": "2026-04-20T00:00:00.000Z",
+  "credentials": {
+    "accessToken": "<access-token>",
+    "refreshToken": "<refresh-token>",
+    "expiresAt": 1770000000000,
+    "accountId": "<chatgpt-account-id>"
+  }
+}

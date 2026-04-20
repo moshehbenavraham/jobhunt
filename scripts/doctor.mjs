@@ -19,6 +19,7 @@ const projectRoot = process.env.JOBHUNT_ROOT
 const isTTY = process.stdout.isTTY;
 const green = (s) => (isTTY ? `\x1b[32m${s}\x1b[0m` : s);
 const red = (s) => (isTTY ? `\x1b[31m${s}\x1b[0m` : s);
+const yellow = (s) => (isTTY ? `\x1b[33m${s}\x1b[0m` : s);
 const dim = (s) => (isTTY ? `\x1b[2m${s}\x1b[0m` : s);
 
 function checkNodeVersion() {
@@ -63,6 +64,70 @@ async function checkPlaywright() {
       fix: 'Run: npx playwright install chromium',
     };
   }
+}
+
+async function checkOpenAIAccountAuth() {
+  let getStoredCredentialsStatus;
+  try {
+    ({ getStoredCredentialsStatus } = await import(
+      './lib/openai-account-auth/storage.mjs'
+    ));
+  } catch (error) {
+    if (
+      error?.code === 'ERR_MODULE_NOT_FOUND' ||
+      /Cannot find module|Cannot find package/i.test(String(error?.message))
+    ) {
+      return {
+        kind: 'next',
+        label: 'OpenAI account auth runtime not available yet',
+        fix: [
+          'Run: npm install',
+          'If this repo was updated partially, run: node scripts/update-system.mjs apply',
+        ],
+      };
+    }
+    throw error;
+  }
+
+  const status = await getStoredCredentialsStatus();
+
+  if (!status.authenticated) {
+    if (status.reason === 'invalid') {
+      return {
+        kind: 'next',
+        label: 'OpenAI account auth needs repair',
+        fix: [
+          'Run: npm run auth:openai -- logout',
+          'Then run: npm run auth:openai -- login',
+        ],
+      };
+    }
+
+    return {
+      kind: 'next',
+      label: 'OpenAI account auth not set up yet',
+      fix: [
+        'Run: npm run auth:openai -- login',
+        'Then validate with: npm run agents:codex:smoke -- --json',
+      ],
+    };
+  }
+
+  if (status.expired) {
+    return {
+      kind: 'next',
+      label: `OpenAI account auth expired for ${status.accountId}`,
+      fix: [
+        'Run: npm run auth:openai -- refresh',
+        'If refresh fails, run: npm run auth:openai -- reauth',
+      ],
+    };
+  }
+
+  return {
+    kind: 'pass',
+    label: `OpenAI account auth ready (${status.accountId})`,
+  };
 }
 
 function checkCv() {
@@ -175,13 +240,20 @@ async function main() {
     checkAutoDir('data'),
     checkAutoDir('output'),
     checkAutoDir('reports'),
+    await checkOpenAIAccountAuth(),
   ];
 
   let failures = 0;
 
   for (const result of checks) {
-    if (result.pass) {
+    if (result.pass || result.kind === 'pass') {
       console.log(`${green('[PASS]')} ${result.label}`);
+    } else if (result.kind === 'next') {
+      console.log(`${yellow('[NEXT]')} ${result.label}`);
+      const fixes = Array.isArray(result.fix) ? result.fix : [result.fix];
+      for (const hint of fixes) {
+        console.log(`  ${dim(`-> ${hint}`)}`);
+      }
     } else {
       failures++;
       console.log(`${red('[FAIL]')} ${result.label}`);
@@ -201,6 +273,9 @@ async function main() {
   } else {
     console.log(
       "Result: All checks passed. You're ready to go! Run `codex` to start.",
+    );
+    console.log(
+      'For OpenAI-backed runtime checks, use `npm run auth:openai -- status` and `npm run agents:codex:smoke -- --json`.',
     );
     console.log('');
     process.exit(0);
