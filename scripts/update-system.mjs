@@ -78,6 +78,8 @@ const SYSTEM_PATHS = [
   'LICENSE',
   '.github/',
   'package.json',
+  'scripts/run-scheduled-scan.sh',
+  'scripts/ux.sh',
   'scripts/generate-latex.mjs',
   'scripts/test-generate-latex.mjs',
 ];

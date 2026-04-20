@@ -1,6 +1,8 @@
 # Scripts Reference
 
-All scripts live in the project root as `.mjs` modules and are exposed via `npm run <name>`.
+Most script surfaces live in the project root as `.mjs` modules and are
+exposed via `npm run <name>`. Repo-local shell helpers such as
+`./scripts/ux.sh` also live under `scripts/`.
 
 ## Quick Reference
 
@@ -14,6 +16,7 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 | `npm run merge`        | `scripts/merge-tracker.mjs`          | Merge batch TSVs into applications.md      |
 | `npm run pdf`          | `scripts/generate-pdf.mjs`           | Convert HTML to ATS-optimized PDF          |
 | `npm run latex`        | `scripts/generate-latex.mjs`         | Validate and compile an optional LaTeX CV  |
+| `npm run dashboard`    | `scripts/ux.sh`                      | Build and launch the Go dashboard          |
 | `npm run sync-check`   | `scripts/cv-sync-check.mjs`          | Validate CV/profile consistency            |
 | `npm run coverage`     | `c8` + `go test -cover`              | Measure Node script and dashboard coverage |
 | `npm run update:check` | `scripts/update-system.mjs check`    | Check for upstream updates                 |
@@ -22,6 +25,7 @@ All scripts live in the project root as `.mjs` modules and are exposed via `npm 
 | `npm run liveness`     | `scripts/check-liveness.mjs`         | Test if job URLs are still active          |
 | `npm run extract-job`  | `scripts/extract-job.mjs`            | Extract one ATS-backed job as JSON         |
 | `npm run scan`         | `scripts/scan.mjs`                   | Zero-token portal scanner                  |
+| `./scripts/ux.sh`      | `scripts/ux.sh`                      | Direct shell entry point for the dashboard |
 
 ---
 
@@ -204,6 +208,32 @@ npm run coverage:dashboard:html
 `dashboard/coverage.out` already exists.
 
 **Exit codes:** `0` both coverage runs succeeded, `1` either coverage run failed.
+
+---
+
+## ux.sh
+
+Builds and launches the Go dashboard from the repo root without manually
+changing into `dashboard/`. The canonical operator entry point is
+`npm run dashboard`, which wraps this script.
+
+```bash
+npm run dashboard
+npm run dashboard -- --help
+./scripts/ux.sh
+./scripts/ux.sh --help
+./scripts/ux.sh --path /abs/path/to/another/jobhunt/clone
+```
+
+Notes:
+
+- requires `go` on `PATH`
+- builds `dashboard/career-dashboard`
+- defaults `--path` to the current repo root when you do not provide one
+- passes additional flags through to the dashboard binary
+
+**Exit codes:** `0` dashboard exited cleanly, `1` missing Go, build failure, or
+dashboard startup failure.
 
 ---
 

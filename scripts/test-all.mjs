@@ -365,6 +365,25 @@ try {
         fail(`Updater misclassifies LaTeX system target as user data: ${path}`);
       }
     }
+
+    const shellSystemTargets = [
+      'scripts/run-scheduled-scan.sh',
+      'scripts/ux.sh',
+    ];
+
+    for (const path of shellSystemTargets) {
+      if (updaterHarness.isUpdateTargetPath(path)) {
+        pass(`Updater ships shell system target: ${path}`);
+      } else {
+        fail(`Updater misses shell system target: ${path}`);
+      }
+
+      if (!updaterHarness.isUserPath(path)) {
+        pass(`Updater keeps shell system target out of user data: ${path}`);
+      } else {
+        fail(`Updater misclassifies shell system target as user data: ${path}`);
+      }
+    }
   } finally {
     rmSync(updaterHarnessPath, { force: true });
   }
@@ -527,6 +546,8 @@ const systemFiles = [
   'AGENTS.md',
   '.codex/skills/career-ops/SKILL.md',
   'VERSION',
+  'scripts/run-scheduled-scan.sh',
+  'scripts/ux.sh',
   'data/follow-ups.example.md',
   'docs/DATA_CONTRACT.md',
   'interview-prep/README-interview-prep.md',

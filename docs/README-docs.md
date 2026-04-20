@@ -28,6 +28,7 @@ runtime policy, and repo reference material.
 ## Reference
 
 - [Architecture](ARCHITECTURE.md)
+- [Dashboard README](../dashboard/README-dashboard.md)
 - [Environments](environments.md)
 - [Deployment](deployment.md)
 - [Credits](CREDITS.md)

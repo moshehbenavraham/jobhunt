@@ -303,6 +303,33 @@ This section is separate from the main checklist on purpose.
   need the official rules around external systems, manual submission, and
   platform boundaries.
 
+### Dashboard UX/UI Intersections
+
+- `D0. Launch`
+  Run the Go TUI from `dashboard/` when you want a visual operations layer over
+  the same tracker and report artifacts.
+- `2D. After discovery`
+  The dashboard helps review campaign state after `npm run scan`, but
+  `data/pipeline.md` is still the shortlist source for picking the next role.
+- `6D. After auto-pipeline`
+  Generated reports become readable in the dashboard's report viewer, and the
+  pipeline screen becomes the browsing UI for tracked applications.
+- `9D. After submission`
+  Tracker status changes matter immediately here because the dashboard reads
+  and updates `data/applications.md`.
+- `10D. After outreach`
+  Outreach notes recorded in the tracker become visible as application context
+  during pipeline review.
+- `11D. While waiting`
+  The dashboard's progress screen is the UX layer for funnel health,
+  conversion, and weekly activity.
+- `12D. After response`
+  The dashboard becomes the operational UI for moving roles through
+  `Responded`, `Interview`, `Offer`, or `Rejected`.
+- `D1. Boundary`
+  The dashboard is a UI over the same repo data. It does not replace Codex
+  modes, the tracker contract, or the main `1-12` checklist.
+
 ### Optional Export Path
 
 - `L1. LaTeX / Overleaf CV export`

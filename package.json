@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.28",
+  "version": "1.5.29",
   "description": "AI-powered job search pipeline",
   "scripts": {
     "cron:install": "node scripts/install-scan-cron.mjs",
@@ -15,6 +15,7 @@
     "merge": "node scripts/merge-tracker.mjs",
     "pdf": "node scripts/generate-pdf.mjs",
     "latex": "node scripts/generate-latex.mjs",
+    "dashboard": "./scripts/ux.sh",
     "sync-check": "node scripts/cv-sync-check.mjs",
     "scan-state": "node scripts/manage-scan-state.mjs",
     "coverage:node": "c8 --all --src=scripts --report-dir=coverage/node --reporter=text-summary --reporter=lcov --reporter=json-summary --exclude=scripts/test-*.mjs --exclude=scripts/test-all.mjs node scripts/test-all.mjs --quick",
