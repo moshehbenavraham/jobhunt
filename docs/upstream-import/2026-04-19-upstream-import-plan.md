@@ -60,7 +60,7 @@ Non-goals for this plan:
 - do not pull in the Gemini-specific integration or provider-specific runtime
   dependencies
 - do not modify user-layer files such as `profile/cv.md`, `config/profile.yml`,
-  `portals.yml`, `data/*`, `reports/*`, or `output/*`
+  `config/portals.yml`, `data/*`, `reports/*`, or `output/*`
 
 ## Session 1. Import low-risk workflow and scan guidance fixes
 
@@ -74,7 +74,7 @@ Implementation targets:
 
 - `.github/workflows/dependency-review.yml`
 - `modes/scan.md`
-- `templates/portals.example.yml`
+- `config/portals.example.yml`
 - optional tail in the same pass:
   - `.github/workflows/codeql.yml`
   - `.github/workflows/labeler.yml`
@@ -91,7 +91,7 @@ Concrete changes:
   - use ATS-hosted pages only as fallback
   - explain why raw ATS URLs can produce false 410 or mismatched job ID issues
   - keep the wording honest about this repo's current scanner behavior
-- port the matching config comments into `templates/portals.example.yml`
+- port the matching config comments into `config/portals.example.yml`
 - if the workflow files are otherwise unchanged, include the low-priority action
   bumps in the same review pass:
   - `github/codeql-action` `v3 -> v4`
@@ -111,7 +111,7 @@ Implementation status on 2026-04-19:
 - completed: `dependency-review.yml` now carries the upstream-style temporary
   TODO note and `continue-on-error: true` guard for missing dependency graph
   data
-- completed: `modes/scan.md` and `templates/portals.example.yml` now prefer
+- completed: `modes/scan.md` and `config/portals.example.yml` now prefer
   branded `careers_url` values first, while documenting the current scanner
   nuance that branded pages often need explicit `api:`
 - completed: `.github/workflows/codeql.yml` was bumped from

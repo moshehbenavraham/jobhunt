@@ -17,7 +17,7 @@ Optional extra proof:
 
 Tune discovery targets in:
 
-- `portals.yml`
+- `config/portals.yml`
 
 These files drive evaluation, PDF generation, draft answers, compensation
 framing, work-authorization answers, and role targeting.
@@ -212,7 +212,7 @@ This section is separate from the main checklist on purpose.
 
 - `0A. Onboarding / first-time setup`
   Use when the repo is not ready yet and you need to create or clean up:
-  `profile/cv.md`, `config/profile.yml`, `modes/_profile.md`, `portals.yml`,
+  `profile/cv.md`, `config/profile.yml`, `modes/_profile.md`, `config/portals.yml`,
   and `data/applications.md`.
 - `0B. Setup validation`
   Run `npm run doctor` when you want a direct setup check instead of discovering
@@ -228,7 +228,7 @@ This section is separate from the main checklist on purpose.
   Use when you want to improve role targeting, comp policy, archetypes,
   narrative, or work-auth answers by editing:
   `config/profile.yml`, `modes/_profile.md`, `profile/article-digest.md`, or
-  `portals.yml`.
+  `config/portals.yml`.
 - `1B. Customization reference`
   Use `docs/CUSTOMIZATION.md` when you want to change how the system behaves for
   you without changing shared defaults.

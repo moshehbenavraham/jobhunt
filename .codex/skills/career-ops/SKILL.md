@@ -33,13 +33,13 @@ Before substantial Job-Hunt work, verify these files:
 - `profile/cv.md` (legacy root `cv.md` also accepted during migration)
 - `config/profile.yml`
 - `modes/_profile.md`
-- `portals.yml`
+- `config/portals.yml`
 
 If `modes/_profile.md` is missing, copy `modes/_profile.template.md` into place silently.
 
 If any required file is missing, stop normal job-search work and onboard first. Do not run evaluations, scans, PDFs, or pipeline processing until onboarding is complete.
 
-During onboarding, bootstrap from `config/profile.example.yml` and `templates/portals.example.yml`, and create `data/applications.md` from the standard tracker header if it is missing.
+During onboarding, bootstrap from `config/profile.example.yml` and `config/portals.example.yml`, and create `data/applications.md` from the standard tracker header if it is missing.
 
 If required files are missing for the requested task, report the exact blockers instead of faking a personalized result.
 
@@ -47,11 +47,11 @@ If required files are missing for the requested task, report the exact blockers 
 
 Keep user-specific changes in these files only:
 
-- `profile/cv.md` (legacy root `cv.md` also accepted during migration)
+- `profile/cv.md`
 - `config/profile.yml`
 - `modes/_profile.md`
 - `profile/article-digest.md`
-- `portals.yml`
+- `config/portals.yml`
 - `data/*`
 - `reports/*`
 - `output/*`

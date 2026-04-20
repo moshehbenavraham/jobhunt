@@ -7,7 +7,7 @@ matches into a usable shortlist for later evaluation.
 
 The checked-in zero-token scanner is API-first. It:
 
-- reads `portals.yml`
+- reads `config/portals.yml`
 - reads `config/profile.yml` for optional discovery constraints
 - scans enabled `tracked_companies` with a detectable supported ATS API
 - supports Greenhouse, Ashby, and Lever board discovery
@@ -25,7 +25,7 @@ implement.
 
 ## Configuration
 
-Read `portals.yml`, which currently matters in these ways:
+Read `config/portals.yml`, which currently matters in these ways:
 
 - `tracked_companies`: the live discovery surface for this scanner
 - `title_filter.positive`: required title keywords unless the list is empty
@@ -45,7 +45,7 @@ Read `config/profile.yml`, which currently matters in these ways:
   or ambiguous location should survive scan-time filtering
 - `discovery.allow_remote_unknown_locations`: same, but for remote roles
 
-Config that is allowed in `portals.yml` but not used by this scanner today:
+Config that is allowed in `config/portals.yml` but not used by this scanner today:
 
 - `search_queries`: manual or future discovery notes only
 - `title_filter.seniority_boost`: ignored by the current scanner
@@ -82,7 +82,7 @@ API detection is inferred from `api:` or from `careers_url`.
 
 ## Workflow
 
-1. Read `portals.yml`.
+1. Read `config/portals.yml`.
 2. Select tracked companies within scope:
    - include companies matching `--company`, if provided
    - skip disabled companies

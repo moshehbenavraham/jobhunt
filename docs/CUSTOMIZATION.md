@@ -21,7 +21,7 @@ negotiation posture.
 | Archetypes and narrative | `modes/_profile.md`            | Role archetypes, adaptive framing, negotiation scripts, location policy, scoring preferences                |
 | CV content               | `profile/cv.md`                | Summary, experience, projects, education, skills                                                            |
 | Proof points             | `profile/article-digest.md`    | Public metrics, portfolio evidence, proof-point wording that should override weaker CV phrasing             |
-| Job-search targeting     | `portals.yml`                  | Positive and negative title filters, tracked companies, and optional manual search notes                    |
+| Job-search targeting     | `config/portals.yml`           | Positive and negative title filters, tracked companies, and optional manual search notes                    |
 | Interview story bank     | `interview-prep/story-bank.md` | Accumulated STAR-style stories and interview examples                                                       |
 
 ### Common User-Layer Changes
@@ -34,12 +34,12 @@ discovery`
 - Refresh resume bullets in `profile/cv.md`
 - Add stronger proof points in `profile/article-digest.md`
 - Tune `title_filter.positive`, `title_filter.negative`, and
-  `tracked_companies` in `portals.yml`
-- Keep `search_queries` in `portals.yml` only as manual notes for now; the
+  `tracked_companies` in `config/portals.yml`
+- Keep `search_queries` in `config/portals.yml` only as manual notes for now; the
   current zero-token scanner does not execute them
 
 If you are setting up from scratch, start from
-`config/profile.example.yml`, `templates/portals.example.yml`,
+`config/profile.example.yml`, `config/portals.example.yml`,
 `profile/cv.example.md`, and optionally `profile/article-digest.example.md`,
 then save your final settings in the user-layer files above.
 
@@ -65,7 +65,7 @@ active in the current scanner:
 Use this loop when scan results are too broad or too thin:
 
 1. Tighten or broaden `title_filter.positive` and `title_filter.negative` in
-   `portals.yml`.
+   `config/portals.yml`.
 2. Adjust `config/profile.yml -> discovery` if the problem is geographic rather
    than title-based.
 3. Preview with `npm run scan -- --compare-clean` so you see the config's real
@@ -120,7 +120,7 @@ Edit:
 
 - `config/profile.yml`
 - `modes/_profile.md`
-- `portals.yml`
+- `config/portals.yml`
 
 ### Change your negotiation posture
 

@@ -497,7 +497,7 @@ function analyze(minThreshold = MIN_THRESHOLD) {
   );
   if (geoBlocker && geoBlocker.percentage >= 20) {
     recommendations.push({
-      action: `Tighten location filters in portals.yml -- ${geoBlocker.percentage}% of applications hit a geo-restriction blocker`,
+      action: `Tighten location filters in config/portals.yml -- ${geoBlocker.percentage}% of applications hit a geo-restriction blocker`,
       reasoning: `${geoBlocker.frequency} of ${enriched.length} offers are location-restricted (US/Canada-only). These are wasted evaluation effort.`,
       impact: 'high',
     });

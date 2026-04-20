@@ -1,5 +1,5 @@
 # Portal Scanner Configuration
-# Copy this file to portals.yml in the project root, then tune it for your lane.
+# Copy this file to config/portals.yml, then tune it for your lane.
 #
 # Current zero-token scanner behavior:
 # - scans enabled tracked_companies with detectable supported ATS APIs

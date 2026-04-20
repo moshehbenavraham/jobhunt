@@ -3,7 +3,7 @@
 /**
  * scan.mjs - Zero-token portal scanner
  *
- * Fetches supported ATS APIs directly, applies title filters from portals.yml,
+ * Fetches supported ATS APIs directly, applies title filters from config/portals.yml,
  * deduplicates against existing history, and appends new offers to pipeline.md
  * and scan-history.tsv.
  *
@@ -42,7 +42,7 @@ const PROJECT_ROOT = process.env.JOBHUNT_ROOT
   : resolve(SCRIPT_DIR, '..');
 
 const DATA_DIR = resolve(PROJECT_ROOT, 'data');
-const PORTALS_PATH = resolve(PROJECT_ROOT, 'portals.yml');
+const PORTALS_PATH = resolve(PROJECT_ROOT, 'config', 'portals.yml');
 const PROFILE_PATH = resolve(PROJECT_ROOT, 'config', 'profile.yml');
 const SCAN_HISTORY_PATH = resolve(DATA_DIR, 'scan-history.tsv');
 const PIPELINE_PATH = resolve(DATA_DIR, 'pipeline.md');
@@ -996,7 +996,7 @@ function collectInactiveConfigNotes(config, scopedCompanies) {
 
   if (searchQueries.length > 0) {
     notes.push(
-      `search_queries (${searchQueries.length}) are stored in portals.yml but ignored by this scanner`,
+      `search_queries (${searchQueries.length}) are stored in config/portals.yml but ignored by this scanner`,
     );
   }
 
@@ -1027,7 +1027,10 @@ function buildCompanyLists(companies, filterCompany) {
 
   for (const company of scopedCompanies) {
     if (company.enabled === false) {
-      skipped.push({ name: company.name, reason: 'disabled in portals.yml' });
+      skipped.push({
+        name: company.name,
+        reason: 'disabled in config/portals.yml',
+      });
       continue;
     }
 
@@ -1055,7 +1058,9 @@ export async function runScan(args = process.argv.slice(2)) {
   const filterCompany = companyValue ? companyValue.toLowerCase() : null;
 
   if (!existsSync(PORTALS_PATH)) {
-    console.error('Error: portals.yml not found. Run onboarding first.');
+    console.error(
+      'Error: config/portals.yml not found. Run onboarding first.',
+    );
     process.exit(1);
   }
 
@@ -1263,7 +1268,7 @@ export async function runScan(args = process.argv.slice(2)) {
     }
   } else {
     console.log(
-      '\nNext step: tighten portals.yml or add higher-fit companies, then rerun npm run scan.',
+      '\nNext step: tighten config/portals.yml or add higher-fit companies, then rerun npm run scan.',
     );
   }
 }

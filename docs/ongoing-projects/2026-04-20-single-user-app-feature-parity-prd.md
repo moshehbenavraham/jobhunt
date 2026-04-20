@@ -151,7 +151,7 @@ The app must reach parity for these current surfaces:
   - `profile/cv.md`
   - `config/profile.yml`
   - `modes/_profile.md`
-  - `portals.yml`
+  - `config/portals.yml`
 - onboarding flow that creates missing user-layer files from existing examples
 
 ### 2. Core workflows
@@ -312,7 +312,7 @@ Keep the current file-based contract as the source of truth for domain data:
 - `profile/cv.md`
 - `config/profile.yml`
 - `modes/_profile.md`
-- `portals.yml`
+- `config/portals.yml`
 - `reports/*`
 - `output/*`
 - `batch/tracker-additions/*`

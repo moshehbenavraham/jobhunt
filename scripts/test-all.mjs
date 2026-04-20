@@ -345,6 +345,18 @@ try {
       fail('Updater does not protect legacy root cv.md');
     }
 
+    if (updaterHarness.isUserPath('portals.yml')) {
+      pass('Updater still protects legacy root portals.yml during migration');
+    } else {
+      fail('Updater does not protect legacy root portals.yml during migration');
+    }
+
+    if (updaterHarness.isUpdateTargetPath('templates/portals.example.yml')) {
+      pass('Updater still tracks removed templates for upgrade cleanup');
+    } else {
+      fail('Updater does not track removed templates for upgrade cleanup');
+    }
+
     const latexSystemTargets = [
       'modes/latex.md',
       'scripts/generate-latex.mjs',
@@ -414,7 +426,7 @@ try {
     join(tempRoot, 'config', 'profile.yml'),
     'full_name: "Test User"\nemail: "test@example.com"\nlocation: "Remote"\n',
   );
-  writeFileSync(join(tempRoot, 'portals.yml'), 'companies: []\n');
+  writeFileSync(join(tempRoot, 'config', 'portals.yml'), 'companies: []\n');
   writeFileSync(join(tempRoot, 'fonts', 'dummy.txt'), 'font');
 
   try {
@@ -579,11 +591,12 @@ const userFiles = [
   'profile/cv.md',
   'profile/article-digest.md',
   'article-digest.md',
+  'portals.yml',
   'config/profile.yml',
   'data/follow-ups.md',
   'interview-prep/story-bank.md',
   'modes/_profile.md',
-  'portals.yml',
+  'config/portals.yml',
 ];
 for (const f of userFiles) {
   const tracked = run('git', ['ls-files', f]);
@@ -744,7 +757,7 @@ if (fileExists(skillPath)) {
     '`profile/cv.md`',
     '`config/profile.yml`',
     '`modes/_profile.md`',
-    '`portals.yml`',
+    '`config/portals.yml`',
   ];
   const missingBootstrapMarkers = bootstrapMarkers.filter(
     (marker) => !careerOpsSkill.includes(marker),

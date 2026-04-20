@@ -22,7 +22,7 @@ Use the checked-in Job-Hunt modes, scripts, templates, and tracker flow. Do not 
    - `profile/cv.md` (legacy root `cv.md` also accepted during migration)
    - `config/profile.yml`
    - `modes/_profile.md`
-   - `portals.yml`
+   - `config/portals.yml`
 
 3. If `modes/_profile.md` is missing, copy `modes/_profile.template.md` to `modes/_profile.md` silently.
 
@@ -41,8 +41,8 @@ If setup is incomplete, do not run evaluations, scans, PDFs, or pipeline process
    - Collect: full name, email, location, timezone, target roles, salary target.
    - Store identity, targets, narrative, and constraints here.
 
-3. `portals.yml`
-   - Copy `templates/portals.example.yml` if needed.
+3. `config/portals.yml`
+   - Copy `config/portals.example.yml` if needed.
    - Tailor `title_filter.positive` to the user’s target roles.
 
 4. `data/applications.md`
@@ -67,7 +67,7 @@ If setup is incomplete, do not run evaluations, scans, PDFs, or pipeline process
 
 Read `docs/DATA_CONTRACT.md`.
 
-- User layer: `profile/cv.md`, legacy root `cv.md`, `profile/article-digest.md`, `config/profile.yml`, `modes/_profile.md`, `portals.yml`, `data/*`, `reports/*`, `output/*`, `interview-prep/*`, `jds/*`
+- User layer: `profile/cv.md`, legacy root `cv.md`, `profile/article-digest.md`, `config/profile.yml`, `config/portals.yml`, `modes/_profile.md`, `data/*`, `reports/*`, `output/*`, `interview-prep/*`, `jds/*`
 - System layer: `modes/_shared.md`, `modes/**`, `scripts/**`, `templates/**`, `batch/**`, `dashboard/**`, `docs/**`, `AGENTS.md`
 
 Rule:
@@ -164,7 +164,7 @@ Rules:
 Common user-specific changes belong here:
 
 - archetypes, narrative, negotiation, location policy, scoring preference: `modes/_profile.md` or `config/profile.yml`
-- target companies and queries: `portals.yml`
+- target companies and queries: `config/portals.yml`
 - proof points and public metrics: `profile/article-digest.md`
 - CV content: `profile/cv.md`
 

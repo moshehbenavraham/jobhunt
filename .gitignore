@@ -25,6 +25,7 @@ profile/article-digest.md
 article-digest.md
 config/profile.yml
 portals.yml
+config/portals.yml
 modes/_profile.md
 interview-prep/*.md
 !interview-prep/README-interview-prep.md

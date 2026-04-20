@@ -4,7 +4,7 @@
  * update-system.mjs - Safe auto-updater for jobhunt
  *
  * Updates ONLY system layer files (modes, scripts, dashboard, templates).
- * NEVER touches user data (profile/cv.md, legacy cv.md, profile/article-digest.md, profile.yml, _profile.md, data/, reports/).
+ * NEVER touches user data (profile/cv.md, legacy cv.md, profile/article-digest.md, config/profile.yml, legacy portals.yml, config/portals.yml, _profile.md, data/, reports/).
  *
  * Usage:
  *   node scripts/update-system.mjs check      # Check if update available
@@ -40,9 +40,16 @@ const RELEASES_API =
   'https://api.github.com/repos/moshehbenavraham/jobhunt/releases/latest';
 const VERSION_PATH = 'VERSION';
 
+// System-managed legacy paths removed from the canonical layout. Keep them in
+// the updater contract so apply/rollback can cleanly delete or restore them.
+const REMOVED_SYSTEM_PATHS = ['templates/portals.example.yml'];
+
 // System layer paths - ONLY these files get updated
 const SYSTEM_PATHS = [
   '.gitignore',
+  'config/README-config.md',
+  'config/profile.example.yml',
+  'config/portals.example.yml',
   'modes/_shared.md',
   'modes/_profile.template.md',
   'modes/latex.md',
@@ -115,8 +122,9 @@ const USER_PATHS = [
   'profile/article-digest.md',
   'article-digest.md',
   'config/profile.yml',
-  'modes/_profile.md',
   'portals.yml',
+  'config/portals.yml',
+  'modes/_profile.md',
   'interview-prep/story-bank.md',
   'data/follow-ups.md',
   'data/',
@@ -201,7 +209,7 @@ function revertPaths(paths) {
 
 function addPaths(paths) {
   if (paths.length === 0) return;
-  git('add', '--', ...paths);
+  git('add', '-A', '--', ...paths);
 }
 
 function resolveUpstreamTarget() {
@@ -265,6 +273,7 @@ function isUserPath(file) {
 function updateTargets() {
   return new Set([
     ...SYSTEM_PATHS,
+    ...REMOVED_SYSTEM_PATHS,
     ...REMAPPED_SYSTEM_FILES.map(({ dest }) => dest),
   ]);
 }
@@ -289,6 +298,30 @@ function dirtyUpdateTargets() {
     .filter(isUpdateTargetPath);
 }
 
+function pathExistsInRef(ref, path) {
+  try {
+    execFileSync('git', ['cat-file', '-e', `${ref}:${path}`], {
+      cwd: ROOT,
+      stdio: 'ignore',
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isTrackedPath(path) {
+  try {
+    execFileSync('git', ['ls-files', '--error-unmatch', path], {
+      cwd: ROOT,
+      stdio: 'ignore',
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function checkoutSystemFilesFromRef(ref, updatedPaths) {
   for (const path of SYSTEM_PATHS) {
     try {
@@ -297,6 +330,26 @@ function checkoutSystemFilesFromRef(ref, updatedPaths) {
     } catch {
       // File may not exist in the source ref.
     }
+  }
+
+  for (const path of REMOVED_SYSTEM_PATHS) {
+    if (pathExistsInRef(ref, path)) {
+      try {
+        git('checkout', ref, '--', path);
+        updatedPaths.add(path);
+      } catch {
+        // File may not exist in the source ref.
+      }
+      continue;
+    }
+
+    const destination = join(ROOT, path);
+    if (!existsSync(destination) || !isTrackedPath(path)) {
+      continue;
+    }
+
+    unlinkSync(destination);
+    updatedPaths.add(path);
   }
 
   for (const { source, dest } of REMAPPED_SYSTEM_FILES) {

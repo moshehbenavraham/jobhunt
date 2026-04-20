@@ -21,7 +21,7 @@ npx playwright install chromium
 
 ```bash
 cp config/profile.example.yml config/profile.yml
-cp templates/portals.example.yml portals.yml
+cp config/portals.example.yml config/portals.yml
 ```
 
 Fill in:
@@ -55,7 +55,7 @@ npm run doctor
 ```
 
 `npm run doctor` validates Node.js, installed dependencies, Playwright
-Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml`. If it reports an
+Chromium, `profile/cv.md`, `config/profile.yml`, and `config/portals.yml`. If it reports an
 issue, fix the listed item and rerun the command.
 
 ### 5. Start the repo in Codex

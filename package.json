@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.32",
+  "version": "1.5.33",
   "description": "AI-powered job search pipeline",
   "scripts": {
     "cron:install": "node scripts/install-scan-cron.mjs",

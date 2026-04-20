@@ -277,13 +277,13 @@ function runScript(script, sandbox, args = []) {
   assert.equal(failed.status, 1);
   assert.match(failed.stdout, /Dependencies not installed/);
   assert.match(failed.stdout, /profile\/cv\.md not found/);
-  assert.match(failed.stdout, /portals\.yml not found/);
+  assert.match(failed.stdout, /config\/portals\.yml not found/);
 
   const passing = createSandbox('jobhunt-doctor-pass-');
   mkdirSync(join(passing, 'node_modules'), { recursive: true });
   writeFile(join(passing, 'profile', 'cv.md'), '# CV\n');
   writeFile(join(passing, 'config', 'profile.yml'), 'name: Test User\n');
-  writeFile(join(passing, 'portals.yml'), 'tracked_companies: []\n');
+  writeFile(join(passing, 'config', 'portals.yml'), 'tracked_companies: []\n');
   writeFile(join(passing, 'fonts', 'test-font.ttf'), 'font');
 
   const passed = runScript('doctor.mjs', passing);

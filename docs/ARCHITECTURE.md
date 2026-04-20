@@ -73,7 +73,7 @@ The repository is organized around a Codex-first agent contract, repo-owned scri
 profile/cv.md
 profile/article-digest.md
 config/profile.yml
-portals.yml
+config/portals.yml
   -> evaluation and scan workflows
   -> batch/batch-input.tsv
   -> batch/batch-runner.sh

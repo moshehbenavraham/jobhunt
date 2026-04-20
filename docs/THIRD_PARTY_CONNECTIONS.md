@@ -42,7 +42,7 @@ These are the recruiting platforms and patterns explicitly handled or documented
 | Workday              | `*.myworkdayjobs.com`                                                                 | documented scan target, JD extraction, liveness |
 | Custom company sites | company-owned careers domains                                                         | direct scan and single-offer evaluation         |
 
-The example `portals.yml` also includes search-driven discovery across broader job sites, including `apply.workable.com`, `workatastartup.com`, `ycombinator.com/jobs`, `ai-jobs.net`, `remoteok.com`, `weworkremotely.com`, `workingnomads.com`, `euremotejobs.com`, `fwddeploy.com`, and `getmanfred.com`.
+The example `config/portals.yml` also includes manual search-query notes for broader job sites, including `apply.workable.com`, `workatastartup.com`, `ycombinator.com/jobs`, `ai-jobs.net`, `remoteok.com`, `weworkremotely.com`, `workingnomads.com`, `euremotejobs.com`, `fwddeploy.com`, and `getmanfred.com`.
 
 ## How The Repo Connects To These Pages
 
@@ -56,9 +56,9 @@ Portal scan works in layers:
 
 1. Read each tracked company's `careers_url` directly.
 2. Use structured ATS APIs or feeds when available.
-3. Use broader search queries to discover new roles on public job sites and ATS boards.
+3. Treat broader search queries as manual notes unless or until the scanner adds a search-backed discovery path.
 
-The first-party source of truth for these connections is `portals.yml`.
+The first-party source of truth for these connections is `config/portals.yml`.
 
 ### Liveness verification
 
@@ -87,7 +87,7 @@ If content exists but no visible apply control is found, the result can remain `
 
 ## Practical Boundaries
 
-- The exact third-party surface depends on the user's `portals.yml` and the URLs they paste.
+- The exact third-party surface depends on the user's `config/portals.yml` and the URLs they paste.
 - A live posting must come from the live page itself, not from generic search snippets alone.
 - The repo prefers direct careers pages and ATS boards over search-engine discovery.
 - This document is about recruiting surfaces only. It does not cover package registries, GitHub update paths, CI, or AI-provider connections.
@@ -98,5 +98,5 @@ If content exists but no visible apply control is found, the result can remain `
 - `scripts/scan.mjs`
 - `scripts/check-liveness.mjs`
 - `scripts/liveness-core.mjs`
-- `templates/portals.example.yml`
+- `config/portals.example.yml`
 - `docs/ARCHITECTURE.md`

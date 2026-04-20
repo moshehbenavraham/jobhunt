@@ -8,7 +8,6 @@ System-layer template files used by jobhunt scripts and modes. These files are a
 | --------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | `cv-template.html`    | `scripts/generate-pdf.mjs`                                                                   | HTML/CSS template for ATS-optimized CV PDFs                              |
 | `cv-template.tex`     | `scripts/generate-latex.mjs`                                                                 | LaTeX / Overleaf template for ATS-optimized CV PDFs                      |
-| `portals.example.yml` | Onboarding                                                                                   | Example portal scanner configuration (copy to `portals.yml` to activate) |
 | `states.yml`          | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases                           |
 
 ### cv-template.html
@@ -34,12 +33,6 @@ npm run latex -- output/cv-name-company-date.tex output/cv-name-company-date.pdf
 **Prerequisites:** `pdflatex` on `PATH` via TeX Live, MiKTeX, or equivalent. If local compilation is unavailable, upload the generated `.tex` file to Overleaf instead.
 
 **Customization:** Edit this file to change spacing, section order, or formatting commands. Placeholder guidance lives in `modes/latex.md`.
-
-### portals.example.yml
-
-Pre-configured portal scanner with 45+ tracked companies and search queries. Contains title filters, company career page URLs, Greenhouse API endpoints, and WebSearch queries.
-
-**To activate:** Copy to project root as `portals.yml` and customize `title_filter.positive` keywords for your target roles. Add or remove companies as needed.
 
 ### states.yml
 

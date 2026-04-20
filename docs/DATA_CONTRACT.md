@@ -14,7 +14,7 @@ These files contain your personal data, customizations, and work product. Update
 | `modes/_profile.md`            | Your archetypes, narrative, negotiation scripts |
 | `interview-prep/story-bank.md` | Your accumulated STAR+R stories                 |
 | `interview-prep/*.md`          | Saved company- or role-specific interview prep  |
-| `portals.yml`                  | Your customized company list                    |
+| `config/portals.yml`           | Your customized company list                    |
 | `data/applications.md`         | Your application tracker                        |
 | `data/pipeline.md`             | Your URL inbox                                  |
 | `data/scan-history.tsv`        | Your scan history                               |

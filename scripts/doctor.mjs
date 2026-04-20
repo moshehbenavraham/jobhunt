@@ -102,14 +102,14 @@ function checkProfile() {
 }
 
 function checkPortals() {
-  if (existsSync(join(projectRoot, 'portals.yml'))) {
-    return { pass: true, label: 'portals.yml found' };
+  if (existsSync(join(projectRoot, 'config', 'portals.yml'))) {
+    return { pass: true, label: 'config/portals.yml found' };
   }
   return {
     pass: false,
-    label: 'portals.yml not found',
+    label: 'config/portals.yml not found',
     fix: [
-      'Run: cp templates/portals.example.yml portals.yml',
+      'Run: cp config/portals.example.yml config/portals.yml',
       'Then customize with your target companies',
     ],
   };

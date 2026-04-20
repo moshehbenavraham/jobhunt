@@ -57,7 +57,7 @@ Notes:
 
 ## doctor
 
-Validates that all prerequisites are in place: Node.js >= 18, dependencies installed, Playwright chromium, required files (`profile/cv.md`, `config/profile.yml`, `portals.yml`), fonts directory, and auto-creates `data/`, `output/`, `reports/` if missing.
+Validates that all prerequisites are in place: Node.js >= 18, dependencies installed, Playwright chromium, required files (`profile/cv.md`, `config/profile.yml`, `config/portals.yml`), fonts directory, and auto-creates `data/`, `output/`, `reports/` if missing.
 
 ```bash
 npm run doctor
@@ -392,7 +392,7 @@ Each URL gets a verdict: `active`, `expired`, or `uncertain` with a reason.
 ## scan
 
 Zero-token portal scanner. Hits ATS APIs (Greenhouse, Ashby, Lever) directly,
-applies title filters from `portals.yml`, applies optional location constraints
+applies title filters from `config/portals.yml`, applies optional location constraints
 from `config/profile.yml -> discovery`, appends matching listings to
 `data/pipeline.md`, and refreshes the generated `## Shortlist` section with
 bucket counts, campaign guidance, and a top-10 ranking.
@@ -402,7 +402,7 @@ npm run scan
 npm run scan -- --compare-clean
 ```
 
-**Exit codes:** `0` scan completed, `1` configuration error or no portals.yml found.
+**Exit codes:** `0` scan completed, `1` configuration error or no config/portals.yml found.
 
 ---
 

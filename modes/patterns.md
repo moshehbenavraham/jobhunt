@@ -10,7 +10,7 @@ Analyze all tracked applications to find patterns in outcomes and surface action
 - `reports/` — Individual evaluation reports
 - `config/profile.yml` — User profile (for recommendation context)
 - `modes/_profile.md` — User archetypes and framing
-- `portals.yml` — Portal config (for filter update recommendations)
+- `config/portals.yml` — Portal config (for filter update recommendations)
 
 ## Minimum Threshold
 
@@ -137,7 +137,7 @@ Ask the user if they want to act on any recommendations:
 
 > "Want me to apply any of these recommendations? I can:
 >
-> - Update `portals.yml` to filter out geo-restricted roles
+> - Update `config/portals.yml` to filter out geo-restricted roles
 > - Set a score threshold in `_profile.md` for PDF generation
 > - Adjust archetype targeting based on what's converting
 >
@@ -145,7 +145,7 @@ Ask the user if they want to act on any recommendations:
 
 If the user agrees:
 
-- For portal filter changes: edit `portals.yml`
+- For portal filter changes: edit `config/portals.yml`
 - For profile/archetype changes: edit `modes/_profile.md` (NEVER `_shared.md`)
 - For score threshold: add to `config/profile.yml` under a `patterns` key
 

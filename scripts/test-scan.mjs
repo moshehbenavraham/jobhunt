@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import http from 'node:http';
 import {
   existsSync,
@@ -112,7 +113,7 @@ const skippedCompanyLines = Array.from({ length: 10 }, (_, index) => [
 ]);
 
 writeFile(
-  join(sandbox, 'portals.yml'),
+  join(sandbox, 'config', 'portals.yml'),
   [
     'title_filter:',
     '  positive:',
@@ -482,7 +483,7 @@ assert.match(dryRun.output, /Filtered by location:\s+2 removed/);
 assert.match(dryRun.output, /Duplicates:\s+3 skipped/);
 assert.match(dryRun.output, /New offers added:\s+1/);
 assert.match(dryRun.output, /Skipped companies \(12\):/);
-assert.match(dryRun.output, /AshbyCo: disabled in portals\.yml/);
+assert.match(dryRun.output, /AshbyCo: disabled in config\/portals\.yml/);
 assert.match(
   dryRun.output,
   /UnknownCo: no supported ATS API detected from api\/careers_url/,
@@ -490,7 +491,7 @@ assert.match(
 assert.match(dryRun.output, /Unsupported config \(3\):/);
 assert.match(
   dryRun.output,
-  /search_queries \(1\) are stored in portals\.yml but ignored by this scanner/,
+  /search_queries \(1\) are stored in config\/portals\.yml but ignored by this scanner/,
 );
 assert.match(
   dryRun.output,
@@ -547,7 +548,7 @@ const freshSandbox = mkdtempSync(join(tmpdir(), 'jobhunt-scan-fresh-'));
 process.env.JOBHUNT_ROOT = freshSandbox;
 
 writeFile(
-  join(freshSandbox, 'portals.yml'),
+  join(freshSandbox, 'config', 'portals.yml'),
   [
     'title_filter:',
     '  positive:',
@@ -582,10 +583,36 @@ assert.match(
   /^url\tfirst_seen\tportal\ttitle\tcompany\tstatus/m,
 );
 
+const rootOnlySandbox = mkdtempSync(join(tmpdir(), 'jobhunt-scan-root-only-'));
+writeFile(
+  join(rootOnlySandbox, 'portals.yml'),
+  [
+    'title_filter:',
+    '  positive:',
+    '    - engineer',
+    'tracked_companies:',
+    '  - name: RootOnlyCo',
+    '    enabled: true',
+    `    api: ${baseUrl}/greenhouse`,
+    '',
+  ].join('\n'),
+);
+const rootOnlyRun = spawnSync('node', [join(ROOT, 'scripts', 'scan.mjs')], {
+  cwd: ROOT,
+  env: { ...process.env, JOBHUNT_ROOT: rootOnlySandbox },
+  encoding: 'utf8',
+});
+assert.equal(rootOnlyRun.status, 1, rootOnlyRun.stdout + rootOnlyRun.stderr);
+assert.match(
+  rootOnlyRun.stderr,
+  /Error: config\/portals\.yml not found\. Run onboarding first\./,
+);
+
 await new Promise((resolveClose, rejectClose) =>
   server.close((error) => (error ? rejectClose(error) : resolveClose())),
 );
 rmSync(sandbox, { recursive: true, force: true });
 rmSync(freshSandbox, { recursive: true, force: true });
+rmSync(rootOnlySandbox, { recursive: true, force: true });
 
 console.log('scan regression tests pass');

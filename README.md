@@ -12,7 +12,7 @@ It also includes a Go-based terminal dashboard for browsing and updating the job
 npm install
 npx playwright install chromium
 cp config/profile.example.yml config/profile.yml
-cp templates/portals.example.yml portals.yml
+cp config/portals.example.yml config/portals.yml
 cp profile/cv.example.md profile/cv.md
 npm run doctor
 codex
@@ -24,7 +24,7 @@ If you have public proof points, optionally copy `profile/article-digest.example
 
 See the [Setup Guide](docs/SETUP.md) for the detailed walkthrough.
 
-`npm run doctor` validates Node.js, installed dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `portals.yml`.
+`npm run doctor` validates Node.js, installed dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `config/portals.yml`.
 
 After it passes, you have two normal next steps:
 
@@ -35,8 +35,8 @@ The standard user-layer inputs are:
 
 - `profile/cv.md`
 - `config/profile.yml`
+- `config/portals.yml`
 - `modes/_profile.md`
-- `portals.yml`
 - `profile/article-digest.md` if you have proof points
 
 ## Core Commands
@@ -61,7 +61,7 @@ file to Overleaf.
 
 `npm run scan` is currently an API-first scanner. It uses
 `tracked_companies`, `title_filter.positive`, and `title_filter.negative` from
-`portals.yml`, plus optional scan-time discovery constraints from
+`config/portals.yml`, plus optional scan-time discovery constraints from
 `config/profile.yml -> discovery`, to scan supported Greenhouse, Ashby, and
 Lever boards directly. It does not execute `search_queries`. It also refreshes
 `data/pipeline.md -> ## Shortlist` with bucket counts, campaign guidance, and a

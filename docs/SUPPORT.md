@@ -37,7 +37,7 @@ the diagnostics needed to reproduce the problem.
 
 ## Do Not Include
 
-- full CV contents, `config/profile.yml`, `portals.yml`, or generated reports
+- full CV contents, `config/profile.yml`, `config/portals.yml`, or generated reports
 - secrets, tokens, cookies, or private job materials
 - public details for a security issue; email them instead
 
