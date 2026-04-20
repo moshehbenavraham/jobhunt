@@ -6,6 +6,7 @@ runtime policy, and repo reference material.
 ## Start Here
 
 - [Setup Guide](SETUP.md)
+- [Workflow Checklist](WORKFLOW_CHECKLIST.md) - main operator flow plus side-path capability map
 - [Onboarding](onboarding.md)
 - [Data Contract](DATA_CONTRACT.md)
 - [Customization Guide](CUSTOMIZATION.md)
