@@ -1,0 +1,59 @@
+{
+  "version": "2.0",
+  "project_name": "Job-Hunt",
+  "description": "Local-first single-user app parity effort for jobhunt",
+  "current_phase": 0,
+  "current_session": null,
+  "monorepo": true,
+  "packages": [
+    {
+      "name": "web",
+      "path": "apps/web",
+      "stack_hint": "TypeScript React"
+    },
+    {
+      "name": "api",
+      "path": "apps/api",
+      "stack_hint": "TypeScript Node"
+    }
+  ],
+  "phases": {
+    "0": {
+      "name": "Foundation and Repo Contract",
+      "status": "not_started",
+      "session_count": 0
+    },
+    "1": {
+      "name": "Backend Runtime and Job Infrastructure",
+      "status": "not_started",
+      "session_count": 0
+    },
+    "2": {
+      "name": "Typed Tools and Agent Orchestration",
+      "status": "not_started",
+      "session_count": 0
+    },
+    "3": {
+      "name": "Chat, Onboarding, and Approvals UX",
+      "status": "not_started",
+      "session_count": 0
+    },
+    "4": {
+      "name": "Evaluation, Artifacts, and Tracker Parity",
+      "status": "not_started",
+      "session_count": 0
+    },
+    "5": {
+      "name": "Scan, Batch, and Application-Help Parity",
+      "status": "not_started",
+      "session_count": 0
+    },
+    "6": {
+      "name": "Specialist Workflows, Dashboard Replacement, and Cutover",
+      "status": "not_started",
+      "session_count": 0
+    }
+  },
+  "completed_sessions": [],
+  "next_session_history": []
+}
