@@ -1,33 +1,47 @@
 import { pathToFileURL } from 'node:url';
-import { getAppStateRootStatus } from './config/app-state-root.js';
-import { getRepoPaths } from './config/repo-paths.js';
+import { type RepoPathOptions } from './config/repo-paths.js';
+import {
+  createWorkspaceAdapter,
+  type WorkspaceMissingSummary,
+  type WorkspaceSummary,
+} from './workspace/index.js';
 
 export type StartupDiagnostics = {
-  service: 'jobhunt-api-scaffold';
-  sessionId: string;
-  repoRoot: string;
-  agentsGuidePath: string;
-  dataContractPath: string;
   appStateRootPath: string;
   appStateRootExists: boolean;
-  mutationPolicy: 'manual-bootstrap-only';
+  agentsGuidePath: string;
+  dataContractPath: string;
+  mutationPolicy: 'app-owned-only';
+  onboardingMissing: WorkspaceMissingSummary[];
+  optionalMissing: WorkspaceMissingSummary[];
+  repoRoot: string;
+  runtimeMissing: WorkspaceMissingSummary[];
+  service: 'jobhunt-api-scaffold';
+  sessionId: 'phase00-session02-workspace-adapter-contract';
   userLayerWrites: 'disabled';
+  workspace: WorkspaceSummary;
 };
 
-export async function getStartupDiagnostics(): Promise<StartupDiagnostics> {
-  const repoPaths = getRepoPaths();
-  const appStateRoot = await getAppStateRootStatus();
+export async function getStartupDiagnostics(
+  options: RepoPathOptions = {},
+): Promise<StartupDiagnostics> {
+  const workspace = createWorkspaceAdapter(options);
+  const summary = await workspace.getSummary();
 
   return {
+    appStateRootPath: summary.appStateRootPath,
+    appStateRootExists: summary.appStateRootExists,
+    agentsGuidePath: workspace.repoPaths.agentsGuidePath,
+    dataContractPath: workspace.repoPaths.dataContractPath,
+    mutationPolicy: 'app-owned-only',
+    onboardingMissing: summary.onboardingMissing,
+    optionalMissing: summary.optionalMissing,
+    repoRoot: workspace.repoPaths.repoRoot,
+    runtimeMissing: summary.runtimeMissing,
     service: 'jobhunt-api-scaffold',
-    sessionId: 'phase00-session01-monorepo-app-skeleton',
-    repoRoot: repoPaths.repoRoot,
-    agentsGuidePath: repoPaths.agentsGuidePath,
-    dataContractPath: repoPaths.dataContractPath,
-    appStateRootPath: appStateRoot.rootPath,
-    appStateRootExists: appStateRoot.exists,
-    mutationPolicy: 'manual-bootstrap-only',
+    sessionId: 'phase00-session02-workspace-adapter-contract',
     userLayerWrites: 'disabled',
+    workspace: summary,
   };
 }
 

@@ -117,7 +117,7 @@ assert(
   'API scaffold diagnostics reported an unexpected service name.',
 );
 assert(
-  diagnostics.sessionId === 'phase00-session01-monorepo-app-skeleton',
+  diagnostics.sessionId === 'phase00-session02-workspace-adapter-contract',
   'API scaffold diagnostics reported an unexpected session id.',
 );
 assert(
@@ -129,12 +129,20 @@ assert(
   'API scaffold diagnostics changed app-state existence unexpectedly.',
 );
 assert(
-  diagnostics.mutationPolicy === 'manual-bootstrap-only',
+  diagnostics.mutationPolicy === 'app-owned-only',
   'API scaffold diagnostics reported an unexpected mutation policy.',
 );
 assert(
   diagnostics.userLayerWrites === 'disabled',
   'API scaffold diagnostics reported an unexpected user-layer policy.',
+);
+assert(
+  Array.isArray(diagnostics.onboardingMissing),
+  'API scaffold diagnostics did not include onboarding-missing details.',
+);
+assert(
+  Array.isArray(diagnostics.runtimeMissing),
+  'API scaffold diagnostics did not include runtime-missing details.',
 );
 
 if (!appStateExistedBefore) {

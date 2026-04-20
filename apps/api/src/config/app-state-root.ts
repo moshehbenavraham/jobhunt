@@ -1,8 +1,11 @@
 import { lstat, mkdir } from 'node:fs/promises';
-import { relative, resolve } from 'node:path';
-import { getRepoPaths } from './repo-paths.js';
-
-export const APP_STATE_DIRNAME = '.jobhunt-app';
+import { resolve } from 'node:path';
+import {
+  APP_STATE_DIRNAME,
+  getRepoPaths,
+  type RepoPathOptions,
+} from './repo-paths.js';
+import { assertAppOwnedWorkspacePath } from '../workspace/workspace-boundary.js';
 
 export type AppStateRootStatus = {
   rootPath: string;
@@ -17,8 +20,10 @@ function isNodeError(error: unknown): error is NodeError {
   return typeof error === 'object' && error !== null && 'code' in error;
 }
 
-export async function getAppStateRootStatus(): Promise<AppStateRootStatus> {
-  const { appStateRootPath } = getRepoPaths();
+export async function getAppStateRootStatus(
+  options: RepoPathOptions = {},
+): Promise<AppStateRootStatus> {
+  const { appStateRootPath } = getRepoPaths(options);
 
   try {
     const stats = await lstat(appStateRootPath);
@@ -49,8 +54,10 @@ export async function getAppStateRootStatus(): Promise<AppStateRootStatus> {
   }
 }
 
-export async function ensureAppStateRoot(): Promise<AppStateRootStatus> {
-  const status = await getAppStateRootStatus();
+export async function ensureAppStateRoot(
+  options: RepoPathOptions = {},
+): Promise<AppStateRootStatus> {
+  const status = await getAppStateRootStatus(options);
 
   if (status.exists) {
     return status;
@@ -66,25 +73,24 @@ export async function ensureAppStateRoot(): Promise<AppStateRootStatus> {
   };
 }
 
-export function assertAppOwnedPath(candidatePath: string): string {
-  const { appStateRootPath } = getRepoPaths();
-  const resolvedPath = resolve(candidatePath);
-  const relativePath = relative(appStateRootPath, resolvedPath);
-
-  if (
-    relativePath === '' ||
-    (!relativePath.startsWith('..') && !relativePath.startsWith('/'))
-  ) {
-    return resolvedPath;
-  }
-
-  throw new Error(
-    `Refusing to access non-app-owned path: ${candidatePath}. Expected a path inside ${appStateRootPath}.`,
-  );
+export function assertAppOwnedPath(
+  candidatePath: string,
+  options: RepoPathOptions = {},
+): string {
+  return assertAppOwnedWorkspacePath(candidatePath, options).path;
 }
 
 export function resolveAppStatePath(...segments: string[]): string {
   const { appStateRootPath } = getRepoPaths();
   const candidatePath = resolve(appStateRootPath, ...segments);
   return assertAppOwnedPath(candidatePath);
+}
+
+export function resolveAppStatePathForRepo(
+  options: RepoPathOptions,
+  ...segments: string[]
+): string {
+  const { appStateRootPath } = getRepoPaths(options);
+  const candidatePath = resolve(appStateRootPath, ...segments);
+  return assertAppOwnedPath(candidatePath, options);
 }

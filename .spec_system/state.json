@@ -3,7 +3,7 @@
   "project_name": "Job-Hunt",
   "description": "Local-first single-user app parity effort for jobhunt",
   "current_phase": 0,
-  "current_session": "phase00-session01-monorepo-app-skeleton",
+  "current_session": null,
   "monorepo": true,
   "packages": [
     {
@@ -59,14 +59,23 @@
     {
       "id": "phase00-session01-monorepo-app-skeleton",
       "package": null
+    },
+    {
+      "id": "phase00-session02-workspace-adapter-contract",
+      "package": "apps/api"
     }
   ],
-  "current_session": null,
   "next_session_history": [
     {
       "date": "2026-04-21",
       "session": "phase00-session01-monorepo-app-skeleton",
       "package": null,
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase00-session02-workspace-adapter-contract",
+      "package": "apps/api",
       "status": "completed"
     }
   ]
