@@ -739,7 +739,7 @@ Planning assumptions for this PRD:
 
 - Objective: make the app usable as the primary operator surface for startup
   and interactive runs
-- Sessions: `3-5`
+- Sessions: `5`
 - Key outcomes: chat and run console, startup checklist, onboarding wizard,
   approval UI, resumable conversations, settings basics
 - Exit: a user can launch the app, satisfy prerequisites, start a run, and
@@ -786,7 +786,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | 00    | Foundation and Repo Contract                             | 4        | Complete    |
 | 01    | Backend Runtime and Job Infrastructure                   | 5        | Complete    |
 | 02    | Typed Tools and Agent Orchestration                      | 5        | Complete    |
-| 03    | Chat, Onboarding, and Approvals UX                       | 3-5      | Not Started |
+| 03    | Chat, Onboarding, and Approvals UX                       | 5        | In Progress |
 | 04    | Evaluation, Artifacts, and Tracker Parity                | 4-6      | Not Started |
 | 05    | Scan, Batch, and Application-Help Parity                 | 4-6      | Not Started |
 | 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 4-6      | Not Started |
@@ -867,6 +867,8 @@ Archived phase artifacts live under `.spec_system/archive/phases/phase_02/`.
 - Implement startup checklist and onboarding wizard
 - Implement resumable conversations and approval prompts
 - Add settings basics for prerequisite visibility and maintenance actions
+
+Progress: 3/5 sessions complete.
 
 ### Phase 04: Evaluation, Artifacts, and Tracker Parity
 

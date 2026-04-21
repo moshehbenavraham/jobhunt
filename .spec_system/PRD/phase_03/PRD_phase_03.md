@@ -4,7 +4,7 @@
 **Sessions**: 5
 **Estimated Duration**: 4-6 days
 
-**Progress**: 2/5 sessions (40%)
+**Progress**: 3/5 sessions (60%)
 
 ---
 
@@ -29,7 +29,7 @@ and durable state contracts.
 |---------|------|--------|------------|-----------|
 | 01 | Operator Shell and Navigation Foundation | Complete | ~14 | 2026-04-21 |
 | 02 | Chat Console and Session Resume | Complete | ~15 | 2026-04-21 |
-| 03 | Startup Checklist and Onboarding Wizard | Not Started | ~14 | - |
+| 03 | Startup Checklist and Onboarding Wizard | Complete | ~14 | 2026-04-22 |
 | 04 | Approval Inbox and Human Review Flow | Not Started | ~14 | - |
 | 05 | Settings and Maintenance Surface | Not Started | ~13 | - |
 
@@ -39,12 +39,15 @@ and durable state contracts.
 
 Session 01: Operator Shell and Navigation Foundation
 Session 02: Chat Console and Session Resume
+Session 03: Startup Checklist and Onboarding Wizard
 
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Startup Checklist and Onboarding Wizard
+- Session 04: Approval Inbox and Human Review Flow
+
+Progress update: 3/5 sessions complete.
 
 ---
 

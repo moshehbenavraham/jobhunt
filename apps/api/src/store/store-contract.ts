@@ -126,6 +126,18 @@ export type RuntimeSessionHeartbeatInput = {
   timestamp: string;
 };
 
+export type RuntimeRecentSessionCursor = {
+  sessionId: string;
+  updatedAt: string;
+};
+
+export type RuntimeRecentSessionListInput = {
+  cursor?: RuntimeRecentSessionCursor;
+  limit?: number;
+  statuses?: RuntimeSessionStatus[];
+  workflow?: string;
+};
+
 export type RuntimeJobClaimInput = {
   claimOwnerId: string;
   claimToken: string;
@@ -248,6 +260,9 @@ export type SessionRepository = {
   listActive: () => Promise<RuntimeSessionRecord[]>;
   listByStatus: (
     status: RuntimeSessionStatus,
+  ) => Promise<RuntimeSessionRecord[]>;
+  listRecent: (
+    input?: RuntimeRecentSessionListInput,
   ) => Promise<RuntimeSessionRecord[]>;
   save: (record: RuntimeSessionRecord) => Promise<RuntimeSessionRecord>;
   touchHeartbeat: (

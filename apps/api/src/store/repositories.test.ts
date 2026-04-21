@@ -396,3 +396,70 @@ test('stale running jobs remain recoverable and run metadata checkpoints merge i
     await fixture.cleanup();
   }
 });
+
+test('session repository lists recent sessions with deterministic ordering, filters, and bounded limits', async () => {
+  const fixture = await createWorkspaceFixture();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+
+  try {
+    await store.sessions.save(
+      createSessionRecord({
+        sessionId: 'session-alpha',
+        status: 'failed',
+        updatedAt: '2026-04-21T06:00:00.000Z',
+        workflow: 'single-evaluation',
+      }),
+    );
+    await store.sessions.save(
+      createSessionRecord({
+        sessionId: 'session-beta',
+        status: 'running',
+        updatedAt: '2026-04-21T06:05:00.000Z',
+        workflow: 'scan-portals',
+      }),
+    );
+    await store.sessions.save(
+      createSessionRecord({
+        sessionId: 'session-gamma',
+        status: 'waiting',
+        updatedAt: '2026-04-21T06:05:00.000Z',
+        workflow: 'scan-portals',
+      }),
+    );
+    await store.sessions.save(
+      createSessionRecord({
+        sessionId: 'session-delta',
+        status: 'completed',
+        updatedAt: '2026-04-21T05:55:00.000Z',
+        workflow: 'single-evaluation',
+      }),
+    );
+
+    const recent = await store.sessions.listRecent({
+      limit: 3,
+      statuses: ['completed', 'failed', 'running', 'waiting'],
+    });
+
+    assert.deepEqual(
+      recent.map((session) => session.sessionId),
+      ['session-beta', 'session-gamma', 'session-alpha'],
+    );
+
+    const cursorPage = await store.sessions.listRecent({
+      cursor: {
+        sessionId: 'session-gamma',
+        updatedAt: '2026-04-21T06:05:00.000Z',
+      },
+      limit: 2,
+      workflow: 'single-evaluation',
+    });
+
+    assert.deepEqual(
+      cursorPage.map((session) => session.sessionId),
+      ['session-alpha', 'session-delta'],
+    );
+  } finally {
+    await store.close();
+    await fixture.cleanup();
+  }
+});

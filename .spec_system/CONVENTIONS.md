@@ -118,6 +118,7 @@
 | Health    | `npm run doctor && node scripts/test-all.mjs --quick` | Repo health gate; validates setup, version consistency, and dashboard build                                |
 | Coverage  | `npm run coverage`                                    | Measures Node script coverage via `c8` and dashboard package coverage via `go test -cover`                 |
 | Security  | `npm run app:boot:test`                               | API startup server rate limits burst traffic per client and returns HTTP 429 after the configured window   |
+| Backup    | `npm run backup:run`                                  | Timestamped SQLite backups in `.jobhunt-app/backups/` with 7-day retention; use `--verify` to restore-check |
 | Local Dev | `npm run dashboard`                                   | Preferred launcher for the Go TUI dashboard; builds in `dashboard/` and defaults `--path` to the repo root |
 
 ## CI/CD

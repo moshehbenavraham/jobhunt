@@ -42,6 +42,33 @@ async function createReadyFixture() {
   });
 }
 
+const ONBOARDING_TEMPLATE_FIXTURE_FILES = {
+  'config/portals.example.yml': 'title_filter:\n  positive:\n    - AI Engineer\n',
+  'config/profile.example.yml': 'candidate:\n  full_name: Template User\n',
+  'data/applications.example.md': [
+    '# Applications Tracker',
+    '',
+    '| # | Date | Company | Role | Score | Status | PDF | Report | Notes |',
+    '| --- | ---- | ------- | ---- | ----- | ------ | --- | ------ | ----- |',
+    '',
+  ].join('\n'),
+  'modes/_profile.template.md': '# Profile Template\n',
+  'profile/cv.example.md': '# Template CV\n',
+};
+
+async function createOnboardingFixture(
+  files: Record<string, string> = {},
+) {
+  return createWorkspaceFixture({
+    files: {
+      ...ONBOARDING_TEMPLATE_FIXTURE_FILES,
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'modes/_profile.md': '# Profile\n',
+      ...files,
+    },
+  });
+}
+
 async function seedRuntimeContext(
   store: Awaited<ReturnType<typeof createOperationalStore>>,
   input: {
@@ -322,6 +349,154 @@ test('startup routes surface agent runtime auth-required status without mutating
   }
 });
 
+test('operator-shell route reports missing prerequisites without creating runtime activity state', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'modes/_profile.md': '# Profile\n',
+    },
+  });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/operator-shell`,
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal((payload as { status: string }).status, 'missing-prerequisites');
+    assert.equal(
+      (
+        payload as {
+          activity: { state: string };
+        }
+      ).activity.state,
+      'unavailable',
+    );
+    assert.equal(
+      (
+        payload as {
+          health: { missing: { onboarding: number } };
+        }
+      ).health.missing.onboarding,
+      2,
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('operator-shell route reports ready shell state without leaking raw runtime records', async () => {
+  const fixture = await createReadyFixture();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-shell-ready' });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-http-shell-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/operator-shell`,
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal((payload as { status: string }).status, 'ready');
+    assert.equal(
+      (
+        payload as {
+          activity: {
+            activeSession: null;
+            pendingApprovalCount: number;
+            recentFailureCount: number;
+            state: string;
+          };
+        }
+      ).activity.state,
+      'idle',
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: {
+            activeSession: null;
+            pendingApprovalCount: number;
+            recentFailureCount: number;
+          };
+        }
+      ).activity.pendingApprovalCount,
+      0,
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: {
+            activeSession: null;
+            pendingApprovalCount: number;
+            recentFailureCount: number;
+          };
+        }
+      ).activity.recentFailureCount,
+      0,
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: { activeSession: null };
+        }
+      ).activity.activeSession,
+      null,
+    );
+    assert.equal(
+      (
+        payload as {
+          currentSession: { id: string };
+        }
+      ).currentSession.id,
+      STARTUP_SESSION_ID,
+    );
+    assert.equal(
+      'diagnostics' in (payload as Record<string, unknown>),
+      false,
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
+    await fixture.cleanup();
+  }
+});
+
 test('startup routes surface corrupt operational-store state as a runtime error', async () => {
   const fixture = await createReadyFixture();
   const corruptStorePath = join(fixture.repoRoot, '.jobhunt-app', 'app.db');
@@ -393,6 +568,374 @@ test('startup route maps repo-root resolution failures to explicit error payload
     assert.equal((payload as { status: string }).status, 'error');
   } finally {
     await handle.close();
+  }
+});
+
+test('operator-shell route exposes active-work badges and validates bounded query params', async () => {
+  const fixture = await createReadyFixture();
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const store = await services.operationalStore.getStore();
+  await seedRuntimeContext(store, {
+    jobId: 'job-shell-route',
+    sessionId: 'session-shell-route',
+  });
+  const approvalRuntime = await services.approvalRuntime.getService();
+  const observability = await services.observability.getService();
+  const approval = await approvalRuntime.createApproval({
+    requestedAt: '2026-04-21T08:10:00.000Z',
+    request: {
+      action: 'apply-with-review',
+      correlation: {
+        jobId: 'job-shell-route',
+        requestId: 'request-shell-route',
+        sessionId: 'session-shell-route',
+        traceId: 'trace-shell-route',
+      },
+      details: null,
+      title: 'Review shell approval',
+    },
+  });
+  await observability.recordEvent({
+    correlation: {
+      jobId: 'job-shell-route',
+      requestId: 'request-shell-route',
+      sessionId: 'session-shell-route',
+      traceId: 'trace-shell-route',
+    },
+    eventType: 'job-failed',
+    level: 'error',
+    metadata: {
+      message: 'Shell route failure',
+      runId: 'job-shell-route-run',
+    },
+    occurredAt: '2026-04-21T08:11:00.000Z',
+    summary: 'Shell job failed.',
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/operator-shell?approvalLimit=1&failureLimit=1`,
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal(
+      (
+        payload as {
+          activity: { state: string };
+        }
+      ).activity.state,
+      'attention-required',
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: {
+            activeSession: { sessionId: string; activeJobId: string | null };
+          };
+        }
+      ).activity.activeSession.sessionId,
+      'session-shell-route',
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: {
+            activeSession: { sessionId: string; activeJobId: string | null };
+          };
+        }
+      ).activity.activeSession.activeJobId,
+      'job-shell-route',
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: { pendingApprovalCount: number };
+        }
+      ).activity.pendingApprovalCount,
+      1,
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: { recentFailureCount: number };
+        }
+      ).activity.recentFailureCount,
+      1,
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: { latestPendingApprovals: Array<{ approvalId: string }> };
+        }
+      ).activity.latestPendingApprovals[0]?.approvalId,
+      approval.approval.approvalId,
+    );
+    assert.equal(
+      (
+        payload as {
+          activity: { recentFailures: Array<{ jobId: string }> };
+        }
+      ).activity.recentFailures[0]?.jobId,
+      'job-shell-route',
+    );
+
+    const { payload: invalidPayload, response: invalidResponse } =
+      await readJsonResponse(`${handle.url}/operator-shell?approvalLimit=0`);
+
+    assert.equal(invalidResponse.status, 400);
+    assert.equal(
+      (
+        invalidPayload as {
+          error: { code: string };
+        }
+      ).error.code,
+      'invalid-operator-shell-query',
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('chat-console route reports workflow support and selected-session detail without leaking store internals', async () => {
+  const fixture = await createReadyFixture();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-chat-console' });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-http-chat-console-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const runtimeStore = await services.operationalStore.getStore();
+  await seedRuntimeContext(runtimeStore, {
+    jobId: 'job-chat-console',
+    sessionId: 'session-chat-console',
+  });
+  const approvalRuntime = await services.approvalRuntime.getService();
+  const observability = await services.observability.getService();
+  await approvalRuntime.createApproval({
+    requestedAt: '2026-04-21T08:15:00.000Z',
+    request: {
+      action: 'approve-chat-console',
+      correlation: {
+        jobId: 'job-chat-console',
+        requestId: 'request-chat-console',
+        sessionId: 'session-chat-console',
+        traceId: 'trace-chat-console',
+      },
+      details: null,
+      title: 'Approve chat console run',
+    },
+  });
+  await observability.recordEvent({
+    correlation: {
+      jobId: 'job-chat-console',
+      requestId: 'request-chat-console',
+      sessionId: 'session-chat-console',
+      traceId: 'trace-chat-console',
+    },
+    eventType: 'job-waiting-approval',
+    metadata: {
+      waitReason: 'approval',
+    },
+    occurredAt: '2026-04-21T08:16:00.000Z',
+    summary: 'Chat console run is waiting for approval.',
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/chat-console?sessionId=session-chat-console`,
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal((payload as { status: string }).status, 'ready');
+    assert.equal(
+      (
+        payload as {
+          workflows: Array<{ intent: string; status: string }>;
+        }
+      ).workflows.some(
+        (workflow) =>
+          workflow.intent === 'single-evaluation' &&
+          workflow.status === 'ready',
+      ),
+      true,
+    );
+    assert.equal(
+      (
+        payload as {
+          recentSessions: Array<{ sessionId: string }>;
+        }
+      ).recentSessions[0]?.sessionId,
+      'session-chat-console',
+    );
+    assert.equal(
+      (
+        payload as {
+          selectedSession: { session: { state: string } };
+        }
+      ).selectedSession.session.state,
+      'waiting-for-approval',
+    );
+    assert.equal(
+      (
+        payload as {
+          selectedSession: { timeline: Array<{ summary: string }> };
+        }
+      ).selectedSession.timeline[0]?.summary,
+      'Chat console run is waiting for approval.',
+    );
+    assert.equal(
+      'context' in
+        (
+          payload as {
+            selectedSession: { session: Record<string, unknown> };
+          }
+        ).selectedSession.session,
+      false,
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
+    await fixture.cleanup();
+  }
+});
+
+test('orchestration route returns auth-blocked launch handoffs and explicit missing-session resume envelopes', async () => {
+  const fixture = await createReadyFixture();
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload: launchPayload, response: launchResponse } =
+      await readJsonResponse(`${handle.url}/orchestration`, {
+        body: JSON.stringify({
+          context: {
+            promptText: 'Evaluate this JD',
+          },
+          kind: 'launch',
+          workflow: 'single-evaluation',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+    assert.equal(launchResponse.status, 200);
+    assert.equal(
+      (
+        launchPayload as {
+          handoff: { route: { status: string } };
+        }
+      ).handoff.route.status,
+      'ready',
+    );
+    assert.equal(
+      (
+        launchPayload as {
+          handoff: { runtime: { status: string } };
+        }
+      ).handoff.runtime.status,
+      'blocked',
+    );
+    assert.equal(
+      (
+        launchPayload as {
+          handoff: { state: string };
+        }
+      ).handoff.state,
+      'auth-required',
+    );
+    assert.equal(
+      (
+        launchPayload as {
+          handoff: { selectedSession: { session: { sessionId: string } } };
+        }
+      ).handoff.selectedSession.session.sessionId.length > 0,
+      true,
+    );
+
+    const { payload: resumePayload, response: resumeResponse } =
+      await readJsonResponse(`${handle.url}/orchestration`, {
+        body: JSON.stringify({
+          kind: 'resume',
+          sessionId: 'missing-session',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+    assert.equal(resumeResponse.status, 200);
+    assert.equal(
+      (
+        resumePayload as {
+          handoff: { route: { status: string } };
+        }
+      ).handoff.route.status,
+      'session-not-found',
+    );
+    assert.equal(
+      (
+        resumePayload as {
+          handoff: { state: string };
+        }
+      ).handoff.state,
+      'failed',
+    );
+    assert.equal(
+      (
+        resumePayload as {
+          handoff: { selectedSession: unknown | null };
+        }
+      ).handoff.selectedSession,
+      null,
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
   }
 });
 
@@ -527,6 +1070,286 @@ test('runtime approval and diagnostics routes expose pending approvals, failed d
         (event) => event.eventType === 'http-request-received',
       ),
       true,
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('onboarding summary route composes startup checklist state with bounded repair preview data', async () => {
+  const fixture = await createOnboardingFixture();
+  const beforeSnapshot = await fixture.snapshotUserLayer();
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/onboarding?targets=applicationsTracker,profileConfig,profileCv`,
+    );
+    const afterSnapshot = await fixture.snapshotUserLayer();
+
+    assert.equal(response.status, 200);
+    assert.equal((payload as { status: string }).status, 'missing-prerequisites');
+    assert.equal(
+      (
+        payload as {
+          checklist: { required: Array<{ surfaceKey: string }> };
+        }
+      ).checklist.required.length,
+      2,
+    );
+    assert.deepEqual(
+      (
+        payload as {
+          repairPreview: { targets: string[] };
+        }
+      ).repairPreview.targets,
+      ['applicationsTracker', 'profileConfig', 'profileCv'],
+    );
+    assert.equal(
+      (
+        payload as {
+          repairPreview: { repairableCount: number; targetCount: number };
+        }
+      ).repairPreview.repairableCount,
+      3,
+    );
+    assert.equal(
+      (
+        payload as {
+          repairPreview: { repairableCount: number; targetCount: number };
+        }
+      ).repairPreview.targetCount,
+      3,
+    );
+    assert.deepEqual(afterSnapshot, beforeSnapshot);
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('onboarding summary route rejects unsupported target filters', async () => {
+  const fixture = await createOnboardingFixture();
+  const services = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/onboarding?targets=profileConfig,unknownTarget`,
+    );
+
+    assert.equal(response.status, 400);
+    assert.equal((payload as { status: string }).status, 'bad-request');
+    assert.equal(
+      (payload as { error: { code: string } }).error.code,
+      'invalid-onboarding-query',
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('onboarding repair route creates requested files and revalidates startup state from the live repo', async () => {
+  const fixture = await createOnboardingFixture();
+  const beforeSnapshot = await fixture.snapshotUserLayer();
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/onboarding/repair`,
+      {
+        body: JSON.stringify({
+          confirm: true,
+          targets: ['profileConfig', 'profileCv'],
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      },
+    );
+    const afterSnapshot = await fixture.snapshotUserLayer();
+
+    assert.equal(response.status, 200);
+    assert.equal(
+      (payload as { repairedCount: number }).repairedCount,
+      2,
+    );
+    assert.equal((payload as { status: string }).status, 'auth-required');
+    assert.equal(
+      (
+        payload as {
+          health: { missing: { onboarding: number } };
+        }
+      ).health.missing.onboarding,
+      0,
+    );
+    assert.equal(
+      await fixture.readText('config/profile.yml'),
+      'candidate:\n  full_name: Template User\n',
+    );
+    assert.equal(await fixture.readText('profile/cv.md'), '# Template CV\n');
+    assert.notDeepEqual(afterSnapshot, beforeSnapshot);
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('onboarding repair route rejects already-present requested targets', async () => {
+  const fixture = await createOnboardingFixture({
+    'config/profile.yml': 'full_name: Existing User\n',
+  });
+  const services = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/onboarding/repair`,
+      {
+        body: JSON.stringify({
+          confirm: true,
+          targets: ['profileConfig'],
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      },
+    );
+
+    assert.equal(response.status, 409);
+    assert.equal((payload as { status: string }).status, 'error');
+    assert.equal(
+      (payload as { error: { code: string } }).error.code,
+      'onboarding-target-already-present',
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('onboarding repair route rejects invalid target input', async () => {
+  const fixture = await createOnboardingFixture();
+  const services = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/onboarding/repair`,
+      {
+        body: JSON.stringify({
+          confirm: true,
+          targets: ['profileConfig', 'not-real-target'],
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      },
+    );
+
+    assert.equal(response.status, 400);
+    assert.equal((payload as { status: string }).status, 'bad-request');
+    assert.equal(
+      (payload as { error: { code: string } }).error.code,
+      'invalid-onboarding-repair-request',
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('onboarding repair route maps missing template sources to explicit server errors', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.example.yml': 'title_filter:\n  positive: []\n',
+      'data/applications.example.md': '# Applications Tracker\n',
+      'modes/_profile.template.md': '# Profile Template\n',
+      'profile/cv.example.md': '# Template CV\n',
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'modes/_profile.md': '# Profile\n',
+    },
+  });
+  const services = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/onboarding/repair`,
+      {
+        body: JSON.stringify({
+          confirm: true,
+          targets: ['profileConfig'],
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      },
+    );
+
+    assert.equal(response.status, 500);
+    assert.equal((payload as { status: string }).status, 'error');
+    assert.equal(
+      (payload as { error: { code: string } }).error.code,
+      'onboarding-template-missing',
     );
   } finally {
     await handle.close();

@@ -6,7 +6,9 @@ type StartupStatusPanelProps = {
   diagnostics: StartupPayload;
   isRefreshing: boolean;
   lastUpdatedAt: string | null;
+  onOpenOnboarding?: (() => void) | null;
   onRefresh: () => void;
+  variant?: 'page' | 'shell';
 };
 
 const panelStyle: CSSProperties = {
@@ -80,11 +82,15 @@ export function StartupStatusPanel({
   diagnostics,
   isRefreshing,
   lastUpdatedAt,
+  onOpenOnboarding = null,
   onRefresh,
+  variant = 'page',
 }: StartupStatusPanelProps) {
   const promptContract = diagnostics.diagnostics.promptContract;
   const healthBadgeStyle =
     badgeStyles[diagnostics.health.status] ?? badgeStyles.ok;
+  const isShellVariant = variant === 'shell';
+  const HeadingTag = isShellVariant ? 'h2' : 'h1';
 
   return (
     <section style={panelStyle}>
@@ -99,11 +105,18 @@ export function StartupStatusPanel({
               textTransform: 'uppercase',
             }}
           >
-            Local bootstrap contract
+            {isShellVariant ? 'Startup readiness detail' : 'Local bootstrap contract'}
           </p>
-          <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.1rem)', margin: 0 }}>
+          <HeadingTag
+            style={{
+              fontSize: isShellVariant
+                ? 'clamp(1.6rem, 4vw, 2.4rem)'
+                : 'clamp(2rem, 5vw, 3.1rem)',
+              margin: 0,
+            }}
+          >
             Job-Hunt startup diagnostics
-          </h1>
+          </HeadingTag>
           <p role="status" aria-live="polite" style={{ marginBottom: 0 }}>
             {diagnostics.message}
           </p>
@@ -111,17 +124,46 @@ export function StartupStatusPanel({
             Last refreshed: {formatTimestamp(lastUpdatedAt)}
           </p>
         </div>
-        <button
-          type="button"
-          disabled={isRefreshing}
-          onClick={onRefresh}
+        <div
           style={{
-            ...buttonStyle,
-            opacity: isRefreshing ? 0.7 : 1,
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+            justifyContent: 'flex-end',
           }}
         >
-          {isRefreshing ? 'Refreshing diagnostics...' : 'Refresh diagnostics'}
-        </button>
+          {onOpenOnboarding &&
+          (diagnostics.health.missing.onboarding > 0 ||
+            diagnostics.status === 'missing-prerequisites') ? (
+            <button
+              aria-label="Open the onboarding wizard"
+              onClick={onOpenOnboarding}
+              style={{
+                ...buttonStyle,
+                background: '#ea580c',
+              }}
+              type="button"
+            >
+              {isShellVariant ? 'Open onboarding' : 'Review onboarding'}
+            </button>
+          ) : null}
+          <button
+            aria-label="Refresh startup diagnostics"
+            type="button"
+            disabled={isRefreshing}
+            onClick={onRefresh}
+            style={{
+              ...buttonStyle,
+              opacity: isRefreshing ? 0.7 : 1,
+            }}
+          >
+            {isRefreshing
+              ? 'Refreshing diagnostics...'
+              : isShellVariant
+                ? 'Refresh readiness detail'
+                : 'Refresh diagnostics'}
+          </button>
+        </div>
       </header>
 
       <div style={cardGridStyle}>
@@ -213,6 +255,27 @@ export function StartupStatusPanel({
           Root path: <code>{diagnostics.operationalStore.rootPath}</code>
         </p>
       </section>
+
+      {diagnostics.health.missing.onboarding > 0 && onOpenOnboarding ? (
+        <section
+          style={{
+            ...cardStyle,
+            background: '#fff7ed',
+            borderColor: '#fed7aa',
+          }}
+        >
+          <h2 style={{ marginTop: 0 }}>Onboarding handoff</h2>
+          <p style={{ marginBottom: '0.45rem' }}>
+            Required user-layer files are still missing. Use the onboarding
+            wizard to preview template-backed repairs, confirm writes
+            explicitly, and then refresh readiness from the live repo state.
+          </p>
+          <p style={{ color: '#7c2d12', marginBottom: 0 }}>
+            After a repair, refresh startup diagnostics so the shell status and
+            missing-file counts stay aligned.
+          </p>
+        </section>
+      ) : null}
 
       {diagnostics.diagnostics.runtimeMissing.length > 0 ? (
         <MissingFilesList

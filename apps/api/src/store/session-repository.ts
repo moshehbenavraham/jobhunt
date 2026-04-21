@@ -1,5 +1,6 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type {
+  RuntimeRecentSessionListInput,
   RuntimeSessionHeartbeatInput,
   RuntimeSessionRecord,
   RuntimeSessionStatus,
@@ -36,6 +37,9 @@ const SELECT_SESSION_SQL = `
   FROM runtime_sessions
 `;
 
+const DEFAULT_RECENT_LIMIT = 8;
+const MAX_RECENT_LIMIT = 25;
+
 function assertNonEmptyString(
   value: string,
   fieldName: string,
@@ -59,6 +63,41 @@ function assertSessionRecord(
   assertNonEmptyString(record.status, 'status', databasePath);
   assertNonEmptyString(record.createdAt, 'createdAt', databasePath);
   assertNonEmptyString(record.updatedAt, 'updatedAt', databasePath);
+}
+
+function normalizeRecentLimit(
+  value: number | undefined,
+  databasePath: string,
+): number {
+  const limit = value ?? DEFAULT_RECENT_LIMIT;
+
+  if (!Number.isInteger(limit) || limit < 1 || limit > MAX_RECENT_LIMIT) {
+    throw new OperationalStoreError(
+      'operational-store-invalid-input',
+      databasePath,
+      `Recent session limit must be an integer between 1 and ${MAX_RECENT_LIMIT}.`,
+    );
+  }
+
+  return limit;
+}
+
+function normalizeRecentStatuses(
+  statuses: RuntimeSessionStatus[] | undefined,
+  databasePath: string,
+): RuntimeSessionStatus[] {
+  if (!statuses || statuses.length === 0) {
+    return [];
+  }
+
+  const normalized = new Set<RuntimeSessionStatus>();
+
+  for (const status of statuses) {
+    assertNonEmptyString(status, 'status', databasePath);
+    normalized.add(status);
+  }
+
+  return [...normalized];
 }
 
 function parseContextJson(
@@ -139,6 +178,68 @@ export function createSessionRepository(
       const rows = await store.all<SessionRow>(
         `${SELECT_SESSION_SQL} WHERE status = @status ORDER BY updated_at DESC, session_id ASC`,
         { status },
+      );
+
+      return rows.map((row) => mapSessionRow(row, store.databasePath));
+    },
+    async listRecent(
+      input: RuntimeRecentSessionListInput = {},
+    ): Promise<RuntimeSessionRecord[]> {
+      const clauses: string[] = [];
+      const parameters: Record<string, number | string> = {
+        limit: normalizeRecentLimit(input.limit, store.databasePath),
+      };
+      const statuses = normalizeRecentStatuses(
+        input.statuses,
+        store.databasePath,
+      );
+
+      if (input.cursor) {
+        assertNonEmptyString(
+          input.cursor.updatedAt,
+          'cursor.updatedAt',
+          store.databasePath,
+        );
+        assertNonEmptyString(
+          input.cursor.sessionId,
+          'cursor.sessionId',
+          store.databasePath,
+        );
+        clauses.push(
+          '(updated_at < @cursorUpdatedAt OR (updated_at = @cursorUpdatedAt AND session_id > @cursorSessionId))',
+        );
+        parameters.cursorSessionId = input.cursor.sessionId;
+        parameters.cursorUpdatedAt = input.cursor.updatedAt;
+      }
+
+      if (input.workflow) {
+        assertNonEmptyString(input.workflow, 'workflow', store.databasePath);
+        clauses.push('workflow = @workflow');
+        parameters.workflow = input.workflow;
+      }
+
+      if (statuses.length > 0) {
+        const placeholders: string[] = [];
+
+        for (const [index, status] of statuses.entries()) {
+          const parameterName = `status${index}`;
+          placeholders.push(`@${parameterName}`);
+          parameters[parameterName] = status;
+        }
+
+        clauses.push(`status IN (${placeholders.join(', ')})`);
+      }
+
+      const whereSql =
+        clauses.length > 0 ? `WHERE ${clauses.join(' AND ')}` : '';
+      const rows = await store.all<SessionRow>(
+        `
+          ${SELECT_SESSION_SQL}
+          ${whereSql}
+          ORDER BY updated_at DESC, session_id ASC
+          LIMIT @limit
+        `,
+        parameters,
       );
 
       return rows.map((row) => mapSessionRow(row, store.databasePath));

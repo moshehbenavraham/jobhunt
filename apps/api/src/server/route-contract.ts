@@ -4,7 +4,8 @@ import { STARTUP_SERVICE_NAME, STARTUP_SESSION_ID } from '../index.js';
 import type { ApiRuntimeConfig } from '../runtime/runtime-config.js';
 import type { ApiServiceContainer } from '../runtime/service-container.js';
 
-const SUPPORTED_ROUTE_METHODS = ['GET', 'HEAD'] as const;
+const SUPPORTED_ROUTE_METHODS = ['GET', 'HEAD', 'POST'] as const;
+const DEFAULT_JSON_BODY_LIMIT_BYTES = 64 * 1024;
 
 export type ApiRouteMethod = (typeof SUPPORTED_ROUTE_METHODS)[number];
 export type ApiErrorStatus =
@@ -226,4 +227,47 @@ export function createRateLimitedResponse(
       'x-ratelimit-remaining': remaining.toString(),
     },
   );
+}
+
+export async function readJsonRequestBody(
+  request: IncomingMessage,
+  options: {
+    maxBytes?: number;
+  } = {},
+): Promise<unknown> {
+  const maxBytes = options.maxBytes ?? DEFAULT_JSON_BODY_LIMIT_BYTES;
+  const chunks: Buffer[] = [];
+  let totalBytes = 0;
+
+  for await (const chunk of request) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    totalBytes += buffer.length;
+
+    if (totalBytes > maxBytes) {
+      throw new ApiRequestValidationError(
+        `JSON request body exceeds the ${maxBytes}-byte limit.`,
+        'json-body-too-large',
+      );
+    }
+
+    chunks.push(buffer);
+  }
+
+  if (totalBytes === 0) {
+    throw new ApiRequestValidationError(
+      'JSON request body must not be empty.',
+      'json-body-required',
+    );
+  }
+
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  } catch (error) {
+    throw new ApiRequestValidationError(
+      error instanceof Error
+        ? `JSON request body is invalid: ${error.message}`
+        : 'JSON request body is invalid.',
+      'invalid-json-body',
+    );
+  }
 }

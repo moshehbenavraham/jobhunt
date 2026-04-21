@@ -117,6 +117,10 @@
     {
       "id": "phase03-session02-chat-console-and-session-resume",
       "package": "apps/web"
+    },
+    {
+      "id": "phase03-session03-startup-checklist-and-onboarding-wizard",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
@@ -280,6 +284,18 @@
     {
       "date": "2026-04-22",
       "session": "phase03-session02-chat-console-and-session-resume",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase03-session03-startup-checklist-and-onboarding-wizard",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase03-session03-startup-checklist-and-onboarding-wizard",
       "package": "apps/web",
       "status": "completed"
     }

@@ -1,5 +1,10 @@
+import { createChatConsoleRoute } from './chat-console-route.js';
 import type { ApiRouteDefinition } from '../route-contract.js';
 import { createHealthRoute } from './health-route.js';
+import { createOnboardingRepairRoute } from './onboarding-repair-route.js';
+import { createOnboardingRoute } from './onboarding-route.js';
+import { createOrchestrationRoute } from './orchestration-route.js';
+import { createOperatorShellRoute } from './operator-shell-route.js';
 import { createRuntimeApprovalsRoute } from './runtime-approvals-route.js';
 import { createRuntimeDiagnosticsRoute } from './runtime-diagnostics-route.js';
 import { createStartupRoute } from './startup-route.js';
@@ -25,6 +30,11 @@ function assertUniqueRouteSignatures(
 export function createApiRouteRegistry(): ApiRouteDefinition[] {
   const routes = [
     createHealthRoute(),
+    createChatConsoleRoute(),
+    createOrchestrationRoute(),
+    createOnboardingRoute(),
+    createOnboardingRepairRoute(),
+    createOperatorShellRoute(),
     createStartupRoute(),
     createRuntimeApprovalsRoute(),
     createRuntimeDiagnosticsRoute(),

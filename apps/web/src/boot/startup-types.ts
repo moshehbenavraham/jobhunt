@@ -1,6 +1,13 @@
 export type StartupHealthStatus = 'degraded' | 'error' | 'ok';
 export type OperationalStoreStatus = 'absent' | 'corrupt' | 'ready';
-export type StartupStatus = 'missing-prerequisites' | 'ready' | 'runtime-error';
+export type StartupStatus =
+  | 'auth-required'
+  | 'expired-auth'
+  | 'invalid-auth'
+  | 'missing-prerequisites'
+  | 'prompt-failure'
+  | 'ready'
+  | 'runtime-error';
 
 export type StartupMissingItem = {
   candidates: readonly string[];
@@ -272,8 +279,12 @@ export function parseStartupPayload(value: unknown): StartupPayload {
   }
 
   if (
+    startupStatus !== 'auth-required' &&
+    startupStatus !== 'expired-auth' &&
+    startupStatus !== 'invalid-auth' &&
     startupStatus !== 'ready' &&
     startupStatus !== 'missing-prerequisites' &&
+    startupStatus !== 'prompt-failure' &&
     startupStatus !== 'runtime-error'
   ) {
     throw new Error(`Unsupported startup status: ${startupStatus}`);

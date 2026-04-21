@@ -6,15 +6,20 @@ import {
   useState,
 } from 'react';
 import { StartupClientError, fetchStartupDiagnostics } from './startup-client';
-import type { StartupPayload } from './startup-types';
+import type { StartupPayload, StartupStatus } from './startup-types';
 
 export type StartupViewStatus =
+  | 'auth-required'
   | 'empty'
   | 'error'
+  | 'expired-auth'
+  | 'invalid-auth'
   | 'loading'
   | 'missing-prerequisites'
   | 'offline'
-  | 'ready';
+  | 'prompt-failure'
+  | 'ready'
+  | 'runtime-error';
 
 export type StartupDiagnosticsState = {
   data: StartupPayload | null;
@@ -33,14 +38,7 @@ const EMPTY_STATE: StartupDiagnosticsState = {
 };
 
 function getStatusFromPayload(payload: StartupPayload): StartupViewStatus {
-  switch (payload.status) {
-    case 'ready':
-      return 'ready';
-    case 'missing-prerequisites':
-      return 'missing-prerequisites';
-    case 'runtime-error':
-      return 'error';
-  }
+  return payload.status as StartupStatus;
 }
 
 function toStartupClientError(error: unknown): StartupClientError {

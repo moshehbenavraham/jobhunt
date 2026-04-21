@@ -450,9 +450,42 @@ if (appBootstrap !== null) {
   fail('App bootstrap smoke tests failed');
 }
 
-// -- 3z. Bootstrap ASCII validation ------------------------------
+// -- 3z. App shell smoke -----------------------------------------
 
-console.log('\n3z. Bootstrap ASCII validation');
+console.log('\n3z. App shell smoke');
+
+const appShell = run('node', ['scripts/test-app-shell.mjs']);
+if (appShell !== null) {
+  pass('App shell smoke tests pass');
+} else {
+  fail('App shell smoke tests failed');
+}
+
+// -- 3aa. App chat-console smoke ---------------------------------
+
+console.log('\n3aa. App chat-console smoke');
+
+const appChatConsole = run('node', ['scripts/test-app-chat-console.mjs']);
+if (appChatConsole !== null) {
+  pass('App chat-console smoke tests pass');
+} else {
+  fail('App chat-console smoke tests failed');
+}
+
+// -- 3ab. App onboarding smoke -----------------------------------
+
+console.log('\n3ab. App onboarding smoke');
+
+const appOnboarding = run('node', ['scripts/test-app-onboarding.mjs']);
+if (appOnboarding !== null) {
+  pass('App onboarding smoke tests pass');
+} else {
+  fail('App onboarding smoke tests failed');
+}
+
+// -- 3ac. Bootstrap ASCII validation -----------------------------
+
+console.log('\n3ac. Bootstrap ASCII validation');
 
 const bootstrapFiles = [
   'apps/api/src/approval-runtime/approval-runtime-contract.ts',
@@ -503,9 +536,17 @@ const bootstrapFiles = [
   'apps/api/src/server/http-server.test.ts',
   'apps/api/src/server/http-server.ts',
   'apps/api/src/server/index.ts',
+  'apps/api/src/server/chat-console-summary.ts',
+  'apps/api/src/server/onboarding-summary.ts',
+  'apps/api/src/server/operator-shell-summary.ts',
   'apps/api/src/server/route-contract.ts',
+  'apps/api/src/server/routes/chat-console-route.ts',
   'apps/api/src/server/routes/health-route.ts',
   'apps/api/src/server/routes/index.ts',
+  'apps/api/src/server/routes/onboarding-repair-route.ts',
+  'apps/api/src/server/routes/onboarding-route.ts',
+  'apps/api/src/server/routes/orchestration-route.ts',
+  'apps/api/src/server/routes/operator-shell-route.ts',
   'apps/api/src/server/routes/runtime-approvals-route.ts',
   'apps/api/src/server/routes/runtime-diagnostics-route.ts',
   'apps/api/src/server/routes/startup-route.ts',
@@ -564,9 +605,35 @@ const bootstrapFiles = [
   'apps/web/src/boot/startup-status-panel.tsx',
   'apps/web/src/boot/startup-types.ts',
   'apps/web/src/boot/use-startup-diagnostics.ts',
+  'apps/web/src/chat/chat-console-client.ts',
+  'apps/web/src/chat/chat-console-surface.tsx',
+  'apps/web/src/chat/chat-console-types.ts',
+  'apps/web/src/chat/recent-session-list.tsx',
+  'apps/web/src/chat/run-status-panel.tsx',
+  'apps/web/src/chat/run-timeline.tsx',
+  'apps/web/src/chat/use-chat-console.ts',
+  'apps/web/src/chat/workflow-composer.tsx',
+  'apps/web/src/onboarding/onboarding-checklist.tsx',
+  'apps/web/src/onboarding/onboarding-client.ts',
+  'apps/web/src/onboarding/onboarding-types.ts',
+  'apps/web/src/onboarding/onboarding-wizard-surface.tsx',
+  'apps/web/src/onboarding/readiness-handoff-card.tsx',
+  'apps/web/src/onboarding/repair-confirmation-panel.tsx',
+  'apps/web/src/onboarding/repair-preview-list.tsx',
+  'apps/web/src/onboarding/use-onboarding-wizard.ts',
+  'apps/web/src/shell/navigation-rail.tsx',
+  'apps/web/src/shell/operator-shell-client.ts',
+  'apps/web/src/shell/operator-shell.tsx',
+  'apps/web/src/shell/shell-types.ts',
+  'apps/web/src/shell/status-strip.tsx',
+  'apps/web/src/shell/surface-placeholder.tsx',
+  'apps/web/src/shell/use-operator-shell.ts',
   'apps/web/vite.config.ts',
   'scripts/test-app-scaffold.mjs',
   'scripts/test-app-bootstrap.mjs',
+  'scripts/test-app-chat-console.mjs',
+  'scripts/test-app-onboarding.mjs',
+  'scripts/test-app-shell.mjs',
 ];
 
 for (const path of bootstrapFiles) {
