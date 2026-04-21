@@ -74,6 +74,8 @@ function createJobRecord(overrides: Partial<{
     startedAt: overrides.startedAt ?? null,
     status: overrides.status ?? 'queued',
     updatedAt: overrides.updatedAt ?? '2026-04-21T04:41:00.000Z',
+    waitApprovalId: null,
+    waitReason: null,
   } as const;
 }
 
@@ -108,6 +110,7 @@ test('repositories persist and reload sessions, jobs, approvals, and run metadat
     response: null,
     sessionId: session.sessionId,
     status: 'pending' as const,
+    traceId: 'trace-001',
     updatedAt: '2026-04-21T04:43:00.000Z',
   };
   const runMetadata = {
@@ -214,6 +217,7 @@ test('job and session repositories support claims, heartbeats, retry waiting, an
     assert.equal(touchedJob.lastHeartbeatAt, '2026-04-21T05:00:30.000Z');
 
     const waitingJob = await store.jobs.wait({
+      approvalId: null,
       claimToken: 'claim-001',
       error: {
         message: 'Retry later',
@@ -223,6 +227,7 @@ test('job and session repositories support claims, heartbeats, retry waiting, an
       nextAttemptAt: '2026-04-21T05:05:00.000Z',
       result: null,
       timestamp: '2026-04-21T05:01:00.000Z',
+      waitReason: 'retry',
     });
 
     assert.equal(waitingJob.status, 'waiting');

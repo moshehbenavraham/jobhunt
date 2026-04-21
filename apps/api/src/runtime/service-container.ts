@@ -1,5 +1,9 @@
 import type { RepoPathOptions, RepoPaths } from '../config/repo-paths.js';
 import {
+  createApprovalRuntimeService,
+  type ApprovalRuntimeService,
+} from '../approval-runtime/index.js';
+import {
   createAgentRuntimeService,
   type AgentRuntimeBootstrap,
   type AgentRuntimeReadinessSummary,
@@ -11,6 +15,10 @@ import {
   type DurableJobExecutorRegistryInput,
   type DurableJobRunnerService,
 } from '../job-runner/index.js';
+import {
+  createObservabilityService,
+  type ObservabilityService,
+} from '../observability/index.js';
 import {
   createStartupDiagnosticsService,
   type StartupDiagnostics,
@@ -28,6 +36,9 @@ export type ServiceCleanupTask = () => Promise<void> | void;
 
 export type ApiServiceContainer = {
   addCleanupTask: (task: ServiceCleanupTask) => void;
+  approvalRuntime: {
+    getService: () => Promise<ApprovalRuntimeService>;
+  };
   agentRuntime: {
     bootstrap: (workflowInput: unknown) => Promise<AgentRuntimeBootstrap>;
     getReadiness: () => Promise<AgentRuntimeReadinessSummary>;
@@ -40,15 +51,20 @@ export type ApiServiceContainer = {
     getStatus: () => Promise<OperationalStoreStatus>;
     getStore: () => Promise<OperationalStore>;
   };
+  observability: {
+    getService: () => Promise<ObservabilityService>;
+  };
   repoPaths: RepoPaths;
   startupDiagnostics: StartupDiagnosticsService;
   workspace: WorkspaceAdapter;
 };
 
 export type ApiServiceContainerOptions = RepoPathOptions & {
+  approvalRuntime?: ApprovalRuntimeService;
   agentRuntime?: AgentRuntimeService;
   jobRunner?: DurableJobRunnerService;
   jobRunnerExecutors?: DurableJobExecutorRegistryInput;
+  observability?: ObservabilityService;
   startupDiagnostics?: StartupDiagnosticsService;
   workspace?: WorkspaceAdapter;
 };
@@ -57,12 +73,16 @@ export function createApiServiceContainer(
   options: ApiServiceContainerOptions = {},
 ): ApiServiceContainer {
   const cleanupTasks: ServiceCleanupTask[] = [];
+  let approvalRuntimeService = options.approvalRuntime;
+  let approvalRuntimePromise: Promise<ApprovalRuntimeService> | undefined;
   let operationalStore: OperationalStore | undefined;
   let operationalStorePromise: Promise<OperationalStore> | undefined;
   let agentRuntimeService = options.agentRuntime;
   let agentRuntimeCleanupRegistered = false;
   let jobRunnerService = options.jobRunner;
   let jobRunnerPromise: Promise<DurableJobRunnerService> | undefined;
+  let observabilityService = options.observability;
+  let observabilityPromise: Promise<ObservabilityService> | undefined;
   let startupDiagnosticsService = options.startupDiagnostics;
   let workspace = options.workspace;
   let disposed = false;
@@ -159,6 +179,51 @@ export function createApiServiceContainer(
     return operationalStorePromise;
   }
 
+  async function getObservabilityService(): Promise<ObservabilityService> {
+    assertActive();
+
+    if (observabilityService) {
+      return observabilityService;
+    }
+
+    if (!observabilityPromise) {
+      observabilityPromise = Promise.resolve(
+        createObservabilityService({
+          getStore: getOperationalStore,
+          getStoreStatus: getOperationalStoreStatus,
+        }),
+      ).then((createdService) => {
+        observabilityService = createdService;
+        return createdService;
+      });
+    }
+
+    return observabilityPromise;
+  }
+
+  async function getApprovalRuntimeService(): Promise<ApprovalRuntimeService> {
+    assertActive();
+
+    if (approvalRuntimeService) {
+      return approvalRuntimeService;
+    }
+
+    if (!approvalRuntimePromise) {
+      approvalRuntimePromise = Promise.resolve(
+        createApprovalRuntimeService({
+          getStore: getOperationalStore,
+          recordEvent: (input) =>
+            getObservabilityService().then((service) => service.recordEvent(input)),
+        }),
+      ).then((createdService) => {
+        approvalRuntimeService = createdService;
+        return createdService;
+      });
+    }
+
+    return approvalRuntimePromise;
+  }
+
   async function getJobRunnerService(): Promise<DurableJobRunnerService> {
     assertActive();
 
@@ -173,6 +238,8 @@ export function createApiServiceContainer(
           executors: createDurableJobExecutorRegistry(
             options.jobRunnerExecutors ?? [],
           ),
+          getApprovalRuntime: getApprovalRuntimeService,
+          getObservability: getObservabilityService,
           getStore: getOperationalStore,
         });
 
@@ -205,6 +272,11 @@ export function createApiServiceContainer(
     addCleanupTask(task: ServiceCleanupTask): void {
       assertActive();
       cleanupTasks.push(task);
+    },
+    approvalRuntime: {
+      async getService(): Promise<ApprovalRuntimeService> {
+        return getApprovalRuntimeService();
+      },
     },
     agentRuntime: {
       async bootstrap(workflowInput: unknown): Promise<AgentRuntimeBootstrap> {
@@ -274,6 +346,11 @@ export function createApiServiceContainer(
       },
       async getStore(): Promise<OperationalStore> {
         return getOperationalStore();
+      },
+    },
+    observability: {
+      async getService(): Promise<ObservabilityService> {
+        return getObservabilityService();
       },
     },
     get workspace(): WorkspaceAdapter {

@@ -216,3 +216,205 @@ test('durable job runner prevents duplicate execution while a job is in flight',
     await harness.cleanup();
   }
 });
+
+test('durable job runner pauses for approval, resumes after approval, and records structured events', async () => {
+  let executeCount = 0;
+  const harness = await createDurableJobRunnerHarness({
+    executors: [
+      createTestExecutor({
+        description: 'Waits for approval once, then completes on resume.',
+        execute: async (_payload, context) => {
+          executeCount += 1;
+
+          if (executeCount === 1) {
+            await context.saveCheckpoint({
+              completedSteps: ['generated-draft'],
+              cursor: 'approval',
+              value: {
+                step: 'approval',
+              },
+            });
+
+            return {
+              approval: {
+                action: 'send-email',
+                details: {
+                  draftId: 'draft-001',
+                },
+                title: 'Send generated email draft',
+              },
+              result: {
+                pendingDraft: true,
+              },
+              status: 'waiting',
+              waitReason: 'approval',
+            };
+          }
+
+          assert.deepEqual(context.checkpoint?.completedSteps, ['generated-draft']);
+
+          return {
+            result: {
+              sent: true,
+            },
+            status: 'completed',
+          };
+        },
+        jobType: 'evaluate-job',
+        payloadSchema: z.object({
+          company: z.string(),
+        }),
+      }),
+    ],
+  });
+
+  try {
+    await harness.runner.enqueue({
+      jobId: 'job-approval',
+      jobType: 'evaluate-job',
+      payload: {
+        company: 'Approval Co',
+      },
+      session: {
+        context: {
+          workflow: 'single-evaluation',
+        },
+        sessionId: 'session-approval',
+        workflow: 'single-evaluation',
+      },
+    });
+
+    const waitingSummary = await harness.runner.drainOnce();
+    const waitingJob = await harness.store.jobs.getById('job-approval');
+    const pendingApprovals = await harness.approvalRuntime.listPendingApprovals();
+    const waitingEvents = await harness.store.events.list({
+      jobId: 'job-approval',
+      limit: 10,
+    });
+
+    assert.deepEqual(waitingSummary.waitingJobIds, ['job-approval']);
+    assert.equal(waitingJob?.status, 'waiting');
+    assert.equal(waitingJob?.waitReason, 'approval');
+    assert.equal(pendingApprovals.length, 1);
+    assert.equal(
+      waitingEvents.some((event) => event.eventType === 'job-waiting-approval'),
+      true,
+    );
+    assert.equal(
+      waitingEvents.some((event) => event.eventType === 'approval-requested'),
+      true,
+    );
+
+    const resolved = await harness.approvalRuntime.resolveApproval({
+      approvalId: pendingApprovals[0]!.approvalId,
+      decision: 'approved',
+      reason: null,
+      resolvedAt: '2026-04-21T07:20:00.000Z',
+      responseMetadata: {
+        approvedBy: 'operator',
+      },
+    });
+
+    assert.equal(resolved.applied, true);
+    assert.equal(resolved.job?.status, 'queued');
+
+    const resumedSummary = await harness.runner.drainOnce();
+    const completedJob = await harness.store.jobs.getById('job-approval');
+    const session = await harness.store.sessions.getById('session-approval');
+    const diagnostics = await harness.observability.getDiagnosticsSummary({
+      jobId: 'job-approval',
+      limit: 10,
+    });
+
+    assert.deepEqual(resumedSummary.claimedJobIds, ['job-approval']);
+    assert.deepEqual(resumedSummary.completedJobIds, ['job-approval']);
+    assert.equal(executeCount, 2);
+    assert.equal(completedJob?.status, 'completed');
+    assert.equal(session?.status, 'completed');
+    assert.equal(
+      diagnostics.recentEvents.some((event) => event.eventType === 'approval-approved'),
+      true,
+    );
+    assert.equal(
+      diagnostics.recentEvents.some((event) => event.eventType === 'job-completed'),
+      true,
+    );
+  } finally {
+    await harness.cleanup();
+  }
+});
+
+test('durable job runner leaves rejected approval work in a failed state', async () => {
+  const harness = await createDurableJobRunnerHarness({
+    executors: [
+      createTestExecutor({
+        description: 'Always waits for approval.',
+        execute: async () => ({
+          approval: {
+            action: 'delete-draft',
+            details: null,
+            title: 'Delete generated draft',
+          },
+          result: null,
+          status: 'waiting',
+          waitReason: 'approval',
+        }),
+        jobType: 'evaluate-job',
+        payloadSchema: z.object({
+          company: z.string(),
+        }),
+      }),
+    ],
+  });
+
+  try {
+    await harness.runner.enqueue({
+      jobId: 'job-rejected-approval',
+      jobType: 'evaluate-job',
+      payload: {
+        company: 'Reject Co',
+      },
+      session: {
+        context: {
+          workflow: 'single-evaluation',
+        },
+        sessionId: 'session-rejected-approval',
+        workflow: 'single-evaluation',
+      },
+    });
+
+    await harness.runner.drainOnce();
+    const pendingApprovals = await harness.approvalRuntime.listPendingApprovals();
+
+    assert.equal(pendingApprovals.length, 1);
+
+    const rejected = await harness.approvalRuntime.resolveApproval({
+      approvalId: pendingApprovals[0]!.approvalId,
+      decision: 'rejected',
+      reason: 'Operator rejected the destructive action.',
+      resolvedAt: '2026-04-21T07:21:00.000Z',
+      responseMetadata: {
+        rejectedBy: 'operator',
+      },
+    });
+    const failedJob = await harness.store.jobs.getById('job-rejected-approval');
+    const diagnostics = await harness.observability.getDiagnosticsSummary({
+      jobId: 'job-rejected-approval',
+      limit: 10,
+    });
+
+    assert.equal(rejected.applied, true);
+    assert.equal(failedJob?.status, 'failed');
+    assert.deepEqual(failedJob?.error, {
+      approvalId: pendingApprovals[0]!.approvalId,
+      code: 'approval-rejected',
+      decision: 'rejected',
+      message: 'Operator rejected the destructive action.',
+      retryable: false,
+    });
+    assert.equal(diagnostics.failedJobs.length, 1);
+    assert.equal(diagnostics.failedJobs[0]?.jobId, 'job-rejected-approval');
+  } finally {
+    await harness.cleanup();
+  }
+});

@@ -1,5 +1,7 @@
 import type { ApiRouteDefinition } from '../route-contract.js';
 import { createHealthRoute } from './health-route.js';
+import { createRuntimeApprovalsRoute } from './runtime-approvals-route.js';
+import { createRuntimeDiagnosticsRoute } from './runtime-diagnostics-route.js';
 import { createStartupRoute } from './startup-route.js';
 
 function assertUniqueRouteSignatures(routes: readonly ApiRouteDefinition[]): void {
@@ -19,7 +21,12 @@ function assertUniqueRouteSignatures(routes: readonly ApiRouteDefinition[]): voi
 }
 
 export function createApiRouteRegistry(): ApiRouteDefinition[] {
-  const routes = [createHealthRoute(), createStartupRoute()];
+  const routes = [
+    createHealthRoute(),
+    createStartupRoute(),
+    createRuntimeApprovalsRoute(),
+    createRuntimeDiagnosticsRoute(),
+  ];
 
   assertUniqueRouteSignatures(routes);
   return routes;

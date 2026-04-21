@@ -1,6 +1,8 @@
 import type { DatabaseSync, SQLInputValue } from 'node:sqlite';
 import type {
   JobRepository,
+  RuntimeJobApprovalRejectionInput,
+  RuntimeJobApprovalTransitionInput,
   RuntimeJobClaimInput,
   RuntimeJobHeartbeatInput,
   RuntimeJobRecord,
@@ -34,6 +36,8 @@ type JobRow = {
   started_at: string | null;
   status: RuntimeJobStatus;
   updated_at: string;
+  wait_approval_id: string | null;
+  wait_reason: RuntimeJobRecord['waitReason'];
 };
 
 const SELECT_JOB_SQL = `
@@ -57,7 +61,9 @@ const SELECT_JOB_SQL = `
     last_heartbeat_at,
     lease_expires_at,
     next_attempt_at,
-    run_id
+    run_id,
+    wait_reason,
+    wait_approval_id
   FROM runtime_jobs
 `;
 
@@ -66,6 +72,7 @@ const CLAIMABLE_JOB_WHERE_SQL = `
     status = 'queued'
     OR (
       status = 'waiting'
+      AND COALESCE(wait_reason, 'retry') = 'retry'
       AND next_attempt_at IS NOT NULL
       AND next_attempt_at <= @now
     )
@@ -206,6 +213,8 @@ function mapJobRow(row: JobRow, databasePath: string): RuntimeJobRecord {
     startedAt: row.started_at,
     status: row.status,
     updatedAt: row.updated_at,
+    waitApprovalId: row.wait_approval_id,
+    waitReason: row.wait_reason,
   };
 }
 
@@ -254,6 +263,24 @@ function readClaimedJobOrThrow(
   }
 
   return record;
+}
+
+function readJobOrThrow(
+  database: DatabaseSync,
+  store: SqliteStoreContext,
+  jobId: string,
+): RuntimeJobRecord {
+  const row = selectJobById(database, jobId);
+
+  if (!row) {
+    throw new OperationalStoreError(
+      'operational-store-init-failed',
+      store.databasePath,
+      `Runtime job was not found after update: ${jobId}`,
+    );
+  }
+
+  return mapJobRow(row, store.databasePath);
 }
 
 function assertClaimInput(
@@ -305,6 +332,60 @@ function updateClaimedJobState(
 
 export function createJobRepository(store: SqliteStoreContext): JobRepository {
   return {
+    async approveWaiting(
+      input: RuntimeJobApprovalTransitionInput,
+    ): Promise<RuntimeJobRecord> {
+      assertNonEmptyString(input.approvalId, 'approvalId', store.databasePath);
+      assertNonEmptyString(input.jobId, 'jobId', store.databasePath);
+      assertNonEmptyString(input.timestamp, 'timestamp', store.databasePath);
+
+      return store.withTransaction((database) => {
+        const result = database
+          .prepare(
+            `
+              UPDATE runtime_jobs
+              SET
+                status = 'queued',
+                error_json = NULL,
+                result_json = NULL,
+                claim_owner_id = NULL,
+                claim_token = NULL,
+                last_heartbeat_at = NULL,
+                lease_expires_at = NULL,
+                next_attempt_at = NULL,
+                completed_at = NULL,
+                wait_reason = NULL,
+                wait_approval_id = NULL,
+                updated_at = @timestamp
+              WHERE job_id = @jobId
+                AND status = 'waiting'
+                AND wait_reason = 'approval'
+                AND wait_approval_id = @approvalId
+            `,
+          )
+          .run({
+            approvalId: input.approvalId,
+            jobId: input.jobId,
+            timestamp: input.timestamp,
+          });
+        const record = readJobOrThrow(database, store, input.jobId);
+
+        if (
+          result.changes === 0 &&
+          record.status === 'waiting' &&
+          record.waitReason === 'approval' &&
+          record.waitApprovalId !== input.approvalId
+        ) {
+          throw new OperationalStoreError(
+            'operational-store-invalid-input',
+            store.databasePath,
+            `Runtime job is waiting on a different approval: ${input.jobId}`,
+          );
+        }
+
+        return record;
+      });
+    },
     async cancel(input: RuntimeJobTerminalStateInput): Promise<RuntimeJobRecord> {
       assertClaimInput(input, store.databasePath);
 
@@ -325,6 +406,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
               last_heartbeat_at = NULL,
               lease_expires_at = NULL,
               next_attempt_at = NULL,
+              wait_reason = NULL,
+              wait_approval_id = NULL,
               updated_at = @timestamp
             WHERE job_id = @jobId
               AND claim_token = @claimToken
@@ -365,6 +448,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
                 last_heartbeat_at = @timestamp,
                 lease_expires_at = @leaseExpiresAt,
                 next_attempt_at = NULL,
+                wait_reason = NULL,
+                wait_approval_id = NULL,
                 started_at = COALESCE(started_at, @timestamp),
                 run_id = COALESCE(run_id, @runId),
                 updated_at = @timestamp
@@ -406,6 +491,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
               last_heartbeat_at = NULL,
               lease_expires_at = NULL,
               next_attempt_at = NULL,
+              wait_reason = NULL,
+              wait_approval_id = NULL,
               updated_at = @timestamp
             WHERE job_id = @jobId
               AND claim_token = @claimToken
@@ -443,6 +530,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
               last_heartbeat_at = NULL,
               lease_expires_at = NULL,
               next_attempt_at = NULL,
+              wait_reason = NULL,
+              wait_approval_id = NULL,
               updated_at = @timestamp
             WHERE job_id = @jobId
               AND claim_token = @claimToken
@@ -502,6 +591,61 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
 
       return rows.map((row) => mapJobRow(row, store.databasePath));
     },
+    async rejectWaiting(
+      input: RuntimeJobApprovalRejectionInput,
+    ): Promise<RuntimeJobRecord> {
+      assertNonEmptyString(input.approvalId, 'approvalId', store.databasePath);
+      assertNonEmptyString(input.jobId, 'jobId', store.databasePath);
+      assertNonEmptyString(input.timestamp, 'timestamp', store.databasePath);
+
+      return store.withTransaction((database) => {
+        const result = database
+          .prepare(
+            `
+              UPDATE runtime_jobs
+              SET
+                status = 'failed',
+                error_json = @errorJson,
+                result_json = NULL,
+                claim_owner_id = NULL,
+                claim_token = NULL,
+                last_heartbeat_at = NULL,
+                lease_expires_at = NULL,
+                next_attempt_at = NULL,
+                completed_at = @timestamp,
+                wait_reason = NULL,
+                wait_approval_id = NULL,
+                updated_at = @timestamp
+              WHERE job_id = @jobId
+                AND status = 'waiting'
+                AND wait_reason = 'approval'
+                AND wait_approval_id = @approvalId
+            `,
+          )
+          .run({
+            approvalId: input.approvalId,
+            errorJson: JSON.stringify(input.error),
+            jobId: input.jobId,
+            timestamp: input.timestamp,
+          });
+        const record = readJobOrThrow(database, store, input.jobId);
+
+        if (
+          result.changes === 0 &&
+          record.status === 'waiting' &&
+          record.waitReason === 'approval' &&
+          record.waitApprovalId !== input.approvalId
+        ) {
+          throw new OperationalStoreError(
+            'operational-store-invalid-input',
+            store.databasePath,
+            `Runtime job is waiting on a different approval: ${input.jobId}`,
+          );
+        }
+
+        return record;
+      });
+    },
     async save(record: RuntimeJobRecord): Promise<RuntimeJobRecord> {
       assertJobRecord(record, store.databasePath);
 
@@ -529,7 +673,9 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
                 last_heartbeat_at,
                 lease_expires_at,
                 next_attempt_at,
-                run_id
+                run_id,
+                wait_reason,
+                wait_approval_id
               ) VALUES (
                 @jobId,
                 @sessionId,
@@ -550,7 +696,9 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
                 @lastHeartbeatAt,
                 @leaseExpiresAt,
                 @nextAttemptAt,
-                @runId
+                @runId,
+                @waitReason,
+                @waitApprovalId
               )
               ON CONFLICT(job_id) DO UPDATE SET
                 session_id = excluded.session_id,
@@ -570,7 +718,9 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
                 last_heartbeat_at = excluded.last_heartbeat_at,
                 lease_expires_at = excluded.lease_expires_at,
                 next_attempt_at = excluded.next_attempt_at,
-                run_id = excluded.run_id
+                run_id = excluded.run_id,
+                wait_reason = excluded.wait_reason,
+                wait_approval_id = excluded.wait_approval_id
             `,
           )
           .run({
@@ -596,6 +746,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
             startedAt: record.startedAt,
             status: record.status,
             updatedAt: record.updatedAt,
+            waitApprovalId: record.waitApprovalId,
+            waitReason: record.waitReason,
           });
 
         const row = selectJobById(database, record.jobId);
@@ -647,11 +799,22 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
     },
     async wait(input: RuntimeJobWaitingStateInput): Promise<RuntimeJobRecord> {
       assertClaimInput(input, store.databasePath);
-      assertNonEmptyString(
-        input.nextAttemptAt,
-        'nextAttemptAt',
-        store.databasePath,
-      );
+
+      if (input.waitReason === 'retry') {
+        assertNonEmptyString(
+          input.nextAttemptAt ?? '',
+          'nextAttemptAt',
+          store.databasePath,
+        );
+      }
+
+      if (input.waitReason === 'approval') {
+        assertNonEmptyString(
+          input.approvalId ?? '',
+          'approvalId',
+          store.databasePath,
+        );
+      }
 
       return store.withTransaction((database) =>
         updateClaimedJobState(
@@ -669,6 +832,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
               last_heartbeat_at = NULL,
               lease_expires_at = NULL,
               next_attempt_at = @nextAttemptAt,
+              wait_reason = @waitReason,
+              wait_approval_id = @approvalId,
               updated_at = @timestamp
             WHERE job_id = @jobId
               AND claim_token = @claimToken
@@ -682,6 +847,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
             resultJson:
               input.result === null ? null : JSON.stringify(input.result),
             timestamp: input.timestamp,
+            approvalId: input.approvalId,
+            waitReason: input.waitReason,
           },
         ),
       );

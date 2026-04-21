@@ -1,10 +1,10 @@
 # PRD Phase 01: Backend Runtime and Job Infrastructure
 
-**Status**: In Progress
+**Status**: Complete
 **Sessions**: 5
 **Estimated Duration**: 4-6 days
 
-**Progress**: 4/5 sessions (80%)
+**Progress**: 5/5 sessions (100%)
 
 ---
 
@@ -30,7 +30,7 @@ repo-owned data contract and the checked-in prompt and workspace rules.
 | 02 | SQLite Operational Store | Completed | ~15 | 2026-04-21 |
 | 03 | Agent Runtime Bootstrap | Completed | ~14 | 2026-04-21 |
 | 04 | Durable Job Runner | Completed | ~16 | 2026-04-21 |
-| 05 | Approval and Observability Contract | Not Started | ~13 | - |
+| 05 | Approval and Observability Contract | Completed | ~13 | 2026-04-21 |
 
 ---
 
@@ -40,12 +40,13 @@ repo-owned data contract and the checked-in prompt and workspace rules.
 - Session 02: SQLite Operational Store - Completed 2026-04-21
 - Session 03: Agent Runtime Bootstrap - Completed 2026-04-21
 - Session 04: Durable Job Runner - Completed 2026-04-21
+- Session 05: Approval and Observability Contract - Completed 2026-04-21
 
 ---
 
 ## Upcoming Sessions
 
-- Session 05: Approval and Observability Contract
+- Phase 01 complete; archived under `.spec_system/archive/phases/phase_01/`
 
 ---
 
@@ -118,14 +119,14 @@ duplicating repo logic in new runtime-only helpers.
 
 Phase complete when:
 
-- [ ] All 5 sessions completed
-- [ ] The local API can boot with structured health and startup diagnostics
-- [ ] SQLite persists sessions, jobs, approvals, and resume metadata under
+- [x] All 5 sessions completed
+- [x] The local API can boot with structured health and startup diagnostics
+- [x] SQLite persists sessions, jobs, approvals, and resume metadata under
       `.jobhunt-app/`
-- [ ] Background jobs can start, persist, resume, and fail in a structured way
-- [ ] Repo-owned OpenAI account auth and runtime bootstrap work without
+- [x] Background jobs can start, persist, resume, and fail in a structured way
+- [x] Repo-owned OpenAI account auth and runtime bootstrap work without
       `OPENAI_API_KEY`-only assumptions
-- [ ] Logs and traces make job and approval failures inspectable without
+- [x] Logs and traces make job and approval failures inspectable without
       stdout scraping
 
 ---

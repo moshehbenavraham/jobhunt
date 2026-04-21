@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import {
   createServer,
   type IncomingMessage,
@@ -181,6 +182,31 @@ function getRouteExecutionTimeout(runtimeConfig: ApiRuntimeConfig): number {
   );
 }
 
+function getTraceId(
+  request: IncomingMessage,
+  requestId: string,
+): string {
+  const headerValue = request.headers['x-trace-id'];
+
+  if (typeof headerValue === 'string' && headerValue.trim().length > 0) {
+    return headerValue.trim();
+  }
+
+  return requestId;
+}
+
+function getEventLevel(statusCode: number): 'error' | 'info' | 'warn' {
+  if (statusCode >= 500) {
+    return 'error';
+  }
+
+  if (statusCode >= 400) {
+    return 'warn';
+  }
+
+  return 'info';
+}
+
 async function handleRequest(
   request: IncomingMessage,
   response: ServerResponse,
@@ -189,7 +215,68 @@ async function handleRequest(
   routes: readonly ApiRouteDefinition[],
   rateLimiter: ReturnType<typeof createRateLimiter>,
 ): Promise<void> {
-  let requestInput;
+  const startedAtMs = Date.now();
+  const startedAt = new Date(startedAtMs).toISOString();
+  const requestId = randomUUID();
+  const traceId = getTraceId(request, requestId);
+  let requestInput: ReturnType<typeof parseApiRequestInput> | undefined;
+
+  async function recordRequestEvent(
+    eventType: 'http-request-completed' | 'http-request-received',
+    input: {
+      level?: 'error' | 'info' | 'warn';
+      metadata: Record<string, string | number | null>;
+      pathname: string;
+      statusCode?: number;
+      summary: string;
+    },
+  ): Promise<void> {
+    try {
+      const observability = await services.observability.getService();
+      await observability.recordEvent({
+        correlation: {
+          approvalId: null,
+          jobId: null,
+          requestId,
+          sessionId: null,
+          traceId,
+        },
+        eventType,
+        metadata: {
+          ...input.metadata,
+          method: request.method?.trim().toUpperCase() ?? 'GET',
+          path: input.pathname,
+          statusCode: input.statusCode ?? null,
+        },
+        occurredAt: new Date().toISOString(),
+        summary: input.summary,
+        ...(input.level ? { level: input.level } : {}),
+      });
+    } catch {
+      // Observability writes must not break the request path.
+    }
+  }
+
+  async function writeRouteResponse(routeResponse: JsonRouteResponse): Promise<void> {
+    await recordRequestEvent('http-request-completed', {
+      level: getEventLevel(routeResponse.statusCode),
+      metadata: {
+        durationMs: Date.now() - startedAtMs,
+      },
+      pathname: requestInput?.pathname ?? request.url ?? '/',
+      statusCode: routeResponse.statusCode,
+      summary: `HTTP ${request.method?.trim().toUpperCase() ?? 'GET'} ${requestInput?.pathname ?? request.url ?? '/'} completed with ${routeResponse.statusCode}.`,
+    });
+
+    writeJsonResponse(request.method?.trim().toUpperCase() || 'GET', response, {
+      ...routeResponse,
+      headers: {
+        ...(routeResponse.headers ?? {}),
+        'x-request-id': requestId,
+        'x-trace-id': traceId,
+      },
+    });
+  }
 
   try {
     requestInput = parseApiRequestInput(request);
@@ -200,16 +287,29 @@ async function handleRequest(
         : createUnexpectedErrorResponse(error);
     const method = request.method?.trim().toUpperCase() || 'GET';
 
-    writeJsonResponse(method, response, routeResponse);
+    writeJsonResponse(method, response, {
+      ...routeResponse,
+      headers: {
+        ...(routeResponse.headers ?? {}),
+        'x-request-id': requestId,
+        'x-trace-id': traceId,
+      },
+    });
     return;
   }
+
+  await recordRequestEvent('http-request-received', {
+    metadata: {
+      durationMs: 0,
+    },
+    pathname: requestInput.pathname,
+    summary: `HTTP ${requestInput.method} ${requestInput.pathname} received.`,
+  });
 
   const rateLimit = rateLimiter.check(request);
 
   if (!rateLimit.allowed) {
-    writeJsonResponse(
-      requestInput.method,
-      response,
+    await writeRouteResponse(
       createRateLimitedResponse(
         rateLimit.retryAfterSeconds,
         rateLimit.remaining,
@@ -222,9 +322,7 @@ async function handleRequest(
   const matchingRoutes = getRoutesForPath(routes, requestInput.pathname);
 
   if (matchingRoutes.length === 0) {
-    writeJsonResponse(
-      requestInput.method,
-      response,
+    await writeRouteResponse(
       createNotFoundResponse(requestInput.pathname),
     );
     return;
@@ -235,9 +333,7 @@ async function handleRequest(
   );
 
   if (!matchingRoute) {
-    writeJsonResponse(
-      requestInput.method,
-      response,
+    await writeRouteResponse(
       createMethodNotAllowedResponse(
         requestInput.method,
         getAllowedMethods(matchingRoutes),
@@ -261,11 +357,9 @@ async function handleRequest(
       `API route execution timed out after ${getRouteExecutionTimeout(runtimeConfig)}ms.`,
     );
 
-    writeJsonResponse(requestInput.method, response, routeResponse);
+    await writeRouteResponse(routeResponse);
   } catch (error) {
-    writeJsonResponse(
-      requestInput.method,
-      response,
+    await writeRouteResponse(
       createUnexpectedErrorResponse(error),
     );
   }

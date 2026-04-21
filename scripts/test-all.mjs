@@ -375,9 +375,37 @@ if (appAgentRuntimeContract !== null) {
   fail('App agent-runtime contract tests failed');
 }
 
-// -- 3t. App store contract -------------------------------------
+// -- 3t. App approval-runtime contract ---------------------------
 
-console.log('\n3t. App durable job-runner contract');
+console.log('\n3t. App approval-runtime contract');
+
+const appApprovalRuntimeContract = run('npm', [
+  'run',
+  'app:api:test:approval-runtime',
+]);
+if (appApprovalRuntimeContract !== null) {
+  pass('App approval-runtime contract tests pass');
+} else {
+  fail('App approval-runtime contract tests failed');
+}
+
+// -- 3u. App observability contract ------------------------------
+
+console.log('\n3u. App observability contract');
+
+const appObservabilityContract = run('npm', [
+  'run',
+  'app:api:test:observability',
+]);
+if (appObservabilityContract !== null) {
+  pass('App observability contract tests pass');
+} else {
+  fail('App observability contract tests failed');
+}
+
+// -- 3v. App durable job-runner contract -------------------------
+
+console.log('\n3v. App durable job-runner contract');
 
 const appJobRunnerContract = run('npm', ['run', 'app:api:test:job-runner']);
 if (appJobRunnerContract !== null) {
@@ -386,9 +414,9 @@ if (appJobRunnerContract !== null) {
   fail('App durable job-runner contract tests failed');
 }
 
-// -- 3u. App store contract -------------------------------------
+// -- 3w. App store contract --------------------------------------
 
-console.log('\n3u. App store contract');
+console.log('\n3w. App store contract');
 
 const appStoreContract = run('npm', ['run', 'app:api:test:store']);
 if (appStoreContract !== null) {
@@ -397,9 +425,9 @@ if (appStoreContract !== null) {
   fail('App store contract tests failed');
 }
 
-// -- 3v. App bootstrap smoke ------------------------------------
+// -- 3x. App bootstrap smoke -------------------------------------
 
-console.log('\n3v. App bootstrap smoke');
+console.log('\n3x. App bootstrap smoke');
 
 const appBootstrap = run('node', ['scripts/test-app-bootstrap.mjs']);
 if (appBootstrap !== null) {
@@ -408,11 +436,15 @@ if (appBootstrap !== null) {
   fail('App bootstrap smoke tests failed');
 }
 
-// -- 3w. Bootstrap ASCII validation -----------------------------
+// -- 3y. Bootstrap ASCII validation ------------------------------
 
-console.log('\n3w. Bootstrap ASCII validation');
+console.log('\n3y. Bootstrap ASCII validation');
 
 const bootstrapFiles = [
+  'apps/api/src/approval-runtime/approval-runtime-contract.ts',
+  'apps/api/src/approval-runtime/approval-runtime-service.test.ts',
+  'apps/api/src/approval-runtime/approval-runtime-service.ts',
+  'apps/api/src/approval-runtime/index.ts',
   'apps/api/src/agent-runtime/agent-runtime-config.test.ts',
   'apps/api/src/agent-runtime/agent-runtime-config.ts',
   'apps/api/src/agent-runtime/agent-runtime-contract.ts',
@@ -431,6 +463,10 @@ const bootstrapFiles = [
   'apps/api/src/job-runner/job-runner-state-machine.test.ts',
   'apps/api/src/job-runner/job-runner-state-machine.ts',
   'apps/api/src/job-runner/test-utils.ts',
+  'apps/api/src/observability/index.ts',
+  'apps/api/src/observability/observability-contract.ts',
+  'apps/api/src/observability/observability-service.test.ts',
+  'apps/api/src/observability/observability-service.ts',
   'apps/api/src/runtime/runtime-config.test.ts',
   'apps/api/src/runtime/runtime-config.ts',
   'apps/api/src/runtime/service-container.test.ts',
@@ -441,12 +477,15 @@ const bootstrapFiles = [
   'apps/api/src/server/route-contract.ts',
   'apps/api/src/server/routes/health-route.ts',
   'apps/api/src/server/routes/index.ts',
+  'apps/api/src/server/routes/runtime-approvals-route.ts',
+  'apps/api/src/server/routes/runtime-diagnostics-route.ts',
   'apps/api/src/server/routes/startup-route.ts',
   'apps/api/src/server/startup-status.ts',
   'apps/api/src/store/approval-repository.ts',
   'apps/api/src/store/index.ts',
   'apps/api/src/store/job-repository.ts',
   'apps/api/src/store/repositories.test.ts',
+  'apps/api/src/store/runtime-event-repository.ts',
   'apps/api/src/store/run-metadata-repository.ts',
   'apps/api/src/store/session-repository.ts',
   'apps/api/src/store/sqlite-schema.ts',

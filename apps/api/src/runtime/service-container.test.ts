@@ -254,3 +254,108 @@ test('service container closes the durable job runner before generic cleanup tas
     await fixture.cleanup();
   }
 });
+
+test('service container reuses approval-runtime and observability services', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.yml': 'full_name: Test User\n',
+      'modes/_profile.md': '# Profile\n',
+      'profile/cv.md': '# CV\n',
+    },
+  });
+  const container = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const approvalRuntimeA = await container.approvalRuntime.getService();
+    const approvalRuntimeB = await container.approvalRuntime.getService();
+    const observabilityA = await container.observability.getService();
+    const observabilityB = await container.observability.getService();
+    const store = await container.operationalStore.getStore();
+
+    await store.sessions.save({
+      activeJobId: 'job-services',
+      context: {
+        workflow: 'single-evaluation',
+      },
+      createdAt: '2026-04-21T07:22:00.000Z',
+      lastHeartbeatAt: '2026-04-21T07:22:00.000Z',
+      runnerId: 'runner-services',
+      sessionId: 'session-services',
+      status: 'running',
+      updatedAt: '2026-04-21T07:22:00.000Z',
+      workflow: 'single-evaluation',
+    });
+    await store.jobs.save({
+      attempt: 1,
+      claimOwnerId: 'runner-services',
+      claimToken: 'claim-services',
+      completedAt: null,
+      createdAt: '2026-04-21T07:22:00.000Z',
+      currentRunId: 'run-services',
+      error: null,
+      jobId: 'job-services',
+      jobType: 'evaluate-job',
+      lastHeartbeatAt: '2026-04-21T07:22:00.000Z',
+      leaseExpiresAt: '2026-04-21T07:23:00.000Z',
+      maxAttempts: 3,
+      nextAttemptAt: null,
+      payload: {
+        company: 'Services Co',
+      },
+      result: null,
+      retryBackoffMs: 1_000,
+      sessionId: 'session-services',
+      startedAt: '2026-04-21T07:22:00.000Z',
+      status: 'running',
+      updatedAt: '2026-04-21T07:22:00.000Z',
+      waitApprovalId: null,
+      waitReason: null,
+    });
+
+    const approval = await approvalRuntimeA.createApproval({
+      requestedAt: '2026-04-21T07:22:30.000Z',
+      request: {
+        action: 'send-email',
+        correlation: {
+          jobId: 'job-services',
+          requestId: 'request-services',
+          sessionId: 'session-services',
+          traceId: 'trace-services',
+        },
+        details: null,
+        title: 'Send services email',
+      },
+    });
+    await observabilityA.recordEvent({
+      correlation: {
+        jobId: 'job-services',
+        requestId: 'request-services',
+        sessionId: 'session-services',
+        traceId: 'trace-services',
+      },
+      eventType: 'job-failed',
+      level: 'error',
+      metadata: {
+        message: 'Service container test failure',
+        runId: 'run-services',
+      },
+      occurredAt: '2026-04-21T07:23:00.000Z',
+      summary: 'Job failed.',
+    });
+    const pendingApprovals = await approvalRuntimeB.listPendingApprovals();
+    const diagnostics = await observabilityB.getDiagnosticsSummary({
+      traceId: 'trace-services',
+    });
+
+    assert.equal(approvalRuntimeA, approvalRuntimeB);
+    assert.equal(observabilityA, observabilityB);
+    assert.equal(pendingApprovals[0]?.approvalId, approval.approval.approvalId);
+    assert.equal(diagnostics.failedJobs[0]?.jobId, 'job-services');
+  } finally {
+    await container.dispose();
+    await fixture.cleanup();
+  }
+});

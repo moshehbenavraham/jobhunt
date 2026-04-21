@@ -27,6 +27,7 @@ import type {
   RuntimeSessionStatus,
 } from '../store/store-contract.js';
 import type { JsonValue } from '../workspace/workspace-types.js';
+import type { RuntimeEventWriteInput } from '../observability/index.js';
 
 const DEFAULT_HEARTBEAT_INTERVAL_MS = 1_000;
 const DEFAULT_LEASE_DURATION_MS = 5_000;
@@ -79,6 +80,10 @@ function createInitialRunMetadata(): JsonValue {
   return {
     checkpoint: null,
   };
+}
+
+function buildJobTraceId(job: RuntimeJobRecord): string {
+  return job.currentRunId;
 }
 
 async function synchronizeSessionState(
@@ -236,6 +241,34 @@ export function createDurableJobRunnerService(
     return options.getStore();
   }
 
+  async function getApprovalRuntime() {
+    assertActive();
+
+    if (!options.getApprovalRuntime) {
+      throw new DurableJobRunnerError(
+        'job-runner-invalid-config',
+        'Durable job runner approval waits require an approval runtime provider.',
+      );
+    }
+
+    return options.getApprovalRuntime();
+  }
+
+  async function recordRuntimeEvent(
+    input: RuntimeEventWriteInput,
+  ): Promise<void> {
+    if (!options.getObservability) {
+      return;
+    }
+
+    try {
+      const observability = await options.getObservability();
+      await observability.recordEvent(input);
+    } catch {
+      // Observability writes must not block durable job progress.
+    }
+  }
+
   async function persistHeartbeat(
     store: OperationalStore,
     job: RuntimeJobRecord,
@@ -283,6 +316,23 @@ export function createDurableJobRunnerService(
           result: null,
           status: 'failed',
           timestamp,
+        });
+        await recordRuntimeEvent({
+          correlation: {
+            approvalId: null,
+            jobId: claimedJob.jobId,
+            requestId: null,
+            sessionId: claimedJob.sessionId,
+            traceId: buildJobTraceId(claimedJob),
+          },
+          eventType: 'job-failed',
+          level: 'error',
+          metadata: {
+            message: `Runtime session does not exist: ${claimedJob.sessionId}.`,
+            runId: claimedJob.currentRunId,
+          },
+          occurredAt: timestamp,
+          summary: `Job ${claimedJob.jobId} failed because its session is missing.`,
         });
         return;
       }
@@ -361,7 +411,57 @@ export function createDurableJobRunnerService(
         const timestamp = toIsoTimestamp(now());
 
         if (result.status === 'waiting') {
+          if (result.waitReason === 'approval') {
+            const approvalRuntime = await getApprovalRuntime();
+            const approval = await approvalRuntime.createApproval({
+              requestedAt: timestamp,
+              request: {
+                action: result.approval.action,
+                correlation: {
+                  jobId: claimedJob.jobId,
+                  requestId: null,
+                  sessionId: claimedJob.sessionId,
+                  traceId: result.approval.traceId ?? buildJobTraceId(claimedJob),
+                },
+                details: result.approval.details,
+                title: result.approval.title,
+              },
+            });
+
+            await store.jobs.wait({
+              approvalId: approval.approval.approvalId,
+              claimToken,
+              error: null,
+              jobId: claimedJob.jobId,
+              nextAttemptAt: null,
+              result: result.result,
+              timestamp,
+              waitReason: 'approval',
+            });
+            await synchronizeSessionState(store, claimedJob.sessionId, timestamp);
+            summary.waitingJobIds.push(claimedJob.jobId);
+            await recordRuntimeEvent({
+              correlation: {
+                approvalId: approval.approval.approvalId,
+                jobId: claimedJob.jobId,
+                requestId: null,
+                sessionId: claimedJob.sessionId,
+                traceId: approval.approval.traceId,
+              },
+              eventType: 'job-waiting-approval',
+              metadata: {
+                action: result.approval.action,
+                runId: claimedJob.currentRunId,
+                title: result.approval.title,
+              },
+              occurredAt: timestamp,
+              summary: `Job ${claimedJob.jobId} is waiting for approval.`,
+            });
+            return;
+          }
+
           await store.jobs.wait({
+            approvalId: null,
             claimToken,
             error: null,
             jobId: claimedJob.jobId,
@@ -371,9 +471,29 @@ export function createDurableJobRunnerService(
             ),
             result: result.result,
             timestamp,
+            waitReason: 'retry',
           });
           await synchronizeSessionState(store, claimedJob.sessionId, timestamp);
           summary.waitingJobIds.push(claimedJob.jobId);
+          await recordRuntimeEvent({
+            correlation: {
+              approvalId: null,
+              jobId: claimedJob.jobId,
+              requestId: null,
+              sessionId: claimedJob.sessionId,
+              traceId: buildJobTraceId(claimedJob),
+            },
+            eventType: 'job-waiting-retry',
+            metadata: {
+              nextAttemptAt: addMilliseconds(
+                timestamp,
+                Math.max(0, result.delayMs),
+              ),
+              runId: claimedJob.currentRunId,
+            },
+            occurredAt: timestamp,
+            summary: `Job ${claimedJob.jobId} is waiting for retry.`,
+          });
           return;
         }
 
@@ -387,6 +507,22 @@ export function createDurableJobRunnerService(
         });
         await synchronizeSessionState(store, claimedJob.sessionId, timestamp);
         summary.completedJobIds.push(claimedJob.jobId);
+        await recordRuntimeEvent({
+          correlation: {
+            approvalId: null,
+            jobId: claimedJob.jobId,
+            requestId: null,
+            sessionId: claimedJob.sessionId,
+            traceId: buildJobTraceId(claimedJob),
+          },
+          eventType: 'job-completed',
+          metadata: {
+            attempt: claimedJob.attempt,
+            runId: claimedJob.currentRunId,
+          },
+          occurredAt: timestamp,
+          summary: `Job ${claimedJob.jobId} completed.`,
+        });
       } catch (error) {
         if (executionController.signal.aborted && loopController?.signal.aborted) {
           return;
@@ -407,15 +543,36 @@ export function createDurableJobRunnerService(
 
         if (retryDecision.status === 'waiting' && retryDecision.nextAttemptAt) {
           await store.jobs.wait({
+            approvalId: null,
             claimToken,
             error: toFailureDetails(normalizedError),
             jobId: claimedJob.jobId,
             nextAttemptAt: retryDecision.nextAttemptAt,
             result: null,
             timestamp,
+            waitReason: 'retry',
           });
           await synchronizeSessionState(store, claimedJob.sessionId, timestamp);
           summary.waitingJobIds.push(claimedJob.jobId);
+          await recordRuntimeEvent({
+            correlation: {
+              approvalId: null,
+              jobId: claimedJob.jobId,
+              requestId: null,
+              sessionId: claimedJob.sessionId,
+              traceId: buildJobTraceId(claimedJob),
+            },
+            eventType: 'job-waiting-retry',
+            level: 'warn',
+            metadata: {
+              message: normalizedError.message,
+              nextAttemptAt: retryDecision.nextAttemptAt,
+              retryable: normalizedError.retryable,
+              runId: claimedJob.currentRunId,
+            },
+            occurredAt: timestamp,
+            summary: `Job ${claimedJob.jobId} is waiting for retry after an execution error.`,
+          });
           return;
         }
 
@@ -428,6 +585,24 @@ export function createDurableJobRunnerService(
           timestamp,
         });
         await synchronizeSessionState(store, claimedJob.sessionId, timestamp);
+        await recordRuntimeEvent({
+          correlation: {
+            approvalId: null,
+            jobId: claimedJob.jobId,
+            requestId: null,
+            sessionId: claimedJob.sessionId,
+            traceId: buildJobTraceId(claimedJob),
+          },
+          eventType: 'job-failed',
+          level: 'error',
+          metadata: {
+            message: normalizedError.message,
+            retryable: normalizedError.retryable,
+            runId: claimedJob.currentRunId,
+          },
+          occurredAt: timestamp,
+          summary: `Job ${claimedJob.jobId} failed.`,
+        });
       } finally {
         if (heartbeatTimer) {
           clearTimeout(heartbeatTimer);
@@ -490,6 +665,23 @@ export function createDurableJobRunnerService(
       timestamp: scannedAt,
     });
     await ensureRunMetadata(store, claimedJob, scannedAt);
+    await recordRuntimeEvent({
+      correlation: {
+        approvalId: null,
+        jobId: claimedJob.jobId,
+        requestId: null,
+        sessionId: claimedJob.sessionId,
+        traceId: buildJobTraceId(claimedJob),
+      },
+      eventType: 'job-claimed',
+      metadata: {
+        attempt: claimedJob.attempt,
+        runId: claimedJob.currentRunId,
+        runnerId,
+      },
+      occurredAt: scannedAt,
+      summary: `Job ${claimedJob.jobId} claimed by ${runnerId}.`,
+    });
     await executeClaimedJob(summary, store, claimedJob, claimToken);
 
     return summary;
@@ -584,6 +776,8 @@ export function createDurableJobRunnerService(
         startedAt: null,
         status: 'queued',
         updatedAt: timestamp,
+        waitApprovalId: null,
+        waitReason: null,
       });
       const runMetadata = await ensureRunMetadata(store, job, timestamp);
 

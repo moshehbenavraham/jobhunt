@@ -56,6 +56,8 @@ export type RuntimeJobStatus =
   | 'running'
   | 'waiting';
 
+export type RuntimeJobWaitReason = 'approval' | 'retry';
+
 export type RuntimeJobRecord = {
   attempt: number;
   claimOwnerId: string | null;
@@ -77,9 +79,15 @@ export type RuntimeJobRecord = {
   startedAt: string | null;
   status: RuntimeJobStatus;
   updatedAt: string;
+  waitApprovalId: string | null;
+  waitReason: RuntimeJobWaitReason | null;
 };
 
 export type RuntimeApprovalStatus = 'approved' | 'pending' | 'rejected';
+export type RuntimeApprovalDecisionStatus = Extract<
+  RuntimeApprovalStatus,
+  'approved' | 'rejected'
+>;
 
 export type RuntimeApprovalRecord = {
   approvalId: string;
@@ -90,6 +98,7 @@ export type RuntimeApprovalRecord = {
   response: JsonValue | null;
   sessionId: string;
   status: RuntimeApprovalStatus;
+  traceId: string | null;
   updatedAt: string;
 };
 
@@ -141,12 +150,14 @@ export type RuntimeJobTerminalStateInput = {
 };
 
 export type RuntimeJobWaitingStateInput = {
+  approvalId: string | null;
   claimToken: string;
   error: JsonValue | null;
   jobId: string;
-  nextAttemptAt: string;
+  nextAttemptAt: string | null;
   result: JsonValue | null;
   timestamp: string;
+  waitReason: RuntimeJobWaitReason;
 };
 
 export type RuntimeRunCheckpointSaveInput = {
@@ -154,6 +165,77 @@ export type RuntimeRunCheckpointSaveInput = {
   jobId: string | null;
   runId: string;
   sessionId: string;
+};
+
+export type RuntimeApprovalPendingListInput = {
+  limit?: number;
+  sessionId?: string;
+};
+
+export type RuntimeApprovalResolutionInput = {
+  approvalId: string;
+  response: JsonValue | null;
+  resolvedAt: string;
+  status: RuntimeApprovalDecisionStatus;
+  updatedAt: string;
+};
+
+export type RuntimeApprovalResolutionResult = {
+  approval: RuntimeApprovalRecord;
+  applied: boolean;
+};
+
+export type RuntimeJobApprovalTransitionInput = {
+  approvalId: string;
+  jobId: string;
+  timestamp: string;
+};
+
+export type RuntimeJobApprovalRejectionInput = RuntimeJobApprovalTransitionInput & {
+  error: JsonValue;
+};
+
+export const RUNTIME_EVENT_LEVELS = ['error', 'info', 'warn'] as const;
+export type RuntimeEventLevel = (typeof RUNTIME_EVENT_LEVELS)[number];
+
+export const RUNTIME_EVENT_TYPES = [
+  'approval-approved',
+  'approval-requested',
+  'approval-rejected',
+  'http-request-completed',
+  'http-request-received',
+  'job-claimed',
+  'job-completed',
+  'job-failed',
+  'job-waiting-approval',
+  'job-waiting-retry',
+] as const;
+
+export type RuntimeEventType = (typeof RUNTIME_EVENT_TYPES)[number];
+
+export type RuntimeEventRecord = {
+  approvalId: string | null;
+  eventId: string;
+  eventType: RuntimeEventType;
+  jobId: string | null;
+  level: RuntimeEventLevel;
+  metadata: JsonValue | null;
+  occurredAt: string;
+  requestId: string | null;
+  sessionId: string | null;
+  summary: string;
+  traceId: string | null;
+};
+
+export type RuntimeEventListInput = {
+  approvalId?: string;
+  eventTypes?: RuntimeEventType[];
+  jobId?: string;
+  level?: RuntimeEventLevel;
+  limit?: number;
+  requestId?: string;
+  sessionId?: string;
+  traceId?: string;
 };
 
 export type SessionRepository = {
@@ -171,6 +253,9 @@ export type SessionRepository = {
 };
 
 export type JobRepository = {
+  approveWaiting: (
+    input: RuntimeJobApprovalTransitionInput,
+  ) => Promise<RuntimeJobRecord>;
   cancel: (input: RuntimeJobTerminalStateInput) => Promise<RuntimeJobRecord>;
   claimNext: (input: RuntimeJobClaimInput) => Promise<RuntimeJobRecord | null>;
   complete: (input: RuntimeJobTerminalStateInput) => Promise<RuntimeJobRecord>;
@@ -179,6 +264,9 @@ export type JobRepository = {
   listClaimable: (now: string) => Promise<RuntimeJobRecord[]>;
   listRecoverable: (now: string) => Promise<RuntimeJobRecord[]>;
   listBySessionId: (sessionId: string) => Promise<RuntimeJobRecord[]>;
+  rejectWaiting: (
+    input: RuntimeJobApprovalRejectionInput,
+  ) => Promise<RuntimeJobRecord>;
   save: (record: RuntimeJobRecord) => Promise<RuntimeJobRecord>;
   touchHeartbeat: (input: RuntimeJobHeartbeatInput) => Promise<RuntimeJobRecord>;
   wait: (input: RuntimeJobWaitingStateInput) => Promise<RuntimeJobRecord>;
@@ -186,9 +274,16 @@ export type JobRepository = {
 
 export type ApprovalRepository = {
   getById: (approvalId: string) => Promise<RuntimeApprovalRecord | null>;
+  listByJobId: (jobId: string) => Promise<RuntimeApprovalRecord[]>;
   listBySessionId: (
     sessionId: string,
   ) => Promise<RuntimeApprovalRecord[]>;
+  listPending: (
+    input?: RuntimeApprovalPendingListInput,
+  ) => Promise<RuntimeApprovalRecord[]>;
+  resolve: (
+    input: RuntimeApprovalResolutionInput,
+  ) => Promise<RuntimeApprovalResolutionResult>;
   save: (
     record: RuntimeApprovalRecord,
   ) => Promise<RuntimeApprovalRecord>;
@@ -213,8 +308,15 @@ export type RunMetadataRepository = {
   ) => Promise<RuntimeRunMetadataRecord>;
 };
 
+export type RuntimeEventRepository = {
+  getById: (eventId: string) => Promise<RuntimeEventRecord | null>;
+  list: (input?: RuntimeEventListInput) => Promise<RuntimeEventRecord[]>;
+  save: (record: RuntimeEventRecord) => Promise<RuntimeEventRecord>;
+};
+
 export type OperationalStoreRepositories = {
   approvals: ApprovalRepository;
+  events: RuntimeEventRepository;
   jobs: JobRepository;
   runMetadata: RunMetadataRepository;
   sessions: SessionRepository;

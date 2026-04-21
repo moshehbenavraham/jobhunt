@@ -1,4 +1,9 @@
+import type {
+  ApprovalRuntimeRequest,
+  ApprovalRuntimeService,
+} from '../approval-runtime/index.js';
 import type { AgentRuntimeBootstrap } from '../agent-runtime/index.js';
+import type { ObservabilityService } from '../observability/index.js';
 import type { WorkflowIntent } from '../prompt/index.js';
 import type {
   OperationalStore,
@@ -21,6 +26,7 @@ export type DurableJobTerminalStatus =
   (typeof DURABLE_JOB_TERMINAL_STATUSES)[number];
 
 export const DURABLE_JOB_EXECUTION_EVENTS = [
+  'approval-waiting',
   'checkpoint-saved',
   'claimed',
   'completed',
@@ -95,16 +101,29 @@ export type DurableJobDrainSummary = {
   waitingJobIds: string[];
 };
 
+export type DurableJobApprovalWaitResult = {
+  approval: Pick<ApprovalRuntimeRequest, 'action' | 'details' | 'title'> & {
+    traceId?: string | null;
+  };
+  result: JsonValue | null;
+  status: 'waiting';
+  waitReason: 'approval';
+};
+
+export type DurableJobRetryWaitResult = {
+  delayMs: number;
+  result: JsonValue | null;
+  status: 'waiting';
+  waitReason: 'retry';
+};
+
 export type DurableJobExecutorResult =
   | {
       result: JsonValue | null;
       status: 'completed';
     }
-  | {
-      delayMs: number;
-      result: JsonValue | null;
-      status: 'waiting';
-    };
+  | DurableJobApprovalWaitResult
+  | DurableJobRetryWaitResult;
 
 export type DurableJobExecutorContext = {
   attempt: number;
@@ -157,6 +176,8 @@ export type DurableJobRunnerServiceOptions = {
     workflow: WorkflowIntent,
   ) => Promise<AgentRuntimeBootstrap>;
   executors: DurableJobExecutorRegistry;
+  getApprovalRuntime?: () => Promise<ApprovalRuntimeService>;
+  getObservability?: () => Promise<ObservabilityService>;
   getStore: () => Promise<OperationalStore>;
   heartbeatIntervalMs?: number;
   leaseDurationMs?: number;

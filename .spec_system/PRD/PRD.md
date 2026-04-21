@@ -784,7 +784,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | Phase | Name | Sessions | Status |
 |-------|------|----------|--------|
 | 00 | Foundation and Repo Contract | 4 | Complete |
-| 01 | Backend Runtime and Job Infrastructure | 5 | Not Started |
+| 01 | Backend Runtime and Job Infrastructure | 5 | Complete |
 | 02 | Typed Tools and Agent Orchestration | 4-5 | Not Started |
 | 03 | Chat, Onboarding, and Approvals UX | 3-5 | Not Started |
 | 04 | Evaluation, Artifacts, and Tracker Parity | 4-6 | Not Started |
@@ -842,12 +842,14 @@ Archived phase artifacts live under `.spec_system/archive/phases/phase_00/`.
 
 ### Phase 01: Backend Runtime and Job Infrastructure
 
-- Build the Node.js and TypeScript API
-- Add SQLite store for sessions, jobs, and approvals
-- Implement the background job runner
-- Integrate the checked-in OpenAI account auth and provider stack from
+- Completed the Node.js and TypeScript API
+- Added the SQLite store for sessions, jobs, and approvals
+- Implemented the background job runner
+- Integrated the checked-in OpenAI account auth and provider stack from
   `scripts/lib/openai-account-auth/`
-- Add trace and log plumbing
+- Added trace and log plumbing
+
+Archived phase artifacts live under `.spec_system/archive/phases/phase_01/`.
 
 ### Phase 02: Typed Tools and Agent Orchestration
 

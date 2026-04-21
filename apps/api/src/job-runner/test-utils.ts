@@ -1,3 +1,11 @@
+import {
+  createApprovalRuntimeService,
+  type ApprovalRuntimeService,
+} from '../approval-runtime/index.js';
+import {
+  createObservabilityService,
+  type ObservabilityService,
+} from '../observability/index.js';
 import { z } from 'zod';
 import type {
   AnyDurableJobExecutorDefinition,
@@ -24,9 +32,11 @@ export type Deferred<TValue> = {
 };
 
 export type DurableJobRunnerHarness = {
+  approvalRuntime: ApprovalRuntimeService;
   cleanup: () => Promise<void>;
   clock: JobRunnerTestClock;
   fixture: WorkspaceFixture;
+  observability: ObservabilityService;
   runner: DurableJobRunnerService;
   store: OperationalStore;
 };
@@ -102,11 +112,21 @@ export async function createDurableJobRunnerHarness(options: {
   const store = await createOperationalStore({
     repoRoot: fixture.repoRoot,
   });
+  const observability = createObservabilityService({
+    getStore: async () => store,
+    getStoreStatus: store.getStatus,
+  });
+  const approvalRuntime = createApprovalRuntimeService({
+    getStore: async () => store,
+    recordEvent: (input) => observability.recordEvent(input),
+  });
   const runner = createDurableJobRunnerService({
     bootstrapWorkflow: async () => {
       throw new Error('bootstrapWorkflow was not expected in this test');
     },
     executors: createDurableJobExecutorRegistry(options.executors ?? []),
+    getApprovalRuntime: async () => approvalRuntime,
+    getObservability: async () => observability,
     getStore: async () => store,
     now: clock.now,
     runnerId: 'durable-job-runner-test',
@@ -128,6 +148,7 @@ export async function createDurableJobRunnerHarness(options: {
   });
 
   return {
+    approvalRuntime,
     async cleanup(): Promise<void> {
       await runner.close();
       await store.close();
@@ -135,6 +156,7 @@ export async function createDurableJobRunnerHarness(options: {
     },
     clock,
     fixture,
+    observability,
     runner,
     store,
   };
@@ -190,6 +212,8 @@ export async function seedCheckpointedRunningJob(
     startedAt,
     status: 'running',
     updatedAt: startedAt,
+    waitApprovalId: null,
+    waitReason: null,
   });
   await harness.store.runMetadata.saveCheckpoint({
     checkpoint: {

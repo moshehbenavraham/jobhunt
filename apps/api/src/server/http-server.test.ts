@@ -42,6 +42,54 @@ async function createReadyFixture() {
   });
 }
 
+async function seedRuntimeContext(
+  store: Awaited<ReturnType<typeof createOperationalStore>>,
+  input: {
+    jobId: string;
+    sessionId: string;
+  },
+): Promise<void> {
+  await store.sessions.save({
+    activeJobId: input.jobId,
+    context: {
+      workflow: 'single-evaluation',
+    },
+    createdAt: '2026-04-21T07:24:00.000Z',
+    lastHeartbeatAt: '2026-04-21T07:24:00.000Z',
+    runnerId: 'runner-http',
+    sessionId: input.sessionId,
+    status: 'running',
+    updatedAt: '2026-04-21T07:24:00.000Z',
+    workflow: 'single-evaluation',
+  });
+  await store.jobs.save({
+    attempt: 1,
+    claimOwnerId: 'runner-http',
+    claimToken: 'claim-http',
+    completedAt: null,
+    createdAt: '2026-04-21T07:24:00.000Z',
+    currentRunId: `${input.jobId}-run`,
+    error: null,
+    jobId: input.jobId,
+    jobType: 'evaluate-job',
+    lastHeartbeatAt: '2026-04-21T07:24:00.000Z',
+    leaseExpiresAt: '2026-04-21T07:25:00.000Z',
+    maxAttempts: 3,
+    nextAttemptAt: null,
+    payload: {
+      company: 'HTTP Co',
+    },
+    result: null,
+    retryBackoffMs: 1_000,
+    sessionId: input.sessionId,
+    startedAt: '2026-04-21T07:24:00.000Z',
+    status: 'running',
+    updatedAt: '2026-04-21T07:24:00.000Z',
+    waitApprovalId: null,
+    waitReason: null,
+  });
+}
+
 test('health and startup routes report ready diagnostics after explicit store initialization', async () => {
   const fixture = await createReadyFixture();
   const authFixture = await createAgentRuntimeAuthFixture();
@@ -342,6 +390,101 @@ test('health route handles HEAD requests without emitting a response body', asyn
     assert.equal(response.headers.get('content-type'), 'application/json; charset=utf-8');
     assert.equal(
       Number(response.headers.get('content-length') ?? '0') > 0,
+      true,
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('runtime approval and diagnostics routes expose pending approvals, failed diagnostics, and request correlation headers', async () => {
+  const fixture = await createReadyFixture();
+  const services = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+  const store = await services.operationalStore.getStore();
+  await seedRuntimeContext(store, {
+    jobId: 'job-runtime-route',
+    sessionId: 'session-runtime-route',
+  });
+  const approvalRuntime = await services.approvalRuntime.getService();
+  const observability = await services.observability.getService();
+  const approval = await approvalRuntime.createApproval({
+    requestedAt: '2026-04-21T07:24:30.000Z',
+    request: {
+      action: 'send-email',
+      correlation: {
+        jobId: 'job-runtime-route',
+        requestId: 'request-runtime-route',
+        sessionId: 'session-runtime-route',
+        traceId: 'trace-runtime-route',
+      },
+      details: null,
+      title: 'Send route email',
+    },
+  });
+  await observability.recordEvent({
+    correlation: {
+      jobId: 'job-runtime-route',
+      requestId: 'request-runtime-route',
+      sessionId: 'session-runtime-route',
+      traceId: 'trace-runtime-route',
+    },
+    eventType: 'job-failed',
+    level: 'error',
+    metadata: {
+      message: 'Route diagnostics failure',
+      runId: 'job-runtime-route-run',
+    },
+    occurredAt: '2026-04-21T07:25:00.000Z',
+    summary: 'Job failed.',
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload: approvalsPayload, response: approvalsResponse } =
+      await readJsonResponse(
+        `${handle.url}/runtime/approvals?sessionId=session-runtime-route`,
+      );
+    const approvalsRequestId = approvalsResponse.headers.get('x-request-id');
+    const approvalsTraceId = approvalsResponse.headers.get('x-trace-id');
+    const { payload: diagnosticsPayload, response: diagnosticsResponse } =
+      await readJsonResponse(
+        `${handle.url}/runtime/diagnostics?traceId=trace-runtime-route`,
+      );
+
+    assert.equal(approvalsResponse.status, 200);
+    assert.equal(diagnosticsResponse.status, 200);
+    assert.ok(approvalsRequestId);
+    assert.ok(approvalsTraceId);
+    assert.equal(
+      (approvalsPayload as { approvals: Array<{ approvalId: string }> }).approvals[0]
+        ?.approvalId,
+      approval.approval.approvalId,
+    );
+    assert.equal(
+      (diagnosticsPayload as {
+        diagnostics: { failedJobs: Array<{ jobId: string }> };
+      }).diagnostics.failedJobs[0]?.jobId,
+      'job-runtime-route',
+    );
+
+    const requestEvents = await store.events.list({
+      requestId: approvalsRequestId ?? undefined,
+    });
+
+    assert.equal(
+      requestEvents.some((event) => event.eventType === 'http-request-completed'),
+      true,
+    );
+    assert.equal(
+      requestEvents.some((event) => event.eventType === 'http-request-received'),
       true,
     );
   } finally {

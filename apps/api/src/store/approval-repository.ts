@@ -1,7 +1,10 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type {
   ApprovalRepository,
+  RuntimeApprovalPendingListInput,
   RuntimeApprovalRecord,
+  RuntimeApprovalResolutionInput,
+  RuntimeApprovalResolutionResult,
   RuntimeApprovalStatus,
 } from './store-contract.js';
 import {
@@ -18,6 +21,7 @@ type ApprovalRow = {
   response_json: string | null;
   session_id: string;
   status: RuntimeApprovalStatus;
+  trace_id: string | null;
   updated_at: string;
 };
 
@@ -31,6 +35,7 @@ const SELECT_APPROVAL_SQL = `
     response_json,
     requested_at,
     resolved_at,
+    trace_id,
     updated_at
   FROM runtime_approvals
 `;
@@ -105,6 +110,7 @@ function mapApprovalRow(
     ),
     sessionId: row.session_id,
     status: row.status,
+    traceId: row.trace_id,
     updatedAt: row.updated_at,
   };
 }
@@ -123,6 +129,25 @@ function selectApprovalById(
 export function createApprovalRepository(
   store: SqliteStoreContext,
 ): ApprovalRepository {
+  function normalizePendingListInput(
+    input: RuntimeApprovalPendingListInput = {},
+  ): Required<RuntimeApprovalPendingListInput> {
+    const limit = input.limit ?? 25;
+
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
+      throw new OperationalStoreError(
+        'operational-store-invalid-input',
+        store.databasePath,
+        'Runtime approval pending list limit must be an integer between 1 and 100.',
+      );
+    }
+
+    return {
+      limit,
+      sessionId: input.sessionId ?? '',
+    };
+  }
+
   return {
     async getById(approvalId: string): Promise<RuntimeApprovalRecord | null> {
       assertNonEmptyString(approvalId, 'approvalId', store.databasePath);
@@ -132,6 +157,15 @@ export function createApprovalRepository(
       );
 
       return row ? mapApprovalRow(row, store.databasePath) : null;
+    },
+    async listByJobId(jobId: string): Promise<RuntimeApprovalRecord[]> {
+      assertNonEmptyString(jobId, 'jobId', store.databasePath);
+      const rows = await store.all<ApprovalRow>(
+        `${SELECT_APPROVAL_SQL} WHERE job_id = @jobId ORDER BY requested_at DESC, approval_id ASC`,
+        { jobId },
+      );
+
+      return rows.map((row) => mapApprovalRow(row, store.databasePath));
     },
     async listBySessionId(
       sessionId: string,
@@ -143,6 +177,72 @@ export function createApprovalRepository(
       );
 
       return rows.map((row) => mapApprovalRow(row, store.databasePath));
+    },
+    async listPending(
+      input: RuntimeApprovalPendingListInput = {},
+    ): Promise<RuntimeApprovalRecord[]> {
+      const normalizedInput = normalizePendingListInput(input);
+      const rows = await store.all<ApprovalRow>(
+        `
+          ${SELECT_APPROVAL_SQL}
+          WHERE status = 'pending'
+            AND (
+              @sessionId = ''
+              OR session_id = @sessionId
+            )
+          ORDER BY requested_at ASC, approval_id ASC
+          LIMIT @limit
+        `,
+        normalizedInput,
+      );
+
+      return rows.map((row) => mapApprovalRow(row, store.databasePath));
+    },
+    async resolve(
+      input: RuntimeApprovalResolutionInput,
+    ): Promise<RuntimeApprovalResolutionResult> {
+      assertNonEmptyString(input.approvalId, 'approvalId', store.databasePath);
+      assertNonEmptyString(input.status, 'status', store.databasePath);
+      assertNonEmptyString(input.resolvedAt, 'resolvedAt', store.databasePath);
+      assertNonEmptyString(input.updatedAt, 'updatedAt', store.databasePath);
+
+      return store.withTransaction((database) => {
+        const result = database
+          .prepare(
+            `
+              UPDATE runtime_approvals
+              SET
+                status = @status,
+                response_json = @responseJson,
+                resolved_at = @resolvedAt,
+                updated_at = @updatedAt
+              WHERE approval_id = @approvalId
+                AND status = 'pending'
+            `,
+          )
+          .run({
+            approvalId: input.approvalId,
+            resolvedAt: input.resolvedAt,
+            responseJson:
+              input.response === null ? null : JSON.stringify(input.response),
+            status: input.status,
+            updatedAt: input.updatedAt,
+          });
+        const row = selectApprovalById(database, input.approvalId);
+
+        if (!row) {
+          throw new OperationalStoreError(
+            'operational-store-invalid-input',
+            store.databasePath,
+            `Runtime approval does not exist: ${input.approvalId}`,
+          );
+        }
+
+        return {
+          approval: mapApprovalRow(row, store.databasePath),
+          applied: result.changes > 0,
+        };
+      });
     },
     async save(record: RuntimeApprovalRecord): Promise<RuntimeApprovalRecord> {
       assertApprovalRecord(record, store.databasePath);
@@ -160,6 +260,7 @@ export function createApprovalRepository(
                 response_json,
                 requested_at,
                 resolved_at,
+                trace_id,
                 updated_at
               ) VALUES (
                 @approvalId,
@@ -170,6 +271,7 @@ export function createApprovalRepository(
                 @responseJson,
                 @requestedAt,
                 @resolvedAt,
+                @traceId,
                 @updatedAt
               )
               ON CONFLICT(approval_id) DO UPDATE SET
@@ -179,6 +281,7 @@ export function createApprovalRepository(
                 request_json = excluded.request_json,
                 response_json = excluded.response_json,
                 resolved_at = excluded.resolved_at,
+                trace_id = excluded.trace_id,
                 updated_at = excluded.updated_at
             `,
           )
@@ -192,6 +295,7 @@ export function createApprovalRepository(
               record.response === null ? null : JSON.stringify(record.response),
             sessionId: record.sessionId,
             status: record.status,
+            traceId: record.traceId,
             updatedAt: record.updatedAt,
           });
 
