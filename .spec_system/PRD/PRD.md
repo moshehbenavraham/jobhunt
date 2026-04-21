@@ -783,7 +783,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 
 | Phase | Name | Sessions | Status |
 |-------|------|----------|--------|
-| 00 | Foundation and Repo Contract | 4 | In Progress |
+| 00 | Foundation and Repo Contract | 4 | Complete |
 | 01 | Backend Runtime and Job Infrastructure | 4-5 | Not Started |
 | 02 | Typed Tools and Agent Orchestration | 4-5 | Not Started |
 | 03 | Chat, Onboarding, and Approvals UX | 3-5 | Not Started |
@@ -799,14 +799,14 @@ multiple 2-4 hour sessions (12-25 tasks each).
 2. Define the frontend and backend package structure and workspace adapter.
 3. Codify prompt-loading and repo path resolution from checked-in files.
 
-### Planned Sessions
+### Completed Sessions
 
 1. Session 01: Monorepo App Skeleton
 2. Session 02: Workspace Adapter Contract
 3. Session 03: Prompt Loading Contract
 4. Session 04: Boot Path and Validation
 
-Session stubs live under `.spec_system/PRD/phase_00/`.
+Session artifacts were archived to `.spec_system/archive/phases/phase_00/`.
 
 ## Technical Stack
 
@@ -833,10 +833,12 @@ Session stubs live under `.spec_system/PRD/phase_00/`.
 
 ### Phase 00: Foundation and Repo Contract
 
-- Define backend and frontend package structure
-- Add app-owned state directory
-- Formalize repo workspace adapter
-- Codify prompt-loading strategy from existing files
+- Completed backend and frontend package structure
+- Added app-owned state directory
+- Formalized repo workspace adapter
+- Codified prompt-loading strategy from existing files
+
+Archived phase artifacts live under `.spec_system/archive/phases/phase_00/`.
 
 ### Phase 01: Backend Runtime and Job Infrastructure
 

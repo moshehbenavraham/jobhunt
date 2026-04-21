@@ -7,10 +7,22 @@ import {
   type WorkspaceSummary,
 } from './workspace/index.js';
 
+export const STARTUP_SERVICE_NAME = 'jobhunt-api-scaffold' as const;
+export const STARTUP_SESSION_ID =
+  'phase00-session04-boot-path-and-validation' as const;
+export const DEFAULT_BOOT_HOST = '127.0.0.1' as const;
+export const DEFAULT_BOOT_PORT = 4174;
+
 export type StartupDiagnostics = {
   appStateRootPath: string;
   appStateRootExists: boolean;
   agentsGuidePath: string;
+  bootSurface: {
+    defaultHost: typeof DEFAULT_BOOT_HOST;
+    defaultPort: typeof DEFAULT_BOOT_PORT;
+    healthPath: '/health';
+    startupPath: '/startup';
+  };
   dataContractPath: string;
   mutationPolicy: 'app-owned-only';
   onboardingMissing: WorkspaceMissingSummary[];
@@ -18,8 +30,8 @@ export type StartupDiagnostics = {
   promptContract: PromptContractSummary;
   repoRoot: string;
   runtimeMissing: WorkspaceMissingSummary[];
-  service: 'jobhunt-api-scaffold';
-  sessionId: 'phase00-session03-prompt-loading-contract';
+  service: typeof STARTUP_SERVICE_NAME;
+  sessionId: typeof STARTUP_SESSION_ID;
   userLayerWrites: 'disabled';
   workspace: WorkspaceSummary;
 };
@@ -34,6 +46,12 @@ export async function getStartupDiagnostics(
     appStateRootPath: summary.appStateRootPath,
     appStateRootExists: summary.appStateRootExists,
     agentsGuidePath: workspace.repoPaths.agentsGuidePath,
+    bootSurface: {
+      defaultHost: DEFAULT_BOOT_HOST,
+      defaultPort: DEFAULT_BOOT_PORT,
+      healthPath: '/health',
+      startupPath: '/startup',
+    },
     dataContractPath: workspace.repoPaths.dataContractPath,
     mutationPolicy: 'app-owned-only',
     onboardingMissing: summary.onboardingMissing,
@@ -41,8 +59,8 @@ export async function getStartupDiagnostics(
     promptContract: getPromptContractSummary(),
     repoRoot: workspace.repoPaths.repoRoot,
     runtimeMissing: summary.runtimeMissing,
-    service: 'jobhunt-api-scaffold',
-    sessionId: 'phase00-session03-prompt-loading-contract',
+    service: STARTUP_SERVICE_NAME,
+    sessionId: STARTUP_SESSION_ID,
     userLayerWrites: 'disabled',
     workspace: summary,
   };
@@ -64,7 +82,7 @@ function isMainModule(): boolean {
 if (isMainModule()) {
   main().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
-    console.error(`jobhunt-api-scaffold failed: ${message}`);
+    console.error(`${STARTUP_SERVICE_NAME} failed: ${message}`);
     process.exitCode = 1;
   });
 }

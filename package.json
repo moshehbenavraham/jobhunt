@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.35",
+  "version": "1.5.36",
   "description": "AI-powered job search pipeline",
   "workspaces": [
     "apps/web",
@@ -13,7 +13,10 @@
     "app:api:dev": "npm run dev --workspace @jobhunt/api",
     "app:api:build": "npm run build --workspace @jobhunt/api",
     "app:api:check": "npm run check --workspace @jobhunt/api",
+    "app:api:serve": "npm run serve --workspace @jobhunt/api",
     "app:check": "npm run app:web:check && npm run app:api:check",
+    "app:boot:test": "node scripts/test-app-bootstrap.mjs",
+    "app:validate": "npm run app:check && npm run app:boot:test",
     "cron:install": "node scripts/install-scan-cron.mjs",
     "doctor": "node scripts/doctor.mjs",
     "format": "prettier --write . && npm run format:shell",

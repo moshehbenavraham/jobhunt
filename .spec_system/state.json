@@ -3,7 +3,6 @@
   "project_name": "Job-Hunt",
   "description": "Local-first single-user app parity effort for jobhunt",
   "current_phase": 0,
-  "current_session": null,
   "monorepo": true,
   "packages": [
     {
@@ -21,7 +20,7 @@
     "0": {
       "name": "Foundation and Repo Contract",
       "description": "Establish the app skeleton, workspace adapter, and prompt-loading contract for the local app parity effort.",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 4
     },
     "1": {
@@ -63,8 +62,17 @@
     {
       "id": "phase00-session02-workspace-adapter-contract",
       "package": "apps/api"
+    },
+    {
+      "id": "phase00-session03-prompt-loading-contract",
+      "package": "apps/api"
+    },
+    {
+      "id": "phase00-session04-boot-path-and-validation",
+      "package": null
     }
   ],
+  "current_session": null,
   "next_session_history": [
     {
       "date": "2026-04-21",
@@ -82,6 +90,12 @@
       "date": "2026-04-21",
       "session": "phase00-session03-prompt-loading-contract",
       "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase00-session04-boot-path-and-validation",
+      "package": null,
       "status": "completed"
     }
   ]

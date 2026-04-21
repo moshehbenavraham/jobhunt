@@ -1,10 +1,10 @@
 # PRD Phase 00: Foundation and Repo Contract
 
-**Status**: In Progress
+**Status**: Complete
 **Sessions**: 4
 **Estimated Duration**: 3-5 days
 
-**Progress**: 3/4 sessions (75%)
+**Progress**: 4/4 sessions (100%)
 
 ---
 
@@ -25,7 +25,7 @@ will build on.
 | 01 | Monorepo App Skeleton | Complete | ~14 | 2026-04-21 |
 | 02 | Workspace Adapter Contract | Complete | ~15 | 2026-04-21 |
 | 03 | Prompt Loading Contract | Complete | ~14 | 2026-04-21 |
-| 04 | Boot Path and Validation | Not Started | ~13 | - |
+| 04 | Boot Path and Validation | Complete | ~13 | 2026-04-21 |
 
 ---
 
@@ -34,12 +34,13 @@ will build on.
 1. Session 01: Monorepo App Skeleton
 2. Session 02: Workspace Adapter Contract
 3. Session 03: Prompt Loading Contract
+4. Session 04: Boot Path and Validation
 
 ---
 
 ## Upcoming Sessions
 
-- Session 04: Boot Path and Validation
+- Phase 00 complete; archived under `.spec_system/archive/phases/phase_00/`
 
 ---
 
@@ -105,13 +106,13 @@ selected mode file.
 
 Phase complete when:
 
-- [ ] All 4 sessions are completed
-- [ ] `apps/web` and `apps/api` exist with a coherent package/tooling baseline
-- [ ] The backend can resolve canonical repo surfaces through an explicit
+- [x] All 4 sessions are completed
+- [x] `apps/web` and `apps/api` exist with a coherent package/tooling baseline
+- [x] The backend can resolve canonical repo surfaces through an explicit
       workspace adapter
-- [ ] Prompt and profile sources load from checked-in files in a deterministic
+- [x] Prompt and profile sources load from checked-in files in a deterministic
       order
-- [ ] The app can boot against the repo and validate its contract without
+- [x] The app can boot against the repo and validate its contract without
       mutating user-layer artifacts
 
 ---

@@ -117,8 +117,12 @@ assert(
   'API scaffold diagnostics reported an unexpected service name.',
 );
 assert(
-  diagnostics.sessionId === 'phase00-session03-prompt-loading-contract',
+  diagnostics.sessionId === 'phase00-session04-boot-path-and-validation',
   'API scaffold diagnostics reported an unexpected session id.',
+);
+assert(
+  diagnostics.bootSurface?.startupPath === '/startup',
+  'API scaffold diagnostics did not expose the startup boot surface.',
 );
 assert(
   diagnostics.appStateRootPath === APP_STATE_ROOT,

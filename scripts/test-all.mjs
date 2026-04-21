@@ -353,6 +353,50 @@ if (appScaffold !== null) {
   fail('App scaffold regression tests failed');
 }
 
+// -- 3r. App bootstrap smoke ------------------------------------
+
+console.log('\n3r. App bootstrap smoke');
+
+const appBootstrap = run('node', ['scripts/test-app-bootstrap.mjs']);
+if (appBootstrap !== null) {
+  pass('App bootstrap smoke tests pass');
+} else {
+  fail('App bootstrap smoke tests failed');
+}
+
+// -- 3s. Bootstrap ASCII validation -----------------------------
+
+console.log('\n3s. Bootstrap ASCII validation');
+
+const bootstrapFiles = [
+  'apps/api/src/index.ts',
+  'apps/api/src/server/http-server.test.ts',
+  'apps/api/src/server/http-server.ts',
+  'apps/api/src/server/index.ts',
+  'apps/api/src/server/startup-status.ts',
+  'apps/web/src/App.tsx',
+  'apps/web/src/boot/missing-files-list.tsx',
+  'apps/web/src/boot/startup-client.ts',
+  'apps/web/src/boot/startup-status-panel.tsx',
+  'apps/web/src/boot/startup-types.ts',
+  'apps/web/src/boot/use-startup-diagnostics.ts',
+  'apps/web/vite.config.ts',
+  'scripts/test-app-bootstrap.mjs',
+];
+
+for (const path of bootstrapFiles) {
+  if (!fileExists(path)) {
+    fail(`Bootstrap file missing for ASCII validation: ${path}`);
+    continue;
+  }
+
+  if (/[^\x00-\x7F]/.test(readFile(path))) {
+    fail(`Bootstrap file contains non-ASCII characters: ${path}`);
+  } else {
+    pass(`Bootstrap file is ASCII-only: ${path}`);
+  }
+}
+
 // -- 3l. UPGRADE SAFETY REGRESSIONS ------------------------------
 
 console.log('\n3l. Upgrade safety regressions');

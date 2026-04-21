@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/index.ts",
+    "serve": "tsx src/server/index.ts",
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/**/*.test.js",
+    "test:boot-contract": "npm run build && node --test dist/server/http-server.test.js",
     "test:prompt-contract": "npm run build && node --test dist/prompt/prompt-loader.test.js"
   },
   "devDependencies": {

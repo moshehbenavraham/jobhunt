@@ -2,7 +2,7 @@
 
 **Session ID**: `phase00-session04-boot-path-and-validation`
 **Packages**: apps/web, apps/api
-**Status**: Not Started
+**Status**: Complete
 **Estimated Tasks**: ~13
 **Estimated Duration**: 2-4 hours
 
@@ -35,9 +35,9 @@ starts.
 
 ## Prerequisites
 
-- [ ] Sessions 01-02 completed
-- [ ] Session 03 prompt loading contract completed
-- [ ] Validation approach chosen for app bootstrap regressions
+- [x] Sessions 01-02 completed
+- [x] Session 03 prompt loading contract completed
+- [x] Validation approach chosen for app bootstrap regressions
 
 ---
 
@@ -51,7 +51,7 @@ starts.
 
 ## Success Criteria
 
-- [ ] The app boots against a live repo clone with deterministic path
+- [x] The app boots against a live repo clone with deterministic path
       resolution
-- [ ] Startup checks report missing prerequisites without mutating user files
-- [ ] Validation catches contract drift in the new bootstrap path
+- [x] Startup checks report missing prerequisites without mutating user files
+- [x] Validation catches contract drift in the new bootstrap path

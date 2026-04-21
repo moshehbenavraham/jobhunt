@@ -1,65 +1,137 @@
 import type { CSSProperties } from 'react';
-
-const shellState = {
-  title: 'Local parity scaffold',
-  status: 'ready',
-  summary:
-    'This placeholder confirms the web workspace loads without reading or mutating user-layer files.',
-} as const;
-
-const guarantees = [
-  {
-    id: 'workspace',
-    label: 'Root workspace routing',
-    detail: 'Repo-level npm commands now address the web and API packages directly.',
-  },
-  {
-    id: 'app-state',
-    label: '.jobhunt-app ownership',
-    detail: 'App-owned runtime state is reserved for the API helper layer, not the browser shell.',
-  },
-  {
-    id: 'user-layer',
-    label: 'User data boundary',
-    detail: 'Profile, tracker, report, and output files remain outside this scaffold session.',
-  },
-] as const;
+import { StartupStatusPanel } from './boot/startup-status-panel';
+import { useStartupDiagnostics } from './boot/use-startup-diagnostics';
 
 const pageStyle: CSSProperties = {
-  fontFamily: 'system-ui, sans-serif',
-  lineHeight: 1.5,
+  background:
+    'linear-gradient(180deg, #f6f6f0 0%, #f8fafc 48%, #fdf2f8 100%)',
+  color: '#0f172a',
+  fontFamily: '"Trebuchet MS", "Segoe UI", sans-serif',
+  lineHeight: 1.6,
+  minHeight: '100vh',
+  padding: '2rem 1.25rem 3rem',
+};
+
+const shellStyle: CSSProperties = {
   margin: '0 auto',
-  maxWidth: '48rem',
-  padding: '3rem 1.5rem',
+  maxWidth: '72rem',
 };
 
 const sectionStyle: CSSProperties = {
-  border: '1px solid #d1d5db',
-  borderRadius: '0.75rem',
-  padding: '1rem 1.25rem',
+  background: '#ffffff',
+  border: '1px solid #d4d4d8',
+  borderRadius: '1rem',
+  padding: '1.1rem 1.25rem',
 };
 
+const mutedTextStyle: CSSProperties = {
+  color: '#475569',
+};
+
+type StateCardProps = {
+  children: string;
+  title: string;
+};
+
+function StateCard({ children, title }: StateCardProps) {
+  return (
+    <section style={sectionStyle}>
+      <h2 style={{ marginTop: 0 }}>{title}</h2>
+      <p style={{ marginBottom: 0 }}>{children}</p>
+    </section>
+  );
+}
+
 export function App() {
+  const { refresh, state } = useStartupDiagnostics();
+  const hasDiagnostics = state.data !== null;
+
   return (
     <main style={pageStyle}>
-      <header>
-        <p>Job-Hunt app scaffold</p>
-        <h1>{shellState.title}</h1>
-        <p role="status" aria-live="polite">
-          Scaffold status: {shellState.status}. {shellState.summary}
-        </p>
-      </header>
+      <div style={shellStyle}>
+        <header style={{ marginBottom: '1.5rem' }}>
+          <p
+            style={{
+              ...mutedTextStyle,
+              letterSpacing: '0.08em',
+              marginBottom: '0.5rem',
+              textTransform: 'uppercase',
+            }}
+          >
+            Phase 00 boot path
+          </p>
+          <p style={{ ...mutedTextStyle, marginBottom: 0, marginTop: 0 }}>
+            This screen proves the web shell can inspect live startup state
+            without mutating your job-search workspace.
+          </p>
+        </header>
 
-      <section aria-labelledby="guarantees-heading" style={sectionStyle}>
-        <h2 id="guarantees-heading">Current guarantees</h2>
-        <ul>
-          {guarantees.map((item) => (
-            <li key={item.id}>
-              <strong>{item.label}:</strong> {item.detail}
-            </li>
-          ))}
-        </ul>
-      </section>
+        {state.status === 'empty' ? (
+          <StateCard title="Waiting for diagnostics">
+            Bootstrap checks have not started yet. Refresh to request the first
+            startup payload.
+          </StateCard>
+        ) : null}
+
+        {state.status === 'loading' && !hasDiagnostics ? (
+          <StateCard title="Checking the local bootstrap surface">
+            Reading the API startup contract, repo boundary, and prompt summary.
+          </StateCard>
+        ) : null}
+
+        {state.status === 'offline' && !hasDiagnostics ? (
+          <StateCard title="API unavailable">
+            {state.error?.message ??
+              'The bootstrap API is not reachable. Start `npm run app:api:serve` and retry.'}
+          </StateCard>
+        ) : null}
+
+        {state.status === 'error' && !hasDiagnostics ? (
+          <StateCard title="Bootstrap error">
+            {state.error?.message ??
+              'The bootstrap contract failed before diagnostics could load.'}
+          </StateCard>
+        ) : null}
+
+        {state.status === 'missing-prerequisites' ? (
+          <section style={sectionStyle}>
+            <h2 style={{ marginTop: 0 }}>Action required</h2>
+            <p style={{ marginBottom: 0 }}>
+              The app booted, but required onboarding files are still missing.
+              The diagnostics panel below lists the exact files to create next.
+            </p>
+          </section>
+        ) : null}
+
+        {state.status === 'offline' && hasDiagnostics ? (
+          <section style={sectionStyle}>
+            <h2 style={{ marginTop: 0 }}>Offline after last successful load</h2>
+            <p style={{ marginBottom: 0 }}>
+              {state.error?.message ??
+                'The API stopped responding after the previous successful refresh.'}
+            </p>
+          </section>
+        ) : null}
+
+        {state.status === 'error' && hasDiagnostics ? (
+          <section style={sectionStyle}>
+            <h2 style={{ marginTop: 0 }}>Bootstrap contract error</h2>
+            <p style={{ marginBottom: 0 }}>
+              Runtime blockers were detected in the checked-in repo contract.
+              Review the diagnostics below before moving to later runtime work.
+            </p>
+          </section>
+        ) : null}
+
+        {state.data ? (
+          <StartupStatusPanel
+            diagnostics={state.data}
+            isRefreshing={state.isRefreshing}
+            lastUpdatedAt={state.lastUpdatedAt}
+            onRefresh={refresh}
+          />
+        ) : null}
+      </div>
     </main>
   );
 }
