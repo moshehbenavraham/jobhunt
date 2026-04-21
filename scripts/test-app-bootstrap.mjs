@@ -125,7 +125,13 @@ const appStateExistedBefore = existsSync(APP_STATE_ROOT);
 const appStateStatBefore = appStateExistedBefore ? statSync(APP_STATE_ROOT) : null;
 const rootPackage = readJson('package.json');
 
-for (const scriptName of ['app:api:serve', 'app:boot:test', 'app:validate']) {
+for (const scriptName of [
+  'app:api:serve',
+  'app:api:test:runtime',
+  'app:api:test:store',
+  'app:boot:test',
+  'app:validate',
+]) {
   assert(
     typeof rootPackage.scripts?.[scriptName] === 'string',
     `Root package.json is missing script: ${scriptName}`,
@@ -133,6 +139,8 @@ for (const scriptName of ['app:api:serve', 'app:boot:test', 'app:validate']) {
 }
 
 run('npm', ['run', 'app:check']);
+run('npm', ['run', 'app:api:test:runtime']);
+run('npm', ['run', 'app:api:test:store']);
 run('npm', ['run', 'app:api:build']);
 run('npm', ['run', 'app:web:build']);
 
@@ -194,6 +202,18 @@ try {
   assert(
     startupPayload.bootSurface.startupPath === '/startup',
     'Startup payload reported an unexpected startup path.',
+  );
+  assert(
+    startupPayload.sessionId === 'phase01-session02-sqlite-operational-store',
+    'Startup payload reported an unexpected session id.',
+  );
+  assert(
+    healthPayload.operationalStore.status === startupPayload.operationalStore.status,
+    'Health and startup payloads disagreed on operational-store status.',
+  );
+  assert(
+    startupPayload.operationalStore.status !== 'corrupt',
+    'Startup payload reported a corrupt operational store in the live repo.',
   );
 } finally {
   await stopChild(child);

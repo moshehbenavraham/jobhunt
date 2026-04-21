@@ -9,8 +9,9 @@ Use this checklist for a new checkout:
 5. If you have public proof points, optionally copy `profile/article-digest.example.md` to `profile/article-digest.md`.
 6. Run `npm run doctor`.
 7. If you plan to use the repo-owned OpenAI runtime flow, run `npm run auth:openai -- login`.
-8. Start `codex` from the repo root.
-9. Paste a JD or URL and follow the generated workflow.
+8. Run `npm run app:validate` to check the app scaffold and live boot path.
+9. Start `npm run app:web:dev` and `npm run app:api:serve` from the repo root.
+10. Use `codex` only for the legacy CLI workflow if you need it.
 
 For the full setup path, see [Setup Guide](SETUP.md).
 

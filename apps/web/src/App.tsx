@@ -58,7 +58,7 @@ export function App() {
               textTransform: 'uppercase',
             }}
           >
-            Phase 00 boot path
+            Phase 01 operational store
           </p>
           <p style={{ ...mutedTextStyle, marginBottom: 0, marginTop: 0 }}>
             This screen proves the web shell can inspect live startup state

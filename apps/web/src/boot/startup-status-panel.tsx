@@ -167,6 +167,12 @@ export function StartupStatusPanel({
           <p style={{ marginBottom: '0.4rem' }}>
             Mutation policy: <strong>{diagnostics.mutationPolicy}</strong>
           </p>
+          <p style={{ marginBottom: '0.4rem' }}>
+            Store status: <strong>{diagnostics.operationalStore.status}</strong>
+          </p>
+          <p style={{ marginBottom: '0.4rem' }}>
+            Store path: <code>{diagnostics.operationalStore.databasePath}</code>
+          </p>
           <p style={{ marginBottom: 0 }}>
             Writable roots:{' '}
             <code>{diagnostics.diagnostics.workspace.writableRoots.join(', ')}</code>
@@ -189,6 +195,17 @@ export function StartupStatusPanel({
           </p>
         </article>
       </div>
+
+      <section style={cardStyle}>
+        <h2 style={{ marginTop: 0 }}>Operational store</h2>
+        <p style={{ marginBottom: '0.4rem' }}>
+          Health summary: <strong>{diagnostics.health.operationalStore.status}</strong>
+        </p>
+        <p style={{ marginBottom: '0.4rem' }}>{diagnostics.operationalStore.message}</p>
+        <p style={{ marginBottom: 0 }}>
+          Root path: <code>{diagnostics.operationalStore.rootPath}</code>
+        </p>
+      </section>
 
       {diagnostics.diagnostics.runtimeMissing.length > 0 ? (
         <MissingFilesList

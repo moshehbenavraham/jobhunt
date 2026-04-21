@@ -13,6 +13,7 @@
 npm run doctor
 npm run sync-check
 npm run verify
+npm run app:validate
 node scripts/test-all.mjs --quick
 ```
 
@@ -22,6 +23,8 @@ node scripts/test-all.mjs --quick
 - Keep user-layer data and shared system changes separated.
 - Update the relevant docs when scripts or workflows change.
 - Use the existing scripts instead of adding duplicate workflows.
+- Use `npm run app:web:dev` and `npm run app:api:serve` when working on the
+  new app boot path.
 
 ## Useful References
 
@@ -30,3 +33,4 @@ node scripts/test-all.mjs --quick
 - [Customization Guide](CUSTOMIZATION.md)
 - [Architecture](ARCHITECTURE.md)
 - [Scripts Reference](SCRIPTS.md)
+- [Onboarding](onboarding.md)

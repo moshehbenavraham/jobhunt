@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-- Codex CLI installed and available on your PATH
 - Node.js 18 or newer
+- Optional: Codex CLI for the legacy CLI workflow
 - Optional: Go 1.21 or newer for the dashboard TUI
 
 ## Quick Start
@@ -84,13 +84,21 @@ If you want a direct repo-owned runtime check after login, run:
 npm run agents:codex:smoke -- --json
 ```
 
-### 6. Start the repo in Codex
+### 6. Start the app scaffold
 
 ```bash
-codex
+npm run app:validate
 ```
 
-From the repo root, paste a JD or URL and follow the workflow from the generated reports.
+The app scaffold gives you the new boot surface:
+
+- `npm run app:web:dev` for the React shell
+- `npm run app:api:serve` for the long-lived API server
+- `npm run app:boot:test` for the live repo-root smoke test
+
+From the repo root, the legacy `codex` workflow still works for CLI-based
+job-search operations, but the app scaffold is now the preferred boot path for
+the Phase 00 runtime contract.
 
 ## Follow-up Verification
 
@@ -99,6 +107,8 @@ Run these after the initial setup path is working:
 ```bash
 npm run sync-check
 npm run verify
+npm run app:boot:test
+npm run app:validate
 npm run auth:openai -- status
 ```
 

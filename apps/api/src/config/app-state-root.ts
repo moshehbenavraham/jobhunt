@@ -7,11 +7,24 @@ import {
 } from './repo-paths.js';
 import { assertAppOwnedWorkspacePath } from '../workspace/workspace-boundary.js';
 
+export const OPERATIONAL_STORE_DATABASE_FILENAME = 'app.db';
+
 export type AppStateRootStatus = {
   rootPath: string;
   exists: boolean;
   created: boolean;
   owner: 'app';
+};
+
+export type OperationalStoreFileKind = 'directory' | 'file' | 'missing' | 'other';
+
+export type OperationalStoreFileStatus = {
+  databasePath: string;
+  exists: boolean;
+  kind: OperationalStoreFileKind;
+  owner: 'app';
+  rootExists: boolean;
+  rootPath: string;
 };
 
 type NodeError = NodeJS.ErrnoException;
@@ -73,6 +86,50 @@ export async function ensureAppStateRoot(
   };
 }
 
+export async function getOperationalStoreFileStatus(
+  options: RepoPathOptions = {},
+): Promise<OperationalStoreFileStatus> {
+  const rootStatus = await getAppStateRootStatus(options);
+  const databasePath = resolveOperationalStorePath(options);
+
+  if (!rootStatus.exists) {
+    return {
+      databasePath,
+      exists: false,
+      kind: 'missing',
+      owner: 'app',
+      rootExists: false,
+      rootPath: rootStatus.rootPath,
+    };
+  }
+
+  try {
+    const stats = await lstat(databasePath);
+
+    return {
+      databasePath,
+      exists: true,
+      kind: stats.isFile() ? 'file' : stats.isDirectory() ? 'directory' : 'other',
+      owner: 'app',
+      rootExists: true,
+      rootPath: rootStatus.rootPath,
+    };
+  } catch (error) {
+    if (isNodeError(error) && error.code === 'ENOENT') {
+      return {
+        databasePath,
+        exists: false,
+        kind: 'missing',
+        owner: 'app',
+        rootExists: true,
+        rootPath: rootStatus.rootPath,
+      };
+    }
+
+    throw error;
+  }
+}
+
 export function assertAppOwnedPath(
   candidatePath: string,
   options: RepoPathOptions = {},
@@ -93,4 +150,13 @@ export function resolveAppStatePathForRepo(
   const { appStateRootPath } = getRepoPaths(options);
   const candidatePath = resolve(appStateRootPath, ...segments);
   return assertAppOwnedPath(candidatePath, options);
+}
+
+export function resolveOperationalStorePath(
+  options: RepoPathOptions = {},
+): string {
+  return resolveAppStatePathForRepo(
+    options,
+    OPERATIONAL_STORE_DATABASE_FILENAME,
+  );
 }

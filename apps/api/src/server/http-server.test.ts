@@ -1,16 +1,21 @@
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import test from 'node:test';
 import { STARTUP_SESSION_ID, STARTUP_SERVICE_NAME } from '../index.js';
+import { createOperationalStore } from '../store/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { startStartupHttpServer } from './http-server.js';
 
-async function readJsonResponse(url: string): Promise<{
+async function readJsonResponse(
+  url: string,
+  init: RequestInit = {},
+): Promise<{
   payload: unknown;
   response: Response;
 }> {
-  const response = await fetch(url);
+  const response = await fetch(url, init);
   const payload = await response.json();
 
   return {
@@ -19,8 +24,8 @@ async function readJsonResponse(url: string): Promise<{
   };
 }
 
-test('health and startup routes report ready diagnostics for a configured repo', async () => {
-  const fixture = await createWorkspaceFixture({
+async function createReadyFixture() {
+  return createWorkspaceFixture({
     files: {
       'config/portals.yml': 'title_filter:\n  positive: []\n',
       'config/profile.yml': 'full_name: Test User\n',
@@ -28,6 +33,12 @@ test('health and startup routes report ready diagnostics for a configured repo',
       'profile/cv.md': '# CV\n',
     },
   });
+}
+
+test('health and startup routes report ready diagnostics after explicit store initialization', async () => {
+  const fixture = await createReadyFixture();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
 
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
@@ -50,8 +61,16 @@ test('health and startup routes report ready diagnostics for a configured repo',
       STARTUP_SESSION_ID,
     );
     assert.equal((healthPayload as { status: string }).status, 'ok');
+    assert.equal(
+      (healthPayload as { operationalStore: { status: string } }).operationalStore.status,
+      'ready',
+    );
 
     assert.equal((startupPayload as { status: string }).status, 'ready');
+    assert.equal(
+      (startupPayload as { operationalStore: { status: string } }).operationalStore.status,
+      'ready',
+    );
     assert.equal(
       (startupPayload as {
         diagnostics: { onboardingMissing: unknown[] };
@@ -102,8 +121,16 @@ test('startup route reports onboarding gaps without mutating user-layer files', 
     assert.equal(startupResponse.status, 200);
     assert.equal((healthPayload as { status: string }).status, 'degraded');
     assert.equal(
+      (healthPayload as { operationalStore: { status: string } }).operationalStore.status,
+      'absent',
+    );
+    assert.equal(
       (startupPayload as { status: string }).status,
       'missing-prerequisites',
+    );
+    assert.equal(
+      (startupPayload as { operationalStore: { status: string } }).operationalStore.status,
+      'absent',
     );
     assert.deepEqual(afterSnapshot, beforeSnapshot);
     assert.equal(existsSync(appStateRoot), false);
@@ -114,6 +141,47 @@ test('startup route reports onboarding gaps without mutating user-layer files', 
         };
       }).diagnostics.onboardingMissing.map((item) => item.surfaceKey),
       ['profileConfig', 'profileCv'],
+    );
+  } finally {
+    await handle.close();
+    await fixture.cleanup();
+  }
+});
+
+test('startup routes surface corrupt operational-store state as a runtime error', async () => {
+  const fixture = await createReadyFixture();
+  const corruptStorePath = join(fixture.repoRoot, '.jobhunt-app', 'app.db');
+  await mkdir(join(fixture.repoRoot, '.jobhunt-app'), { recursive: true });
+  await writeFile(corruptStorePath, 'not sqlite\n', 'utf8');
+
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const { payload: healthPayload, response: healthResponse } =
+      await readJsonResponse(`${handle.url}/health`);
+    const { payload: startupPayload, response: startupResponse } =
+      await readJsonResponse(`${handle.url}/startup`);
+
+    assert.equal(healthResponse.status, 503);
+    assert.equal(startupResponse.status, 503);
+    assert.equal((healthPayload as { status: string }).status, 'error');
+    assert.equal(
+      (healthPayload as { startupStatus: string }).startupStatus,
+      'runtime-error',
+    );
+    assert.equal(
+      (startupPayload as { status: string }).status,
+      'runtime-error',
+    );
+    assert.equal(
+      (startupPayload as {
+        operationalStore: { status: string };
+      }).operationalStore.status,
+      'corrupt',
     );
   } finally {
     await handle.close();
@@ -139,5 +207,109 @@ test('startup route maps repo-root resolution failures to explicit error payload
     assert.equal((payload as { status: string }).status, 'error');
   } finally {
     await handle.close();
+  }
+});
+
+test('health route handles HEAD requests without emitting a response body', async () => {
+  const fixture = await createReadyFixture();
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const response = await fetch(`${handle.url}/health`, {
+      method: 'HEAD',
+    });
+    const body = await response.text();
+
+    assert.equal(response.status, 200);
+    assert.equal(body, '');
+    assert.equal(response.headers.get('content-type'), 'application/json; charset=utf-8');
+    assert.equal(
+      Number(response.headers.get('content-length') ?? '0') > 0,
+      true,
+    );
+  } finally {
+    await handle.close();
+    await fixture.cleanup();
+  }
+});
+
+test('dispatcher returns explicit 404 and 405 error contracts', async () => {
+  const fixture = await createReadyFixture();
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const { payload: methodPayload, response: methodResponse } =
+      await readJsonResponse(`${handle.url}/health`, {
+        method: 'POST',
+      });
+    const { payload: missingPayload, response: missingResponse } =
+      await readJsonResponse(`${handle.url}/missing-route`);
+
+    assert.equal(methodResponse.status, 405);
+    assert.equal(methodResponse.headers.get('allow'), 'GET, HEAD');
+    assert.equal(
+      (methodPayload as { status: string }).status,
+      'method-not-allowed',
+    );
+    assert.equal(
+      (methodPayload as { error: { code: string } }).error.code,
+      'method-not-allowed',
+    );
+
+    assert.equal(missingResponse.status, 404);
+    assert.equal((missingPayload as { status: string }).status, 'not-found');
+    assert.equal(
+      (missingPayload as { error: { code: string } }).error.code,
+      'route-not-found',
+    );
+  } finally {
+    await handle.close();
+    await fixture.cleanup();
+  }
+});
+
+test('startup server rate limits burst traffic per client', async () => {
+  const fixture = await createReadyFixture();
+
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    let lastResponse: Response | undefined;
+    let lastPayload: unknown;
+
+    for (let requestIndex = 0; requestIndex < 6; requestIndex += 1) {
+      const response = await fetch(`${handle.url}/health`);
+      lastResponse = response;
+      lastPayload = await response.json();
+    }
+
+    assert.ok(lastResponse);
+    assert.equal(lastResponse.status, 429);
+    assert.equal(
+      (lastPayload as { status: string }).status,
+      'rate-limited',
+    );
+    assert.match(
+      String(lastPayload && (lastPayload as { error?: { message?: string } }).error?.message),
+      /Too many requests/i,
+    );
+    assert.equal(lastResponse.headers.get('retry-after') !== null, true);
+    assert.equal(lastResponse.headers.get('x-ratelimit-limit'), '5');
+    assert.equal(lastResponse.headers.get('x-ratelimit-remaining'), '0');
+  } finally {
+    await handle.close();
+    await fixture.cleanup();
   }
 });

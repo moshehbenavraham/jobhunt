@@ -1,17 +1,21 @@
 import { pathToFileURL } from 'node:url';
 import { type RepoPathOptions } from './config/repo-paths.js';
 import { getPromptContractSummary, type PromptContractSummary } from './prompt/index.js';
+import { DEFAULT_BOOT_HOST, DEFAULT_BOOT_PORT } from './runtime/runtime-config.js';
+import {
+  inspectOperationalStoreStatus,
+  type OperationalStoreStatus,
+} from './store/index.js';
 import {
   createWorkspaceAdapter,
+  type WorkspaceAdapter,
   type WorkspaceMissingSummary,
   type WorkspaceSummary,
 } from './workspace/index.js';
 
 export const STARTUP_SERVICE_NAME = 'jobhunt-api-scaffold' as const;
 export const STARTUP_SESSION_ID =
-  'phase00-session04-boot-path-and-validation' as const;
-export const DEFAULT_BOOT_HOST = '127.0.0.1' as const;
-export const DEFAULT_BOOT_PORT = 4174;
+  'phase01-session02-sqlite-operational-store' as const;
 
 export type StartupDiagnostics = {
   appStateRootPath: string;
@@ -27,6 +31,7 @@ export type StartupDiagnostics = {
   mutationPolicy: 'app-owned-only';
   onboardingMissing: WorkspaceMissingSummary[];
   optionalMissing: WorkspaceMissingSummary[];
+  operationalStore: OperationalStoreStatus;
   promptContract: PromptContractSummary;
   repoRoot: string;
   runtimeMissing: WorkspaceMissingSummary[];
@@ -36,11 +41,23 @@ export type StartupDiagnostics = {
   workspace: WorkspaceSummary;
 };
 
-export async function getStartupDiagnostics(
-  options: RepoPathOptions = {},
+export type StartupDiagnosticsService = {
+  getDiagnostics: () => Promise<StartupDiagnostics>;
+};
+
+type StartupDiagnosticsDependencies = {
+  operationalStoreStatus?: () => Promise<OperationalStoreStatus>;
+  workspace?: WorkspaceAdapter;
+};
+
+async function buildStartupDiagnostics(
+  workspace: WorkspaceAdapter,
+  getOperationalStoreStatus: () => Promise<OperationalStoreStatus>,
 ): Promise<StartupDiagnostics> {
-  const workspace = createWorkspaceAdapter(options);
-  const summary = await workspace.getSummary();
+  const [summary, operationalStore] = await Promise.all([
+    workspace.getSummary(),
+    getOperationalStoreStatus(),
+  ]);
 
   return {
     appStateRootPath: summary.appStateRootPath,
@@ -56,6 +73,7 @@ export async function getStartupDiagnostics(
     mutationPolicy: 'app-owned-only',
     onboardingMissing: summary.onboardingMissing,
     optionalMissing: summary.optionalMissing,
+    operationalStore,
     promptContract: getPromptContractSummary(),
     repoRoot: workspace.repoPaths.repoRoot,
     runtimeMissing: summary.runtimeMissing,
@@ -64,6 +82,28 @@ export async function getStartupDiagnostics(
     userLayerWrites: 'disabled',
     workspace: summary,
   };
+}
+
+export function createStartupDiagnosticsService(
+  options: RepoPathOptions = {},
+  dependencies: StartupDiagnosticsDependencies = {},
+): StartupDiagnosticsService {
+  const workspace = dependencies.workspace ?? createWorkspaceAdapter(options);
+  const getOperationalStoreStatus =
+    dependencies.operationalStoreStatus ??
+    (() => inspectOperationalStoreStatus(options));
+
+  return {
+    async getDiagnostics(): Promise<StartupDiagnostics> {
+      return buildStartupDiagnostics(workspace, getOperationalStoreStatus);
+    },
+  };
+}
+
+export async function getStartupDiagnostics(
+  options: RepoPathOptions = {},
+): Promise<StartupDiagnostics> {
+  return createStartupDiagnosticsService(options).getDiagnostics();
 }
 
 async function main(): Promise<void> {

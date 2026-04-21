@@ -1,8 +1,9 @@
 # Contributing to Job-Hunt
 
-Job-Hunt is a Codex-primary repo. The live contributor workflow runs through
-`codex`, `AGENTS.md`, the checked-in skills, and the repo-owned scripts. Keep
-changes small, factual, and aligned with the existing data contract.
+Job-Hunt is a local-first repo with a checked-in agent contract. The live
+contributor workflow runs through `AGENTS.md`, the checked-in skills, the
+repo-owned scripts, and the app scaffold under `apps/`. Keep changes small,
+factual, and aligned with the existing data contract.
 
 If your local environment is not ready yet, stop here and follow the
 [Setup Guide](SETUP.md) first.
@@ -22,8 +23,9 @@ your personal search.
 ## Contributor Workflow
 
 1. Start from `develop` when it exists; otherwise branch from `main`.
-2. Use `codex` from the repo root for interactive repo workflows and keep
-   behavior aligned with `AGENTS.md` plus the checked-in docs and scripts.
+2. Use `codex` from the repo root for the legacy CLI workflow, and use the app
+   scaffold commands for the new boot path. Keep behavior aligned with
+   `AGENTS.md` plus the checked-in docs and scripts.
 3. Keep commits focused and explain behavior changes in the PR summary.
 4. Update the owning docs, scripts, or templates when the runtime contract
    changes.
@@ -65,8 +67,10 @@ results in the PR notes.
   expectations, or the user-layer data contract.
 - `npm run verify` - run when you change tracker, merge, normalization,
   reports, or pipeline integrity behavior.
+- `npm run app:validate` - run when you change the app scaffold, boot server,
+  or startup diagnostics.
 - `node scripts/test-all.mjs --quick` - baseline regression gate for docs,
-  runtime-contract, and script changes before review.
+  runtime-contract, app boot, and script changes before review.
 
 ## Useful References
 
@@ -74,6 +78,7 @@ results in the PR notes.
 npm run doctor
 npm run sync-check
 npm run verify
+npm run app:validate
 node scripts/test-all.mjs --quick
 ```
 

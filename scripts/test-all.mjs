@@ -353,9 +353,31 @@ if (appScaffold !== null) {
   fail('App scaffold regression tests failed');
 }
 
-// -- 3r. App bootstrap smoke ------------------------------------
+// -- 3r. App runtime contract -----------------------------------
 
-console.log('\n3r. App bootstrap smoke');
+console.log('\n3r. App runtime contract');
+
+const appRuntimeContract = run('npm', ['run', 'app:api:test:runtime']);
+if (appRuntimeContract !== null) {
+  pass('App runtime contract tests pass');
+} else {
+  fail('App runtime contract tests failed');
+}
+
+// -- 3s. App store contract -------------------------------------
+
+console.log('\n3s. App store contract');
+
+const appStoreContract = run('npm', ['run', 'app:api:test:store']);
+if (appStoreContract !== null) {
+  pass('App store contract tests pass');
+} else {
+  fail('App store contract tests failed');
+}
+
+// -- 3t. App bootstrap smoke ------------------------------------
+
+console.log('\n3t. App bootstrap smoke');
 
 const appBootstrap = run('node', ['scripts/test-app-bootstrap.mjs']);
 if (appBootstrap !== null) {
@@ -364,16 +386,34 @@ if (appBootstrap !== null) {
   fail('App bootstrap smoke tests failed');
 }
 
-// -- 3s. Bootstrap ASCII validation -----------------------------
+// -- 3u. Bootstrap ASCII validation -----------------------------
 
-console.log('\n3s. Bootstrap ASCII validation');
+console.log('\n3u. Bootstrap ASCII validation');
 
 const bootstrapFiles = [
   'apps/api/src/index.ts',
+  'apps/api/src/runtime/runtime-config.test.ts',
+  'apps/api/src/runtime/runtime-config.ts',
+  'apps/api/src/runtime/service-container.test.ts',
+  'apps/api/src/runtime/service-container.ts',
   'apps/api/src/server/http-server.test.ts',
   'apps/api/src/server/http-server.ts',
   'apps/api/src/server/index.ts',
+  'apps/api/src/server/route-contract.ts',
+  'apps/api/src/server/routes/health-route.ts',
+  'apps/api/src/server/routes/index.ts',
+  'apps/api/src/server/routes/startup-route.ts',
   'apps/api/src/server/startup-status.ts',
+  'apps/api/src/store/approval-repository.ts',
+  'apps/api/src/store/index.ts',
+  'apps/api/src/store/job-repository.ts',
+  'apps/api/src/store/repositories.test.ts',
+  'apps/api/src/store/run-metadata-repository.ts',
+  'apps/api/src/store/session-repository.ts',
+  'apps/api/src/store/sqlite-schema.ts',
+  'apps/api/src/store/sqlite-store.test.ts',
+  'apps/api/src/store/sqlite-store.ts',
+  'apps/api/src/store/store-contract.ts',
   'apps/web/src/App.tsx',
   'apps/web/src/boot/missing-files-list.tsx',
   'apps/web/src/boot/startup-client.ts',
@@ -381,6 +421,7 @@ const bootstrapFiles = [
   'apps/web/src/boot/startup-types.ts',
   'apps/web/src/boot/use-startup-diagnostics.ts',
   'apps/web/vite.config.ts',
+  'scripts/test-app-scaffold.mjs',
   'scripts/test-app-bootstrap.mjs',
 ];
 

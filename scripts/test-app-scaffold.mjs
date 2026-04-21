@@ -117,7 +117,7 @@ assert(
   'API scaffold diagnostics reported an unexpected service name.',
 );
 assert(
-  diagnostics.sessionId === 'phase00-session04-boot-path-and-validation',
+  diagnostics.sessionId === 'phase01-session02-sqlite-operational-store',
   'API scaffold diagnostics reported an unexpected session id.',
 );
 assert(
@@ -147,6 +147,14 @@ assert(
 assert(
   Array.isArray(diagnostics.runtimeMissing),
   'API scaffold diagnostics did not include runtime-missing details.',
+);
+assert(
+  diagnostics.operationalStore &&
+    typeof diagnostics.operationalStore === 'object' &&
+    (diagnostics.operationalStore.status === 'absent' ||
+      diagnostics.operationalStore.status === 'ready' ||
+      diagnostics.operationalStore.status === 'corrupt'),
+  'API scaffold diagnostics did not include operational-store details.',
 );
 assert(
   diagnostics.promptContract?.cacheMode === 'read-through-mtime',

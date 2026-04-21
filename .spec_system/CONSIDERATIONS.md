@@ -1,7 +1,7 @@
 # Considerations
 
 > Institutional memory for AI assistants. Updated between phases via carryforward.
-> **Line budget**: 600 max | **Last updated**: Phase 02 (2026-04-15)
+> **Line budget**: 600 max | **Last updated**: Phase 00 (2026-04-21)
 
 ---
 
@@ -9,27 +9,28 @@
 
 Items requiring attention in upcoming phases. Review before each session.
 
-### Technical Debt <!-- Max 5 items -->
+### Technical Debt
+<!-- Max 5 items -->
 
-- [P02] **Prompt and metadata cleanup**: Phase 02 aligned the live batch runtime and docs, but broader prompt wording and metadata cleanup still needs a dedicated follow-up phase. Keep it isolated from contract work.
-- [P02] **Structured worker contract coupling**: `batch/batch-runner.sh`, `batch/worker-result.schema.json`, `batch/batch-prompt.md`, and dashboard fallback logic move together now. Any state or retry change needs matching schema and harness updates.
+- [P00] **Prompt and boot contract drift**: Keep `scripts/test-app-scaffold.mjs`, `scripts/test-all.mjs`, and the API startup payload in sync when prompt or boot metadata changes.
+- [P00-apps/api] **Workspace registry coupling**: Boundary, read, and write helpers all depend on the checked-in surface registry; edits should flow through the registry instead of ad hoc path checks.
 
-### External Dependencies <!-- Max 5 items -->
+### External Dependencies
+<!-- Max 5 items -->
 
-- [P03] **OpenAI account runtime is product-coupled**: The auth and transport
-  path depends on `auth.openai.com` plus
-  `chatgpt.com/backend-api/codex/responses`. Keep smoke tests and docs aligned
-  because upstream behavior may drift.
+- [P00] **Repo-bound startup freshness**: Startup remains sensitive to missing or stale checked-in files. Keep required-file checks and onboarding messages aligned with the live contract.
 
-### Performance / Security <!-- Max 5 items -->
+### Performance / Security
+<!-- Max 5 items -->
 
-- [P02] **Trust boundary is file-based**: Preserve the move away from stdout scraping and keep synthetic fixtures free of real user data or secrets.
+- [P00] **Read-first boot surface**: Startup and diagnostics must stay read-only and metadata-only. Do not reintroduce hidden writes or stdout scraping.
+- [P00] **Live contract payload size**: Keep the boot response narrow so startup stays fast and the web UI does not depend on large derived payloads.
 
-### Architecture <!-- Max 5 items -->
+### Architecture
+<!-- Max 5 items -->
 
-- [P00] **Canonical live surface**: Treat `AGENTS.md`, `.codex/skills/`, and `docs/` as the live instruction and metadata sources. Avoid reintroducing `.claude` or root-doc aliases.
-- [P01] **Docs-local links matter**: Keep links and routing relative to the file's own directory, especially inside `docs/`. Root-level assumptions caused avoidable churn in Phase 01.
-- [P02] **Live contract first**: Keep docs and operator guidance anchored to the checked-in runner and schema rather than narrative summaries.
+- [P00] **Canonical live surface**: `AGENTS.md`, `.codex/skills/`, `modes/`, `docs/`, and the user-layer files remain the source of truth.
+- [P00] **Registry-first contracts**: Prompt routing, workspace ownership, and startup summaries should derive from checked-in registries, not duplicated path logic.
 
 ---
 
@@ -37,42 +38,32 @@ Items requiring attention in upcoming phases. Review before each session.
 
 Proven patterns and anti-patterns. Reference during implementation.
 
-### What Worked <!-- Max 15 items -->
+### What Worked
+<!-- Max 15 items -->
 
-- [P00] **Validator-first closeout**: Updating the runtime contract and the repo gate in the same phase prevented silent drift.
-- [P00] **Explicit deferral ledger**: Keeping residual Phase 01 and Phase 02 references visible let Phase 00 stay narrow without losing future work.
-- [P00] **Canonical version anchoring**: Using root `VERSION` as the source of truth and mirroring it in validation checks made version drift easy to catch.
-- [P01] **Docs-first routing**: Keeping root entrypoints concise and pushing detail into `docs/` kept onboarding and contributor guidance manageable.
-- [P01] **Live-contract alignment**: Anchoring setup and support docs to the validator and `docs/DATA_CONTRACT.md` kept the public surface consistent.
-- [P01] **Phase-closeout bookkeeping**: Once validation evidence was in place, closeout was mostly tracker and PRD synchronization.
-- [P02] **Contract-first worker output**: Using checked-in schema and result files is easier to validate than parsing stdout logs.
-- [P02] **Structured result authority**: Let the JSON result drive batch state and retry semantics instead of collapsing zero-exit runs.
-- [P02] **Report-bearing partials**: Preserve partial rows with report links so downstream consumers do not lose the primary evaluation link.
-- [P02] **Deterministic closeout harnesses**: Temp-sandbox coverage is the safest way to validate dry-run, retry gating, merge, and verify behavior.
-- [P02] **Docs/runtime alignment**: Keep operator docs and architecture notes pointed at the same live artifacts.
-- [P02] **Validator-first closeout**: Merge and verify together before marking a phase complete.
+- [P00] **Registry-first surface mapping**: One checked-in registry made workspace and prompt behavior easy to audit.
+- [P00] **Read-first startup**: Reporting missing prerequisites without mutating user files kept boot deterministic.
+- [P00] **Explicit startup summaries**: Exposing workspace, prompt, and boot metadata in diagnostics gave later phases a stable inspection surface.
+- [P00] **Freshness-aware caches**: Re-statting prompt sources and evicting missing files prevented stale re-entry behavior.
+- [P00] **Contract reuse over parallel bootstrap logic**: Serializing boot data from existing diagnostics avoided a second source of truth.
+- [P00] **Validator-first closeout**: Wiring scaffold and boot smoke checks into the repo gate caught drift immediately.
 
-### What to Avoid <!-- Max 10 items -->
+### What to Avoid
+<!-- Max 10 items -->
 
-- [P00] **Legacy path fallbacks**: Do not re-add `.claude` or `docs/VERSION` fallback logic once the live surface is known.
-- [P00] **Split closeout state**: Do not update implementation changes without the matching validation artifact and tracker/state update.
-- [P00] **Unscoped metadata churn**: Keep docs and labeler edits targeted to the live path that actually matters.
-- [P01] **Root-relative docs assumptions**: Do not assume links from the repo root will resolve correctly inside nested docs.
-- [P01] **Mixed-scope docs edits**: Avoid bundling runtime cleanup, policy wording, and onboarding routing into one docs pass.
-- [P02] **Stdout scraping**: Do not infer worker success from logs when a structured result file exists.
-- [P02] **Bundling prompt cleanup with runtime work**: Keep wording and contract changes in separate phases.
+- [P00] **Legacy path fallbacks**: Do not re-add alias paths once the registry has a canonical surface.
+- [P00] **Split closeout state**: Do not update implementation code without the matching validation and tracker state.
+- [P00] **Stdout scraping**: Prefer structured payloads and summary objects over log parsing.
+- [P00] **Bundling prompt cleanup with runtime work**: Keep wording and metadata cleanup separate from runtime contract changes.
+- [P00] **Hidden writes during diagnostics**: Boot and validation paths should not create app state or user-layer files.
 
-### Tool/Library Notes <!-- Max 5 items -->
+### Tool/Library Notes
+<!-- Max 5 items -->
 
-- [P00] **`scripts/test-all.mjs`**: Now covers validator runtime output, version drift, and metadata path assertions. Use it for contract-surface changes.
-- [P00] **`scripts/update-system.mjs`**: Reads root `VERSION` directly. Treat that file as canonical during release or version work.
-- [P00] **`scripts/doctor.mjs`**: The success footer is part of the runtime contract, so check its output in tests, not just its exit code.
-- [P02] **`scripts/test-batch-runner-contract.mjs`**: Covers CLI args, schema wiring, and result-file behavior.
-- [P02] **`scripts/test-batch-runner-state-semantics.mjs`**: Covers rerun gating and summary semantics.
-- [P02] **`scripts/test-batch-runner-closeout.mjs`**: Covers dry-run closeout and merge/verify sequencing.
-- [P03] **`@openai/agents` tracing warning**: The package may print a
-  tracing-exporter warning when no tracing key is configured. Treat it as
-  non-blocking unless runtime behavior changes.
+- [P00] **`scripts/test-app-scaffold.mjs`**: Use it for repo-boundary and startup-contract drift.
+- [P00] **`scripts/test-app-bootstrap.mjs`**: Use it for live boot-surface checks and no-mutation validation.
+- [P00] **`scripts/test-all.mjs --quick`**: The quick suite now covers scaffold, prompt, boot, and ASCII regressions.
+- [P00-apps/api] **Prompt cache invalidation**: File freshness should be rechecked on every lookup; missing files should evict cached entries immediately.
 
 ---
 
@@ -80,13 +71,13 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 Recently closed items (buffer - rotates out after 2 phases).
 
-| Phase | Item                               | Resolution                                                                                                                        |
-| ----- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| P01   | Deferred runtime-reference cleanup | Batch runtime docs were aligned to the live `codex exec` contract in Phase 02; only narrower prompt and metadata cleanup remains. |
-| P00   | Residual legacy references         | The batch runtime doc path was realigned in Phase 02, removing the old `claude -p` surface from the live docs.                    |
-| P00   | Validator surface drift            | `scripts/test-all.mjs` now covers the batch runner contract, state semantics, and closeout harnesses.                             |
-| P00   | Version ownership drift            | Root `VERSION` was made canonical and mirrored by package metadata plus validation checks.                                        |
-| P00   | Codex metadata path drift          | Updater, data contract, and GitHub metadata were realigned to `.codex/skills/` and live `docs/` paths.                            |
-| P00   | Validator runtime footer drift     | `npm run doctor` now ends with Codex-primary guidance and the repo gate asserts that output.                                      |
+| Phase | Item | Resolution |
+|-------|------|------------|
+| P00 | Scaffold boundary drift | Workspace, app-state, and repo-gate checks now cover the new app scaffold and keep writes inside `.jobhunt-app/`. |
+| P00 | Workspace contract drift | Adapter ownership checks now reject protected targets before mutation and keep startup diagnostics read-only. |
+| P00 | Prompt routing ambiguity | Workflow-to-mode routing and source precedence are now explicit in the prompt loader contract. |
+| P00 | Boot-path drift | API boot payloads now serialize from the startup contract and the web shell renders the same diagnostics surface. |
+| P00 | Version ownership drift | Root `VERSION` remains canonical and mirrored by package metadata plus validation checks. |
+| P00 | Validator runtime footer drift | `npm run doctor` now ends with Codex-primary guidance and the repo gate asserts that output. |
 
 _Auto-generated by carryforward. Manual edits allowed but may be overwritten._

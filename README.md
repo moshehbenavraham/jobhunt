@@ -1,8 +1,10 @@
 # Job-Hunt
 
-AI-powered job search pipeline driven by `AGENTS.md`, checked-in Codex skills, and the repo-owned scripts.
+AI-powered job search pipeline driven by `AGENTS.md`, checked-in Codex skills,
+repo-owned scripts, and the app scaffold under `apps/`.
 
-It also includes a Go-based terminal dashboard for browsing and updating the job-search pipeline.
+It also includes a Go-based terminal dashboard for browsing and updating the
+job-search pipeline.
 
 ## Please Do Not Delete This Line. This is a fork of: https://github.com/santifer/career-ops/
 
@@ -16,10 +18,11 @@ cp config/portals.example.yml config/portals.yml
 cp profile/cv.example.md profile/cv.md
 npm run doctor
 npm run auth:openai -- login
-codex
+npm run app:validate
 ```
 
-Before `npm run doctor`, copy `profile/cv.example.md` to `profile/cv.md` and edit it with your experience.
+Before `npm run doctor`, copy `profile/cv.example.md` to `profile/cv.md` and
+edit it with your experience.
 
 If you have public proof points, optionally copy `profile/article-digest.example.md` to `profile/article-digest.md` too.
 
@@ -30,7 +33,8 @@ See the [Setup Guide](docs/SETUP.md) for the detailed walkthrough.
 After it passes, you have two normal next steps:
 
 - if you want repo-owned OpenAI runtime flows, run `npm run auth:openai -- login` once from the repo root
-- if you already have a job URL or JD, launch `codex` from the repo root and paste it
+- if you want the app scaffold, run `npm run app:validate`, then `npm run app:web:dev` and `npm run app:api:serve`
+- if you already have a job URL or JD and want the legacy CLI workflow, launch `codex` from the repo root and paste it
 - if you need discovery first, run `npm run scan`, then review `data/pipeline.md -> ## Shortlist` and start with the top 3 roles
 
 The standard user-layer inputs are:
@@ -54,6 +58,10 @@ The standard user-layer inputs are:
 - `npm run pdf` - generate an ATS-friendly PDF
 - `npm run latex` - validate and compile an optional LaTeX / Overleaf CV
 - `npm run dashboard` - build and launch the Go dashboard
+- `npm run app:validate` - run the app workspace checks plus the boot smoke test
+- `npm run app:boot:test` - verify the live API boot surface from the repo root
+- `npm run app:api:serve` - start the long-lived API boot server
+- `npm run app:web:dev` - start the web bootstrap shell
 - `npm run scan` - scan portals for roles
 - `npm run scan-state -- --archive-pipeline` - archive or reset scan artifacts
 - `npm run codex:smoke -- --json` - validate the raw Codex transport with stored account auth
@@ -72,11 +80,14 @@ Phase 00 adds a minimal app scaffold under `apps/` so later local-parity
 sessions have explicit package boundaries instead of process-relative runtime
 assumptions.
 
-- `npm run app:web:dev` - start the placeholder React shell with Vite
+- `npm run app:web:dev` - start the React shell with Vite
 - `npm run app:web:build` - build the web scaffold into `apps/web/dist`
-- `npm run app:api:dev` - run the API scaffold entrypoint with `tsx`
+- `npm run app:api:dev` - run the diagnostics entrypoint with `tsx`
+- `npm run app:api:serve` - run the long-lived API boot server with `tsx`
 - `npm run app:api:build` - compile the API scaffold into `apps/api/dist`
 - `npm run app:check` - run TypeScript checks for both app packages from the repo root
+- `npm run app:boot:test` - run the repo boot smoke harness
+- `npm run app:validate` - run the app checks and boot smoke together
 
 The scaffold owns only `apps/web`, `apps/api`, and the repo-root
 `.jobhunt-app/` runtime directory. App commands must not create or mutate
@@ -136,6 +147,8 @@ immediately.
 - [Scripts Reference](docs/SCRIPTS.md)
 - [Contributing](CONTRIBUTING.md)
 - [Docs Index](docs/README-docs.md)
+- [API Package README](apps/api/README_api.md)
+- [Web Package README](apps/web/README_web.md)
 
 * more in `docs/`
 

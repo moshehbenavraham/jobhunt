@@ -18,6 +18,10 @@ export type StartupHealthPayload = {
     runtime: number;
   };
   ok: boolean;
+  operationalStore: {
+    message: string;
+    status: StartupDiagnostics['operationalStore']['status'];
+  };
   service: StartupDiagnostics['service'];
   sessionId: StartupDiagnostics['sessionId'];
   startupStatus: StartupStatus;
@@ -43,6 +47,7 @@ export type StartupPayload = {
   health: StartupHealthPayload;
   message: string;
   mutationPolicy: StartupDiagnostics['mutationPolicy'];
+  operationalStore: StartupDiagnostics['operationalStore'];
   repoRoot: string;
   service: StartupDiagnostics['service'];
   sessionId: StartupDiagnostics['sessionId'];
@@ -85,6 +90,10 @@ function sortMissingItems(
 }
 
 export function getStartupStatus(diagnostics: StartupDiagnostics): StartupStatus {
+  if (diagnostics.operationalStore.status === 'corrupt') {
+    return 'runtime-error';
+  }
+
   if (diagnostics.runtimeMissing.length > 0) {
     return 'runtime-error';
   }
@@ -96,14 +105,20 @@ export function getStartupStatus(diagnostics: StartupDiagnostics): StartupStatus
   return 'ready';
 }
 
-export function getStartupMessage(status: StartupStatus): string {
+export function getStartupMessage(diagnostics: StartupDiagnostics): string {
+  const status = getStartupStatus(diagnostics);
+
   switch (status) {
     case 'ready':
-      return 'Bootstrap diagnostics are ready.';
+      return diagnostics.operationalStore.status === 'absent'
+        ? 'Bootstrap diagnostics are ready. Operational store initialization is still pending.'
+        : 'Bootstrap diagnostics are ready.';
     case 'missing-prerequisites':
       return 'Bootstrap is live, but onboarding files are still missing.';
     case 'runtime-error':
-      return 'Bootstrap is live, but required system files are missing.';
+      return diagnostics.operationalStore.status === 'corrupt'
+        ? 'Bootstrap is live, but the operational store is corrupt.'
+        : 'Bootstrap is live, but required system files are missing.';
   }
 }
 
@@ -133,9 +148,13 @@ export function createHealthPayload(
   const healthStatus = getHealthStatus(startupStatus);
 
   return {
-    message: getStartupMessage(startupStatus),
+    message: getStartupMessage(diagnostics),
     missing: getMissingCounts(diagnostics),
     ok: healthStatus !== 'error',
+    operationalStore: {
+      message: diagnostics.operationalStore.message,
+      status: diagnostics.operationalStore.status,
+    },
     service: diagnostics.service,
     sessionId: diagnostics.sessionId,
     startupStatus,
@@ -165,8 +184,9 @@ export function createStartupPayload(
       },
     },
     health: createHealthPayload(diagnostics),
-    message: getStartupMessage(status),
+    message: getStartupMessage(diagnostics),
     mutationPolicy: diagnostics.mutationPolicy,
+    operationalStore: diagnostics.operationalStore,
     repoRoot: diagnostics.repoRoot,
     service: diagnostics.service,
     sessionId: diagnostics.sessionId,

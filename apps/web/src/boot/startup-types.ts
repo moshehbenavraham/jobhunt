@@ -1,4 +1,5 @@
 export type StartupHealthStatus = 'degraded' | 'error' | 'ok';
+export type OperationalStoreStatus = 'absent' | 'corrupt' | 'ready';
 export type StartupStatus = 'missing-prerequisites' | 'ready' | 'runtime-error';
 
 export type StartupMissingItem = {
@@ -60,6 +61,10 @@ export type StartupPayload = {
       runtime: number;
     };
     ok: boolean;
+    operationalStore: {
+      message: string;
+      status: OperationalStoreStatus;
+    };
     service: string;
     sessionId: string;
     startupStatus: StartupStatus;
@@ -67,6 +72,14 @@ export type StartupPayload = {
   };
   message: string;
   mutationPolicy: 'app-owned-only';
+  operationalStore: {
+    databasePath: string;
+    message: string;
+    reason: string | null;
+    rootExists: boolean;
+    rootPath: string;
+    status: OperationalStoreStatus;
+  };
   repoRoot: string;
   service: string;
   sessionId: string;
@@ -105,6 +118,20 @@ function readString(record: JsonRecord, key: string): string {
   return value;
 }
 
+function readNullableString(record: JsonRecord, key: string): string | null {
+  const value = record[key];
+
+  if (value === null) {
+    return null;
+  }
+
+  if (typeof value !== 'string') {
+    throw new Error(`Expected ${key} to be a string or null.`);
+  }
+
+  return value;
+}
+
 function readBoolean(record: JsonRecord, key: string): boolean {
   const value = record[key];
 
@@ -133,6 +160,19 @@ function readStringArray(record: JsonRecord, key: string): string[] {
   }
 
   return [...value];
+}
+
+function readOperationalStoreStatus(
+  record: JsonRecord,
+  key: string,
+): OperationalStoreStatus {
+  const value = readString(record, key);
+
+  if (value !== 'absent' && value !== 'corrupt' && value !== 'ready') {
+    throw new Error(`Unsupported operational-store status: ${value}`);
+  }
+
+  return value;
 }
 
 function parseMissingItem(value: unknown): StartupMissingItem {
@@ -206,7 +246,15 @@ export function parseStartupPayload(value: unknown): StartupPayload {
   );
   const workspace = assertRecord(diagnostics.workspace, 'workspace');
   const health = assertRecord(record.health, 'health');
+  const healthOperationalStore = assertRecord(
+    health.operationalStore,
+    'health.operationalStore',
+  );
   const missingCounts = assertRecord(health.missing, 'health.missing');
+  const operationalStore = assertRecord(
+    record.operationalStore,
+    'operationalStore',
+  );
   const healthStatus = readString(health, 'status');
   const startupStatus = readString(record, 'status');
   const healthStartupStatus = readString(health, 'startupStatus');
@@ -287,6 +335,10 @@ export function parseStartupPayload(value: unknown): StartupPayload {
         runtime: readNumber(missingCounts, 'runtime'),
       },
       ok: readBoolean(health, 'ok'),
+      operationalStore: {
+        message: readString(healthOperationalStore, 'message'),
+        status: readOperationalStoreStatus(healthOperationalStore, 'status'),
+      },
       service: readString(health, 'service'),
       sessionId: readString(health, 'sessionId'),
       startupStatus,
@@ -294,6 +346,14 @@ export function parseStartupPayload(value: unknown): StartupPayload {
     },
     message: readString(record, 'message'),
     mutationPolicy: readString(record, 'mutationPolicy') as 'app-owned-only',
+    operationalStore: {
+      databasePath: readString(operationalStore, 'databasePath'),
+      message: readString(operationalStore, 'message'),
+      reason: readNullableString(operationalStore, 'reason'),
+      rootExists: readBoolean(operationalStore, 'rootExists'),
+      rootPath: readString(operationalStore, 'rootPath'),
+      status: readOperationalStoreStatus(operationalStore, 'status'),
+    },
     repoRoot: readString(record, 'repoRoot'),
     service: readString(record, 'service'),
     sessionId: readString(record, 'sessionId'),

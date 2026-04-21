@@ -1,7 +1,7 @@
 # Docs
 
 This directory contains the checked-in docs for setup, contributor guidance,
-runtime policy, and repo reference material.
+runtime policy, app boot surfaces, and repo reference material.
 
 ## Start Here
 
@@ -12,6 +12,7 @@ runtime policy, and repo reference material.
 - [Customization Guide](CUSTOMIZATION.md)
 - [Scripts Reference](SCRIPTS.md)
 - [OpenAI Account Auth](OPENAI_ACCOUNT_AUTH.md)
+- [App Boot Runbook](runbooks/README_runbooks.md)
 
 ## Contributor and Support
 
@@ -30,18 +31,21 @@ runtime policy, and repo reference material.
 
 - [Architecture](ARCHITECTURE.md)
 - [Dashboard README](../dashboard/README-dashboard.md)
+- [API Docs](api/README_api.md)
 - [Environments](environments.md)
 - [Deployment](deployment.md)
 - [Credits](CREDITS.md)
-- [Conventions](CONVENTIONS.md)
-- [Considerations](CONSIDERATIONS.md)
-- [Security and Compliance](SECURITY-COMPLIANCE.md)
-- [UX PRD](PRD_UX.md)
+- [Conventions](../.spec_system/CONVENTIONS.md)
+- [Considerations](../.spec_system/CONSIDERATIONS.md)
+- [Security and Compliance](../.spec_system/SECURITY-COMPLIANCE.md)
+- [UX PRD](../.spec_system/PRD/PRD_UX.md)
 - [Migration PRD](prev-prd/PRD-codex-convert.md)
 
 ## Notes
 
 - Start from this page when you need the current setup, support,
   customization, or policy surface in one place.
+- Use the app boot docs when you need the API server, web shell, or startup
+  diagnostics path.
 - Keep docs current with the repo's actual scripts and file layout.
 - Prefer links to a single source of truth over duplicated explanations.

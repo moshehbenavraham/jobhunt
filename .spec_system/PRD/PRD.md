@@ -718,7 +718,7 @@ Planning assumptions for this PRD:
 
 - Objective: make the runtime explicit and resumable before building broad UI
   parity
-- Sessions: `4-5`
+- Sessions: `5`
 - Key outcomes: local Node.js and TypeScript API, SQLite store, background job
   runner, sessions, approvals, logs, traces
 - Exit: long-running runs can start, persist, resume, and fail in a structured
@@ -784,7 +784,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | Phase | Name | Sessions | Status |
 |-------|------|----------|--------|
 | 00 | Foundation and Repo Contract | 4 | Complete |
-| 01 | Backend Runtime and Job Infrastructure | 4-5 | Not Started |
+| 01 | Backend Runtime and Job Infrastructure | 5 | Not Started |
 | 02 | Typed Tools and Agent Orchestration | 4-5 | Not Started |
 | 03 | Chat, Onboarding, and Approvals UX | 3-5 | Not Started |
 | 04 | Evaluation, Artifacts, and Tracker Parity | 4-6 | Not Started |
