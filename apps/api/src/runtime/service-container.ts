@@ -1,5 +1,11 @@
 import type { RepoPathOptions, RepoPaths } from '../config/repo-paths.js';
 import {
+  createAgentRuntimeService,
+  type AgentRuntimeBootstrap,
+  type AgentRuntimeReadinessSummary,
+  type AgentRuntimeService,
+} from '../agent-runtime/index.js';
+import {
   createStartupDiagnosticsService,
   type StartupDiagnostics,
   type StartupDiagnosticsService,
@@ -16,6 +22,10 @@ export type ServiceCleanupTask = () => Promise<void> | void;
 
 export type ApiServiceContainer = {
   addCleanupTask: (task: ServiceCleanupTask) => void;
+  agentRuntime: {
+    bootstrap: (workflowInput: unknown) => Promise<AgentRuntimeBootstrap>;
+    getReadiness: () => Promise<AgentRuntimeReadinessSummary>;
+  };
   dispose: () => Promise<void>;
   operationalStore: {
     getStatus: () => Promise<OperationalStoreStatus>;
@@ -27,6 +37,7 @@ export type ApiServiceContainer = {
 };
 
 export type ApiServiceContainerOptions = RepoPathOptions & {
+  agentRuntime?: AgentRuntimeService;
   startupDiagnostics?: StartupDiagnosticsService;
   workspace?: WorkspaceAdapter;
 };
@@ -37,6 +48,8 @@ export function createApiServiceContainer(
   const cleanupTasks: ServiceCleanupTask[] = [];
   let operationalStore: OperationalStore | undefined;
   let operationalStorePromise: Promise<OperationalStore> | undefined;
+  let agentRuntimeService = options.agentRuntime;
+  let agentRuntimeCleanupRegistered = false;
   let startupDiagnosticsService = options.startupDiagnostics;
   let workspace = options.workspace;
   let disposed = false;
@@ -57,6 +70,24 @@ export function createApiServiceContainer(
     return workspace;
   }
 
+  function getAgentRuntimeService(): AgentRuntimeService {
+    assertActive();
+
+    if (!agentRuntimeService) {
+      agentRuntimeService = createAgentRuntimeService({
+        repoRoot: getWorkspace().repoPaths.repoRoot,
+        workspace: getWorkspace(),
+      });
+    }
+
+    if (!agentRuntimeCleanupRegistered) {
+      agentRuntimeCleanupRegistered = true;
+      cleanupTasks.push(() => agentRuntimeService?.close());
+    }
+
+    return agentRuntimeService;
+  }
+
   function getStartupDiagnosticsService(): StartupDiagnosticsService {
     assertActive();
 
@@ -64,6 +95,7 @@ export function createApiServiceContainer(
       startupDiagnosticsService = createStartupDiagnosticsService(
         {},
         {
+          agentRuntime: getAgentRuntimeService(),
           operationalStoreStatus: getOperationalStoreStatus,
           workspace: getWorkspace(),
         },
@@ -118,6 +150,14 @@ export function createApiServiceContainer(
     addCleanupTask(task: ServiceCleanupTask): void {
       assertActive();
       cleanupTasks.push(task);
+    },
+    agentRuntime: {
+      async bootstrap(workflowInput: unknown): Promise<AgentRuntimeBootstrap> {
+        return getAgentRuntimeService().bootstrap(workflowInput);
+      },
+      async getReadiness(): Promise<AgentRuntimeReadinessSummary> {
+        return getAgentRuntimeService().getReadiness();
+      },
     },
     async dispose(): Promise<void> {
       if (disposed) {

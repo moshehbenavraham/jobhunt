@@ -77,6 +77,7 @@ for (const scriptName of [
   'app:api:dev',
   'app:api:build',
   'app:api:check',
+  'app:api:test:agent-runtime',
   'app:check',
 ]) {
   assert(
@@ -117,7 +118,7 @@ assert(
   'API scaffold diagnostics reported an unexpected service name.',
 );
 assert(
-  diagnostics.sessionId === 'phase01-session02-sqlite-operational-store',
+  diagnostics.sessionId === 'phase01-session03-agent-runtime-bootstrap',
   'API scaffold diagnostics reported an unexpected session id.',
 );
 assert(
@@ -147,6 +148,24 @@ assert(
 assert(
   Array.isArray(diagnostics.runtimeMissing),
   'API scaffold diagnostics did not include runtime-missing details.',
+);
+assert(
+  diagnostics.agentRuntime &&
+    typeof diagnostics.agentRuntime === 'object' &&
+    (diagnostics.agentRuntime.status === 'auth-required' ||
+      diagnostics.agentRuntime.status === 'expired-auth' ||
+      diagnostics.agentRuntime.status === 'invalid-auth' ||
+      diagnostics.agentRuntime.status === 'prompt-failure' ||
+      diagnostics.agentRuntime.status === 'ready'),
+  'API scaffold diagnostics did not include agent-runtime readiness details.',
+);
+assert(
+  diagnostics.agentRuntime?.prompt?.state === 'ready',
+  'API scaffold diagnostics did not report ready prompt prerequisites.',
+);
+assert(
+  diagnostics.currentSession?.id === 'phase01-session03-agent-runtime-bootstrap',
+  'API scaffold diagnostics did not report the current session metadata.',
 );
 assert(
   diagnostics.operationalStore &&

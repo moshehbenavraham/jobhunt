@@ -1,6 +1,6 @@
 {
   "name": "@jobhunt/api",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,11 +10,13 @@
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/**/*.test.js",
+    "test:agent-runtime": "npm run build && node --test dist/agent-runtime/*.test.js",
     "test:boot-contract": "npm run test:runtime-contract",
     "test:runtime-contract": "npm run build && node --test dist/runtime/*.test.js dist/server/http-server.test.js",
     "test:prompt-contract": "npm run build && node --test dist/prompt/prompt-loader.test.js",
     "test:store": "npm run test:store-contract",
     "test:store-contract": "npm run build && node --test dist/store/*.test.js",
+    "validate:agent-runtime": "npm run check && npm run test:agent-runtime",
     "validate:store": "npm run check && npm run test:store-contract"
   },
   "devDependencies": {

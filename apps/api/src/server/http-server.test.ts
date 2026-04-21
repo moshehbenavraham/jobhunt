@@ -3,7 +3,14 @@ import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import test from 'node:test';
+import {
+  createAgentRuntimeAuthFixture,
+  getRepoOpenAIAccountModuleImportPath,
+  startFakeCodexBackend,
+} from '../agent-runtime/test-utils.js';
+import { createAgentRuntimeService } from '../agent-runtime/index.js';
 import { STARTUP_SESSION_ID, STARTUP_SERVICE_NAME } from '../index.js';
+import { createApiServiceContainer } from '../runtime/service-container.js';
 import { createOperationalStore } from '../store/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { startStartupHttpServer } from './http-server.js';
@@ -37,13 +44,28 @@ async function createReadyFixture() {
 
 test('health and startup routes report ready diagnostics after explicit store initialization', async () => {
   const fixture = await createReadyFixture();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
   const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
   await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-ready' });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-http-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
 
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
-    repoRoot: fixture.repoRoot,
+    services,
   });
 
   try {
@@ -62,11 +84,23 @@ test('health and startup routes report ready diagnostics after explicit store in
     );
     assert.equal((healthPayload as { status: string }).status, 'ok');
     assert.equal(
+      (healthPayload as {
+        agentRuntime: { status: string };
+      }).agentRuntime.status,
+      'ready',
+    );
+    assert.equal(
       (healthPayload as { operationalStore: { status: string } }).operationalStore.status,
       'ready',
     );
 
     assert.equal((startupPayload as { status: string }).status, 'ready');
+    assert.equal(
+      (startupPayload as {
+        diagnostics: { agentRuntime: { status: string } };
+      }).diagnostics.agentRuntime.status,
+      'ready',
+    );
     assert.equal(
       (startupPayload as { operationalStore: { status: string } }).operationalStore.status,
       'ready',
@@ -85,12 +119,21 @@ test('health and startup routes report ready diagnostics after explicit store in
     );
     assert.equal(
       (startupPayload as {
+        diagnostics: { currentSession: { id: string } };
+      }).diagnostics.currentSession.id,
+      STARTUP_SESSION_ID,
+    );
+    assert.equal(
+      (startupPayload as {
         bootSurface: { startupPath: string };
       }).bootSurface.startupPath,
       '/startup',
     );
   } finally {
     await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
     await fixture.cleanup();
   }
 });
@@ -104,10 +147,17 @@ test('startup route reports onboarding gaps without mutating user-layer files', 
   });
   const beforeSnapshot = await fixture.snapshotUserLayer();
   const appStateRoot = join(fixture.repoRoot, '.jobhunt-app');
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
-    repoRoot: fixture.repoRoot,
+    services,
   });
 
   try {
@@ -129,6 +179,12 @@ test('startup route reports onboarding gaps without mutating user-layer files', 
       'missing-prerequisites',
     );
     assert.equal(
+      (startupPayload as {
+        diagnostics: { agentRuntime: { status: string } };
+      }).diagnostics.agentRuntime.status,
+      'auth-required',
+    );
+    assert.equal(
       (startupPayload as { operationalStore: { status: string } }).operationalStore.status,
       'absent',
     );
@@ -144,6 +200,48 @@ test('startup route reports onboarding gaps without mutating user-layer files', 
     );
   } finally {
     await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('startup routes surface agent runtime auth-required status without mutating user-layer files', async () => {
+  const fixture = await createReadyFixture();
+  const beforeSnapshot = await fixture.snapshotUserLayer();
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    services,
+  });
+
+  try {
+    const { payload: healthPayload, response: healthResponse } =
+      await readJsonResponse(`${handle.url}/health`);
+    const { payload: startupPayload, response: startupResponse } =
+      await readJsonResponse(`${handle.url}/startup`);
+    const afterSnapshot = await fixture.snapshotUserLayer();
+
+    assert.equal(healthResponse.status, 200);
+    assert.equal(startupResponse.status, 200);
+    assert.equal((healthPayload as { status: string }).status, 'degraded');
+    assert.equal((startupPayload as { status: string }).status, 'auth-required');
+    assert.equal(
+      (startupPayload as {
+        diagnostics: { agentRuntime: { auth: { authPath: string } } };
+      }).diagnostics.agentRuntime.auth.authPath,
+      join(fixture.repoRoot, 'data', 'openai-account-auth.json'),
+    );
+    assert.deepEqual(afterSnapshot, beforeSnapshot);
+  } finally {
+    await handle.close();
+    await services.dispose();
     await fixture.cleanup();
   }
 });
@@ -153,11 +251,18 @@ test('startup routes surface corrupt operational-store state as a runtime error'
   const corruptStorePath = join(fixture.repoRoot, '.jobhunt-app', 'app.db');
   await mkdir(join(fixture.repoRoot, '.jobhunt-app'), { recursive: true });
   await writeFile(corruptStorePath, 'not sqlite\n', 'utf8');
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
 
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
-    repoRoot: fixture.repoRoot,
+    services,
   });
 
   try {
@@ -185,6 +290,7 @@ test('startup routes surface corrupt operational-store state as a runtime error'
     );
   } finally {
     await handle.close();
+    await services.dispose();
     await fixture.cleanup();
   }
 });
@@ -212,10 +318,17 @@ test('startup route maps repo-root resolution failures to explicit error payload
 
 test('health route handles HEAD requests without emitting a response body', async () => {
   const fixture = await createReadyFixture();
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
-    repoRoot: fixture.repoRoot,
+    services,
   });
 
   try {
@@ -233,16 +346,24 @@ test('health route handles HEAD requests without emitting a response body', asyn
     );
   } finally {
     await handle.close();
+    await services.dispose();
     await fixture.cleanup();
   }
 });
 
 test('dispatcher returns explicit 404 and 405 error contracts', async () => {
   const fixture = await createReadyFixture();
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
-    repoRoot: fixture.repoRoot,
+    services,
   });
 
   try {
@@ -272,6 +393,7 @@ test('dispatcher returns explicit 404 and 405 error contracts', async () => {
     );
   } finally {
     await handle.close();
+    await services.dispose();
     await fixture.cleanup();
   }
 });

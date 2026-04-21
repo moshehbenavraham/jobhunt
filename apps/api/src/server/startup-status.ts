@@ -1,10 +1,18 @@
+import type { AgentRuntimePromptState } from '../agent-runtime/index.js';
 import { RepoRootResolutionError } from '../config/repo-paths.js';
 import type { StartupDiagnostics } from '../index.js';
 import type { PromptContractSummary } from '../prompt/index.js';
 import type { WorkspaceMissingSummary } from '../workspace/index.js';
 
 export type StartupHealthStatus = 'degraded' | 'error' | 'ok';
-export type StartupStatus = 'missing-prerequisites' | 'ready' | 'runtime-error';
+export type StartupStatus =
+  | 'auth-required'
+  | 'expired-auth'
+  | 'invalid-auth'
+  | 'missing-prerequisites'
+  | 'prompt-failure'
+  | 'ready'
+  | 'runtime-error';
 export type StartupErrorCode =
   | 'repo-root-resolution-failed'
   | 'startup-diagnostics-failed'
@@ -16,6 +24,12 @@ export type StartupHealthPayload = {
     onboarding: number;
     optional: number;
     runtime: number;
+  };
+  agentRuntime: {
+    authPath: string;
+    message: string;
+    promptState: AgentRuntimePromptState | null;
+    status: StartupDiagnostics['agentRuntime']['status'];
   };
   ok: boolean;
   operationalStore: {
@@ -35,6 +49,8 @@ export type StartupPayload = {
   };
   bootSurface: StartupDiagnostics['bootSurface'];
   diagnostics: {
+    agentRuntime: StartupDiagnostics['agentRuntime'];
+    currentSession: StartupDiagnostics['currentSession'];
     onboardingMissing: WorkspaceMissingSummary[];
     optionalMissing: WorkspaceMissingSummary[];
     promptContract: PromptContractSummary;
@@ -102,6 +118,10 @@ export function getStartupStatus(diagnostics: StartupDiagnostics): StartupStatus
     return 'missing-prerequisites';
   }
 
+  if (diagnostics.agentRuntime.status !== 'ready') {
+    return diagnostics.agentRuntime.status;
+  }
+
   return 'ready';
 }
 
@@ -115,6 +135,11 @@ export function getStartupMessage(diagnostics: StartupDiagnostics): string {
         : 'Bootstrap diagnostics are ready.';
     case 'missing-prerequisites':
       return 'Bootstrap is live, but onboarding files are still missing.';
+    case 'auth-required':
+    case 'expired-auth':
+    case 'invalid-auth':
+    case 'prompt-failure':
+      return diagnostics.agentRuntime.message;
     case 'runtime-error':
       return diagnostics.operationalStore.status === 'corrupt'
         ? 'Bootstrap is live, but the operational store is corrupt.'
@@ -126,7 +151,11 @@ export function getHealthStatus(status: StartupStatus): StartupHealthStatus {
   switch (status) {
     case 'ready':
       return 'ok';
+    case 'auth-required':
+    case 'expired-auth':
+    case 'invalid-auth':
     case 'missing-prerequisites':
+    case 'prompt-failure':
       return 'degraded';
     case 'runtime-error':
       return 'error';
@@ -148,6 +177,12 @@ export function createHealthPayload(
   const healthStatus = getHealthStatus(startupStatus);
 
   return {
+    agentRuntime: {
+      authPath: diagnostics.agentRuntime.auth.authPath,
+      message: diagnostics.agentRuntime.message,
+      promptState: diagnostics.agentRuntime.prompt?.state ?? null,
+      status: diagnostics.agentRuntime.status,
+    },
     message: getStartupMessage(diagnostics),
     missing: getMissingCounts(diagnostics),
     ok: healthStatus !== 'error',
@@ -174,6 +209,8 @@ export function createStartupPayload(
     },
     bootSurface: diagnostics.bootSurface,
     diagnostics: {
+      agentRuntime: diagnostics.agentRuntime,
+      currentSession: diagnostics.currentSession,
       onboardingMissing: sortMissingItems(diagnostics.onboardingMissing),
       optionalMissing: sortMissingItems(diagnostics.optionalMissing),
       promptContract: diagnostics.promptContract,

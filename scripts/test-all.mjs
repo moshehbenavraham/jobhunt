@@ -364,9 +364,20 @@ if (appRuntimeContract !== null) {
   fail('App runtime contract tests failed');
 }
 
-// -- 3s. App store contract -------------------------------------
+// -- 3s. App agent-runtime contract -----------------------------
 
-console.log('\n3s. App store contract');
+console.log('\n3s. App agent-runtime contract');
+
+const appAgentRuntimeContract = run('npm', ['run', 'app:api:test:agent-runtime']);
+if (appAgentRuntimeContract !== null) {
+  pass('App agent-runtime contract tests pass');
+} else {
+  fail('App agent-runtime contract tests failed');
+}
+
+// -- 3t. App store contract -------------------------------------
+
+console.log('\n3t. App store contract');
 
 const appStoreContract = run('npm', ['run', 'app:api:test:store']);
 if (appStoreContract !== null) {
@@ -375,9 +386,9 @@ if (appStoreContract !== null) {
   fail('App store contract tests failed');
 }
 
-// -- 3t. App bootstrap smoke ------------------------------------
+// -- 3u. App bootstrap smoke ------------------------------------
 
-console.log('\n3t. App bootstrap smoke');
+console.log('\n3u. App bootstrap smoke');
 
 const appBootstrap = run('node', ['scripts/test-app-bootstrap.mjs']);
 if (appBootstrap !== null) {
@@ -386,11 +397,20 @@ if (appBootstrap !== null) {
   fail('App bootstrap smoke tests failed');
 }
 
-// -- 3u. Bootstrap ASCII validation -----------------------------
+// -- 3v. Bootstrap ASCII validation -----------------------------
 
-console.log('\n3u. Bootstrap ASCII validation');
+console.log('\n3v. Bootstrap ASCII validation');
 
 const bootstrapFiles = [
+  'apps/api/src/agent-runtime/agent-runtime-config.test.ts',
+  'apps/api/src/agent-runtime/agent-runtime-config.ts',
+  'apps/api/src/agent-runtime/agent-runtime-contract.ts',
+  'apps/api/src/agent-runtime/agent-runtime-service.test.ts',
+  'apps/api/src/agent-runtime/agent-runtime-service.ts',
+  'apps/api/src/agent-runtime/index.ts',
+  'apps/api/src/agent-runtime/openai-account-provider.test.ts',
+  'apps/api/src/agent-runtime/openai-account-provider.ts',
+  'apps/api/src/agent-runtime/test-utils.ts',
   'apps/api/src/index.ts',
   'apps/api/src/runtime/runtime-config.test.ts',
   'apps/api/src/runtime/runtime-config.ts',

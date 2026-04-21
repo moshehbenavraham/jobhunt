@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 import { execFileSync, spawn } from 'node:child_process';
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { createServer as createHttpServer } from 'node:http';
 import { createServer } from 'node:net';
+import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
@@ -66,6 +68,143 @@ function getFreePort() {
   });
 }
 
+function createEvent(name, payload) {
+  return `event: ${name}\ndata: ${JSON.stringify(payload)}\n\n`;
+}
+
+async function readRequestBody(request) {
+  const chunks = [];
+  for await (const chunk of request) {
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+function normalizeHeaders(headers) {
+  return Object.fromEntries(
+    Object.entries(headers).map(([key, value]) => [
+      key,
+      Array.isArray(value) ? value.join(', ') : (value ?? ''),
+    ]),
+  );
+}
+
+function createStoredAuthRecord() {
+  return `${JSON.stringify(
+    {
+      credentials: {
+        accessToken: 'access-token-bootstrap',
+        accountId: 'acct-bootstrap-smoke',
+        expiresAt: Date.now() + 60_000,
+        refreshToken: 'refresh-token-bootstrap',
+      },
+      provider: 'openai-codex',
+      updatedAt: new Date().toISOString(),
+      version: 1,
+    },
+    null,
+    2,
+  )}\n`;
+}
+
+async function startFakeCodexBackend() {
+  const seenRequests = [];
+  const sockets = new Set();
+  let requestCount = 0;
+
+  const server = createHttpServer(async (request, response) => {
+    if (
+      request.method === 'POST' &&
+      request.url === '/backend-api/codex/responses'
+    ) {
+      requestCount += 1;
+      seenRequests.push({
+        body: JSON.parse(await readRequestBody(request)),
+        headers: normalizeHeaders(request.headers),
+      });
+
+      response.statusCode = 200;
+      response.setHeader('connection', 'close');
+      response.setHeader('content-type', 'text/event-stream');
+      response.write(
+        [
+          createEvent('response.created', {
+            response: {
+              id: `resp_bootstrap_${requestCount}`,
+              model: 'gpt-5.4-mini-2026-03-17',
+              status: 'in_progress',
+            },
+            type: 'response.created',
+          }),
+          createEvent('response.completed', {
+            response: {
+              id: `resp_bootstrap_${requestCount}`,
+              model: 'gpt-5.4-mini-2026-03-17',
+              output: [],
+              status: 'completed',
+              usage: {
+                input_tokens: 10,
+                output_tokens: 0,
+                total_tokens: 10,
+              },
+            },
+            type: 'response.completed',
+          }),
+        ].join(''),
+      );
+      response.end();
+      return;
+    }
+
+    response.statusCode = 404;
+    response.end('not found');
+  });
+
+  server.on('connection', (socket) => {
+    sockets.add(socket);
+    socket.on('close', () => {
+      sockets.delete(socket);
+    });
+  });
+
+  await new Promise((resolvePromise) => {
+    server.listen(0, '127.0.0.1', resolvePromise);
+  });
+
+  const address = server.address();
+  if (typeof address !== 'object' || address === null) {
+    throw new Error('Failed to start the fake Codex backend.');
+  }
+
+  return {
+    async close() {
+      await new Promise((resolvePromise, reject) => {
+        server.close((error) => {
+          if (typeof server.closeIdleConnections === 'function') {
+            server.closeIdleConnections();
+          }
+          if (typeof server.closeAllConnections === 'function') {
+            server.closeAllConnections();
+          }
+
+          for (const socket of sockets) {
+            socket.destroy();
+          }
+
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolvePromise();
+        });
+      });
+    },
+    seenRequests,
+    url: `http://127.0.0.1:${address.port}`,
+  };
+}
+
 async function waitForHealthy(url, child, stderrLog) {
   for (let attempt = 0; attempt < 50; attempt += 1) {
     if (child.exitCode !== null) {
@@ -127,6 +266,7 @@ const rootPackage = readJson('package.json');
 
 for (const scriptName of [
   'app:api:serve',
+  'app:api:test:agent-runtime',
   'app:api:test:runtime',
   'app:api:test:store',
   'app:boot:test',
@@ -139,6 +279,7 @@ for (const scriptName of [
 }
 
 run('npm', ['run', 'app:check']);
+run('npm', ['run', 'app:api:test:agent-runtime']);
 run('npm', ['run', 'app:api:test:runtime']);
 run('npm', ['run', 'app:api:test:store']);
 run('npm', ['run', 'app:api:build']);
@@ -155,11 +296,20 @@ assert(
 
 const port = await getFreePort();
 const baseUrl = `http://127.0.0.1:${port}`;
+const authSandbox = mkdtempSync(join(tmpdir(), 'jobhunt-app-bootstrap-'));
+const authPath = join(authSandbox, 'data', 'openai-account-auth.json');
+mkdirSync(join(authSandbox, 'data'), { recursive: true });
+writeFileSync(authPath, createStoredAuthRecord(), 'utf8');
+const fakeBackend = await startFakeCodexBackend();
 const stderrLog = [];
 const child = spawn('node', ['apps/api/dist/server/index.js'], {
   cwd: ROOT,
   env: {
     ...process.env,
+    JOBHUNT_API_OPENAI_AUTH_PATH: authPath,
+    JOBHUNT_API_OPENAI_BASE_URL: `${fakeBackend.url}/backend-api`,
+    JOBHUNT_API_OPENAI_MODEL: 'openai-codex/gpt-5.4-mini',
+    JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-bootstrap-smoke',
     JOBHUNT_API_HOST: '127.0.0.1',
     JOBHUNT_API_PORT: String(port),
     JOBHUNT_API_REPO_ROOT: ROOT,
@@ -184,6 +334,10 @@ try {
   assert(startupResponse.status === 200, 'Expected /startup to return HTTP 200.');
   assert(healthPayload.status === 'ok', 'Expected /health to report status "ok".');
   assert(
+    healthPayload.agentRuntime.status === 'ready',
+    'Expected /health to report a ready agent-runtime state.',
+  );
+  assert(
     startupPayload.status === 'ready',
     'Expected /startup to report a ready bootstrap state.',
   );
@@ -196,6 +350,14 @@ try {
     'Startup payload reported unexpected onboarding blockers in the live repo.',
   );
   assert(
+    startupPayload.diagnostics.agentRuntime.status === 'ready',
+    'Startup payload did not report a ready agent-runtime state.',
+  );
+  assert(
+    startupPayload.diagnostics.agentRuntime.auth.authPath === authPath,
+    'Startup payload reported an unexpected auth-path override.',
+  );
+  assert(
     startupPayload.diagnostics.runtimeMissing.length === 0,
     'Startup payload reported unexpected runtime blockers in the live repo.',
   );
@@ -204,8 +366,13 @@ try {
     'Startup payload reported an unexpected startup path.',
   );
   assert(
-    startupPayload.sessionId === 'phase01-session02-sqlite-operational-store',
+    startupPayload.sessionId === 'phase01-session03-agent-runtime-bootstrap',
     'Startup payload reported an unexpected session id.',
+  );
+  assert(
+    startupPayload.diagnostics.currentSession.id ===
+      'phase01-session03-agent-runtime-bootstrap',
+    'Startup payload reported unexpected current-session metadata.',
   );
   assert(
     healthPayload.operationalStore.status === startupPayload.operationalStore.status,
@@ -215,8 +382,14 @@ try {
     startupPayload.operationalStore.status !== 'corrupt',
     'Startup payload reported a corrupt operational store in the live repo.',
   );
+  assert(
+    fakeBackend.seenRequests.length === 0,
+    'Startup diagnostics unexpectedly contacted the Codex backend.',
+  );
 } finally {
   await stopChild(child);
+  await fakeBackend.close();
+  rmSync(authSandbox, { force: true, recursive: true });
 }
 
 if (!appStateExistedBefore) {
