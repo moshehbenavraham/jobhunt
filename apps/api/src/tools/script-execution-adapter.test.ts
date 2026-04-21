@@ -116,3 +116,81 @@ test('script execution adapter reports failed subprocess exits without leaking s
     await fixture.cleanup();
   }
 });
+
+test('script execution adapter accepts configured non-zero success exits', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'scripts/check-liveness-fixture.mjs': [
+        "process.stdout.write('Checking 1 URL(s)...\\n\\n');",
+        "process.stdout.write('WARN uncertain  https://example.com/job\\n');",
+        "process.stdout.write('           timed out waiting for apply button\\n');",
+        "process.stdout.write('\\nResults: 0 active  0 expired  1 uncertain\\n');",
+        'process.exit(1);',
+        '',
+      ].join('\n'),
+    },
+  });
+  const adapter = createScriptExecutionAdapter({
+    allowlist: [
+      createDefinition(fixture.repoRoot, 'check-liveness-fixture', {
+        successExitCodes: [0, 1],
+      }),
+    ],
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const result = await adapter.execute({
+      scriptName: 'check-liveness-fixture',
+    });
+
+    assert.equal(result.exitCode, 1);
+    assert.match(result.stdout, /uncertain/);
+    assert.equal(result.stderr, '');
+  } finally {
+    await fixture.cleanup();
+  }
+});
+
+test('script execution adapter retries configured retryable exits before succeeding', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'scripts/retry-once.mjs': [
+        "import { existsSync, readFileSync, writeFileSync } from 'node:fs';",
+        "const statePath = new URL('./retry-once.state', import.meta.url);",
+        'const attempts = existsSync(statePath)',
+        "  ? Number.parseInt(readFileSync(statePath, 'utf8'), 10)",
+        '  : 0;',
+        "writeFileSync(statePath, String(attempts + 1), 'utf8');",
+        'if (attempts === 0) {',
+        "  process.stderr.write('retry me\\n');",
+        '  process.exit(75);',
+        '}',
+        "process.stdout.write('ok after retry\\n');",
+        '',
+      ].join('\n'),
+    },
+  });
+  const adapter = createScriptExecutionAdapter({
+    allowlist: [
+      createDefinition(fixture.repoRoot, 'retry-once', {
+        retryableExitCodes: [75],
+      }),
+    ],
+    repoRoot: fixture.repoRoot,
+    retryBackoffMs: 0,
+    retryAttempts: 2,
+  });
+
+  try {
+    const result = await adapter.execute({
+      scriptName: 'retry-once',
+    });
+
+    assert.equal(result.attempts, 2);
+    assert.equal(result.exitCode, 0);
+    assert.equal(result.stdout, 'ok after retry\n');
+  } finally {
+    await fixture.cleanup();
+  }
+});

@@ -86,6 +86,12 @@ When you are working from the repo root, the corresponding aliases are
   `waitReason: 'approval'` metadata instead of introducing a second worker loop.
 - `src/job-runner/job-runner-executors.ts` validates payloads against the
   registered executor schemas before a job runs.
+- `src/job-runner/workflow-job-contract.ts` defines the typed payload and
+  result contracts for `scan-portals`, `process-pipeline`, and
+  `batch-evaluation`.
+- `src/job-runner/workflow-job-executors.ts` wraps the repo-owned scan,
+  pipeline, and batch flows in checkpointed durable executors instead of
+  exposing raw shell orchestration to later phases.
 - `src/runtime/service-container.ts` exposes one cached durable job-runner
   instance plus shared approval-runtime and observability services.
 - Recovery state stays in `.jobhunt-app/app.db`; checkpoint progress is stored
@@ -118,15 +124,16 @@ When you are working from the repo root, the corresponding aliases are
   deterministic backend tool catalog.
 - `src/tools/tool-execution-service.ts` validates tool input, enforces
   declared script and workspace-mutation permissions, requests approval when
-  policy requires it, and emits metadata-only lifecycle events.
+  policy requires it, emits metadata-only lifecycle events, and lets selected
+  tools enqueue durable jobs through the shared runner.
 - `src/tools/script-execution-adapter.ts` wraps allowlisted repo script
   dispatch with bounded cwd, environment, timeout, and retry behavior.
 - `src/tools/workspace-mutation-adapter.ts` authorizes explicit user-layer or
   app-layer mutation targets at the workspace boundary before writing
   atomically.
 - `src/runtime/service-container.ts` exposes one cached tools surface so
-  workflow tools reuse shared workspace, approval-runtime, and observability
-  services instead of creating another execution path.
+  workflow tools reuse shared workspace, approval-runtime, durable-job-runner,
+  and observability services instead of creating another execution path.
 
 ### Default Tool Suite
 
@@ -155,6 +162,16 @@ When you are working from the repo root, the corresponding aliases are
 - `bootstrap-single-evaluation` and `bootstrap-auto-pipeline` reuse the
   authenticated agent runtime and return typed readiness states such as
   `auth-required`, `prompt-missing`, or `ready`.
+- `check-job-liveness` and `check-job-liveness-batch` wrap the allowlisted
+  Playwright liveness script and return typed `ready`, `empty`, `offline`, or
+  `error` states instead of raw stdout.
+- `enqueue-portal-scan` starts a durable `scan-portals` job with duplicate
+  suppression while an identical scan is still live.
+- `enqueue-pipeline-processing` normalizes pending, first, or selected-URL
+  queue intent and enqueues the durable `process-pipeline` workflow.
+- `start-batch-evaluation`, `retry-batch-evaluation-failures`, and
+  `dry-run-batch-evaluation` expose the batch runner semantics through the
+  durable `batch-evaluation` workflow instead of shell-first orchestration.
 - `reserve-report-artifact` allocates the next canonical report path through
   `.jobhunt-app/report-reservations/` before later writes target `reports/`.
 - `write-report-artifact` writes the reserved report file and marks the
@@ -181,6 +198,9 @@ When you are working from the repo root, the corresponding aliases are
 - Session 03 tool warnings come from repo-script warning lines, but
   observability remains metadata-only and never persists raw prompt text,
   report bodies, or PDF bytes.
+- Session 04 workflow executors checkpoint only typed progress summaries,
+  warnings, and per-item status metadata; they do not persist raw JD text,
+  prompt bodies, or report contents in the operational store.
 
 ### Repair Boundaries
 

@@ -18,6 +18,7 @@ function createTestTool(name: string, description = `Tool ${name}`) {
     name,
     policy: {
       permissions: {
+        jobTypes: ['scan-portals'] as const,
         mutationTargets: ['app-state'] as const,
         scripts: ['health-check'] as const,
       },
@@ -35,6 +36,7 @@ test('tool registry lists catalog entries in deterministic order', () => {
   assert.deepEqual(registry.listCatalog(), [
     {
       description: 'Tool check-health',
+      jobTypes: ['scan-portals'],
       mutationTargets: ['app-state'],
       name: 'check-health',
       requiresApproval: false,
@@ -42,6 +44,7 @@ test('tool registry lists catalog entries in deterministic order', () => {
     },
     {
       description: 'Tool write-report',
+      jobTypes: ['scan-portals'],
       mutationTargets: ['app-state'],
       name: 'write-report',
       requiresApproval: false,

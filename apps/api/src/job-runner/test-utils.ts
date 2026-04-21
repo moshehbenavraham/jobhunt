@@ -102,6 +102,9 @@ export function createTestExecutor<TPayload extends JsonValue>(options: {
 
 export async function createDurableJobRunnerHarness(
   options: {
+    createExecutors?: (
+      repoRoot: string,
+    ) => readonly AnyDurableJobExecutorDefinition[];
     executors?: AnyDurableJobExecutorDefinition[];
     fixtureFiles?: Record<string, string>;
     heartbeatIntervalMs?: number;
@@ -129,11 +132,13 @@ export async function createDurableJobRunnerHarness(
     getStore: async () => store,
     recordEvent: (input) => observability.recordEvent(input),
   });
+  const executors =
+    options.createExecutors?.(fixture.repoRoot) ?? options.executors ?? [];
   const runner = createDurableJobRunnerService({
     bootstrapWorkflow: async () => {
       throw new Error('bootstrapWorkflow was not expected in this test');
     },
-    executors: createDurableJobExecutorRegistry(options.executors ?? []),
+    executors: createDurableJobExecutorRegistry(executors),
     getApprovalRuntime: async () => approvalRuntime,
     getObservability: async () => observability,
     getStore: async () => store,

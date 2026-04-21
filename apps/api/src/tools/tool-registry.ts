@@ -18,6 +18,7 @@ function assertToolName(name: string): void {
 function toCatalogEntry(definition: AnyToolDefinition): ToolCatalogEntry {
   return {
     description: definition.description,
+    jobTypes: [...(definition.policy?.permissions?.jobTypes ?? [])].sort(),
     mutationTargets: [...(definition.policy?.permissions?.mutationTargets ?? [])]
       .sort(),
     name: definition.name,

@@ -327,11 +327,17 @@ test('service container lazily creates and reuses a tool execution service with 
 
     assert.equal(toolServiceA, toolServiceB);
     assert.ok(catalogNames.includes('bootstrap-single-evaluation'));
+    assert.ok(catalogNames.includes('check-job-liveness'));
+    assert.ok(catalogNames.includes('dry-run-batch-evaluation'));
+    assert.ok(catalogNames.includes('enqueue-pipeline-processing'));
+    assert.ok(catalogNames.includes('enqueue-portal-scan'));
     assert.ok(catalogNames.includes('extract-ats-job'));
     assert.ok(catalogNames.includes('generate-ats-pdf'));
     assert.ok(catalogNames.includes('inspect-startup-diagnostics'));
     assert.ok(catalogNames.includes('preview-onboarding-repair'));
+    assert.ok(catalogNames.includes('retry-batch-evaluation-failures'));
     assert.ok(catalogNames.includes('reserve-report-artifact'));
+    assert.ok(catalogNames.includes('start-batch-evaluation'));
     assert.ok(catalogNames.includes('stage-tracker-addition'));
     assert.ok(catalogNames.includes('write-tool-state'));
     assert.equal(result.status, 'completed');
@@ -348,6 +354,69 @@ test('service container lazily creates and reuses a tool execution service with 
     assert.ok(
       events.some((event) => event.eventType === 'tool-execution-completed'),
     );
+  } finally {
+    await container.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('service container registers default Session 04 workflow executors', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.yml': 'full_name: Test User\n',
+      'modes/_profile.md': '# Profile\n',
+      'profile/cv.md': '# CV\n',
+      'scripts/scan.mjs': [
+        "process.stdout.write('Companies configured: 1\\n');",
+        "process.stdout.write('Companies scanned: 1\\n');",
+        "process.stdout.write('Companies skipped: 0\\n');",
+        "process.stdout.write('Duplicates: 0 skipped\\n');",
+        "process.stdout.write('Filtered by location: 0 removed\\n');",
+        "process.stdout.write('Filtered by title: 0 removed\\n');",
+        "process.stdout.write('New offers added: 2\\n');",
+        "process.stdout.write('Total jobs found: 2\\n');",
+        '',
+      ].join('\n'),
+    },
+  });
+  const container = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const runner = await container.jobRunner.getService();
+
+    await runner.enqueue({
+      jobId: 'job-default-scan',
+      jobType: 'scan-portals',
+      payload: {
+        compareClean: false,
+        company: 'Example Co',
+        dryRun: true,
+      },
+      session: {
+        context: {
+          origin: 'test',
+        },
+        sessionId: 'session-default-scan',
+        workflow: 'scan-portals',
+      },
+    });
+    await runner.drainOnce();
+
+    const job = await (
+      await container.operationalStore.getStore()
+    ).jobs.getById('job-default-scan');
+    const result = job?.result as {
+      summary?: { newOffersAdded?: number; totalJobsFound?: number };
+      workflow?: string;
+    } | null;
+
+    assert.equal(job?.status, 'completed');
+    assert.equal(result?.workflow, 'scan-portals');
+    assert.equal(result?.summary?.newOffersAdded, 2);
+    assert.equal(result?.summary?.totalJobsFound, 2);
   } finally {
     await container.dispose();
     await fixture.cleanup();

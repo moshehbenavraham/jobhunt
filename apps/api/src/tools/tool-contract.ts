@@ -1,4 +1,9 @@
 import type { ZodType } from 'zod';
+import type {
+  DurableJobEnqueueResult,
+  DurableJobRetryPolicy,
+} from '../job-runner/job-runner-contract.js';
+import type { WorkflowIntent } from '../prompt/prompt-types.js';
 import type { WorkspaceAdapter } from '../workspace/workspace-adapter.js';
 import type {
   JsonValue,
@@ -63,6 +68,20 @@ export type ToolWorkspaceMutationResult = {
   target: WorkspaceMutationTarget;
 };
 
+export type ToolDurableJobEnqueueRequest = {
+  context?: JsonValue | null;
+  currentRunId?: string | null;
+  jobId: string;
+  jobType: string;
+  payload: JsonValue;
+  retryPolicy?: Partial<DurableJobRetryPolicy>;
+  workflow: WorkflowIntent;
+};
+
+export type ToolDurableJobEnqueueResult = DurableJobEnqueueResult & {
+  alreadyExists: boolean;
+};
+
 export type ToolObservabilityEventInput = {
   level?: 'error' | 'info' | 'warn';
   metadata: JsonValue | null;
@@ -76,6 +95,9 @@ export type ToolObservabilityEventInput = {
 
 export type ToolExecutionContext<TInput extends JsonValue = JsonValue> = {
   correlation: ToolExecutionCorrelation;
+  enqueueJob: (
+    request: ToolDurableJobEnqueueRequest,
+  ) => Promise<ToolDurableJobEnqueueResult>;
   input: TInput;
   mutateWorkspace: (
     request: ToolWorkspaceMutationRequest,
@@ -96,6 +118,7 @@ export type ToolApprovalRequestShape<TInput extends JsonValue = JsonValue> = {
 };
 
 export type ToolPermissionPolicy = {
+  jobTypes?: readonly string[];
   mutationTargets?: readonly WorkspaceMutationTarget[];
   scripts?: readonly string[];
 };
@@ -124,6 +147,7 @@ export type AnyToolDefinition = ToolDefinition<any, any>;
 
 export type ToolCatalogEntry = {
   description: string;
+  jobTypes: readonly string[];
   mutationTargets: readonly WorkspaceMutationTarget[];
   name: string;
   requiresApproval: boolean;

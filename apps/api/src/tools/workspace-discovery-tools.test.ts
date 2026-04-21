@@ -14,6 +14,9 @@ function createReadOnlyContext(repoRoot: string) {
       sessionId: 'session-workspace-tool',
       traceId: 'trace-workspace-tool',
     },
+    enqueueJob: async () => {
+      throw new Error('discovery tools should not enqueue durable jobs');
+    },
     input: {},
     mutateWorkspace: async () => {
       throw new Error('mutateWorkspace should not be called by discovery tools');

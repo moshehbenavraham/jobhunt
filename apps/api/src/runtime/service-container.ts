@@ -10,8 +10,10 @@ import {
   type AgentRuntimeService,
 } from '../agent-runtime/index.js';
 import {
+  createWorkflowJobExecutors,
   createDurableJobExecutorRegistry,
   createDurableJobRunnerService,
+  type AnyDurableJobExecutorDefinition,
   type DurableJobExecutorRegistryInput,
   type DurableJobRunnerService,
 } from '../job-runner/index.js';
@@ -98,6 +100,23 @@ function mergeScriptDefinitions(
 
   for (const definition of overrides) {
     merged.set(definition.name, definition);
+  }
+
+  return [...merged.values()];
+}
+
+function mergeDurableJobExecutors(
+  defaults: readonly AnyDurableJobExecutorDefinition[],
+  overrides: readonly AnyDurableJobExecutorDefinition[],
+): readonly AnyDurableJobExecutorDefinition[] {
+  const merged = new Map<string, AnyDurableJobExecutorDefinition>();
+
+  for (const definition of defaults) {
+    merged.set(definition.jobType, definition);
+  }
+
+  for (const definition of overrides) {
+    merged.set(definition.jobType, definition);
   }
 
   return [...merged.values()];
@@ -270,11 +289,18 @@ export function createApiServiceContainer(
 
     if (!jobRunnerPromise) {
       jobRunnerPromise = (async () => {
+        const defaultWorkflowExecutors = createWorkflowJobExecutors({
+          getToolExecutionService: async () => getToolExecutionService(),
+          repoRoot: getWorkspace().repoPaths.repoRoot,
+        });
         const createdRunner = createDurableJobRunnerService({
           bootstrapWorkflow: (workflow) =>
             getAgentRuntimeService().bootstrap(workflow),
           executors: createDurableJobExecutorRegistry(
-            options.jobRunnerExecutors ?? [],
+            mergeDurableJobExecutors(
+              defaultWorkflowExecutors,
+              options.jobRunnerExecutors ?? [],
+            ),
           ),
           getApprovalRuntime: getApprovalRuntimeService,
           getObservability: getObservabilityService,
@@ -319,6 +345,7 @@ export function createApiServiceContainer(
       const defaultToolScripts = createDefaultToolScripts();
       toolExecutionService = createToolExecutionService({
         getApprovalRuntime: getApprovalRuntimeService,
+        getJobRunner: getJobRunnerService,
         getObservability: getObservabilityService,
         getStore: getOperationalStore,
         registryInput: [

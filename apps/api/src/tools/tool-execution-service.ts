@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { ApprovalRuntimeService } from '../approval-runtime/index.js';
+import type { DurableJobRunnerService } from '../job-runner/index.js';
 import type { ObservabilityService } from '../observability/index.js';
 import type {
   OperationalStore,
@@ -14,6 +15,7 @@ import type { WorkspaceAdapter } from '../workspace/workspace-adapter.js';
 import type {
   AnyToolDefinition,
   ToolApprovalRequestShape,
+  ToolDurableJobEnqueueRequest,
   ToolExecutionContext,
   ToolExecutionEnvelope,
   ToolExecutionRequest,
@@ -80,6 +82,7 @@ const toolExecutionRequestSchema = z.object({
 
 export type ToolExecutionServiceOptions = {
   getApprovalRuntime?: () => Promise<ApprovalRuntimeService>;
+  getJobRunner?: () => Promise<DurableJobRunnerService>;
   getObservability?: () => Promise<ObservabilityService>;
   getStore?: () => Promise<OperationalStore>;
   now?: () => number;
@@ -119,6 +122,28 @@ function buildDuplicateInvocationKey(
     sessionId: request.correlation.sessionId,
     toolName: request.toolName,
   });
+}
+
+function buildEnqueuedJobSessionContext(
+  request: ToolDurableJobEnqueueRequest,
+  toolName: string,
+): JsonValue {
+  const context =
+    request.context && typeof request.context === 'object' && !Array.isArray(request.context)
+      ? request.context
+      : request.context === null || request.context === undefined
+        ? {}
+        : {
+            value: request.context,
+          };
+
+  return {
+    ...context,
+    origin: 'tool-execution',
+    requestedJobType: request.jobType,
+    requestedWorkflow: request.workflow,
+    toolName,
+  };
 }
 
 type ToolRuntimeState = {
@@ -346,11 +371,35 @@ function assertPermissionAllowsMutation(
   );
 }
 
+function assertPermissionAllowsJobType(
+  definition: AnyToolDefinition,
+  permissions: ToolPermissionPolicy,
+  jobType: string,
+): void {
+  if (permissions.jobTypes?.includes(jobType)) {
+    return;
+  }
+
+  throw new ToolExecutionError(
+    'tool-permission-denied',
+    `Tool ${definition.name} is not allowed to enqueue durable job type ${jobType}.`,
+    {
+      detail: {
+        allowedJobTypes: [...(permissions.jobTypes ?? [])],
+        jobType,
+        toolName: definition.name,
+      },
+    },
+  );
+}
+
 function buildToolContext<TInput extends JsonValue>(
   definition: AnyToolDefinition,
   input: TInput,
   request: z.infer<typeof toolExecutionRequestSchema>,
   options: {
+    getJobRunner?: () => Promise<DurableJobRunnerService>;
+    getStore?: () => Promise<OperationalStore>;
     observe: (input: ToolObservabilityEventInput) => Promise<void>;
     now: () => number;
     scriptAdapter: ScriptExecutionAdapter;
@@ -362,6 +411,53 @@ function buildToolContext<TInput extends JsonValue>(
 
   return {
     correlation: request.correlation,
+    enqueueJob: async (enqueueRequest) => {
+      assertPermissionAllowsJobType(
+        definition,
+        permissions,
+        enqueueRequest.jobType,
+      );
+
+      if (!options.getJobRunner) {
+        throw new ToolExecutionError(
+          'tool-invalid-config',
+          `Tool ${definition.name} requires a durable job runner to enqueue ${enqueueRequest.jobType}.`,
+        );
+      }
+
+      const existingJob = options.getStore
+        ? await (await options.getStore()).jobs.getById(enqueueRequest.jobId)
+        : null;
+      const jobRunner = await options.getJobRunner();
+      const result = await jobRunner.enqueue({
+        jobId: enqueueRequest.jobId,
+        jobType: enqueueRequest.jobType,
+        payload: enqueueRequest.payload,
+        session: {
+          context: buildEnqueuedJobSessionContext(
+            enqueueRequest,
+            definition.name,
+          ),
+          sessionId: request.correlation.sessionId,
+          workflow: enqueueRequest.workflow,
+        },
+        ...(enqueueRequest.currentRunId
+          ? {
+              currentRunId: enqueueRequest.currentRunId,
+            }
+          : {}),
+        ...(enqueueRequest.retryPolicy
+          ? {
+              retryPolicy: enqueueRequest.retryPolicy,
+            }
+          : {}),
+      });
+
+      return {
+        ...result,
+        alreadyExists: existingJob !== null,
+      };
+    },
     input,
     mutateWorkspace: async (mutationRequest) => {
       assertPermissionAllowsMutation(
@@ -597,6 +693,16 @@ export function createToolExecutionService(
             scriptAdapter,
             workspace: options.workspace,
             workspaceMutationAdapter,
+            ...(options.getJobRunner
+              ? {
+                  getJobRunner: options.getJobRunner,
+                }
+              : {}),
+            ...(options.getStore
+              ? {
+                  getStore: options.getStore,
+                }
+              : {}),
           },
         );
         const result = await definition.execute(parsedInput, context);

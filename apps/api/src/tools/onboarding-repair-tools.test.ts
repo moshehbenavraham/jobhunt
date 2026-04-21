@@ -37,6 +37,9 @@ function createDirectToolContext(repoRoot: string): ToolExecutionContext<any> {
       sessionId: 'session-repair-tool',
       traceId: 'trace-repair-tool',
     },
+    enqueueJob: async () => {
+      throw new Error('repair tools should not enqueue durable jobs');
+    },
     input: {},
     mutateWorkspace: (request: ToolWorkspaceMutationRequest) =>
       mutationAdapter.applyMutation(request),

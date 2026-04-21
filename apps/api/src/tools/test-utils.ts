@@ -74,7 +74,7 @@ export async function createToolHarness(
     tools?: readonly AnyToolDefinition[];
   } & Pick<
     ToolExecutionServiceOptions,
-    'getApprovalRuntime' | 'getObservability'
+    'getApprovalRuntime' | 'getJobRunner' | 'getObservability'
   > = {},
 ): Promise<ToolHarness> {
   const clock = createToolTestClock(options.initialTimestamp);
@@ -114,6 +114,11 @@ export async function createToolHarness(
   const service = createToolExecutionService({
     getApprovalRuntime:
       options.getApprovalRuntime ?? (async () => approvalRuntime),
+    ...(options.getJobRunner
+      ? {
+          getJobRunner: options.getJobRunner,
+        }
+      : {}),
     getObservability:
       options.getObservability ?? (async () => observability),
     getStore: async () => store,

@@ -34,6 +34,7 @@ export type ScriptExecutionDefinition = {
   description: string;
   name: string;
   retryableExitCodes?: readonly number[];
+  successExitCodes?: readonly number[];
   timeoutMs?: number;
 };
 
@@ -115,6 +116,10 @@ function normalizeExitCode(error: ExecFileError): number {
   }
 
   return 1;
+}
+
+function getSuccessExitCodes(definition: ScriptExecutionDefinition): readonly number[] {
+  return definition.successExitCodes ?? [0];
 }
 
 function resolveTimeoutMs(
@@ -242,6 +247,18 @@ export function createScriptExecutionAdapter(
           }
 
           const exitCode = normalizeExitCode(execError);
+          const successExitCodes = getSuccessExitCodes(definition);
+
+          if (successExitCodes.includes(exitCode)) {
+            return {
+              attempts: attempt,
+              durationMs: Math.max(0, now() - startTime),
+              exitCode,
+              stderr: normalizeStdio(execError.stderr),
+              stdout: normalizeStdio(execError.stdout),
+            };
+          }
+
           const isRetryable =
             definition.retryableExitCodes?.includes(exitCode) ?? false;
 

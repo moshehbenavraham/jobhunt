@@ -20,6 +20,9 @@ function createReadOnlyContext(repoRoot: string, toolName: string) {
       sessionId: `session-${toolName}`,
       traceId: `trace-${toolName}`,
     },
+    enqueueJob: async () => {
+      throw new Error('workflow tools should not enqueue durable jobs');
+    },
     input: {},
     mutateWorkspace: async () => {
       throw new Error('workflow tools should not mutate the workspace');

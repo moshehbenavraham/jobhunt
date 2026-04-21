@@ -4,7 +4,7 @@
 **Sessions**: 5
 **Estimated Duration**: 4-6 days
 
-**Progress**: 3/5 sessions (60%)
+**Progress**: 4/5 sessions (80%)
 
 ---
 
@@ -31,7 +31,7 @@ space.
 | 01 | Tool Registry and Execution Policy | Complete | ~15 | 2026-04-21 |
 | 02 | Workspace and Startup Tool Suite | Complete | ~14 | 2026-04-21 |
 | 03 | Evaluation, PDF, and Tracker Tools | Complete | ~16 | 2026-04-21 |
-| 04 | Scan, Pipeline, and Batch Tools | Not Started | ~15 | - |
+| 04 | Scan, Pipeline, and Batch Tools | Complete | ~15 | 2026-04-21 |
 | 05 | Router and Specialist Agent Topology | Not Started | ~14 | - |
 
 ---
@@ -41,6 +41,7 @@ space.
 - `phase02-session01-tool-registry-and-execution-policy`
 - `phase02-session02-workspace-and-startup-tool-suite`
 - `phase02-session03-evaluation-pdf-and-tracker-tools`
+- `phase02-session04-scan-pipeline-and-batch-tools`
 
 ---
 
