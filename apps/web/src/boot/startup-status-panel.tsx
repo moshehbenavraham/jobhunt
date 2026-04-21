@@ -83,7 +83,8 @@ export function StartupStatusPanel({
   onRefresh,
 }: StartupStatusPanelProps) {
   const promptContract = diagnostics.diagnostics.promptContract;
-  const healthBadgeStyle = badgeStyles[diagnostics.health.status] ?? badgeStyles.ok;
+  const healthBadgeStyle =
+    badgeStyles[diagnostics.health.status] ?? badgeStyles.ok;
 
   return (
     <section style={panelStyle}>
@@ -162,7 +163,8 @@ export function StartupStatusPanel({
             App state root: <code>{diagnostics.appStateRoot.path}</code>
           </p>
           <p style={{ marginBottom: '0.4rem' }}>
-            Exists on disk: <strong>{String(diagnostics.appStateRoot.exists)}</strong>
+            Exists on disk:{' '}
+            <strong>{String(diagnostics.appStateRoot.exists)}</strong>
           </p>
           <p style={{ marginBottom: '0.4rem' }}>
             Mutation policy: <strong>{diagnostics.mutationPolicy}</strong>
@@ -175,7 +177,9 @@ export function StartupStatusPanel({
           </p>
           <p style={{ marginBottom: 0 }}>
             Writable roots:{' '}
-            <code>{diagnostics.diagnostics.workspace.writableRoots.join(', ')}</code>
+            <code>
+              {diagnostics.diagnostics.workspace.writableRoots.join(', ')}
+            </code>
           </p>
         </article>
 
@@ -199,9 +203,12 @@ export function StartupStatusPanel({
       <section style={cardStyle}>
         <h2 style={{ marginTop: 0 }}>Operational store</h2>
         <p style={{ marginBottom: '0.4rem' }}>
-          Health summary: <strong>{diagnostics.health.operationalStore.status}</strong>
+          Health summary:{' '}
+          <strong>{diagnostics.health.operationalStore.status}</strong>
         </p>
-        <p style={{ marginBottom: '0.4rem' }}>{diagnostics.operationalStore.message}</p>
+        <p style={{ marginBottom: '0.4rem' }}>
+          {diagnostics.operationalStore.message}
+        </p>
         <p style={{ marginBottom: 0 }}>
           Root path: <code>{diagnostics.operationalStore.rootPath}</code>
         </p>
@@ -241,7 +248,8 @@ export function StartupStatusPanel({
         <ul>
           {promptContract.sources.map((source) => (
             <li key={source.key}>
-              <strong>{source.label}</strong> - {source.key} - precedence {source.precedence}
+              <strong>{source.label}</strong> - {source.key} - precedence{' '}
+              {source.precedence}
             </li>
           ))}
         </ul>
@@ -254,7 +262,8 @@ export function StartupStatusPanel({
         <ul>
           {promptContract.workflowRoutes.map((route) => (
             <li key={route.intent}>
-              <strong>{route.intent}</strong> - <code>{route.modeRepoRelativePath}</code>
+              <strong>{route.intent}</strong> -{' '}
+              <code>{route.modeRepoRelativePath}</code>
             </li>
           ))}
         </ul>

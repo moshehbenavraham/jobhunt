@@ -9,13 +9,13 @@
 
 ### Overall: CLEAN
 
-| Metric | Value |
-|--------|-------|
-| Open Findings | 0 |
-| Critical/High | 0 |
-| Medium/Low | 0 |
-| Phases Audited | 1 |
-| Last Clean Phase | P00 |
+| Metric           | Value |
+| ---------------- | ----- |
+| Open Findings    | 0     |
+| Critical/High    | 0     |
+| Medium/Low       | 0     |
+| Phases Audited   | 1     |
+| Last Clean Phase | P00   |
 
 ---
 
@@ -47,13 +47,12 @@ None.
 
 ## Phase History
 
-| Phase | Sessions | Package distribution | Security result | Notes |
-|-------|----------|----------------------|-----------------|-------|
-| P00 | 4 | cross-cutting: 2, apps/api: 2 | PASS | Scaffold, workspace adapter, prompt loading, and boot path all passed review with no findings. |
+| Phase | Sessions | Package distribution          | Security result | Notes                                                                                          |
+| ----- | -------- | ----------------------------- | --------------- | ---------------------------------------------------------------------------------------------- |
+| P00   | 4        | cross-cutting: 2, apps/api: 2 | PASS            | Scaffold, workspace adapter, prompt loading, and boot path all passed review with no findings. |
 
 ---
 
 ## Resolved Findings
 
 None.
-

@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/runtime/runtime-config.ts` - runtime configuration parsing and validation
 - `apps/api/src/runtime/service-container.ts` - shared service container and cleanup lifecycle
 - `apps/api/src/server/route-contract.ts` - typed route contracts and JSON error helpers
@@ -33,14 +34,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No unsafe shell interpolation or untrusted query construction was introduced. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or secret material were added. |
-| Sensitive Data Exposure | PASS | -- | Startup diagnostics stay read-only and do not expand logging of user-layer content. |
-| Insecure Dependencies | PASS | -- | No new runtime dependencies were added for this session. |
-| Misconfiguration | PASS | -- | The runtime uses explicit validation, bounded shutdown, and typed route registration. |
-| Database Security | N/A | -- | This session does not touch a database layer. |
+| Category                      | Status | Severity | Details                                                                               |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No unsafe shell interpolation or untrusted query construction was introduced.         |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or secret material were added.                                |
+| Sensitive Data Exposure       | PASS   | --       | Startup diagnostics stay read-only and do not expand logging of user-layer content.   |
+| Insecure Dependencies         | PASS   | --       | No new runtime dependencies were added for this session.                              |
+| Misconfiguration              | PASS   | --       | The runtime uses explicit validation, bounded shutdown, and typed route registration. |
+| Database Security             | N/A    | --       | This session does not touch a database layer.                                         |
 
 ---
 
@@ -48,14 +49,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection | PASS | The runtime only surfaces boot and repo diagnostics. |
-| Consent | N/A | No new personal-data collection flow was added. |
-| Data Minimization | PASS | The payload is limited to startup and health state. |
-| Right to Erasure | N/A | No persisted personal data was introduced. |
-| Data Logging | PASS | No new logs include personal data. |
-| Third-Party Sharing | N/A | No external data transfer was added. |
+| Category            | Status | Details                                              |
+| ------------------- | ------ | ---------------------------------------------------- |
+| Data Collection     | PASS   | The runtime only surfaces boot and repo diagnostics. |
+| Consent             | N/A    | No new personal-data collection flow was added.      |
+| Data Minimization   | PASS   | The payload is limited to startup and health state.  |
+| Right to Erasure    | N/A    | No persisted personal data was introduced.           |
+| Data Logging        | PASS   | No new logs include personal data.                   |
+| Third-Party Sharing | N/A    | No external data transfer was added.                 |
 
 ---
 
@@ -64,6 +65,7 @@
 **Result**: PASS
 
 Checked files with side effects or trust-boundary handling:
+
 - `apps/api/src/server/http-server.ts`
 - `apps/api/src/server/index.ts`
 - `apps/api/src/server/startup-status.ts`
@@ -72,5 +74,6 @@ Checked files with side effects or trust-boundary handling:
 - `scripts/test-app-bootstrap.mjs`
 
 Findings:
+
 - No high-severity trust-boundary, cleanup, mutation-safety, failure-path, or
   contract-alignment issues remain in the reviewed session deliverables.

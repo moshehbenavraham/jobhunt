@@ -53,6 +53,7 @@ resolved approval rather than disappearing into history.
 ## 2. User Flows
 
 ### Flow 1: First-Run Onboarding
+
 **Trigger**: App launch with one or more missing required files
 **Goal**: Reach a ready workspace without using CLI-only setup instructions
 
@@ -87,6 +88,7 @@ missing, completes the wizard, and lands in the run console with setup cleared.
 fields, interrupted onboarding resumed later.
 
 ### Flow 2: JD or URL Evaluation
+
 **Trigger**: Operator pastes a JD or job URL into the run console
 **Goal**: Produce a report-ready result with visible artifact state
 
@@ -123,6 +125,7 @@ progress, and opens the resulting report or pipeline entry.
 report write failure, tracker-addition conflict.
 
 ### Flow 3: Pipeline Review and Status Update
+
 **Trigger**: Operator opens the pipeline page
 **Goal**: Triage existing opportunities and update tracker state quickly
 
@@ -151,6 +154,7 @@ the summary, and updates status without losing context.
 invalid status transition surfaced from repo rules.
 
 ### Flow 4: Scan to Shortlist to Evaluation
+
 **Trigger**: Operator opens the scan workspace
 **Goal**: Convert a fresh scan into a ranked shortlist and selected evaluations
 
@@ -182,6 +186,7 @@ best roles into the evaluation workflow.
 limitations, stale scan state.
 
 ### Flow 5: Batch Job Management
+
 **Trigger**: Operator creates or resumes a batch workflow
 **Goal**: Monitor many items without losing per-item clarity
 
@@ -213,6 +218,7 @@ specific failures, and completes merge-plus-verify from the same surface.
 merge verification failure.
 
 ### Flow 6: Approval Resolution
+
 **Trigger**: A running workflow pauses for human review
 **Goal**: Resolve the decision without losing run context
 
@@ -241,6 +247,7 @@ approves or rejects, and the run resumes visibly.
 context payload, rejected action requiring alternate next step.
 
 ### Flow 7: Specialist Workflow Workspace
+
 **Trigger**: Operator launches compare-offers, deep research, interview prep,
 follow-up, patterns, training, or project review
 **Goal**: Use a focused workspace without fragmenting the app shell
@@ -270,18 +277,18 @@ workflow-specific input validation errors.
 
 ## 3. Screen Inventory
 
-| Screen | Route/Path | Purpose | Key Components |
-|--------|------------|---------|----------------|
-| App Shell / Run Console | `/` | Default workspace for launching and monitoring runs | Left rail, run composer, live timeline, artifact rail, global command palette |
-| Onboarding Wizard | `/onboarding` | Resolve missing required files and initial profile setup | Preflight checklist, stepper, file status cards, inline editors, validation summary |
-| Run Detail | `/runs/:runId` | Full view of a running or completed workflow | Timeline, logs/traces summary, artifact status, retry or resume controls |
-| Pipeline Page | `/pipeline` | Review tracked opportunities and update status | Filter bar, sortable list or table, summary panel, status actions, artifact links |
-| Report Viewer | `/reports/:reportId` | Read long markdown reports cleanly | Report header, sticky metadata rail, table of contents, markdown body, artifact actions |
-| Scan Review | `/scan` | Run scans and review shortlist candidates | Scan launcher, progress panel, shortlist cards, dedup notes, launch actions |
-| Batch Jobs | `/batch` | Create and monitor batch workflows | Batch composer, item matrix, warning states, merge and verify actions |
-| Approval Inbox | `/approvals` | Resolve paused actions needing review | Approval list, context drawer, approve/reject controls, resume state |
-| Settings and Profile | `/settings` | Manage user-layer files, auth state, and maintenance actions | File cards, profile shortcuts, auth status, update check, maintenance tools |
-| Specialist Workspace | `/workflows/:mode` | Host compare-offers and specialist flows inside one consistent shell | Context panel, artifact picker, workflow timeline, result viewer |
+| Screen                  | Route/Path           | Purpose                                                              | Key Components                                                                          |
+| ----------------------- | -------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| App Shell / Run Console | `/`                  | Default workspace for launching and monitoring runs                  | Left rail, run composer, live timeline, artifact rail, global command palette           |
+| Onboarding Wizard       | `/onboarding`        | Resolve missing required files and initial profile setup             | Preflight checklist, stepper, file status cards, inline editors, validation summary     |
+| Run Detail              | `/runs/:runId`       | Full view of a running or completed workflow                         | Timeline, logs/traces summary, artifact status, retry or resume controls                |
+| Pipeline Page           | `/pipeline`          | Review tracked opportunities and update status                       | Filter bar, sortable list or table, summary panel, status actions, artifact links       |
+| Report Viewer           | `/reports/:reportId` | Read long markdown reports cleanly                                   | Report header, sticky metadata rail, table of contents, markdown body, artifact actions |
+| Scan Review             | `/scan`              | Run scans and review shortlist candidates                            | Scan launcher, progress panel, shortlist cards, dedup notes, launch actions             |
+| Batch Jobs              | `/batch`             | Create and monitor batch workflows                                   | Batch composer, item matrix, warning states, merge and verify actions                   |
+| Approval Inbox          | `/approvals`         | Resolve paused actions needing review                                | Approval list, context drawer, approve/reject controls, resume state                    |
+| Settings and Profile    | `/settings`          | Manage user-layer files, auth state, and maintenance actions         | File cards, profile shortcuts, auth status, update check, maintenance tools             |
+| Specialist Workspace    | `/workflows/:mode`   | Host compare-offers and specialist flows inside one consistent shell | Context panel, artifact picker, workflow timeline, result viewer                        |
 
 ---
 
@@ -309,6 +316,7 @@ deep linking.
 pipeline filters, batch views, and approval IDs.
 
 **Shell rules**:
+
 - Onboarding intercepts the shell only when prerequisites fail
 - Approval count is always visible in the primary nav
 - The run composer remains globally reachable from desktop shell states
@@ -320,12 +328,14 @@ pipeline filters, batch views, and approval IDs.
 ## 5. Interaction Patterns
 
 ### Run Composer
+
 - Accept plain text, pasted JD blocks, and ATS URLs in one field
 - Detect likely input type immediately and show a lightweight preflight summary
 - Keep primary action pinned and obvious
 - Show recent workflow shortcuts without overwhelming the composer
 
 ### Forms
+
 - Validation: both inline and on submit
 - Error display: field-level copy plus a form-level summary for blockers
 - Success feedback: inline success state first, toast second
@@ -333,6 +343,7 @@ pipeline filters, batch views, and approval IDs.
   actions
 
 ### Drawers and Dialogs
+
 - Use right-side drawers on desktop for report quick view, approval context,
   and row details
 - Use full-screen sheets on tablet and mobile for the same content
@@ -340,24 +351,28 @@ pipeline filters, batch views, and approval IDs.
   as archiving scan state or discarding a drafted batch
 
 ### Loading States
+
 - Use skeleton rows for list screens
 - Use streaming timeline states for active runs
 - Use determinate step chips when the workflow knows its stage
 - Never block the whole shell with a full-page spinner during background work
 
 ### Notifications
+
 - Toasts for non-blocking completion and save events
 - Inline banners for verification warnings, merge blockers, or tracker
   conflicts
 - Persistent inbox badges for approvals and failed jobs
 
 ### Tables and Lists
+
 - Pipeline and batch views prefer hybrid table-card rows: dense enough for
   scanning, readable enough for quick detail
 - Row selection updates a context panel instead of forcing route churn
 - Status chips must always pair color with text
 
 ### Comparison and Review
+
 - Compare-offers and shortlist review should support side-by-side inspection on
   large screens
 - On smaller screens, use stacked cards with sticky action footers
@@ -372,6 +387,7 @@ Motion exists to clarify state changes, preserve orientation, and make the
 handoff from live reasoning to durable artifact feel tangible.
 
 ### Entrance Choreography
+
 - App load: shell chrome appears first, then the active workspace, then the
   right-side context rail
 - Large list sections reveal in short, grouped cascades rather than one item at
@@ -379,12 +395,14 @@ handoff from live reasoning to durable artifact feel tangible.
 - Onboarding steps transition horizontally on desktop and vertically on mobile
 
 ### Interaction Feedback
+
 - Hover states: subtle 1-2px lift, border darkening, and accent underline
 - Click or tap responses: quick surface compression, then release
 - Focus rings: 2px high-contrast ring plus 2px gap from component edge
 - Selected pipeline rows: accent bar + surface tint, not only background fill
 
 ### Scroll-Driven Moments
+
 - Report viewer keeps a slim progress indicator and section marker rail visible
 - Scan review uses a sticky action shelf that compresses as the shortlist body
   scrolls
@@ -392,6 +410,7 @@ handoff from live reasoning to durable artifact feel tangible.
   updates independently
 
 ### Animation Constraints
+
 - Locked target: 60fps on normal operator hardware
 - Maximum 3 simultaneous animations per viewport region
 - Prefer transform and opacity; avoid layout-thrashing transitions
@@ -411,6 +430,7 @@ for context, artifacts, or approvals. The center area is where decisions
 happen; the right rail is where evidence accumulates.
 
 ### Visual Hierarchy
+
 - Scale contrast: strong between workspace titles, section labels, and dense
   operational rows
 - Negative space: moderate, not airy; enough room to reduce panic without
@@ -428,12 +448,12 @@ of unrelated widgets.
 
 ## 8. Responsive Strategy
 
-| Breakpoint | Target | Layout Approach |
-|------------|--------|-----------------|
-| `< 768px` | Mobile | Review-first single column, bottom nav, full-screen sheets, simplified run composer, sticky action footer |
-| `768-1199px` | Tablet | Two-pane layout, collapsible rail, detail drawer instead of permanent right context rail |
-| `1200-1599px` | Desktop | Full three-zone workbench with persistent right rail and primary left navigation |
-| `>= 1600px` | Wide desktop | Expanded report reading width, side-by-side comparison states, batch matrix and context visible together |
+| Breakpoint    | Target       | Layout Approach                                                                                           |
+| ------------- | ------------ | --------------------------------------------------------------------------------------------------------- |
+| `< 768px`     | Mobile       | Review-first single column, bottom nav, full-screen sheets, simplified run composer, sticky action footer |
+| `768-1199px`  | Tablet       | Two-pane layout, collapsible rail, detail drawer instead of permanent right context rail                  |
+| `1200-1599px` | Desktop      | Full three-zone workbench with persistent right rail and primary left navigation                          |
+| `>= 1600px`   | Wide desktop | Expanded report reading width, side-by-side comparison states, batch matrix and context visible together  |
 
 **Approach**: Desktop-first adaptive design. Phone-sized browsers must support
 review, approvals, and light triage; dense authoring workflows are optimized
@@ -464,6 +484,7 @@ actions.
 ## 10. Design System
 
 ### Color Architecture
+
 - **Dominant surface** (60%): Mineral paper `#F4EFE6`
 - **Secondary surfaces** (25%): Stone `#E3DDD2`, fog `#D9E4E8`, and deep ink
   `#20313A` for high-focus rails and report chrome
@@ -475,6 +496,7 @@ Palette character: warm-neutral foundation with precise synthetic accents.
 Accent usage should stay disciplined: one dominant accent focus per viewport.
 
 ### Typography
+
 - **Display font**: Space Grotesk
 - **Body font**: IBM Plex Sans
 - **Monospace**: IBM Plex Mono
@@ -482,6 +504,7 @@ Accent usage should stay disciplined: one dominant accent focus per viewport.
 - **Minimum body size**: 16px on desktop, 15px only in dense operational rows
 
 ### Spacing Scale
+
 `4, 8, 12, 16, 24, 32, 48, 64, 96`
 
 Use 24px and 32px as the main section rhythm values. Dense tables may compress
@@ -507,20 +530,20 @@ intentional, not nostalgic or noisy.
 
 ## 11. Component Patterns
 
-| Component | Used In | Behavior |
-|-----------|---------|----------|
-| Global shell | All screens | Persistent navigation, approval badge, workspace title, and global action access |
-| Command palette | All screens | Fast jump to screens, workflows, reports, and maintenance actions |
-| Run composer | Run Console | Unified input for JD text, URLs, and workflow launch intents |
-| Live timeline | Run Console, Run Detail, Specialist Workspace | Stage-by-stage progress with visible waiting, approval, and completion states |
-| Artifact packet | Run Console, Run Detail | Compact summary of report, PDF, tracker, and follow-up outputs |
-| Pipeline row | Pipeline | Dense hybrid row with summary data, status chip, and right-panel selection behavior |
-| Context rail | Pipeline, Scan, Batch | Shows selected item details, warnings, and quick actions without route churn |
-| Report viewer | Report Viewer | Long-form markdown reader with sticky metadata, section anchors, and artifact actions |
-| Shortlist card | Scan Review | Candidate summary with fit signals, dedup notes, and launch-to-evaluate action |
-| Batch matrix row | Batch Jobs | Per-item state with retry, inspect, and merge readiness indicators |
-| Approval drawer | Approval Inbox, Run Detail | Shows triggering context, impact, and explicit approve or reject actions |
-| File status card | Settings and Onboarding | Explains missing files, edit state, and shortcuts into the filesystem-backed setup |
+| Component        | Used In                                       | Behavior                                                                              |
+| ---------------- | --------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Global shell     | All screens                                   | Persistent navigation, approval badge, workspace title, and global action access      |
+| Command palette  | All screens                                   | Fast jump to screens, workflows, reports, and maintenance actions                     |
+| Run composer     | Run Console                                   | Unified input for JD text, URLs, and workflow launch intents                          |
+| Live timeline    | Run Console, Run Detail, Specialist Workspace | Stage-by-stage progress with visible waiting, approval, and completion states         |
+| Artifact packet  | Run Console, Run Detail                       | Compact summary of report, PDF, tracker, and follow-up outputs                        |
+| Pipeline row     | Pipeline                                      | Dense hybrid row with summary data, status chip, and right-panel selection behavior   |
+| Context rail     | Pipeline, Scan, Batch                         | Shows selected item details, warnings, and quick actions without route churn          |
+| Report viewer    | Report Viewer                                 | Long-form markdown reader with sticky metadata, section anchors, and artifact actions |
+| Shortlist card   | Scan Review                                   | Candidate summary with fit signals, dedup notes, and launch-to-evaluate action        |
+| Batch matrix row | Batch Jobs                                    | Per-item state with retry, inspect, and merge readiness indicators                    |
+| Approval drawer  | Approval Inbox, Run Detail                    | Shows triggering context, impact, and explicit approve or reject actions              |
+| File status card | Settings and Onboarding                       | Explains missing files, edit state, and shortcuts into the filesystem-backed setup    |
 
 ---
 

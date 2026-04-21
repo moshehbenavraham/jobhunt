@@ -100,16 +100,16 @@
 
 ## Local Dev Tools
 
-| Category      | Tool                                          | Config                 |
-| ------------- | --------------------------------------------- | ---------------------- |
-| Formatter     | Prettier                                      | .prettierrc            |
-| Linter        | Biome                                         | biome.json             |
-| Type Safety   | not configured                                | -                      |
-| Testing       | `node scripts/test-all.mjs`, `npm run doctor` | repo scripts           |
-| Coverage      | `npm run coverage`                            | `c8`, `go test -cover` |
-| Observability | not configured                                | -                      |
-| Git Hooks     | not configured                                | -                      |
-| Database      | not configured                                | -                      |
+| Category      | Tool                                          | Config                                         |
+| ------------- | --------------------------------------------- | ---------------------------------------------- |
+| Formatter     | Prettier                                      | .prettierrc                                    |
+| Linter        | Biome                                         | biome.json                                     |
+| Type Safety   | `npm run typecheck`                           | apps/web/tsconfig.json, apps/api/tsconfig.json |
+| Testing       | `node scripts/test-all.mjs`, `npm run doctor` | repo scripts                                   |
+| Coverage      | `npm run coverage`                            | `c8`, `go test -cover`                         |
+| Observability | not configured                                | -                                              |
+| Git Hooks     | not configured                                | -                                              |
+| Database      | not configured                                | -                                              |
 
 ## Infrastructure
 

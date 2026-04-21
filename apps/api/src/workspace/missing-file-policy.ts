@@ -35,7 +35,9 @@ export function toMissingSurfaceSummary(
   };
 }
 
-export function partitionMissingReadResults(results: readonly WorkspaceReadResult[]): {
+export function partitionMissingReadResults(
+  results: readonly WorkspaceReadResult[],
+): {
   onboardingMissing: WorkspaceMissingSummary[];
   optionalMissing: WorkspaceMissingSummary[];
   runtimeMissing: WorkspaceMissingSummary[];

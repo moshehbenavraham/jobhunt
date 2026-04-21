@@ -11,9 +11,7 @@ import type {
   RuntimeRunMetadataRecord,
   RuntimeSessionRecord,
 } from '../store/store-contract.js';
-import type {
-  JsonValue,
-} from '../workspace/workspace-types.js';
+import type { JsonValue } from '../workspace/workspace-types.js';
 import type { ZodType } from 'zod';
 
 export const DURABLE_JOB_TERMINAL_STATUSES = [
@@ -154,8 +152,8 @@ export type DurableJobExecutorDefinition<
   payloadSchema: ZodType<TPayload>;
 };
 
-export type AnyDurableJobExecutorDefinition =
-  DurableJobExecutorDefinition<any>;
+// biome-ignore lint/suspicious/noExplicitAny: registry intentionally stores heterogeneous executor payloads
+export type AnyDurableJobExecutorDefinition = DurableJobExecutorDefinition<any>;
 
 export type DurableJobExecutorRegistry = {
   definitions: ReadonlyMap<string, AnyDurableJobExecutorDefinition>;
@@ -166,7 +164,9 @@ export type DurableJobExecutorRegistry = {
 export type DurableJobRunnerService = {
   close: () => Promise<void>;
   drainOnce: () => Promise<DurableJobDrainSummary>;
-  enqueue: (request: DurableJobEnqueueRequest) => Promise<DurableJobEnqueueResult>;
+  enqueue: (
+    request: DurableJobEnqueueRequest,
+  ) => Promise<DurableJobEnqueueResult>;
   getRecoverySummary: () => DurableJobRecoverySummary | null;
   start: () => Promise<void>;
 };

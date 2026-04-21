@@ -29,7 +29,9 @@ const BASE_PROMPT_SOURCE_DEFINITIONS = [
   {
     key: 'profile-mode',
     label: 'modes/_profile.md',
-    notes: ['User-specific overlays override shared defaults after _shared.md.'],
+    notes: [
+      'User-specific overlays override shared defaults after _shared.md.',
+    ],
     optional: false,
     owner: 'user',
     precedence: 30,

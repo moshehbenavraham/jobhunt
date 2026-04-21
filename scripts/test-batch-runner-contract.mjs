@@ -263,8 +263,9 @@ function runScenario({
     const schema = readJson(
       join(sandboxRoot, 'batch', 'worker-result.schema.json'),
     );
-    assert.equal(Array.isArray(schema.oneOf), true);
-    assert.equal(schema.oneOf.length, 3);
+    assert.equal(schema.type, 'object');
+    assert.equal(schema.additionalProperties, false);
+    assert.equal(typeof schema.properties?.status, 'object');
 
     const stateRow = readStateRow(
       join(sandboxRoot, 'batch', 'batch-state.tsv'),

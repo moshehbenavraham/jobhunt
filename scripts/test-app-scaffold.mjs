@@ -55,7 +55,9 @@ const userLayerSnapshots = [
 ].map(snapshotFile);
 
 const appStateExistedBefore = existsSync(APP_STATE_ROOT);
-const appStateStatBefore = appStateExistedBefore ? statSync(APP_STATE_ROOT) : null;
+const appStateStatBefore = appStateExistedBefore
+  ? statSync(APP_STATE_ROOT)
+  : null;
 
 const rootPackage = readJson('package.json');
 const webPackage = readJson('apps/web/package.json');
@@ -92,12 +94,28 @@ for (const scriptName of [
   );
 }
 
-assert(webPackage.name === '@jobhunt/web', 'Unexpected web workspace package name.');
-assert(apiPackage.name === '@jobhunt/api', 'Unexpected API workspace package name.');
-assert(lockfile.packages['apps/web'], 'package-lock.json is missing the apps/web workspace entry.');
-assert(lockfile.packages['apps/api'], 'package-lock.json is missing the apps/api workspace entry.');
+assert(
+  webPackage.name === '@jobhunt/web',
+  'Unexpected web workspace package name.',
+);
+assert(
+  apiPackage.name === '@jobhunt/api',
+  'Unexpected API workspace package name.',
+);
+assert(
+  lockfile.packages['apps/web'],
+  'package-lock.json is missing the apps/web workspace entry.',
+);
+assert(
+  lockfile.packages['apps/api'],
+  'package-lock.json is missing the apps/api workspace entry.',
+);
 
-for (const ignoredPath of ['.jobhunt-app/', 'apps/web/dist/', 'apps/api/dist/']) {
+for (const ignoredPath of [
+  '.jobhunt-app/',
+  'apps/web/dist/',
+  'apps/api/dist/',
+]) {
   assert(
     gitignore.includes(ignoredPath),
     `.gitignore is missing scaffold ignore rule: ${ignoredPath}`,

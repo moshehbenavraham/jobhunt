@@ -20,7 +20,8 @@ export const AGENT_RUNTIME_PROMPT_STATES = [
   'unsupported-workflow',
 ] as const;
 
-export type AgentRuntimePromptState = (typeof AGENT_RUNTIME_PROMPT_STATES)[number];
+export type AgentRuntimePromptState =
+  (typeof AGENT_RUNTIME_PROMPT_STATES)[number];
 
 export const AGENT_RUNTIME_READINESS_STATUSES = [
   'auth-required',

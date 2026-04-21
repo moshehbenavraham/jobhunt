@@ -20,26 +20,28 @@ covered by package-local validation.
 ## Deliverables
 
 ### Files Created
-| File | Purpose | Lines |
-|------|---------|-------|
-| `apps/api/src/prompt/prompt-types.ts` | Shared prompt source, bundle, and workflow types | ~181 |
-| `apps/api/src/prompt/workflow-mode-map.ts` | Explicit workflow-to-mode routing manifest | ~147 |
-| `apps/api/src/prompt/prompt-source-policy.ts` | Canonical source order and precedence rules | ~127 |
-| `apps/api/src/prompt/prompt-resolution.ts` | Safe path and source resolution helpers | ~84 |
-| `apps/api/src/prompt/prompt-cache.ts` | Freshness-aware prompt cache and reload behavior | ~125 |
-| `apps/api/src/prompt/prompt-compose.ts` | Structured prompt bundle composition helpers | ~51 |
-| `apps/api/src/prompt/prompt-loader.ts` | Public prompt loader facade and error mapping | ~174 |
-| `apps/api/src/prompt/prompt-summary.ts` | Loader summaries for diagnostics and later boot paths | ~40 |
-| `apps/api/src/prompt/test-utils.ts` | Temp-repo prompt fixtures and mutation helpers | ~51 |
-| `apps/api/src/prompt/prompt-loader.test.ts` | Package-local routing, precedence, and cache tests | ~227 |
-| `apps/api/src/prompt/index.ts` | Package-local barrel export for prompt modules | ~9 |
+
+| File                                          | Purpose                                               | Lines |
+| --------------------------------------------- | ----------------------------------------------------- | ----- |
+| `apps/api/src/prompt/prompt-types.ts`         | Shared prompt source, bundle, and workflow types      | ~181  |
+| `apps/api/src/prompt/workflow-mode-map.ts`    | Explicit workflow-to-mode routing manifest            | ~147  |
+| `apps/api/src/prompt/prompt-source-policy.ts` | Canonical source order and precedence rules           | ~127  |
+| `apps/api/src/prompt/prompt-resolution.ts`    | Safe path and source resolution helpers               | ~84   |
+| `apps/api/src/prompt/prompt-cache.ts`         | Freshness-aware prompt cache and reload behavior      | ~125  |
+| `apps/api/src/prompt/prompt-compose.ts`       | Structured prompt bundle composition helpers          | ~51   |
+| `apps/api/src/prompt/prompt-loader.ts`        | Public prompt loader facade and error mapping         | ~174  |
+| `apps/api/src/prompt/prompt-summary.ts`       | Loader summaries for diagnostics and later boot paths | ~40   |
+| `apps/api/src/prompt/test-utils.ts`           | Temp-repo prompt fixtures and mutation helpers        | ~51   |
+| `apps/api/src/prompt/prompt-loader.test.ts`   | Package-local routing, precedence, and cache tests    | ~227  |
+| `apps/api/src/prompt/index.ts`                | Package-local barrel export for prompt modules        | ~9    |
 
 ### Files Modified
-| File | Changes |
-|------|---------|
-| `apps/api/src/index.ts` | Surfaced prompt-contract summary in startup diagnostics and updated the session id |
-| `apps/api/package.json` | Added prompt-contract test command and bumped the package patch version |
-| `scripts/test-app-scaffold.mjs` | Asserted prompt-contract diagnostics in scaffold regression checks |
+
+| File                            | Changes                                                                            |
+| ------------------------------- | ---------------------------------------------------------------------------------- |
+| `apps/api/src/index.ts`         | Surfaced prompt-contract summary in startup diagnostics and updated the session id |
+| `apps/api/package.json`         | Added prompt-contract test command and bumped the package patch version            |
+| `scripts/test-app-scaffold.mjs` | Asserted prompt-contract diagnostics in scaffold regression checks                 |
 
 ---
 
@@ -54,11 +56,11 @@ covered by package-local validation.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 12 package tests + 175 repo quick-suite checks |
-| Passed | 187 |
-| Coverage | N/A |
+| Metric   | Value                                          |
+| -------- | ---------------------------------------------- |
+| Tests    | 12 package tests + 175 repo quick-suite checks |
+| Passed   | 187                                            |
+| Coverage | N/A                                            |
 
 ---
 
@@ -74,6 +76,7 @@ covered by package-local validation.
 ## Future Considerations
 
 Items for future sessions:
+
 1. Use the prompt summary output as part of the boot-path validation surface.
 2. Extend diagnostics only through the existing checked-in contract surfaces.
 

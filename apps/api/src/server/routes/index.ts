@@ -4,7 +4,9 @@ import { createRuntimeApprovalsRoute } from './runtime-approvals-route.js';
 import { createRuntimeDiagnosticsRoute } from './runtime-diagnostics-route.js';
 import { createStartupRoute } from './startup-route.js';
 
-function assertUniqueRouteSignatures(routes: readonly ApiRouteDefinition[]): void {
+function assertUniqueRouteSignatures(
+  routes: readonly ApiRouteDefinition[],
+): void {
   const seenSignatures = new Set<string>();
 
   for (const route of routes) {

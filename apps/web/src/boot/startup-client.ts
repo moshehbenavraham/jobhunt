@@ -87,11 +87,13 @@ function isAbortError(error: unknown): boolean {
   return error instanceof DOMException && error.name === 'AbortError';
 }
 
-export async function fetchStartupDiagnostics(options: {
-  endpoint?: string;
-  signal?: AbortSignal;
-  timeoutMs?: number;
-} = {}): Promise<StartupPayload> {
+export async function fetchStartupDiagnostics(
+  options: {
+    endpoint?: string;
+    signal?: AbortSignal;
+    timeoutMs?: number;
+  } = {},
+): Promise<StartupPayload> {
   const request = createSignal(
     options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
     options.signal,
@@ -163,7 +165,8 @@ export async function fetchStartupDiagnostics(options: {
     throw new StartupClientError({
       cause: error,
       code: 'offline',
-      message: 'Bootstrap endpoint is unavailable. Start the local API server and try again.',
+      message:
+        'Bootstrap endpoint is unavailable. Start the local API server and try again.',
       state: 'offline',
     });
   } finally {

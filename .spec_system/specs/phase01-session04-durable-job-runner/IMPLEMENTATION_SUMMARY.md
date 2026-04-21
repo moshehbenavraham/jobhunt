@@ -21,33 +21,33 @@ repo quick suite.
 
 ### Files Created
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `apps/api/src/job-runner/job-runner-contract.ts` | Durable runner lifecycle, enqueue, checkpoint, and recovery contracts | ~150 |
-| `apps/api/src/job-runner/job-runner-state-machine.ts` | Lifecycle transition and retry decision helpers | ~130 |
-| `apps/api/src/job-runner/job-runner-executors.ts` | Executor registration and payload validation | ~120 |
-| `apps/api/src/job-runner/job-runner-service.ts` | Durable enqueue, claim, heartbeat, checkpoint, resume, and retry logic | ~240 |
-| `apps/api/src/job-runner/test-utils.ts` | Deterministic test harness helpers | ~120 |
-| `apps/api/src/job-runner/index.ts` | Public durable-runner exports | ~30 |
-| `apps/api/src/job-runner/job-runner-state-machine.test.ts` | State-machine coverage | ~110 |
-| `apps/api/src/job-runner/job-runner-service.test.ts` | Service coverage for recovery and duplicate-prevention flows | ~220 |
+| File                                                       | Purpose                                                                | Lines |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------- | ----- |
+| `apps/api/src/job-runner/job-runner-contract.ts`           | Durable runner lifecycle, enqueue, checkpoint, and recovery contracts  | ~150  |
+| `apps/api/src/job-runner/job-runner-state-machine.ts`      | Lifecycle transition and retry decision helpers                        | ~130  |
+| `apps/api/src/job-runner/job-runner-executors.ts`          | Executor registration and payload validation                           | ~120  |
+| `apps/api/src/job-runner/job-runner-service.ts`            | Durable enqueue, claim, heartbeat, checkpoint, resume, and retry logic | ~240  |
+| `apps/api/src/job-runner/test-utils.ts`                    | Deterministic test harness helpers                                     | ~120  |
+| `apps/api/src/job-runner/index.ts`                         | Public durable-runner exports                                          | ~30   |
+| `apps/api/src/job-runner/job-runner-state-machine.test.ts` | State-machine coverage                                                 | ~110  |
+| `apps/api/src/job-runner/job-runner-service.test.ts`       | Service coverage for recovery and duplicate-prevention flows           | ~220  |
 
 ### Files Modified
 
-| File | Changes |
-|------|---------|
-| `apps/api/src/store/store-contract.ts` | Added durable claim, heartbeat, retry, and checkpoint shapes |
-| `apps/api/src/store/sqlite-schema.ts` | Added lease, heartbeat, retry, and checkpoint columns and indexes |
-| `apps/api/src/store/job-repository.ts` | Added claim, heartbeat, retry, and terminal-state helpers |
-| `apps/api/src/store/session-repository.ts` | Added active-session lookup and heartbeat persistence |
-| `apps/api/src/store/run-metadata-repository.ts` | Added checkpoint save and load helpers |
-| `apps/api/src/store/repositories.test.ts` | Added durable store regression coverage |
-| `apps/api/src/runtime/service-container.ts` | Added lazy runner creation, caching, and cleanup wiring |
-| `apps/api/src/runtime/service-container.test.ts` | Added container lifecycle coverage |
-| `apps/api/package.json` | Added package-level runner scripts and version bump |
-| `apps/api/README_api.md` | Documented the durable-runner boundary and validation path |
-| `package.json` | Added repo-root validation aliases |
-| `scripts/test-all.mjs` | Added durable-runner coverage to the quick suite |
+| File                                             | Changes                                                           |
+| ------------------------------------------------ | ----------------------------------------------------------------- |
+| `apps/api/src/store/store-contract.ts`           | Added durable claim, heartbeat, retry, and checkpoint shapes      |
+| `apps/api/src/store/sqlite-schema.ts`            | Added lease, heartbeat, retry, and checkpoint columns and indexes |
+| `apps/api/src/store/job-repository.ts`           | Added claim, heartbeat, retry, and terminal-state helpers         |
+| `apps/api/src/store/session-repository.ts`       | Added active-session lookup and heartbeat persistence             |
+| `apps/api/src/store/run-metadata-repository.ts`  | Added checkpoint save and load helpers                            |
+| `apps/api/src/store/repositories.test.ts`        | Added durable store regression coverage                           |
+| `apps/api/src/runtime/service-container.ts`      | Added lazy runner creation, caching, and cleanup wiring           |
+| `apps/api/src/runtime/service-container.test.ts` | Added container lifecycle coverage                                |
+| `apps/api/package.json`                          | Added package-level runner scripts and version bump               |
+| `apps/api/README_api.md`                         | Documented the durable-runner boundary and validation path        |
+| `package.json`                                   | Added repo-root validation aliases                                |
+| `scripts/test-all.mjs`                           | Added durable-runner coverage to the quick suite                  |
 
 ---
 
@@ -62,11 +62,11 @@ repo quick suite.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 34 |
-| Passed | 34 |
-| Coverage | N/A |
+| Metric   | Value |
+| -------- | ----- |
+| Tests    | 34    |
+| Passed   | 34    |
+| Coverage | N/A   |
 
 ---
 

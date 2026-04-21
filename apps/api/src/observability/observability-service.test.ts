@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { createObservabilityService } from './observability-service.js';
-import { createOperationalStore, inspectOperationalStoreStatus } from '../store/index.js';
+import {
+  createOperationalStore,
+  inspectOperationalStoreStatus,
+} from '../store/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 
 async function seedRuntimeContext(
@@ -125,7 +128,9 @@ test('observability service redacts sensitive metadata and supports bounded corr
 
 test('observability diagnostics summarize failed jobs and stay read-only while the store is absent', async () => {
   const readyFixture = await createWorkspaceFixture();
-  const readyStore = await createOperationalStore({ repoRoot: readyFixture.repoRoot });
+  const readyStore = await createOperationalStore({
+    repoRoot: readyFixture.repoRoot,
+  });
   const readyObservability = createObservabilityService({
     getStore: async () => readyStore,
     getStoreStatus: readyStore.getStatus,
@@ -179,7 +184,8 @@ test('observability diagnostics summarize failed jobs and stay read-only while t
       getStoreCalled = true;
       throw new Error('store should not be opened while absent');
     },
-    getStoreStatus: () => inspectOperationalStoreStatus({ repoRoot: absentFixture.repoRoot }),
+    getStoreStatus: () =>
+      inspectOperationalStoreStatus({ repoRoot: absentFixture.repoRoot }),
   });
 
   try {

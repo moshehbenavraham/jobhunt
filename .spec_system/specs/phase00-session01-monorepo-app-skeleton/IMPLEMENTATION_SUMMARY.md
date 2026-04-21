@@ -20,40 +20,40 @@ repo-gate regression harness needed to keep the scaffold stable.
 
 ### Files Created
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `tsconfig.base.json` | Shared TypeScript baseline for the web and API packages | ~25 |
-| `apps/web/package.json` | Web package manifest and scripts | ~30 |
-| `apps/web/tsconfig.json` | Web package TypeScript config | ~20 |
-| `apps/web/vite.config.ts` | Web build and dev tooling baseline | ~20 |
-| `apps/web/index.html` | Minimal web host document | ~20 |
-| `apps/web/src/main.tsx` | React mount entrypoint | ~20 |
-| `apps/web/src/App.tsx` | Placeholder shell component | ~50 |
-| `apps/api/package.json` | API package manifest and scripts | ~30 |
-| `apps/api/tsconfig.json` | API package TypeScript config | ~20 |
-| `apps/api/src/config/repo-paths.ts` | Canonical repo-root and app path helpers | ~50 |
-| `apps/api/src/config/app-state-root.ts` | App-owned state-root contract helper | ~50 |
-| `apps/api/src/index.ts` | Minimal typed API scaffold entrypoint | ~40 |
-| `scripts/test-app-scaffold.mjs` | Regression harness for scaffold boundary checks | ~120 |
-| `.spec_system/specs/phase00-session01-monorepo-app-skeleton/validation.md` | Validation report for the completed session | ~60 |
-| `.spec_system/specs/phase00-session01-monorepo-app-skeleton/IMPLEMENTATION_SUMMARY.md` | Session closeout summary | ~80 |
+| File                                                                                   | Purpose                                                 | Lines |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------- | ----- |
+| `tsconfig.base.json`                                                                   | Shared TypeScript baseline for the web and API packages | ~25   |
+| `apps/web/package.json`                                                                | Web package manifest and scripts                        | ~30   |
+| `apps/web/tsconfig.json`                                                               | Web package TypeScript config                           | ~20   |
+| `apps/web/vite.config.ts`                                                              | Web build and dev tooling baseline                      | ~20   |
+| `apps/web/index.html`                                                                  | Minimal web host document                               | ~20   |
+| `apps/web/src/main.tsx`                                                                | React mount entrypoint                                  | ~20   |
+| `apps/web/src/App.tsx`                                                                 | Placeholder shell component                             | ~50   |
+| `apps/api/package.json`                                                                | API package manifest and scripts                        | ~30   |
+| `apps/api/tsconfig.json`                                                               | API package TypeScript config                           | ~20   |
+| `apps/api/src/config/repo-paths.ts`                                                    | Canonical repo-root and app path helpers                | ~50   |
+| `apps/api/src/config/app-state-root.ts`                                                | App-owned state-root contract helper                    | ~50   |
+| `apps/api/src/index.ts`                                                                | Minimal typed API scaffold entrypoint                   | ~40   |
+| `scripts/test-app-scaffold.mjs`                                                        | Regression harness for scaffold boundary checks         | ~120  |
+| `.spec_system/specs/phase00-session01-monorepo-app-skeleton/validation.md`             | Validation report for the completed session             | ~60   |
+| `.spec_system/specs/phase00-session01-monorepo-app-skeleton/IMPLEMENTATION_SUMMARY.md` | Session closeout summary                                | ~80   |
 
 ### Files Modified
 
-| File | Changes |
-|------|---------|
-| `package.json` | Added workspaces, app scripts, and version bump |
-| `package-lock.json` | Captured workspace dependency changes and version bump |
-| `VERSION` | Bumped patch version to `1.5.35` |
-| `biome.json` | Extended lint coverage to the new app paths |
-| `.gitignore` | Ignored `.jobhunt-app/` and app build outputs |
-| `README.md` | Documented scaffold commands and repo boundary guarantees |
-| `scripts/test-all.mjs` | Registered scaffold regressions in the repo gate |
-| `.spec_system/state.json` | Marked the session complete and cleared current session |
-| `.spec_system/PRD/PRD.md` | Marked phase 00 as in progress |
-| `.spec_system/PRD/phase_00/PRD_phase_00.md` | Marked session 01 complete and updated progress |
-| `.spec_system/PRD/phase_00/session_01_monorepo_app_skeleton.md` | Marked the session stub complete |
-| `.spec_system/specs/phase00-session01-monorepo-app-skeleton/spec.md` | Marked the session spec complete |
+| File                                                                 | Changes                                                   |
+| -------------------------------------------------------------------- | --------------------------------------------------------- |
+| `package.json`                                                       | Added workspaces, app scripts, and version bump           |
+| `package-lock.json`                                                  | Captured workspace dependency changes and version bump    |
+| `VERSION`                                                            | Bumped patch version to `1.5.35`                          |
+| `biome.json`                                                         | Extended lint coverage to the new app paths               |
+| `.gitignore`                                                         | Ignored `.jobhunt-app/` and app build outputs             |
+| `README.md`                                                          | Documented scaffold commands and repo boundary guarantees |
+| `scripts/test-all.mjs`                                               | Registered scaffold regressions in the repo gate          |
+| `.spec_system/state.json`                                            | Marked the session complete and cleared current session   |
+| `.spec_system/PRD/PRD.md`                                            | Marked phase 00 as in progress                            |
+| `.spec_system/PRD/phase_00/PRD_phase_00.md`                          | Marked session 01 complete and updated progress           |
+| `.spec_system/PRD/phase_00/session_01_monorepo_app_skeleton.md`      | Marked the session stub complete                          |
+| `.spec_system/specs/phase00-session01-monorepo-app-skeleton/spec.md` | Marked the session spec complete                          |
 
 ---
 
@@ -70,11 +70,11 @@ repo-gate regression harness needed to keep the scaffold stable.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 175 |
-| Passed | 175 |
-| Coverage | N/A |
+| Metric   | Value |
+| -------- | ----- |
+| Tests    | 175   |
+| Passed   | 175   |
+| Coverage | N/A   |
 
 ---
 
@@ -90,6 +90,7 @@ repo-gate regression harness needed to keep the scaffold stable.
 ## Future Considerations
 
 Items for future sessions:
+
 1. Add the workspace adapter contract in `apps/api`.
 2. Define deterministic prompt-loading order for checked-in instruction files.
 3. Add a minimal boot/status surface for app startup validation.

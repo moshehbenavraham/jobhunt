@@ -5,7 +5,10 @@ import type {
   PromptWorkflowRoute,
   WorkflowIntent,
 } from './prompt-types.js';
-import { getPromptSourceOrder, getPromptSourcePolicySummary } from './prompt-source-policy.js';
+import {
+  getPromptSourceOrder,
+  getPromptSourcePolicySummary,
+} from './prompt-source-policy.js';
 import { WORKFLOW_INTENTS } from './prompt-types.js';
 import { listWorkflowModeRoutes } from './workflow-mode-map.js';
 

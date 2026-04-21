@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/agent-runtime/agent-runtime-contract.ts` - typed runtime readiness and bootstrap contracts
 - `apps/api/src/agent-runtime/agent-runtime-config.ts` - env-driven config normalization and validation
 - `apps/api/src/agent-runtime/openai-account-provider.ts` - typed adapter over the repo-owned auth/provider stack
@@ -38,13 +39,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No user-controlled query or shell concatenation paths were added in the session boundary. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or API keys were introduced in source or tests. |
-| Sensitive Data Exposure | PASS | -- | Diagnostics expose auth readiness and session metadata only; no auth material is logged or written. |
-| Insecure Dependencies | PASS | -- | No new dependencies were added. Validation passed with the existing dependency set. |
-| Security Misconfiguration | PASS | -- | Startup remains read-first; the runtime does not mutate auth files or rely on an `OPENAI_API_KEY`-only path. |
+| Category                      | Status | Severity | Details                                                                                                      |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------ |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No user-controlled query or shell concatenation paths were added in the session boundary.                    |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or API keys were introduced in source or tests.                                      |
+| Sensitive Data Exposure       | PASS   | --       | Diagnostics expose auth readiness and session metadata only; no auth material is logged or written.          |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were added. Validation passed with the existing dependency set.                          |
+| Security Misconfiguration     | PASS   | --       | Startup remains read-first; the runtime does not mutate auth files or rely on an `OPENAI_API_KEY`-only path. |
 
 ### Findings
 
@@ -58,14 +59,14 @@ No security findings.
 
 No personal data was collected, stored, or transmitted by this session.
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection & Purpose | N/A | No new personal data collection paths were added. |
-| Consent Mechanism | N/A | No user-facing consent flow was introduced. |
-| Data Minimization | N/A | No personal data handling was added. |
-| Right to Erasure | N/A | No stored personal data was added. |
-| PII in Logs | N/A | No personal data was logged in the changed files. |
-| Third-Party Data Transfers | N/A | No new third-party transfer path was added. |
+| Category                   | Status | Details                                           |
+| -------------------------- | ------ | ------------------------------------------------- |
+| Data Collection & Purpose  | N/A    | No new personal data collection paths were added. |
+| Consent Mechanism          | N/A    | No user-facing consent flow was introduced.       |
+| Data Minimization          | N/A    | No personal data handling was added.              |
+| Right to Erasure           | N/A    | No stored personal data was added.                |
+| PII in Logs                | N/A    | No personal data was logged in the changed files. |
+| Third-Party Data Transfers | N/A    | No new third-party transfer path was added.       |
 
 ### Personal Data Inventory
 

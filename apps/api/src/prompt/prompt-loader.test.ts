@@ -5,10 +5,7 @@ import {
   createPromptLoader,
   createPromptLoadingState,
 } from './prompt-loader.js';
-import type {
-  PromptBundleSource,
-  PromptLoaderResult,
-} from './prompt-types.js';
+import type { PromptBundleSource, PromptLoaderResult } from './prompt-types.js';
 import { createPromptFixture } from './test-utils.js';
 
 function getSource(
@@ -16,7 +13,9 @@ function getSource(
   key: PromptBundleSource['key'],
 ): PromptBundleSource {
   if (result.state === 'unsupported-workflow' || result.state === 'loading') {
-    throw new Error('Unsupported workflow results do not expose prompt sources.');
+    throw new Error(
+      'Unsupported workflow results do not expose prompt sources.',
+    );
   }
 
   const source = result.bundle.sources.find(
@@ -106,7 +105,10 @@ test('prompt loader honors legacy CV fallback while keeping article digest optio
       throw new Error(`Expected ready state, received ${result.state}.`);
     }
 
-    assert.equal(getSource(result, 'profile-cv').matchedRepoRelativePath, 'cv.md');
+    assert.equal(
+      getSource(result, 'profile-cv').matchedRepoRelativePath,
+      'cv.md',
+    );
     assert.equal(getSource(result, 'article-digest').status, 'missing');
   } finally {
     await fixture.cleanup();
@@ -210,7 +212,9 @@ test('article-digest sections load after the CV and carry the precedence note', 
 
     const cvIndex = result.bundle.sourceOrder.indexOf('profile-cv');
     const digestIndex = result.bundle.sourceOrder.indexOf('article-digest');
-    const cvMarker = result.bundle.composedText.indexOf('[[SOURCE profile-cv]]');
+    const cvMarker = result.bundle.composedText.indexOf(
+      '[[SOURCE profile-cv]]',
+    );
     const digestMarker = result.bundle.composedText.indexOf(
       '[[SOURCE article-digest]]',
     );

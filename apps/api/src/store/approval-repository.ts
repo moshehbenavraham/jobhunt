@@ -167,9 +167,7 @@ export function createApprovalRepository(
 
       return rows.map((row) => mapApprovalRow(row, store.databasePath));
     },
-    async listBySessionId(
-      sessionId: string,
-    ): Promise<RuntimeApprovalRecord[]> {
+    async listBySessionId(sessionId: string): Promise<RuntimeApprovalRecord[]> {
       assertNonEmptyString(sessionId, 'sessionId', store.databasePath);
       const rows = await store.all<ApprovalRow>(
         `${SELECT_APPROVAL_SQL} WHERE session_id = @sessionId ORDER BY requested_at DESC, approval_id ASC`,

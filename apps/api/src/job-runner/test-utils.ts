@@ -15,8 +15,14 @@ import type {
 } from './job-runner-contract.js';
 import { createDurableJobExecutorRegistry } from './job-runner-executors.js';
 import { createDurableJobRunnerService } from './job-runner-service.js';
-import { createOperationalStore, type OperationalStore } from '../store/index.js';
-import { createWorkspaceFixture, type WorkspaceFixture } from '../workspace/test-utils.js';
+import {
+  createOperationalStore,
+  type OperationalStore,
+} from '../store/index.js';
+import {
+  createWorkspaceFixture,
+  type WorkspaceFixture,
+} from '../workspace/test-utils.js';
 import type { JsonValue } from '../workspace/workspace-types.js';
 
 export type JobRunnerTestClock = {
@@ -74,33 +80,36 @@ export function createDeferred<TValue>(): Deferred<TValue> {
   };
 }
 
-export function createTestExecutor<TPayload extends JsonValue>(
-  options: {
-    description?: string;
-    execute: DurableJobExecutorDefinition<TPayload>['execute'];
-    jobType: string;
-    payloadSchema?: DurableJobExecutorDefinition<TPayload>['payloadSchema'];
-  },
-): DurableJobExecutorDefinition<TPayload> {
+export function createTestExecutor<TPayload extends JsonValue>(options: {
+  description?: string;
+  execute: DurableJobExecutorDefinition<TPayload>['execute'];
+  jobType: string;
+  payloadSchema?: DurableJobExecutorDefinition<TPayload>['payloadSchema'];
+}): DurableJobExecutorDefinition<TPayload> {
   return {
     description:
-      options.description ?? `Test executor for durable job type ${options.jobType}.`,
+      options.description ??
+      `Test executor for durable job type ${options.jobType}.`,
     execute: options.execute,
     jobType: options.jobType,
     payloadSchema:
       options.payloadSchema ??
-      (z.custom<TPayload>(() => true) as DurableJobExecutorDefinition<TPayload>['payloadSchema']),
+      (z.custom<TPayload>(
+        () => true,
+      ) as DurableJobExecutorDefinition<TPayload>['payloadSchema']),
   };
 }
 
-export async function createDurableJobRunnerHarness(options: {
-  executors?: AnyDurableJobExecutorDefinition[];
-  fixtureFiles?: Record<string, string>;
-  heartbeatIntervalMs?: number;
-  initialTimestamp?: string;
-  leaseDurationMs?: number;
-  pollIntervalMs?: number;
-} = {}): Promise<DurableJobRunnerHarness> {
+export async function createDurableJobRunnerHarness(
+  options: {
+    executors?: AnyDurableJobExecutorDefinition[];
+    fixtureFiles?: Record<string, string>;
+    heartbeatIntervalMs?: number;
+    initialTimestamp?: string;
+    leaseDurationMs?: number;
+    pollIntervalMs?: number;
+  } = {},
+): Promise<DurableJobRunnerHarness> {
   const clock = createJobRunnerTestClock(options.initialTimestamp);
   const fixture = await createWorkspaceFixture(
     options.fixtureFiles
@@ -174,9 +183,7 @@ export async function seedCheckpointedRunningJob(
   },
 ): Promise<void> {
   const startedAt = harness.clock.nowIso();
-  const staleLeaseExpiresAt = new Date(
-    harness.clock.now() - 1,
-  ).toISOString();
+  const staleLeaseExpiresAt = new Date(harness.clock.now() - 1).toISOString();
 
   await harness.store.sessions.save({
     activeJobId: input.jobId,

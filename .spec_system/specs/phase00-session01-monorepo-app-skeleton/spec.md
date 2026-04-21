@@ -80,12 +80,12 @@ packages wired well enough to prove boot and validation behavior.
 
 ### Out of Scope (Deferred)
 
-- Workspace adapter logic, prompt loading, or mode routing - *Reason: Sessions
-  02 and 03 own those contracts.*
-- SQLite schema design, background jobs, and approval flows - *Reason: Phase 01
-  and later phases own operational runtime behavior.*
-- Full app UI, live API endpoints, or boot diagnostics - *Reason: Session 04
-  owns the minimal runnable boot path.*
+- Workspace adapter logic, prompt loading, or mode routing - _Reason: Sessions
+  02 and 03 own those contracts._
+- SQLite schema design, background jobs, and approval flows - _Reason: Phase 01
+  and later phases own operational runtime behavior._
+- Full app UI, live API endpoints, or boot diagnostics - _Reason: Session 04
+  owns the minimal runnable boot path._
 
 ---
 
@@ -136,32 +136,32 @@ artifacts untouched on install and basic checks.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `tsconfig.base.json` | Shared TypeScript baseline for both app packages | ~25 |
-| `apps/web/package.json` | Web package manifest and scripts | ~30 |
-| `apps/web/tsconfig.json` | Web package TypeScript config | ~20 |
-| `apps/web/vite.config.ts` | Web build and dev tooling baseline | ~20 |
-| `apps/web/index.html` | Minimal web shell host document | ~20 |
-| `apps/web/src/main.tsx` | React mount entrypoint | ~20 |
-| `apps/web/src/App.tsx` | Placeholder shell component | ~50 |
-| `apps/api/package.json` | API package manifest and scripts | ~30 |
-| `apps/api/tsconfig.json` | API package TypeScript config | ~20 |
-| `apps/api/src/config/repo-paths.ts` | Canonical repo-root and app path helpers | ~50 |
-| `apps/api/src/config/app-state-root.ts` | App-owned state-root contract helper | ~50 |
-| `apps/api/src/index.ts` | Minimal typed API scaffold entrypoint | ~40 |
-| `scripts/test-app-scaffold.mjs` | Regression harness for scaffold boundary checks | ~120 |
+| File                                    | Purpose                                          | Est. Lines |
+| --------------------------------------- | ------------------------------------------------ | ---------- |
+| `tsconfig.base.json`                    | Shared TypeScript baseline for both app packages | ~25        |
+| `apps/web/package.json`                 | Web package manifest and scripts                 | ~30        |
+| `apps/web/tsconfig.json`                | Web package TypeScript config                    | ~20        |
+| `apps/web/vite.config.ts`               | Web build and dev tooling baseline               | ~20        |
+| `apps/web/index.html`                   | Minimal web shell host document                  | ~20        |
+| `apps/web/src/main.tsx`                 | React mount entrypoint                           | ~20        |
+| `apps/web/src/App.tsx`                  | Placeholder shell component                      | ~50        |
+| `apps/api/package.json`                 | API package manifest and scripts                 | ~30        |
+| `apps/api/tsconfig.json`                | API package TypeScript config                    | ~20        |
+| `apps/api/src/config/repo-paths.ts`     | Canonical repo-root and app path helpers         | ~50        |
+| `apps/api/src/config/app-state-root.ts` | App-owned state-root contract helper             | ~50        |
+| `apps/api/src/index.ts`                 | Minimal typed API scaffold entrypoint            | ~40        |
+| `scripts/test-app-scaffold.mjs`         | Regression harness for scaffold boundary checks  | ~120       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `package.json` | Add workspaces plus app-specific root scripts | ~30 |
-| `package-lock.json` | Capture intentional workspace dependency changes | generated |
-| `biome.json` | Extend lint coverage to the new app paths if required | ~10 |
-| `.gitignore` | Ignore `.jobhunt-app/` and package build outputs | ~10 |
-| `README.md` | Document scaffold commands and repo boundary expectations | ~20 |
-| `scripts/test-all.mjs` | Register the scaffold regression harness in the repo gate | ~20 |
+| File                   | Changes                                                   | Est. Lines |
+| ---------------------- | --------------------------------------------------------- | ---------- |
+| `package.json`         | Add workspaces plus app-specific root scripts             | ~30        |
+| `package-lock.json`    | Capture intentional workspace dependency changes          | generated  |
+| `biome.json`           | Extend lint coverage to the new app paths if required     | ~10        |
+| `.gitignore`           | Ignore `.jobhunt-app/` and package build outputs          | ~10        |
+| `README.md`            | Document scaffold commands and repo boundary expectations | ~20        |
+| `scripts/test-all.mjs` | Register the scaffold regression harness in the repo gate | ~20        |
 
 ---
 

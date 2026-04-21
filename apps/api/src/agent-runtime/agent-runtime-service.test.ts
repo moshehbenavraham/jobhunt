@@ -10,10 +10,7 @@ import {
   startFakeCodexBackend,
 } from './test-utils.js';
 
-function createService(
-  repoRoot: string,
-  env: NodeJS.ProcessEnv = {},
-) {
+function createService(repoRoot: string, env: NodeJS.ProcessEnv = {}) {
   return createAgentRuntimeService({
     authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
     env,

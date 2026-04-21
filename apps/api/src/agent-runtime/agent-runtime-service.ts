@@ -5,7 +5,10 @@ import {
   type PromptSourceKey,
   WORKFLOW_INTENTS,
 } from '../prompt/index.js';
-import { createWorkspaceAdapter, type WorkspaceAdapter } from '../workspace/index.js';
+import {
+  createWorkspaceAdapter,
+  type WorkspaceAdapter,
+} from '../workspace/index.js';
 import type { RepoPathOptions } from '../config/repo-paths.js';
 import {
   AgentRuntimeBootstrapError,
@@ -68,9 +71,7 @@ function toPromptIssues(
   return promptKeys.map((promptKey) => `${prefix}: ${promptKey}`);
 }
 
-function toPromptSummary(
-  result: PromptLoaderResult,
-): {
+function toPromptSummary(result: PromptLoaderResult): {
   promptBundle: AgentRuntimeBootstrap['promptBundle'] | null;
   summary: AgentRuntimePromptSummary;
 } {
@@ -302,9 +303,8 @@ export function createAgentRuntimeService(
       providerOptions.authModuleImportPath = options.authModuleImportPath;
     }
 
-    const { defaults, moduleRef } = await getOpenAIAccountProviderDefaults(
-      providerOptions,
-    );
+    const { defaults, moduleRef } =
+      await getOpenAIAccountProviderDefaults(providerOptions);
 
     return {
       config: readAgentRuntimeConfigFromEnv(defaults, options.env, {
@@ -424,7 +424,9 @@ export function createAgentRuntimeService(
       const auth = await inspectOpenAIAccountReadiness(config, authOptions);
 
       if (auth.state !== 'ready') {
-        throw new AgentRuntimeBootstrapError(auth.state, auth.message, { auth });
+        throw new AgentRuntimeBootstrapError(auth.state, auth.message, {
+          auth,
+        });
       }
 
       const readyAuth = auth as AgentRuntimeAuthReadiness & {
@@ -446,10 +448,14 @@ export function createAgentRuntimeService(
       }
 
       if (summary.state === 'missing') {
-        throw new AgentRuntimeBootstrapError('prompt-missing', summary.message, {
-          auth,
-          prompt: summary,
-        });
+        throw new AgentRuntimeBootstrapError(
+          'prompt-missing',
+          summary.message,
+          {
+            auth,
+            prompt: summary,
+          },
+        );
       }
 
       if (summary.state === 'empty') {
@@ -467,7 +473,10 @@ export function createAgentRuntimeService(
       };
 
       try {
-        const { model, provider } = await getConfiguredProvider(moduleRef, config);
+        const { model, provider } = await getConfiguredProvider(
+          moduleRef,
+          config,
+        );
 
         if (!promptBundle) {
           throw new Error('Prompt bundle was missing from a ready bootstrap.');

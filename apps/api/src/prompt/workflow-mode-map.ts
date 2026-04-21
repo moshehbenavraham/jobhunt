@@ -29,12 +29,14 @@ const WORKFLOW_MODE_ROUTES = [
     modeRepoRelativePath: 'modes/scan.md',
   },
   {
-    description: 'Generate the ATS-focused PDF artifacts for an evaluated role.',
+    description:
+      'Generate the ATS-focused PDF artifacts for an evaluated role.',
     intent: 'generate-ats-pdf',
     modeRepoRelativePath: 'modes/pdf.md',
   },
   {
-    description: 'Guide a live application flow without submitting for the user.',
+    description:
+      'Guide a live application flow without submitting for the user.',
     intent: 'application-help',
     modeRepoRelativePath: 'modes/apply.md',
   },
@@ -94,7 +96,9 @@ const workflowRouteMap = new Map<WorkflowIntent, PromptWorkflowRoute>(
   WORKFLOW_MODE_ROUTES.map((route) => [route.intent, route]),
 );
 
-function assertWorkflowModePath(route: PromptWorkflowRoute): PromptWorkflowRoute {
+function assertWorkflowModePath(
+  route: PromptWorkflowRoute,
+): PromptWorkflowRoute {
   const normalizedPath = normalizeRepoRelativePath(route.modeRepoRelativePath);
 
   if (
@@ -116,7 +120,9 @@ export function listWorkflowModeRoutes(): readonly PromptWorkflowRoute[] {
   return WORKFLOW_MODE_ROUTES.map(assertWorkflowModePath);
 }
 
-export function isWorkflowIntent(candidate: unknown): candidate is WorkflowIntent {
+export function isWorkflowIntent(
+  candidate: unknown,
+): candidate is WorkflowIntent {
   return (
     typeof candidate === 'string' &&
     (WORKFLOW_INTENTS as readonly string[]).includes(candidate)
@@ -125,7 +131,10 @@ export function isWorkflowIntent(candidate: unknown): candidate is WorkflowInten
 
 export function parseWorkflowIntent(candidate: unknown): WorkflowIntent {
   if (typeof candidate !== 'string') {
-    throw new PromptUnsupportedWorkflowError(String(candidate), WORKFLOW_INTENTS);
+    throw new PromptUnsupportedWorkflowError(
+      String(candidate),
+      WORKFLOW_INTENTS,
+    );
   }
 
   if (!isWorkflowIntent(candidate)) {

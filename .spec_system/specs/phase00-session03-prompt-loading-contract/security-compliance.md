@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables and supporting validation update):
+
 - `apps/api/src/prompt/index.ts` - prompt module barrel exports
 - `apps/api/src/prompt/prompt-types.ts` - shared prompt types and loader states
 - `apps/api/src/prompt/workflow-mode-map.ts` - workflow routing manifest
@@ -33,13 +34,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No shell or query construction from untrusted input in the touched prompt loader surface. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or secrets added. |
-| Sensitive Data Exposure | PASS | -- | The prompt bundle stays anchored to checked-in repo files and diagnostics expose metadata only. |
-| Insecure Dependencies | PASS | -- | No new runtime dependencies were introduced. |
-| Security Misconfiguration | PASS | -- | No permissive defaults or debug-only behavior added. |
+| Category                      | Status | Severity | Details                                                                                         |
+| ----------------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No shell or query construction from untrusted input in the touched prompt loader surface.       |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or secrets added.                                                       |
+| Sensitive Data Exposure       | PASS   | --       | The prompt bundle stays anchored to checked-in repo files and diagnostics expose metadata only. |
+| Insecure Dependencies         | PASS   | --       | No new runtime dependencies were introduced.                                                    |
+| Security Misconfiguration     | PASS   | --       | No permissive defaults or debug-only behavior added.                                            |
 
 ### Findings
 
@@ -53,14 +54,14 @@ No security findings.
 
 The session added no personal data collection, storage, or transfer paths.
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection & Purpose | N/A | No user personal data is collected by the prompt loader contract. |
-| Consent Mechanism | N/A | No new consent flow is required. |
-| Data Minimization | N/A | No personal data fields were added. |
-| Right to Erasure | N/A | No personal data storage path was introduced. |
-| PII in Logs | N/A | No logging of personal data was added. |
-| Third-Party Data Transfers | N/A | No external transfers were introduced. |
+| Category                   | Status | Details                                                           |
+| -------------------------- | ------ | ----------------------------------------------------------------- |
+| Data Collection & Purpose  | N/A    | No user personal data is collected by the prompt loader contract. |
+| Consent Mechanism          | N/A    | No new consent flow is required.                                  |
+| Data Minimization          | N/A    | No personal data fields were added.                               |
+| Right to Erasure           | N/A    | No personal data storage path was introduced.                     |
+| PII in Logs                | N/A    | No logging of personal data was added.                            |
+| Third-Party Data Transfers | N/A    | No external transfers were introduced.                            |
 
 ### Personal Data Inventory
 

@@ -111,19 +111,46 @@ function normalizeCompany(name) {
   return name.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
+function normalizeRole(role) {
+  return role
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function extractRoleQualifier(role) {
+  const match = role.match(/\(([^)]+)\)/);
+  return match ? normalizeRole(match[1]) : '';
+}
+
 function roleFuzzyMatch(a, b) {
-  const wordsA = a
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((w) => w.length > 3);
-  const wordsB = b
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((w) => w.length > 3);
-  const overlap = wordsA.filter((w) =>
-    wordsB.some((wb) => wb.includes(w) || w.includes(wb)),
+  const normalizedA = normalizeRole(a);
+  const normalizedB = normalizeRole(b);
+
+  if (normalizedA === normalizedB) return true;
+
+  const qualifierA = extractRoleQualifier(a);
+  const qualifierB = extractRoleQualifier(b);
+
+  // Distinct parenthetical qualifiers usually indicate genuinely different
+  // openings, e.g. "Startups" vs "Industries" vs "Federal Civilian".
+  if (qualifierA && qualifierB && qualifierA !== qualifierB) {
+    return false;
+  }
+
+  const wordsA = new Set(
+    normalizedA.split(/\s+/).filter((w) => w.length > 3),
   );
-  return overlap.length >= 2;
+  const wordsB = new Set(
+    normalizedB.split(/\s+/).filter((w) => w.length > 3),
+  );
+
+  const overlap = [...wordsA].filter((w) =>
+    [...wordsB].some((wb) => wb.includes(w) || w.includes(wb)),
+  );
+  const unionSize = new Set([...wordsA, ...wordsB]).size;
+
+  return overlap.length >= 2 && overlap.length / Math.max(unionSize, 1) >= 0.8;
 }
 
 function extractReportNum(reportStr) {

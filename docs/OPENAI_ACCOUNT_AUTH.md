@@ -21,15 +21,15 @@ Unsupported behavior:
 
 ## Main Components
 
-| Surface | Path | Purpose |
-| --- | --- | --- |
-| Auth CLI | `scripts/openai-account-auth.mjs` | Login, status, refresh, reauth, logout |
-| Auth core | `scripts/lib/openai-account-auth/oauth.mjs` | PKCE login and token exchange |
-| Storage | `scripts/lib/openai-account-auth/storage.mjs` | Locked credential reads and writes |
-| Transport | `scripts/lib/openai-account-auth/codex-transport.mjs` | Authenticated Codex SSE client |
-| Provider adapter | `scripts/lib/openai-account-auth/agents-provider.mjs` | `@openai/agents` provider wiring |
-| Raw smoke CLI | `scripts/openai-codex-smoke.mjs` | Transport validation |
-| Agents smoke CLI | `scripts/openai-agents-codex-smoke.mjs` | Provider validation |
+| Surface          | Path                                                  | Purpose                                |
+| ---------------- | ----------------------------------------------------- | -------------------------------------- |
+| Auth CLI         | `scripts/openai-account-auth.mjs`                     | Login, status, refresh, reauth, logout |
+| Auth core        | `scripts/lib/openai-account-auth/oauth.mjs`           | PKCE login and token exchange          |
+| Storage          | `scripts/lib/openai-account-auth/storage.mjs`         | Locked credential reads and writes     |
+| Transport        | `scripts/lib/openai-account-auth/codex-transport.mjs` | Authenticated Codex SSE client         |
+| Provider adapter | `scripts/lib/openai-account-auth/agents-provider.mjs` | `@openai/agents` provider wiring       |
+| Raw smoke CLI    | `scripts/openai-codex-smoke.mjs`                      | Transport validation                   |
+| Agents smoke CLI | `scripts/openai-agents-codex-smoke.mjs`               | Provider validation                    |
 
 ## Runtime Flow
 

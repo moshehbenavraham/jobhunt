@@ -19,42 +19,44 @@ plumbing on top of the existing API runtime and job runner.
 ## Deliverables
 
 ### Files Created
-| File | Purpose | Lines |
-|------|---------|-------|
-| `apps/api/src/approval-runtime/approval-runtime-contract.ts` | Approval request, resolution, and pause metadata contracts | ~140 |
-| `apps/api/src/approval-runtime/approval-runtime-service.ts` | Approval persistence and approve or reject orchestration | ~220 |
-| `apps/api/src/approval-runtime/index.ts` | Approval runtime public exports | ~30 |
-| `apps/api/src/approval-runtime/approval-runtime-service.test.ts` | Approval runtime coverage | ~180 |
-| `apps/api/src/observability/observability-contract.ts` | Runtime event, correlation, and diagnostics contracts | ~140 |
-| `apps/api/src/observability/observability-service.ts` | Metadata-only runtime event persistence and diagnostics summaries | ~220 |
-| `apps/api/src/observability/index.ts` | Observability public exports | ~30 |
-| `apps/api/src/observability/observability-service.test.ts` | Observability coverage | ~170 |
-| `apps/api/src/store/runtime-event-repository.ts` | Structured runtime event persistence and query helpers | ~190 |
-| `apps/api/src/server/routes/runtime-approvals-route.ts` | Pending approval inspection route | ~90 |
-| `apps/api/src/server/routes/runtime-diagnostics-route.ts` | Runtime diagnostics route | ~110 |
+
+| File                                                             | Purpose                                                           | Lines |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------- | ----- |
+| `apps/api/src/approval-runtime/approval-runtime-contract.ts`     | Approval request, resolution, and pause metadata contracts        | ~140  |
+| `apps/api/src/approval-runtime/approval-runtime-service.ts`      | Approval persistence and approve or reject orchestration          | ~220  |
+| `apps/api/src/approval-runtime/index.ts`                         | Approval runtime public exports                                   | ~30   |
+| `apps/api/src/approval-runtime/approval-runtime-service.test.ts` | Approval runtime coverage                                         | ~180  |
+| `apps/api/src/observability/observability-contract.ts`           | Runtime event, correlation, and diagnostics contracts             | ~140  |
+| `apps/api/src/observability/observability-service.ts`            | Metadata-only runtime event persistence and diagnostics summaries | ~220  |
+| `apps/api/src/observability/index.ts`                            | Observability public exports                                      | ~30   |
+| `apps/api/src/observability/observability-service.test.ts`       | Observability coverage                                            | ~170  |
+| `apps/api/src/store/runtime-event-repository.ts`                 | Structured runtime event persistence and query helpers            | ~190  |
+| `apps/api/src/server/routes/runtime-approvals-route.ts`          | Pending approval inspection route                                 | ~90   |
+| `apps/api/src/server/routes/runtime-diagnostics-route.ts`        | Runtime diagnostics route                                         | ~110  |
 
 ### Files Modified
-| File | Changes |
-|------|---------|
-| `apps/api/src/store/store-contract.ts` | Added approval wait metadata and runtime event repository contracts |
-| `apps/api/src/store/sqlite-schema.ts` | Added approval correlation fields and runtime event table/indexes |
-| `apps/api/src/store/approval-repository.ts` | Added pending, by-job, and resolution-safe helpers |
-| `apps/api/src/store/index.ts` | Registered the runtime event repository |
-| `apps/api/src/store/repositories.test.ts` | Extended store coverage for approvals and runtime events |
-| `apps/api/src/job-runner/job-runner-contract.ts` | Added approval wait semantics and service providers |
-| `apps/api/src/job-runner/job-runner-state-machine.ts` | Added approval-wait transition helpers |
-| `apps/api/src/job-runner/job-runner-service.ts` | Persisted approval pauses and emitted structured runtime events |
-| `apps/api/src/job-runner/job-runner-service.test.ts` | Added approval pause, resume, reject, and recovery coverage |
-| `apps/api/src/job-runner/test-utils.ts` | Added approval and observability fixtures to the harness |
-| `apps/api/src/runtime/service-container.ts` | Wired approval-runtime and observability services |
-| `apps/api/src/runtime/service-container.test.ts` | Added container reuse and cleanup coverage |
-| `apps/api/src/server/http-server.ts` | Added request correlation and structured request events |
-| `apps/api/src/server/http-server.test.ts` | Added diagnostics and correlation coverage |
-| `apps/api/src/server/routes/index.ts` | Registered the new runtime routes |
-| `apps/api/README_api.md` | Documented the approval and observability boundaries |
-| `apps/api/package.json` | Added validation aliases and version bump |
-| `package.json` | Added repo-root validation aliases |
-| `scripts/test-all.mjs` | Added quick-suite coverage for the new API validation path |
+
+| File                                                  | Changes                                                             |
+| ----------------------------------------------------- | ------------------------------------------------------------------- |
+| `apps/api/src/store/store-contract.ts`                | Added approval wait metadata and runtime event repository contracts |
+| `apps/api/src/store/sqlite-schema.ts`                 | Added approval correlation fields and runtime event table/indexes   |
+| `apps/api/src/store/approval-repository.ts`           | Added pending, by-job, and resolution-safe helpers                  |
+| `apps/api/src/store/index.ts`                         | Registered the runtime event repository                             |
+| `apps/api/src/store/repositories.test.ts`             | Extended store coverage for approvals and runtime events            |
+| `apps/api/src/job-runner/job-runner-contract.ts`      | Added approval wait semantics and service providers                 |
+| `apps/api/src/job-runner/job-runner-state-machine.ts` | Added approval-wait transition helpers                              |
+| `apps/api/src/job-runner/job-runner-service.ts`       | Persisted approval pauses and emitted structured runtime events     |
+| `apps/api/src/job-runner/job-runner-service.test.ts`  | Added approval pause, resume, reject, and recovery coverage         |
+| `apps/api/src/job-runner/test-utils.ts`               | Added approval and observability fixtures to the harness            |
+| `apps/api/src/runtime/service-container.ts`           | Wired approval-runtime and observability services                   |
+| `apps/api/src/runtime/service-container.test.ts`      | Added container reuse and cleanup coverage                          |
+| `apps/api/src/server/http-server.ts`                  | Added request correlation and structured request events             |
+| `apps/api/src/server/http-server.test.ts`             | Added diagnostics and correlation coverage                          |
+| `apps/api/src/server/routes/index.ts`                 | Registered the new runtime routes                                   |
+| `apps/api/README_api.md`                              | Documented the approval and observability boundaries                |
+| `apps/api/package.json`                               | Added validation aliases and version bump                           |
+| `package.json`                                        | Added repo-root validation aliases                                  |
+| `scripts/test-all.mjs`                                | Added quick-suite coverage for the new API validation path          |
 
 ---
 
@@ -69,11 +71,11 @@ plumbing on top of the existing API runtime and job runner.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 42 |
-| Passed | 42 |
-| Coverage | N/A |
+| Metric   | Value |
+| -------- | ----- |
+| Tests    | 42    |
+| Passed   | 42    |
+| Coverage | N/A   |
 
 ---
 

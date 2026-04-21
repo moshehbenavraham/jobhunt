@@ -1,10 +1,6 @@
 import { lstat, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import {
-  APP_STATE_DIRNAME,
-  getRepoPaths,
-  type RepoPathOptions,
-} from './repo-paths.js';
+import { getRepoPaths, type RepoPathOptions } from './repo-paths.js';
 import { assertAppOwnedWorkspacePath } from '../workspace/workspace-boundary.js';
 
 export const OPERATIONAL_STORE_DATABASE_FILENAME = 'app.db';

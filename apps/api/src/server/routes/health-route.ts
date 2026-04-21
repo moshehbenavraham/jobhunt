@@ -3,10 +3,7 @@ import {
   defineApiRoute,
   type ApiRouteDefinition,
 } from '../route-contract.js';
-import {
-  createHealthPayload,
-  getHealthHttpStatus,
-} from '../startup-status.js';
+import { createHealthPayload, getHealthHttpStatus } from '../startup-status.js';
 
 export function createHealthRoute(): ApiRouteDefinition {
   return defineApiRoute({

@@ -5,10 +5,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import {
-  StartupClientError,
-  fetchStartupDiagnostics,
-} from './startup-client';
+import { StartupClientError, fetchStartupDiagnostics } from './startup-client';
 import type { StartupPayload } from './startup-types';
 
 export type StartupViewStatus =

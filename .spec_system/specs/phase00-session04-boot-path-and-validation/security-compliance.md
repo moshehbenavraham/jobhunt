@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/index.ts` - CLI diagnostics and boot-surface metadata
 - `apps/api/src/server/index.ts` - server entrypoint and lifecycle control
 - `apps/api/src/server/http-server.ts` - HTTP boot surface and request handling
@@ -32,14 +33,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No unsafe shell interpolation or query construction was introduced in the boot path. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or secrets were added. |
-| Sensitive Data Exposure | PASS | -- | Startup diagnostics stay read-only and do not log user-layer contents beyond intended file presence summaries. |
-| Insecure Dependencies | PASS | -- | No new runtime dependencies were added for the session. |
-| Misconfiguration | PASS | -- | The HTTP server uses explicit route handling and bounded startup behavior. |
-| Database Security | N/A | -- | This session does not touch a database layer. |
+| Category                      | Status | Severity | Details                                                                                                        |
+| ----------------------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No unsafe shell interpolation or query construction was introduced in the boot path.                           |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or secrets were added.                                                                 |
+| Sensitive Data Exposure       | PASS   | --       | Startup diagnostics stay read-only and do not log user-layer contents beyond intended file presence summaries. |
+| Insecure Dependencies         | PASS   | --       | No new runtime dependencies were added for the session.                                                        |
+| Misconfiguration              | PASS   | --       | The HTTP server uses explicit route handling and bounded startup behavior.                                     |
+| Database Security             | N/A    | --       | This session does not touch a database layer.                                                                  |
 
 ---
 
@@ -47,14 +48,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection | PASS | The new startup surface only reports repo and bootstrap diagnostics. |
-| Consent | N/A | No new personal-data collection flow was added. |
-| Data Minimization | PASS | The payload is limited to boot and repo health state. |
-| Right to Erasure | N/A | No persisted personal data was introduced. |
-| Data Logging | PASS | No new logs include personal data. |
-| Third-Party Sharing | N/A | No external data transfer was added. |
+| Category            | Status | Details                                                              |
+| ------------------- | ------ | -------------------------------------------------------------------- |
+| Data Collection     | PASS   | The new startup surface only reports repo and bootstrap diagnostics. |
+| Consent             | N/A    | No new personal-data collection flow was added.                      |
+| Data Minimization   | PASS   | The payload is limited to boot and repo health state.                |
+| Right to Erasure    | N/A    | No persisted personal data was introduced.                           |
+| Data Logging        | PASS   | No new logs include personal data.                                   |
+| Third-Party Sharing | N/A    | No external data transfer was added.                                 |
 
 ---
 
@@ -63,6 +64,7 @@
 **Result**: PASS
 
 Checked files with side effects or trust-boundary handling:
+
 - `apps/api/src/server/http-server.ts`
 - `apps/api/src/server/startup-status.ts`
 - `apps/web/src/boot/startup-client.ts`
@@ -70,5 +72,5 @@ Checked files with side effects or trust-boundary handling:
 - `scripts/test-app-bootstrap.mjs`
 
 Findings:
-- No high-severity trust-boundary, cleanup, mutation-safety, failure-path, or contract-alignment issues remain in the reviewed session deliverables.
 
+- No high-severity trust-boundary, cleanup, mutation-safety, failure-path, or contract-alignment issues remain in the reviewed session deliverables.

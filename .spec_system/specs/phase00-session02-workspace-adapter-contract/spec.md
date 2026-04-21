@@ -86,12 +86,12 @@ surface map and boundary rules for the files it will load.
 
 ### Out of Scope (Deferred)
 
-- Prompt composition and mode routing - *Reason: Session 03 owns the
-  prompt-loading contract that consumes this adapter.*
-- UI onboarding flows or forms - *Reason: Phase 03 owns the operator-facing
-  onboarding and approvals UX.*
+- Prompt composition and mode routing - _Reason: Session 03 owns the
+  prompt-loading contract that consumes this adapter._
+- UI onboarding flows or forms - _Reason: Phase 03 owns the operator-facing
+  onboarding and approvals UX._
 - Background job persistence, tracker mutation, or artifact generation -
-  *Reason: later phases own those workflow-specific write paths.*
+  _Reason: later phases own those workflow-specific write paths._
 
 ---
 
@@ -142,29 +142,29 @@ reuse without re-deciding path ownership.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/workspace/workspace-types.ts` | Shared surface, ownership, and result types for the adapter | ~70 |
-| `apps/api/src/workspace/workspace-contract.ts` | Canonical registry of repo surfaces and policy metadata | ~180 |
-| `apps/api/src/workspace/workspace-errors.ts` | Typed adapter errors for boundary and missing-file cases | ~90 |
-| `apps/api/src/workspace/workspace-boundary.ts` | Path-layer classification and protected-target checks | ~110 |
-| `apps/api/src/workspace/missing-file-policy.ts` | Startup versus optional missing-file evaluation helpers | ~90 |
-| `apps/api/src/workspace/workspace-read.ts` | Deterministic file-read helpers keyed by contract metadata | ~130 |
-| `apps/api/src/workspace/workspace-write.ts` | Guarded write helpers for app-owned and explicitly allowed targets | ~140 |
-| `apps/api/src/workspace/workspace-summary.ts` | Adapter summaries for diagnostics and preflight callers | ~80 |
-| `apps/api/src/workspace/workspace-adapter.ts` | Public workspace adapter facade and exported API | ~120 |
-| `apps/api/src/workspace/index.ts` | Package-local barrel export for workspace modules | ~20 |
-| `apps/api/src/workspace/test-utils.ts` | Temp-repo fixture helpers for contract tests | ~100 |
-| `apps/api/src/workspace/workspace-adapter.test.ts` | Package-local tests for resolution, policy, and missing-file rules | ~180 |
+| File                                               | Purpose                                                            | Est. Lines |
+| -------------------------------------------------- | ------------------------------------------------------------------ | ---------- |
+| `apps/api/src/workspace/workspace-types.ts`        | Shared surface, ownership, and result types for the adapter        | ~70        |
+| `apps/api/src/workspace/workspace-contract.ts`     | Canonical registry of repo surfaces and policy metadata            | ~180       |
+| `apps/api/src/workspace/workspace-errors.ts`       | Typed adapter errors for boundary and missing-file cases           | ~90        |
+| `apps/api/src/workspace/workspace-boundary.ts`     | Path-layer classification and protected-target checks              | ~110       |
+| `apps/api/src/workspace/missing-file-policy.ts`    | Startup versus optional missing-file evaluation helpers            | ~90        |
+| `apps/api/src/workspace/workspace-read.ts`         | Deterministic file-read helpers keyed by contract metadata         | ~130       |
+| `apps/api/src/workspace/workspace-write.ts`        | Guarded write helpers for app-owned and explicitly allowed targets | ~140       |
+| `apps/api/src/workspace/workspace-summary.ts`      | Adapter summaries for diagnostics and preflight callers            | ~80        |
+| `apps/api/src/workspace/workspace-adapter.ts`      | Public workspace adapter facade and exported API                   | ~120       |
+| `apps/api/src/workspace/index.ts`                  | Package-local barrel export for workspace modules                  | ~20        |
+| `apps/api/src/workspace/test-utils.ts`             | Temp-repo fixture helpers for contract tests                       | ~100       |
+| `apps/api/src/workspace/workspace-adapter.test.ts` | Package-local tests for resolution, policy, and missing-file rules | ~180       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/package.json` | Add package-local contract test command(s) | ~10 |
-| `apps/api/src/config/repo-paths.ts` | Expose canonical directory anchors and normalized repo-relative helpers | ~60 |
-| `apps/api/src/config/app-state-root.ts` | Reuse adapter ownership checks for app-owned path assertions | ~50 |
-| `apps/api/src/index.ts` | Surface adapter summary data in startup diagnostics | ~50 |
+| File                                    | Changes                                                                 | Est. Lines |
+| --------------------------------------- | ----------------------------------------------------------------------- | ---------- |
+| `apps/api/package.json`                 | Add package-local contract test command(s)                              | ~10        |
+| `apps/api/src/config/repo-paths.ts`     | Expose canonical directory anchors and normalized repo-relative helpers | ~60        |
+| `apps/api/src/config/app-state-root.ts` | Reuse adapter ownership checks for app-owned path assertions            | ~50        |
+| `apps/api/src/index.ts`                 | Surface adapter summary data in startup diagnostics                     | ~50        |
 
 ---
 

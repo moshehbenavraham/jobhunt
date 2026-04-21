@@ -40,7 +40,9 @@ export function assertJobTransition(
 export function isDurableJobTerminalStatus(
   status: RuntimeJobStatus,
 ): status is DurableJobTerminalStatus {
-  return status === 'cancelled' || status === 'completed' || status === 'failed';
+  return (
+    status === 'cancelled' || status === 'completed' || status === 'failed'
+  );
 }
 
 function toIsoWithOffset(now: string, delayMs: number): string {

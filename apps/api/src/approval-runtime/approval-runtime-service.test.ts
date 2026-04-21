@@ -28,7 +28,9 @@ async function createRuntimeHarness() {
   };
 }
 
-async function seedWaitingApprovalJob(harness: Awaited<ReturnType<typeof createRuntimeHarness>>) {
+async function seedWaitingApprovalJob(
+  harness: Awaited<ReturnType<typeof createRuntimeHarness>>,
+) {
   await harness.store.sessions.save({
     activeJobId: 'job-approval',
     context: {
@@ -108,13 +110,17 @@ test('approval runtime creates idempotent pending approvals and lists pending su
         title: 'Ignored duplicate approval',
       },
     });
-    const pendingApprovals = await harness.approvalRuntime.listPendingApprovals();
+    const pendingApprovals =
+      await harness.approvalRuntime.listPendingApprovals();
     const approvalEvents = await harness.store.events.list({
       eventTypes: ['approval-requested'],
     });
 
     assert.equal(firstApproval.approval.status, 'pending');
-    assert.equal(duplicateApproval.approval.approvalId, firstApproval.approval.approvalId);
+    assert.equal(
+      duplicateApproval.approval.approvalId,
+      firstApproval.approval.approvalId,
+    );
     assert.deepEqual(pendingApprovals, [
       {
         action: 'send-email',
@@ -182,7 +188,8 @@ test('approval runtime resolves approvals into queued or failed jobs with idempo
       },
     });
     const queuedJob = await harness.store.jobs.getById('job-approval');
-    const queuedSession = await harness.store.sessions.getById('session-approval');
+    const queuedSession =
+      await harness.store.sessions.getById('session-approval');
 
     assert.equal(approved.applied, true);
     assert.equal(approvedAgain.applied, false);
@@ -190,8 +197,12 @@ test('approval runtime resolves approvals into queued or failed jobs with idempo
     assert.equal(queuedJob?.waitReason, null);
     assert.equal(queuedSession?.status, 'pending');
 
+    if (!queuedJob) {
+      throw new Error('Expected a queued job record');
+    }
+
     await harness.store.jobs.save({
-      ...queuedJob!,
+      ...queuedJob,
       claimOwnerId: 'runner-approval',
       claimToken: 'claim-approval-2',
       lastHeartbeatAt: '2026-04-21T07:09:00.000Z',
@@ -235,7 +246,8 @@ test('approval runtime resolves approvals into queued or failed jobs with idempo
       },
     });
     const failedJob = await harness.store.jobs.getById('job-approval');
-    const failedSession = await harness.store.sessions.getById('session-approval');
+    const failedSession =
+      await harness.store.sessions.getById('session-approval');
 
     assert.equal(rejected.applied, true);
     assert.equal(failedJob?.status, 'failed');

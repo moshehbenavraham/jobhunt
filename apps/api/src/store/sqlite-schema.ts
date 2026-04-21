@@ -202,7 +202,10 @@ const TABLE_COLUMN_MIGRATIONS = {
   ],
 } as const;
 
-function listTableColumns(database: DatabaseSync, tableName: string): Set<string> {
+function listTableColumns(
+  database: DatabaseSync,
+  tableName: string,
+): Set<string> {
   const rows = database
     .prepare(`PRAGMA table_info(${tableName});`)
     .all() as Array<{ name?: string }>;
@@ -210,7 +213,9 @@ function listTableColumns(database: DatabaseSync, tableName: string): Set<string
   return new Set(
     rows
       .map((row) => row.name)
-      .filter((columnName): columnName is string => typeof columnName === 'string'),
+      .filter(
+        (columnName): columnName is string => typeof columnName === 'string',
+      ),
   );
 }
 
@@ -218,7 +223,9 @@ function extractAddedColumnName(statement: string): string {
   const match = statement.match(/ADD COLUMN ([a-z_]+)/i);
 
   if (!match?.[1]) {
-    throw new Error(`Unable to determine migrated column name from: ${statement}`);
+    throw new Error(
+      `Unable to determine migrated column name from: ${statement}`,
+    );
   }
 
   return match[1];

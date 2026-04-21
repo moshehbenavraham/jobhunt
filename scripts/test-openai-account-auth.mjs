@@ -12,8 +12,9 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
 
 const authModule = await import(
-  pathToFileURL(join(ROOT, 'scripts', 'lib', 'openai-account-auth', 'index.mjs'))
-    .href
+  pathToFileURL(
+    join(ROOT, 'scripts', 'lib', 'openai-account-auth', 'index.mjs'),
+  ).href
 );
 
 const {
@@ -61,10 +62,7 @@ try {
   });
 
   assert.equal(loggedIn.accountId, 'acct-auth-code');
-  assert.equal(
-    seenAuthorizationUrl.searchParams.get('originator'),
-    'pi',
-  );
+  assert.equal(seenAuthorizationUrl.searchParams.get('originator'), 'pi');
   assert.equal(
     seenAuthorizationUrl.searchParams.get('codex_cli_simplified_flow'),
     'true',
@@ -106,7 +104,12 @@ try {
   const cliLogout = runCli(['logout', '--json', '--auth-path', authPath]);
   assert.equal(cliLogout.status, 0, cliLogout.stderr);
 
-  const postLogoutStatus = runCli(['status', '--json', '--auth-path', authPath]);
+  const postLogoutStatus = runCli([
+    'status',
+    '--json',
+    '--auth-path',
+    authPath,
+  ]);
   assert.equal(postLogoutStatus.status, 0, postLogoutStatus.stderr);
   assert.equal(JSON.parse(postLogoutStatus.stdout).authenticated, false);
 
@@ -254,10 +257,14 @@ function base64url(value) {
 }
 
 function runCli(args) {
-  return spawnSync('node', [join(ROOT, 'scripts', 'openai-account-auth.mjs'), ...args], {
-    cwd: ROOT,
-    encoding: 'utf8',
-  });
+  return spawnSync(
+    'node',
+    [join(ROOT, 'scripts', 'openai-account-auth.mjs'), ...args],
+    {
+      cwd: ROOT,
+      encoding: 'utf8',
+    },
+  );
 }
 
 async function readRequestBody(request) {
@@ -269,7 +276,7 @@ async function readRequestBody(request) {
 }
 
 async function waitForAbort(signal) {
-  return new Promise((resolve, reject) => {
+  return new Promise((_resolve, reject) => {
     signal.addEventListener(
       'abort',
       () => {

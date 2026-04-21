@@ -142,7 +142,10 @@ export async function writeWorkspaceFile(
   await mkdir(targetDirectory, { recursive: true });
 
   try {
-    await writeFile(tempPath, serializedContent, { encoding: 'utf8', flag: 'wx' });
+    await writeFile(tempPath, serializedContent, {
+      encoding: 'utf8',
+      flag: 'wx',
+    });
     await rename(tempPath, targetPath);
   } catch (error) {
     await rm(tempPath, { force: true });

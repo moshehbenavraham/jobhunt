@@ -93,11 +93,11 @@ before SQLite, agent bootstrap, jobs, approvals, or observability are added.
 ### Out of Scope (Deferred)
 
 - SQLite schema design, app-owned repositories, or new `.jobhunt-app/`
-  persistence behavior - *Reason: Session 02 owns the operational store.*
+  persistence behavior - _Reason: Session 02 owns the operational store._
 - OpenAI runtime auth bootstrap, provider wiring, or prompt-driven agent
-  execution - *Reason: Session 03 owns backend runtime bootstrap.*
+  execution - _Reason: Session 03 owns backend runtime bootstrap._
 - Background queueing, retries, resumable runs, or approval pause points -
-  *Reason: Sessions 04 and 05 own jobs, approvals, and observability.*
+  _Reason: Sessions 04 and 05 own jobs, approvals, and observability._
 
 ---
 
@@ -148,30 +148,30 @@ against a live repo clone and keeps startup metadata-only.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/runtime/runtime-config.ts` | Validate and normalize API host, port, and timeout settings | ~90 |
-| `apps/api/src/runtime/service-container.ts` | Build shared runtime services for diagnostics and future backend modules | ~130 |
-| `apps/api/src/server/route-contract.ts` | Define typed route, request context, and JSON error helpers | ~120 |
-| `apps/api/src/server/routes/health-route.ts` | Implement the health endpoint as a typed route module | ~80 |
-| `apps/api/src/server/routes/startup-route.ts` | Implement the startup endpoint as a typed route module | ~90 |
-| `apps/api/src/server/routes/index.ts` | Register current boot routes in deterministic order | ~60 |
-| `apps/api/src/runtime/runtime-config.test.ts` | Cover invalid config and default normalization | ~80 |
-| `apps/api/src/runtime/service-container.test.ts` | Cover service creation and repeated runtime reuse assumptions | ~90 |
+| File                                             | Purpose                                                                  | Est. Lines |
+| ------------------------------------------------ | ------------------------------------------------------------------------ | ---------- |
+| `apps/api/src/runtime/runtime-config.ts`         | Validate and normalize API host, port, and timeout settings              | ~90        |
+| `apps/api/src/runtime/service-container.ts`      | Build shared runtime services for diagnostics and future backend modules | ~130       |
+| `apps/api/src/server/route-contract.ts`          | Define typed route, request context, and JSON error helpers              | ~120       |
+| `apps/api/src/server/routes/health-route.ts`     | Implement the health endpoint as a typed route module                    | ~80        |
+| `apps/api/src/server/routes/startup-route.ts`    | Implement the startup endpoint as a typed route module                   | ~90        |
+| `apps/api/src/server/routes/index.ts`            | Register current boot routes in deterministic order                      | ~60        |
+| `apps/api/src/runtime/runtime-config.test.ts`    | Cover invalid config and default normalization                           | ~80        |
+| `apps/api/src/runtime/service-container.test.ts` | Cover service creation and repeated runtime reuse assumptions            | ~90        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/index.ts` | Expose diagnostics behavior in a service-container-friendly way without duplicating repo logic | ~50 |
-| `apps/api/src/server/http-server.ts` | Replace hardcoded route branching with typed dispatch, shared errors, and runtime services | ~180 |
-| `apps/api/src/server/index.ts` | Use runtime config, lifecycle wiring, and graceful shutdown around the real API runtime | ~70 |
-| `apps/api/src/server/http-server.test.ts` | Expand route and no-mutation coverage for the new runtime boundary | ~120 |
-| `apps/api/package.json` | Add explicit runtime test aliases for the package | ~12 |
-| `apps/api/README_api.md` | Document the new runtime boundary and local smoke path | ~25 |
-| `package.json` | Add or adjust repo-root aliases for the real API runtime entrypoint | ~10 |
-| `scripts/test-app-bootstrap.mjs` | Assert the repo smoke path starts the real API runtime entrypoint | ~40 |
-| `scripts/test-all.mjs` | Keep the quick suite aligned with the runtime contract and new test files | ~20 |
+| File                                      | Changes                                                                                        | Est. Lines |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/index.ts`                   | Expose diagnostics behavior in a service-container-friendly way without duplicating repo logic | ~50        |
+| `apps/api/src/server/http-server.ts`      | Replace hardcoded route branching with typed dispatch, shared errors, and runtime services     | ~180       |
+| `apps/api/src/server/index.ts`            | Use runtime config, lifecycle wiring, and graceful shutdown around the real API runtime        | ~70        |
+| `apps/api/src/server/http-server.test.ts` | Expand route and no-mutation coverage for the new runtime boundary                             | ~120       |
+| `apps/api/package.json`                   | Add explicit runtime test aliases for the package                                              | ~12        |
+| `apps/api/README_api.md`                  | Document the new runtime boundary and local smoke path                                         | ~25        |
+| `package.json`                            | Add or adjust repo-root aliases for the real API runtime entrypoint                            | ~10        |
+| `scripts/test-app-bootstrap.mjs`          | Assert the repo smoke path starts the real API runtime entrypoint                              | ~40        |
+| `scripts/test-all.mjs`                    | Keep the quick suite aligned with the runtime contract and new test files                      | ~20        |
 
 ---
 

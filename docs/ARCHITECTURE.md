@@ -117,17 +117,17 @@ exhausted.
 
 ## Integrity Scripts
 
-| Script | Purpose |
-| ------ | ------- |
-| `scripts/test-all.mjs` | Quick repo validation gate |
-| `scripts/test-app-bootstrap.mjs` | Live app boot smoke test |
-| `scripts/test-app-scaffold.mjs` | Scaffold and diagnostics regression check |
-| `scripts/verify-pipeline.mjs` | Check tracker integrity |
-| `scripts/merge-tracker.mjs` | Merge batch TSV additions |
-| `scripts/dedup-tracker.mjs` | Remove duplicate tracker rows |
-| `scripts/normalize-statuses.mjs` | Normalize status aliases |
-| `scripts/cv-sync-check.mjs` | Validate setup consistency |
-| `scripts/update-system.mjs` | Check and apply repo updates |
+| Script                           | Purpose                                   |
+| -------------------------------- | ----------------------------------------- |
+| `scripts/test-all.mjs`           | Quick repo validation gate                |
+| `scripts/test-app-bootstrap.mjs` | Live app boot smoke test                  |
+| `scripts/test-app-scaffold.mjs`  | Scaffold and diagnostics regression check |
+| `scripts/verify-pipeline.mjs`    | Check tracker integrity                   |
+| `scripts/merge-tracker.mjs`      | Merge batch TSV additions                 |
+| `scripts/dedup-tracker.mjs`      | Remove duplicate tracker rows             |
+| `scripts/normalize-statuses.mjs` | Normalize status aliases                  |
+| `scripts/cv-sync-check.mjs`      | Validate setup consistency                |
+| `scripts/update-system.mjs`      | Check and apply repo updates              |
 
 ## Key Decisions
 

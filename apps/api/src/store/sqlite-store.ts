@@ -141,11 +141,7 @@ async function runWithRetry<TResult>(
   action: string,
   operation: () => TResult,
 ): Promise<TResult> {
-  for (
-    let attempt = 0;
-    attempt < DEFAULT_LOCK_RETRY_ATTEMPTS;
-    attempt += 1
-  ) {
+  for (let attempt = 0; attempt < DEFAULT_LOCK_RETRY_ATTEMPTS; attempt += 1) {
     try {
       return operation();
     } catch (error) {
@@ -179,9 +175,9 @@ function readStoreSchemaState(database: DatabaseSync): {
   missingTables: string[];
   userVersion: number;
 } {
-  const versionRow = database
-    .prepare(`PRAGMA user_version;`)
-    .get() as { user_version?: number } | undefined;
+  const versionRow = database.prepare(`PRAGMA user_version;`).get() as
+    | { user_version?: number }
+    | undefined;
   const tableRows = database
     .prepare(
       `
@@ -210,7 +206,8 @@ export async function inspectOperationalStoreStatus(
   if (!fileStatus.rootExists) {
     return {
       databasePath: fileStatus.databasePath,
-      message: 'Operational store is absent because the app-state root does not exist yet.',
+      message:
+        'Operational store is absent because the app-state root does not exist yet.',
       reason: 'root-missing',
       rootExists: false,
       rootPath: fileStatus.rootPath,
@@ -221,7 +218,8 @@ export async function inspectOperationalStoreStatus(
   if (!fileStatus.exists) {
     return {
       databasePath: fileStatus.databasePath,
-      message: 'Operational store is absent because the database file has not been initialized yet.',
+      message:
+        'Operational store is absent because the database file has not been initialized yet.',
       reason: 'database-missing',
       rootExists: true,
       rootPath: fileStatus.rootPath,
@@ -286,7 +284,7 @@ export async function inspectOperationalStoreStatus(
         ? 'database-locked'
         : mappedError.code === 'operational-store-corrupt'
           ? 'database-corrupt'
-        : 'database-open-failed';
+          : 'database-open-failed';
 
     return {
       databasePath: fileStatus.databasePath,
@@ -321,9 +319,13 @@ export async function createSqliteStore(
         configureWritableConnection(database);
       },
     );
-    await runWithRetry(databasePath, 'initialize the operational store schema', () => {
-      applyOperationalStoreSchema(database);
-    });
+    await runWithRetry(
+      databasePath,
+      'initialize the operational store schema',
+      () => {
+        applyOperationalStoreSchema(database);
+      },
+    );
   } catch (error) {
     database.close();
     throw mapOperationalStoreError(
@@ -352,10 +354,14 @@ export async function createSqliteStore(
     ): Promise<TRow[]> {
       assertOpen();
 
-      return runWithRetry(databasePath, 'read from the operational store', () => {
-        const statement = database.prepare(sql);
-        return statement.all(parameters) as TRow[];
-      });
+      return runWithRetry(
+        databasePath,
+        'read from the operational store',
+        () => {
+          const statement = database.prepare(sql);
+          return statement.all(parameters) as TRow[];
+        },
+      );
     },
     async close(): Promise<void> {
       if (closed) {
@@ -372,10 +378,14 @@ export async function createSqliteStore(
     ): Promise<TRow | null> {
       assertOpen();
 
-      return runWithRetry(databasePath, 'read from the operational store', () => {
-        const statement = database.prepare(sql);
-        return (statement.get(parameters) as TRow | undefined) ?? null;
-      });
+      return runWithRetry(
+        databasePath,
+        'read from the operational store',
+        () => {
+          const statement = database.prepare(sql);
+          return (statement.get(parameters) as TRow | undefined) ?? null;
+        },
+      );
     },
     async getStatus(): Promise<OperationalStoreStatus> {
       return inspectOperationalStoreStatus(options);
@@ -386,36 +396,44 @@ export async function createSqliteStore(
     ): Promise<StatementResultingChanges> {
       assertOpen();
 
-      return runWithRetry(databasePath, 'write to the operational store', () => {
-        const statement = database.prepare(sql);
-        return statement.run(parameters);
-      });
+      return runWithRetry(
+        databasePath,
+        'write to the operational store',
+        () => {
+          const statement = database.prepare(sql);
+          return statement.run(parameters);
+        },
+      );
     },
     async withTransaction<TResult>(
       callback: (transactionDatabase: DatabaseSync) => TResult,
     ): Promise<TResult> {
       assertOpen();
 
-      return runWithRetry(databasePath, 'open an operational-store transaction', () => {
-        database.exec('BEGIN IMMEDIATE;');
+      return runWithRetry(
+        databasePath,
+        'open an operational-store transaction',
+        () => {
+          database.exec('BEGIN IMMEDIATE;');
 
-        try {
-          const result = callback(database);
-          database.exec('COMMIT;');
-          return result;
-        } catch (error) {
           try {
-            database.exec('ROLLBACK;');
-          } catch (rollbackError) {
-            throw new AggregateError(
-              [error, rollbackError],
-              `Operational store transaction failed and rollback was not clean: ${databasePath}`,
-            );
-          }
+            const result = callback(database);
+            database.exec('COMMIT;');
+            return result;
+          } catch (error) {
+            try {
+              database.exec('ROLLBACK;');
+            } catch (rollbackError) {
+              throw new AggregateError(
+                [error, rollbackError],
+                `Operational store transaction failed and rollback was not clean: ${databasePath}`,
+              );
+            }
 
-          throw error;
-        }
-      });
+            throw error;
+          }
+        },
+      );
     },
   };
 }

@@ -100,15 +100,15 @@ resuming, rejecting, and inspecting app-owned work.
 ### Out of Scope (Deferred)
 
 - Approval UI flows, chat affordances, or operator-facing interaction design -
-  *Reason: Phase 03 owns the approvals user experience.*
+  _Reason: Phase 03 owns the approvals user experience._
 - Tool-wrapper implementation and workflow-specific approval policies -
-  *Reason: Phase 02 and later workflow phases own typed tool orchestration and
-  policy details.*
+  _Reason: Phase 02 and later workflow phases own typed tool orchestration and
+  policy details._
 - Logging raw prompt bodies, user-layer content, or model transcripts -
-  *Reason: observability in this session stays metadata-only to preserve the
-  local data contract and avoid stdout-driven debugging.*
-- Cross-repo or cloud-hosted telemetry pipelines - *Reason: the PRD keeps the
-  migration local-first and app-owned during initial parity.*
+  _Reason: observability in this session stays metadata-only to preserve the
+  local data contract and avoid stdout-driven debugging._
+- Cross-repo or cloud-hosted telemetry pipelines - _Reason: the PRD keeps the
+  migration local-first and app-owned during initial parity._
 
 ---
 
@@ -165,42 +165,42 @@ records and transition waiting jobs back to runnable or terminal state.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/approval-runtime/approval-runtime-contract.ts` | Define approval request, resolution, pause, and resume shapes | ~140 |
-| `apps/api/src/approval-runtime/approval-runtime-service.ts` | Persist approvals and coordinate approve or reject transitions for waiting jobs | ~220 |
-| `apps/api/src/approval-runtime/index.ts` | Export the approval-runtime boundary | ~30 |
-| `apps/api/src/approval-runtime/approval-runtime-service.test.ts` | Cover approval creation, resume, reject, and duplicate-resolution paths | ~180 |
-| `apps/api/src/observability/observability-contract.ts` | Define runtime event, correlation, filter, and diagnostics summary shapes | ~140 |
-| `apps/api/src/observability/observability-service.ts` | Persist runtime events and build bounded diagnostics summaries | ~220 |
-| `apps/api/src/observability/index.ts` | Export the observability boundary | ~30 |
-| `apps/api/src/observability/observability-service.test.ts` | Cover event persistence, filtering, redaction, and summary behavior | ~170 |
-| `apps/api/src/store/runtime-event-repository.ts` | Persist and query structured runtime events | ~190 |
-| `apps/api/src/server/routes/runtime-approvals-route.ts` | Expose pending approval summaries for operator inspection | ~90 |
-| `apps/api/src/server/routes/runtime-diagnostics-route.ts` | Expose failed-run and recent-event diagnostics with bounded filters | ~110 |
+| File                                                             | Purpose                                                                         | Est. Lines |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/approval-runtime/approval-runtime-contract.ts`     | Define approval request, resolution, pause, and resume shapes                   | ~140       |
+| `apps/api/src/approval-runtime/approval-runtime-service.ts`      | Persist approvals and coordinate approve or reject transitions for waiting jobs | ~220       |
+| `apps/api/src/approval-runtime/index.ts`                         | Export the approval-runtime boundary                                            | ~30        |
+| `apps/api/src/approval-runtime/approval-runtime-service.test.ts` | Cover approval creation, resume, reject, and duplicate-resolution paths         | ~180       |
+| `apps/api/src/observability/observability-contract.ts`           | Define runtime event, correlation, filter, and diagnostics summary shapes       | ~140       |
+| `apps/api/src/observability/observability-service.ts`            | Persist runtime events and build bounded diagnostics summaries                  | ~220       |
+| `apps/api/src/observability/index.ts`                            | Export the observability boundary                                               | ~30        |
+| `apps/api/src/observability/observability-service.test.ts`       | Cover event persistence, filtering, redaction, and summary behavior             | ~170       |
+| `apps/api/src/store/runtime-event-repository.ts`                 | Persist and query structured runtime events                                     | ~190       |
+| `apps/api/src/server/routes/runtime-approvals-route.ts`          | Expose pending approval summaries for operator inspection                       | ~90        |
+| `apps/api/src/server/routes/runtime-diagnostics-route.ts`        | Expose failed-run and recent-event diagnostics with bounded filters             | ~110       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/store/store-contract.ts` | Add approval wait metadata, event-log repository contracts, and diagnostics inputs | ~120 |
-| `apps/api/src/store/sqlite-schema.ts` | Add approval correlation columns plus a runtime event-log table and indexes | ~130 |
-| `apps/api/src/store/approval-repository.ts` | Add pending, by-job, and resolution-oriented helpers with deterministic ordering | ~130 |
-| `apps/api/src/store/index.ts` | Export and register the runtime event repository in the operational store | ~30 |
-| `apps/api/src/store/repositories.test.ts` | Cover approval correlation fields and structured event persistence | ~140 |
-| `apps/api/src/job-runner/job-runner-contract.ts` | Add approval-pause result shapes and correlation metadata surfaces | ~90 |
-| `apps/api/src/job-runner/job-runner-state-machine.ts` | Add explicit approval waiting and resolution transition helpers | ~70 |
-| `apps/api/src/job-runner/job-runner-service.ts` | Persist approval pauses, emit runtime events, and resume or reject waiting jobs safely | ~220 |
-| `apps/api/src/job-runner/job-runner-service.test.ts` | Cover approval pause, approval resume, rejection, and restart-safe recovery | ~180 |
-| `apps/api/src/runtime/service-container.ts` | Lazily create approval and observability services and wire them into routes and runner | ~120 |
-| `apps/api/src/runtime/service-container.test.ts` | Verify service reuse, cleanup, and diagnostics wiring for the new services | ~120 |
-| `apps/api/src/server/http-server.ts` | Stamp request correlation identifiers and emit structured request events | ~90 |
-| `apps/api/src/server/routes/index.ts` | Register approval and diagnostics routes alongside existing health surfaces | ~30 |
-| `apps/api/src/server/http-server.test.ts` | Cover diagnostics routes, pending approvals, and failed-run summaries | ~180 |
-| `apps/api/package.json` | Add approval and observability test or validation aliases | ~16 |
-| `apps/api/README_api.md` | Document approval and observability boundaries plus diagnostics routes | ~40 |
-| `package.json` | Add repo-root aliases for the new API validation path | ~16 |
-| `scripts/test-all.mjs` | Include the approval and observability validation path in the repo quick suite | ~24 |
+| File                                                  | Changes                                                                                | Est. Lines |
+| ----------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/store/store-contract.ts`                | Add approval wait metadata, event-log repository contracts, and diagnostics inputs     | ~120       |
+| `apps/api/src/store/sqlite-schema.ts`                 | Add approval correlation columns plus a runtime event-log table and indexes            | ~130       |
+| `apps/api/src/store/approval-repository.ts`           | Add pending, by-job, and resolution-oriented helpers with deterministic ordering       | ~130       |
+| `apps/api/src/store/index.ts`                         | Export and register the runtime event repository in the operational store              | ~30        |
+| `apps/api/src/store/repositories.test.ts`             | Cover approval correlation fields and structured event persistence                     | ~140       |
+| `apps/api/src/job-runner/job-runner-contract.ts`      | Add approval-pause result shapes and correlation metadata surfaces                     | ~90        |
+| `apps/api/src/job-runner/job-runner-state-machine.ts` | Add explicit approval waiting and resolution transition helpers                        | ~70        |
+| `apps/api/src/job-runner/job-runner-service.ts`       | Persist approval pauses, emit runtime events, and resume or reject waiting jobs safely | ~220       |
+| `apps/api/src/job-runner/job-runner-service.test.ts`  | Cover approval pause, approval resume, rejection, and restart-safe recovery            | ~180       |
+| `apps/api/src/runtime/service-container.ts`           | Lazily create approval and observability services and wire them into routes and runner | ~120       |
+| `apps/api/src/runtime/service-container.test.ts`      | Verify service reuse, cleanup, and diagnostics wiring for the new services             | ~120       |
+| `apps/api/src/server/http-server.ts`                  | Stamp request correlation identifiers and emit structured request events               | ~90        |
+| `apps/api/src/server/routes/index.ts`                 | Register approval and diagnostics routes alongside existing health surfaces            | ~30        |
+| `apps/api/src/server/http-server.test.ts`             | Cover diagnostics routes, pending approvals, and failed-run summaries                  | ~180       |
+| `apps/api/package.json`                               | Add approval and observability test or validation aliases                              | ~16        |
+| `apps/api/README_api.md`                              | Document approval and observability boundaries plus diagnostics routes                 | ~40        |
+| `package.json`                                        | Add repo-root aliases for the new API validation path                                  | ~16        |
+| `scripts/test-all.mjs`                                | Include the approval and observability validation path in the repo quick suite         | ~24        |
 
 ---
 
@@ -284,6 +284,7 @@ records and transition waiting jobs back to runnable or terminal state.
 
 Checklist active: Yes
 Top behavioral risks for this session:
+
 - Duplicate approve or reject requests while a waiting job is already being
   resumed or failed
 - Diagnostics routes returning unbounded or stale approval data during runner
@@ -339,4 +340,3 @@ Top behavioral risks for this session:
 - Existing durable runner in `apps/api/src/job-runner/`
 - Existing service container and route registry in `apps/api/src/runtime/`
   and `apps/api/src/server/`
-

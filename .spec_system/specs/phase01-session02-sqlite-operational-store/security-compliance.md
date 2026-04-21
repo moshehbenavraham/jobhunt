@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/package.json` - package-level store test and validation aliases
 - `apps/api/src/config/app-state-root.ts` - app-state root and operational-store path helpers
 - `apps/api/src/store/store-contract.ts` - operational-store record and error contracts
@@ -33,6 +34,7 @@
 - `scripts/test-all.mjs` - quick-suite coverage
 
 **Cross-cutting files also touched in-session and reviewed because they were in the diff**:
+
 - `apps/web/src/App.tsx`
 - `apps/web/src/boot/startup-status-panel.tsx`
 - `apps/web/src/boot/startup-types.ts`
@@ -45,14 +47,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | Store SQL is confined to the package-local adapter and repository layer; no unsafe shell construction or string-concatenated query path was introduced in the reviewed files. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or secret material were added. |
-| Sensitive Data Exposure | PASS | -- | No new logging or responses expose personal data or runtime secrets. |
-| Insecure Dependencies | PASS | -- | No dependency changes were introduced for this session, and the validated test/build gates passed. |
-| Misconfiguration | PASS | -- | Startup diagnostics remain read-first; boot paths do not create the SQLite file as a side effect. |
-| Database Security | PASS | -- | SQLite access stays behind the store boundary, initialization is explicit, and corrupt/locked states are surfaced as mapped errors. |
+| Category                      | Status | Severity | Details                                                                                                                                                                       |
+| ----------------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | Store SQL is confined to the package-local adapter and repository layer; no unsafe shell construction or string-concatenated query path was introduced in the reviewed files. |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or secret material were added.                                                                                                                        |
+| Sensitive Data Exposure       | PASS   | --       | No new logging or responses expose personal data or runtime secrets.                                                                                                          |
+| Insecure Dependencies         | PASS   | --       | No dependency changes were introduced for this session, and the validated test/build gates passed.                                                                            |
+| Misconfiguration              | PASS   | --       | Startup diagnostics remain read-first; boot paths do not create the SQLite file as a side effect.                                                                             |
+| Database Security             | PASS   | --       | SQLite access stays behind the store boundary, initialization is explicit, and corrupt/locked states are surfaced as mapped errors.                                           |
 
 ---
 
@@ -69,6 +71,7 @@ The session adds runtime store plumbing and diagnostics, but it does not introdu
 ### Overall: PASS
 
 Files spot-checked for runtime behavior:
+
 - `apps/api/src/store/sqlite-store.ts`
 - `apps/api/src/runtime/service-container.ts`
 - `apps/api/src/server/startup-status.ts`
@@ -76,6 +79,7 @@ Files spot-checked for runtime behavior:
 - `apps/api/src/index.ts`
 
 Findings:
+
 - No high-severity trust-boundary issues found.
 - Store initialization is explicit and separate from read-only status inspection.
 - Container cleanup closes initialized store resources on disposal.
@@ -86,12 +90,14 @@ Findings:
 ## Verification Summary
 
 Validated successfully:
+
 - `npm run app:api:build`
 - `npm run app:api:test:store`
 - `npm run app:boot:test`
 - `node scripts/test-all.mjs --quick`
 
 File-integrity checks on the session's touched files showed:
+
 - ASCII-only content
 - Unix LF line endings
 - Non-empty deliverables

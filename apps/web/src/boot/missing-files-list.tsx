@@ -61,7 +61,9 @@ export function MissingFilesList({
   tone,
 }: MissingFilesListProps) {
   const orderedItems = [...items].sort((left, right) =>
-    left.canonicalRepoRelativePath.localeCompare(right.canonicalRepoRelativePath),
+    left.canonicalRepoRelativePath.localeCompare(
+      right.canonicalRepoRelativePath,
+    ),
   );
 
   return (
@@ -79,8 +81,12 @@ export function MissingFilesList({
         {orderedItems.map((item) => (
           <li key={item.surfaceKey} style={itemStyle}>
             <strong>{item.description}</strong>
-            <span style={labelStyle}>Expected path: {item.canonicalRepoRelativePath}</span>
-            <span style={labelStyle}>Accepted candidates: {formatCandidates(item)}</span>
+            <span style={labelStyle}>
+              Expected path: {item.canonicalRepoRelativePath}
+            </span>
+            <span style={labelStyle}>
+              Accepted candidates: {formatCandidates(item)}
+            </span>
           </li>
         ))}
       </ul>

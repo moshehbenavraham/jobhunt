@@ -24,7 +24,9 @@ function resolveWorkflowModeSource(
   workflowIntent: WorkflowIntent,
 ): PromptResolvedSource {
   const workflowRoute = getWorkflowModeRoute(workflowIntent);
-  const classification = workspace.classifyPath(workflowRoute.modeRepoRelativePath);
+  const classification = workspace.classifyPath(
+    workflowRoute.modeRepoRelativePath,
+  );
 
   if (
     classification.owner !== 'system' ||

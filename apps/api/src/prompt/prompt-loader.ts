@@ -1,5 +1,8 @@
 import type { RepoPathOptions } from '../config/repo-paths.js';
-import { createWorkspaceAdapter, type WorkspaceAdapter } from '../workspace/index.js';
+import {
+  createWorkspaceAdapter,
+  type WorkspaceAdapter,
+} from '../workspace/index.js';
 import { createPromptCache, type PromptCache } from './prompt-cache.js';
 import { composePromptBundle } from './prompt-compose.js';
 import { resolvePromptSources } from './prompt-resolution.js';
@@ -25,7 +28,9 @@ export type PromptLoader = {
 };
 
 function toRequestedWorkflow(workflowInput: unknown): string {
-  return typeof workflowInput === 'string' ? workflowInput : String(workflowInput);
+  return typeof workflowInput === 'string'
+    ? workflowInput
+    : String(workflowInput);
 }
 
 export function createPromptLoadingState(
@@ -140,11 +145,19 @@ async function loadPromptBundle(
     workflow: workflowRoute,
   });
 
-  if (bundle.sources.some((source) => !source.optional && source.status === 'missing')) {
+  if (
+    bundle.sources.some(
+      (source) => !source.optional && source.status === 'missing',
+    )
+  ) {
     return createMissingResult(requestedWorkflow, workflow, cache, bundle);
   }
 
-  if (bundle.sources.some((source) => !source.optional && source.status === 'empty')) {
+  if (
+    bundle.sources.some(
+      (source) => !source.optional && source.status === 'empty',
+    )
+  ) {
     return createEmptyResult(requestedWorkflow, workflow, cache, bundle);
   }
 

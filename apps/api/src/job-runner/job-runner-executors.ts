@@ -20,7 +20,10 @@ function assertJobType(jobType: string): void {
 export function createDurableJobExecutorRegistry(
   definitions: DurableJobExecutorRegistryInput,
 ): DurableJobExecutorRegistry {
-  const normalizedDefinitions = new Map<string, AnyDurableJobExecutorDefinition>();
+  const normalizedDefinitions = new Map<
+    string,
+    AnyDurableJobExecutorDefinition
+  >();
 
   for (const definition of definitions) {
     assertJobType(definition.jobType);

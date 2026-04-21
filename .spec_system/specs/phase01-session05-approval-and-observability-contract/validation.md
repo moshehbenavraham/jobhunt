@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/approval-runtime/approval-runtime-contract.ts` - approval request, correlation, and resolution contracts
 - `apps/api/src/approval-runtime/approval-runtime-service.ts` - approval persistence and approve/reject orchestration
 - `apps/api/src/approval-runtime/index.ts` - approval-runtime public exports
@@ -47,28 +48,28 @@
 
 ## Validation Summary
 
-| Check | Result | Details |
-|-------|--------|---------|
-| Tasks complete | PASS | 16/16 checklist items marked complete |
-| Deliverables present | PASS | All spec deliverables exist and are non-empty |
-| ASCII and LF | PASS | Explicit file checks found no non-ASCII content or CRLF line endings |
-| Package build | PASS | `npm run app:api:build` passed |
-| Package validation | PASS | `npm run app:validate` passed |
-| Repo quick suite | PASS | `npm run test:quick` passed with 243 passed, 0 failed, 0 warnings |
-| DB/schema alignment | PASS | SQLite schema changes and repository updates are aligned with the approval and event contracts |
-| Success criteria | PASS | Approval pause, resume, reject, diagnostics, and event persistence paths are covered by tests |
-| Security & GDPR | PASS / N/A | No security findings; no new personal data handling added |
-| Behavioral quality | PASS | Targeted spot-check found no high-severity trust-boundary, cleanup, mutation, or contract issues |
+| Check                | Result     | Details                                                                                          |
+| -------------------- | ---------- | ------------------------------------------------------------------------------------------------ |
+| Tasks complete       | PASS       | 16/16 checklist items marked complete                                                            |
+| Deliverables present | PASS       | All spec deliverables exist and are non-empty                                                    |
+| ASCII and LF         | PASS       | Explicit file checks found no non-ASCII content or CRLF line endings                             |
+| Package build        | PASS       | `npm run app:api:build` passed                                                                   |
+| Package validation   | PASS       | `npm run app:validate` passed                                                                    |
+| Repo quick suite     | PASS       | `npm run test:quick` passed with 243 passed, 0 failed, 0 warnings                                |
+| DB/schema alignment  | PASS       | SQLite schema changes and repository updates are aligned with the approval and event contracts   |
+| Success criteria     | PASS       | Approval pause, resume, reject, diagnostics, and event persistence paths are covered by tests    |
+| Security & GDPR      | PASS / N/A | No security findings; no new personal data handling added                                        |
+| Behavioral quality   | PASS       | Targeted spot-check found no high-severity trust-boundary, cleanup, mutation, or contract issues |
 
 ---
 
 ## Test Results
 
-| Command | Result |
-|---------|--------|
-| `npm run app:api:build` | PASS |
-| `npm run app:validate` | PASS |
-| `npm run test:quick` | PASS |
+| Command                 | Result |
+| ----------------------- | ------ |
+| `npm run app:api:build` | PASS   |
+| `npm run app:validate`  | PASS   |
+| `npm run test:quick`    | PASS   |
 
 **Node test totals**: 42 passed, 0 failed across `app:validate`
 **Smoke checks**: App bootstrap smoke checks passed

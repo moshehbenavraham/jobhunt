@@ -9,10 +9,8 @@ import {
 } from './codex-transport.mjs';
 
 export const OPENAI_CODEX_AGENTS_PROVIDER_NAME = 'openai-codex';
-export const OPENAI_CODEX_AGENTS_MODEL_PREFIX =
-  `${OPENAI_CODEX_AGENTS_PROVIDER_NAME}/`;
-export const OPENAI_CODEX_AGENTS_MODEL_PREFIX_ALT =
-  `${OPENAI_CODEX_AGENTS_PROVIDER_NAME}:`;
+export const OPENAI_CODEX_AGENTS_MODEL_PREFIX = `${OPENAI_CODEX_AGENTS_PROVIDER_NAME}/`;
+export const OPENAI_CODEX_AGENTS_MODEL_PREFIX_ALT = `${OPENAI_CODEX_AGENTS_PROVIDER_NAME}:`;
 
 export function normalizeOpenAICodexModelName(modelName) {
   const normalized = normalizeOptionalString(modelName);
@@ -235,7 +233,9 @@ function resolveCodexCreateOptions(
 
 function stripOpenAICodexProviderData(requestData) {
   const normalizedRequestData =
-    requestData && typeof requestData === 'object' && !Array.isArray(requestData)
+    requestData &&
+    typeof requestData === 'object' &&
+    !Array.isArray(requestData)
       ? { ...requestData }
       : {};
   const nestedCamel =

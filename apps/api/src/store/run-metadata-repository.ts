@@ -169,7 +169,9 @@ export function createRunMetadataRepository(
 
       return row ? mapRunMetadataRow(row, store.databasePath) : null;
     },
-    async getLatestByJobId(jobId: string): Promise<RuntimeRunMetadataRecord | null> {
+    async getLatestByJobId(
+      jobId: string,
+    ): Promise<RuntimeRunMetadataRecord | null> {
       assertNonEmptyString(jobId, 'jobId', store.databasePath);
       const row = await store.get<RunMetadataRow>(
         `

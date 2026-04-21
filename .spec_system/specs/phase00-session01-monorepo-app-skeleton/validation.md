@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables and session tracking files):
+
 - `package.json`
 - `package-lock.json`
 - `VERSION`

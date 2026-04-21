@@ -92,12 +92,12 @@ directly on the workspace adapter contract that is now complete.
 
 ### Out of Scope (Deferred)
 
-- Prompt wording cleanup or metadata cleanup - *Reason: active considerations
-  say to keep broader prompt cleanup isolated from contract work.*
-- UI chat composition, conversation state, or agent orchestration - *Reason:
-  later phases own runtime interaction and tool execution.*
-- Boot-path health endpoints or cross-package startup wiring - *Reason:
-  Session 04 owns the minimal runnable boot path and validation surface.*
+- Prompt wording cleanup or metadata cleanup - _Reason: active considerations
+  say to keep broader prompt cleanup isolated from contract work._
+- UI chat composition, conversation state, or agent orchestration - _Reason:
+  later phases own runtime interaction and tool execution._
+- Boot-path health endpoints or cross-package startup wiring - _Reason:
+  Session 04 owns the minimal runnable boot path and validation surface._
 
 ---
 
@@ -146,26 +146,26 @@ should fail explicitly instead of falling back to hidden defaults.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/prompt/prompt-types.ts` | Shared prompt source, bundle, and workflow types | ~90 |
-| `apps/api/src/prompt/workflow-mode-map.ts` | Explicit workflow-to-mode routing manifest | ~120 |
-| `apps/api/src/prompt/prompt-source-policy.ts` | Canonical source order and precedence rules | ~120 |
-| `apps/api/src/prompt/prompt-resolution.ts` | Safe path and source resolution helpers | ~130 |
-| `apps/api/src/prompt/prompt-cache.ts` | Freshness-aware prompt cache and reload behavior | ~120 |
-| `apps/api/src/prompt/prompt-compose.ts` | Structured prompt bundle composition helpers | ~110 |
-| `apps/api/src/prompt/prompt-loader.ts` | Public prompt loader facade and error mapping | ~160 |
-| `apps/api/src/prompt/prompt-summary.ts` | Loader summaries for diagnostics and later boot paths | ~80 |
-| `apps/api/src/prompt/test-utils.ts` | Temp-repo prompt fixtures and mutation helpers | ~110 |
-| `apps/api/src/prompt/prompt-loader.test.ts` | Package-local routing, precedence, and cache tests | ~220 |
-| `apps/api/src/prompt/index.ts` | Package-local barrel export for prompt modules | ~20 |
+| File                                          | Purpose                                               | Est. Lines |
+| --------------------------------------------- | ----------------------------------------------------- | ---------- |
+| `apps/api/src/prompt/prompt-types.ts`         | Shared prompt source, bundle, and workflow types      | ~90        |
+| `apps/api/src/prompt/workflow-mode-map.ts`    | Explicit workflow-to-mode routing manifest            | ~120       |
+| `apps/api/src/prompt/prompt-source-policy.ts` | Canonical source order and precedence rules           | ~120       |
+| `apps/api/src/prompt/prompt-resolution.ts`    | Safe path and source resolution helpers               | ~130       |
+| `apps/api/src/prompt/prompt-cache.ts`         | Freshness-aware prompt cache and reload behavior      | ~120       |
+| `apps/api/src/prompt/prompt-compose.ts`       | Structured prompt bundle composition helpers          | ~110       |
+| `apps/api/src/prompt/prompt-loader.ts`        | Public prompt loader facade and error mapping         | ~160       |
+| `apps/api/src/prompt/prompt-summary.ts`       | Loader summaries for diagnostics and later boot paths | ~80        |
+| `apps/api/src/prompt/test-utils.ts`           | Temp-repo prompt fixtures and mutation helpers        | ~110       |
+| `apps/api/src/prompt/prompt-loader.test.ts`   | Package-local routing, precedence, and cache tests    | ~220       |
+| `apps/api/src/prompt/index.ts`                | Package-local barrel export for prompt modules        | ~20        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/index.ts` | Expose prompt contract summary in startup diagnostics | ~50 |
-| `apps/api/package.json` | Add or refine deterministic prompt-contract test coverage commands | ~10 |
+| File                    | Changes                                                            | Est. Lines |
+| ----------------------- | ------------------------------------------------------------------ | ---------- |
+| `apps/api/src/index.ts` | Expose prompt contract summary in startup diagnostics              | ~50        |
+| `apps/api/package.json` | Add or refine deterministic prompt-contract test coverage commands | ~10        |
 
 ---
 

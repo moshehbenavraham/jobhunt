@@ -58,7 +58,8 @@ test('durable job runner enqueues work, persists checkpoints, and completes jobs
 
     const summary = await harness.runner.drainOnce();
     const persistedJob = await harness.store.jobs.getById('job-001');
-    const checkpoint = await harness.store.runMetadata.loadCheckpoint('job-001');
+    const checkpoint =
+      await harness.store.runMetadata.loadCheckpoint('job-001');
     const session = await harness.store.sessions.getById('session-001');
 
     assert.deepEqual(summary.claimedJobIds, ['job-001']);
@@ -134,9 +135,8 @@ test('durable job runner recovers stale running work and resumes from the saved 
 
     const summary = await harness.runner.drainOnce();
     const recoveredJob = await harness.store.jobs.getById('job-recovery');
-    const checkpoint = await harness.store.runMetadata.loadCheckpoint(
-      'job-recovery-run',
-    );
+    const checkpoint =
+      await harness.store.runMetadata.loadCheckpoint('job-recovery-run');
 
     assert.deepEqual(summary.recoveredJobIds, ['job-recovery']);
     assert.deepEqual(summary.claimedJobIds, ['job-recovery']);
@@ -251,7 +251,9 @@ test('durable job runner pauses for approval, resumes after approval, and record
             };
           }
 
-          assert.deepEqual(context.checkpoint?.completedSteps, ['generated-draft']);
+          assert.deepEqual(context.checkpoint?.completedSteps, [
+            'generated-draft',
+          ]);
 
           return {
             result: {
@@ -286,7 +288,8 @@ test('durable job runner pauses for approval, resumes after approval, and record
 
     const waitingSummary = await harness.runner.drainOnce();
     const waitingJob = await harness.store.jobs.getById('job-approval');
-    const pendingApprovals = await harness.approvalRuntime.listPendingApprovals();
+    const pendingApprovals =
+      await harness.approvalRuntime.listPendingApprovals();
     const waitingEvents = await harness.store.events.list({
       jobId: 'job-approval',
       limit: 10,
@@ -332,11 +335,15 @@ test('durable job runner pauses for approval, resumes after approval, and record
     assert.equal(completedJob?.status, 'completed');
     assert.equal(session?.status, 'completed');
     assert.equal(
-      diagnostics.recentEvents.some((event) => event.eventType === 'approval-approved'),
+      diagnostics.recentEvents.some(
+        (event) => event.eventType === 'approval-approved',
+      ),
       true,
     );
     assert.equal(
-      diagnostics.recentEvents.some((event) => event.eventType === 'job-completed'),
+      diagnostics.recentEvents.some(
+        (event) => event.eventType === 'job-completed',
+      ),
       true,
     );
   } finally {
@@ -384,7 +391,8 @@ test('durable job runner leaves rejected approval work in a failed state', async
     });
 
     await harness.runner.drainOnce();
-    const pendingApprovals = await harness.approvalRuntime.listPendingApprovals();
+    const pendingApprovals =
+      await harness.approvalRuntime.listPendingApprovals();
 
     assert.equal(pendingApprovals.length, 1);
 

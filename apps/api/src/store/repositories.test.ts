@@ -4,16 +4,24 @@ import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { createOperationalStore } from './index.js';
 import type { JsonValue } from '../workspace/workspace-types.js';
 
-function createSessionRecord(overrides: Partial<{
-  activeJobId: string | null;
-  createdAt: string;
-  lastHeartbeatAt: string | null;
-  runnerId: string | null;
-  sessionId: string;
-  status: 'cancelled' | 'completed' | 'failed' | 'pending' | 'running' | 'waiting';
-  updatedAt: string;
-  workflow: string;
-}> = {}) {
+function createSessionRecord(
+  overrides: Partial<{
+    activeJobId: string | null;
+    createdAt: string;
+    lastHeartbeatAt: string | null;
+    runnerId: string | null;
+    sessionId: string;
+    status:
+      | 'cancelled'
+      | 'completed'
+      | 'failed'
+      | 'pending'
+      | 'running'
+      | 'waiting';
+    updatedAt: string;
+    workflow: string;
+  }> = {},
+) {
   return {
     activeJobId: overrides.activeJobId ?? null,
     context: {
@@ -29,28 +37,37 @@ function createSessionRecord(overrides: Partial<{
   } as const;
 }
 
-function createJobRecord(overrides: Partial<{
-  attempt: number;
-  claimOwnerId: string | null;
-  claimToken: string | null;
-  completedAt: string | null;
-  createdAt: string;
-  currentRunId: string;
-  error: JsonValue;
-  jobId: string;
-  jobType: string;
-  lastHeartbeatAt: string | null;
-  leaseExpiresAt: string | null;
-  maxAttempts: number;
-  nextAttemptAt: string | null;
-  payload: JsonValue;
-  result: JsonValue;
-  retryBackoffMs: number;
-  sessionId: string;
-  startedAt: string | null;
-  status: 'cancelled' | 'completed' | 'failed' | 'pending' | 'queued' | 'running' | 'waiting';
-  updatedAt: string;
-}> = {}) {
+function createJobRecord(
+  overrides: Partial<{
+    attempt: number;
+    claimOwnerId: string | null;
+    claimToken: string | null;
+    completedAt: string | null;
+    createdAt: string;
+    currentRunId: string;
+    error: JsonValue;
+    jobId: string;
+    jobType: string;
+    lastHeartbeatAt: string | null;
+    leaseExpiresAt: string | null;
+    maxAttempts: number;
+    nextAttemptAt: string | null;
+    payload: JsonValue;
+    result: JsonValue;
+    retryBackoffMs: number;
+    sessionId: string;
+    startedAt: string | null;
+    status:
+      | 'cancelled'
+      | 'completed'
+      | 'failed'
+      | 'pending'
+      | 'queued'
+      | 'running'
+      | 'waiting';
+    updatedAt: string;
+  }> = {},
+) {
   return {
     attempt: overrides.attempt ?? 0,
     claimOwnerId: overrides.claimOwnerId ?? null,
@@ -139,23 +156,42 @@ test('repositories persist and reload sessions, jobs, approvals, and run metadat
 
     assert.deepEqual(await store.sessions.getById(session.sessionId), session);
     assert.deepEqual(await store.jobs.getById(job.jobId), job);
-    assert.deepEqual(await store.approvals.getById(approval.approvalId), approval);
-    assert.deepEqual(await store.runMetadata.getByRunId(runMetadata.runId), runMetadata);
-    assert.deepEqual(await store.runMetadata.getLatestByJobId(job.jobId), runMetadata);
-    assert.deepEqual(await store.runMetadata.loadCheckpoint(runMetadata.runId), {
-      completedSteps: ['bootstrapped'],
-      cursor: 'step-1',
-      updatedAt: '2026-04-21T04:44:00.000Z',
-      value: {
-        traceId: 'trace-001',
+    assert.deepEqual(
+      await store.approvals.getById(approval.approvalId),
+      approval,
+    );
+    assert.deepEqual(
+      await store.runMetadata.getByRunId(runMetadata.runId),
+      runMetadata,
+    );
+    assert.deepEqual(
+      await store.runMetadata.getLatestByJobId(job.jobId),
+      runMetadata,
+    );
+    assert.deepEqual(
+      await store.runMetadata.loadCheckpoint(runMetadata.runId),
+      {
+        completedSteps: ['bootstrapped'],
+        cursor: 'step-1',
+        updatedAt: '2026-04-21T04:44:00.000Z',
+        value: {
+          traceId: 'trace-001',
+        },
       },
-    });
+    );
 
     assert.deepEqual(await store.sessions.listActive(), [session]);
     assert.deepEqual(await store.sessions.listByStatus('running'), [session]);
-    assert.deepEqual(await store.jobs.listBySessionId(session.sessionId), [job]);
-    assert.deepEqual(await store.approvals.listBySessionId(session.sessionId), [approval]);
-    assert.deepEqual(await store.runMetadata.listBySessionId(session.sessionId), [runMetadata]);
+    assert.deepEqual(await store.jobs.listBySessionId(session.sessionId), [
+      job,
+    ]);
+    assert.deepEqual(await store.approvals.listBySessionId(session.sessionId), [
+      approval,
+    ]);
+    assert.deepEqual(
+      await store.runMetadata.listBySessionId(session.sessionId),
+      [runMetadata],
+    );
   } finally {
     await store.close();
     await fixture.cleanup();
@@ -186,7 +222,10 @@ test('job and session repositories support claims, heartbeats, retry waiting, an
       }),
     );
 
-    assert.equal((await store.jobs.listClaimable('2026-04-21T05:00:00.000Z')).length, 1);
+    assert.equal(
+      (await store.jobs.listClaimable('2026-04-21T05:00:00.000Z')).length,
+      1,
+    );
 
     const claimed = await store.jobs.claimNext({
       claimOwnerId: 'runner-claim',
@@ -232,7 +271,10 @@ test('job and session repositories support claims, heartbeats, retry waiting, an
 
     assert.equal(waitingJob.status, 'waiting');
     assert.equal(waitingJob.nextAttemptAt, '2026-04-21T05:05:00.000Z');
-    assert.equal((await store.jobs.listClaimable('2026-04-21T05:02:00.000Z')).length, 0);
+    assert.equal(
+      (await store.jobs.listClaimable('2026-04-21T05:02:00.000Z')).length,
+      0,
+    );
 
     const resumed = await store.jobs.claimNext({
       claimOwnerId: 'runner-claim',
@@ -325,7 +367,10 @@ test('stale running jobs remain recoverable and run metadata checkpoints merge i
       '2026-04-21T05:11:00.000Z',
     );
 
-    assert.deepEqual(recoverableJobs.map((job) => job.jobId), ['job-stale']);
+    assert.deepEqual(
+      recoverableJobs.map((job) => job.jobId),
+      ['job-stale'],
+    );
     assert.deepEqual(await store.runMetadata.loadCheckpoint('run-stale'), {
       completedSteps: ['downloaded-jd', 'scored-fit'],
       cursor: 'step-2',

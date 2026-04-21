@@ -15,7 +15,8 @@ const DEFAULT_PROMPT_FILES: Record<string, string> = {
 };
 
 for (const route of listWorkflowModeRoutes()) {
-  DEFAULT_PROMPT_FILES[route.modeRepoRelativePath] = `# ${route.intent}\n${route.description}\n`;
+  DEFAULT_PROMPT_FILES[route.modeRepoRelativePath] =
+    `# ${route.intent}\n${route.description}\n`;
 }
 
 export type PromptFixture = WorkspaceFixture & {
@@ -28,9 +29,11 @@ async function bumpFileTimestamp(absolutePath: string): Promise<void> {
   await utimes(absolutePath, nextTick, nextTick);
 }
 
-export async function createPromptFixture(options: {
-  files?: Record<string, string>;
-} = {}): Promise<PromptFixture> {
+export async function createPromptFixture(
+  options: {
+    files?: Record<string, string>;
+  } = {},
+): Promise<PromptFixture> {
   const fixture = await createWorkspaceFixture({
     files: {
       ...DEFAULT_PROMPT_FILES,

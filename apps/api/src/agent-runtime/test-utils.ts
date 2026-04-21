@@ -3,7 +3,10 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { resolveRepoRelativePath, type RepoPathOptions } from '../config/repo-paths.js';
+import {
+  resolveRepoRelativePath,
+  type RepoPathOptions,
+} from '../config/repo-paths.js';
 
 export type FakeCodexRequest = {
   body: Record<string, unknown>;
@@ -34,7 +37,9 @@ function createEvent(name: string, payload: Record<string, unknown>): string {
   return `event: ${name}\ndata: ${JSON.stringify(payload)}\n\n`;
 }
 
-async function readRequestBody(request: AsyncIterable<Buffer>): Promise<string> {
+async function readRequestBody(
+  request: AsyncIterable<Buffer>,
+): Promise<string> {
   const chunks: Buffer[] = [];
 
   for await (const chunk of request) {
@@ -55,10 +60,12 @@ function normalizeHeaders(
   );
 }
 
-function createStoredAuthRecord(options: {
-  accountId?: string;
-  expiresAt?: number;
-} = {}): string {
+function createStoredAuthRecord(
+  options: {
+    accountId?: string;
+    expiresAt?: number;
+  } = {},
+): string {
   const expiresAt = options.expiresAt ?? Date.now() + 60_000;
 
   return `${JSON.stringify(
@@ -79,7 +86,9 @@ function createStoredAuthRecord(options: {
 }
 
 export async function createAgentRuntimeAuthFixture(): Promise<AgentRuntimeAuthFixture> {
-  const sandboxRoot = await mkdtemp(join(tmpdir(), 'jobhunt-agent-runtime-auth-'));
+  const sandboxRoot = await mkdtemp(
+    join(tmpdir(), 'jobhunt-agent-runtime-auth-'),
+  );
   const authPath = join(sandboxRoot, 'data', 'openai-account-auth.json');
 
   async function writeAuthFile(contents: string): Promise<void> {
@@ -251,6 +260,9 @@ export function getRepoOpenAIAccountModuleImportPath(
   options: RepoPathOptions = {},
 ): string {
   return pathToFileURL(
-    resolveRepoRelativePath('scripts/lib/openai-account-auth/index.mjs', options),
+    resolveRepoRelativePath(
+      'scripts/lib/openai-account-auth/index.mjs',
+      options,
+    ),
   ).href;
 }

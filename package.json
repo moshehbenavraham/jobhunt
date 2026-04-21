@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.36",
+  "version": "1.5.37",
   "description": "AI-powered job search pipeline",
   "workspaces": [
     "apps/web",
@@ -24,6 +24,7 @@
     "app:api:validate:job-runner": "npm run validate:job-runner --workspace @jobhunt/api",
     "app:api:validate:observability": "npm run validate:observability --workspace @jobhunt/api",
     "app:check": "npm run app:web:check && npm run app:api:check",
+    "typecheck": "npm run app:check",
     "app:boot:test": "node scripts/test-app-bootstrap.mjs",
     "app:validate": "npm run app:check && npm run app:api:test:runtime && npm run app:api:test:agent-runtime && npm run app:api:test:approval-runtime && npm run app:api:test:observability && npm run app:api:test:job-runner && npm run app:api:test:store && npm run app:boot:test",
     "cron:install": "node scripts/install-scan-cron.mjs",

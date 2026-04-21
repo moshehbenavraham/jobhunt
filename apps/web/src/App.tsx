@@ -3,8 +3,7 @@ import { StartupStatusPanel } from './boot/startup-status-panel';
 import { useStartupDiagnostics } from './boot/use-startup-diagnostics';
 
 const pageStyle: CSSProperties = {
-  background:
-    'linear-gradient(180deg, #f6f6f0 0%, #f8fafc 48%, #fdf2f8 100%)',
+  background: 'linear-gradient(180deg, #f6f6f0 0%, #f8fafc 48%, #fdf2f8 100%)',
   color: '#0f172a',
   fontFamily: '"Trebuchet MS", "Segoe UI", sans-serif',
   lineHeight: 1.6,

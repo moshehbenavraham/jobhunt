@@ -189,7 +189,12 @@ function mapJobRow(row: JobRow, databasePath: string): RuntimeJobRecord {
     completedAt: row.completed_at,
     createdAt: row.created_at,
     currentRunId: row.run_id ?? row.job_id,
-    error: parseJsonValue(row.error_json, databasePath, row.job_id, 'error_json'),
+    error: parseJsonValue(
+      row.error_json,
+      databasePath,
+      row.job_id,
+      'error_json',
+    ),
     jobId: row.job_id,
     jobType: row.job_type,
     lastHeartbeatAt: row.last_heartbeat_at,
@@ -226,7 +231,10 @@ function selectJobById(database: DatabaseSync, jobId: string): JobRow | null {
   );
 }
 
-function selectClaimableJob(database: DatabaseSync, now: string): JobRow | null {
+function selectClaimableJob(
+  database: DatabaseSync,
+  now: string,
+): JobRow | null {
   return (
     (database
       .prepare(
@@ -285,7 +293,9 @@ function readJobOrThrow(
 
 function assertClaimInput(
   input:
-    RuntimeJobHeartbeatInput | RuntimeJobTerminalStateInput | RuntimeJobWaitingStateInput,
+    | RuntimeJobHeartbeatInput
+    | RuntimeJobTerminalStateInput
+    | RuntimeJobWaitingStateInput,
   databasePath: string,
 ): void {
   assertNonEmptyString(input.jobId, 'jobId', databasePath);
@@ -307,7 +317,9 @@ function updateClaimedJobState(
   database: DatabaseSync,
   store: SqliteStoreContext,
   input:
-    RuntimeJobTerminalStateInput | RuntimeJobWaitingStateInput | RuntimeJobHeartbeatInput,
+    | RuntimeJobTerminalStateInput
+    | RuntimeJobWaitingStateInput
+    | RuntimeJobHeartbeatInput,
   sql: string,
   parameters: Record<string, SQLInputValue>,
 ): RuntimeJobRecord {
@@ -386,7 +398,9 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
         return record;
       });
     },
-    async cancel(input: RuntimeJobTerminalStateInput): Promise<RuntimeJobRecord> {
+    async cancel(
+      input: RuntimeJobTerminalStateInput,
+    ): Promise<RuntimeJobRecord> {
       assertClaimInput(input, store.databasePath);
 
       return store.withTransaction((database) =>
@@ -415,7 +429,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
           `,
           {
             claimToken: input.claimToken,
-            errorJson: input.error === null ? null : JSON.stringify(input.error),
+            errorJson:
+              input.error === null ? null : JSON.stringify(input.error),
             jobId: input.jobId,
             resultJson:
               input.result === null ? null : JSON.stringify(input.result),
@@ -425,7 +440,9 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
         ),
       );
     },
-    async claimNext(input: RuntimeJobClaimInput): Promise<RuntimeJobRecord | null> {
+    async claimNext(
+      input: RuntimeJobClaimInput,
+    ): Promise<RuntimeJobRecord | null> {
       assertClaimOperationInput(input, store.databasePath);
 
       return store.withTransaction((database) => {
@@ -435,7 +452,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
           return null;
         }
 
-        const attempt = row.status === 'running' ? row.attempt : row.attempt + 1;
+        const attempt =
+          row.status === 'running' ? row.attempt : row.attempt + 1;
         database
           .prepare(
             `
@@ -468,10 +486,17 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
             timestamp: input.timestamp,
           });
 
-        return readClaimedJobOrThrow(database, store, row.job_id, input.claimToken);
+        return readClaimedJobOrThrow(
+          database,
+          store,
+          row.job_id,
+          input.claimToken,
+        );
       });
     },
-    async complete(input: RuntimeJobTerminalStateInput): Promise<RuntimeJobRecord> {
+    async complete(
+      input: RuntimeJobTerminalStateInput,
+    ): Promise<RuntimeJobRecord> {
       assertClaimInput(input, store.databasePath);
 
       return store.withTransaction((database) =>
@@ -500,7 +525,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
           `,
           {
             claimToken: input.claimToken,
-            errorJson: input.error === null ? null : JSON.stringify(input.error),
+            errorJson:
+              input.error === null ? null : JSON.stringify(input.error),
             jobId: input.jobId,
             resultJson:
               input.result === null ? null : JSON.stringify(input.result),
@@ -539,7 +565,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
           `,
           {
             claimToken: input.claimToken,
-            errorJson: input.error === null ? null : JSON.stringify(input.error),
+            errorJson:
+              input.error === null ? null : JSON.stringify(input.error),
             jobId: input.jobId,
             resultJson:
               input.result === null ? null : JSON.stringify(input.result),
@@ -841,7 +868,8 @@ export function createJobRepository(store: SqliteStoreContext): JobRepository {
           `,
           {
             claimToken: input.claimToken,
-            errorJson: input.error === null ? null : JSON.stringify(input.error),
+            errorJson:
+              input.error === null ? null : JSON.stringify(input.error),
             jobId: input.jobId,
             nextAttemptAt: input.nextAttemptAt,
             resultJson:

@@ -69,9 +69,8 @@ async function checkPlaywright() {
 async function checkOpenAIAccountAuth() {
   let getStoredCredentialsStatus;
   try {
-    ({ getStoredCredentialsStatus } = await import(
-      './lib/openai-account-auth/storage.mjs'
-    ));
+    ({ getStoredCredentialsStatus } =
+      await import('./lib/openai-account-auth/storage.mjs'));
   } catch (error) {
     if (
       error?.code === 'ERR_MODULE_NOT_FOUND' ||

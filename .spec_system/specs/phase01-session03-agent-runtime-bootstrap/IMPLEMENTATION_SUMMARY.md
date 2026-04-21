@@ -25,32 +25,32 @@ the repo quick suite were green, and the session validation report recorded
 
 ### Files Created
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `apps/api/src/agent-runtime/agent-runtime-contract.ts` | Typed readiness, bootstrap, and runtime error contracts | ~147 |
-| `apps/api/src/agent-runtime/agent-runtime-config.ts` | Config normalization for auth path, base URL, originator, and model overrides | ~147 |
-| `apps/api/src/agent-runtime/openai-account-provider.ts` | Typed adapter over the repo-owned auth/provider module | ~308 |
-| `apps/api/src/agent-runtime/agent-runtime-service.ts` | Prompt-loading bootstrap service and provider lifecycle management | ~546 |
-| `apps/api/src/agent-runtime/index.ts` | Public agent-runtime barrel export | ~5 |
-| `apps/api/src/agent-runtime/test-utils.ts` | Fake backend and auth fixture helpers | ~256 |
-| `apps/api/src/agent-runtime/agent-runtime-config.test.ts` | Config parsing and invalid override coverage | ~75 |
-| `apps/api/src/agent-runtime/openai-account-provider.test.ts` | Auth readiness mapping and provider bootstrap coverage | ~122 |
-| `apps/api/src/agent-runtime/agent-runtime-service.test.ts` | Prompt bootstrap and fake-backend runtime coverage | ~118 |
+| File                                                         | Purpose                                                                       | Lines |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------- | ----- |
+| `apps/api/src/agent-runtime/agent-runtime-contract.ts`       | Typed readiness, bootstrap, and runtime error contracts                       | ~147  |
+| `apps/api/src/agent-runtime/agent-runtime-config.ts`         | Config normalization for auth path, base URL, originator, and model overrides | ~147  |
+| `apps/api/src/agent-runtime/openai-account-provider.ts`      | Typed adapter over the repo-owned auth/provider module                        | ~308  |
+| `apps/api/src/agent-runtime/agent-runtime-service.ts`        | Prompt-loading bootstrap service and provider lifecycle management            | ~546  |
+| `apps/api/src/agent-runtime/index.ts`                        | Public agent-runtime barrel export                                            | ~5    |
+| `apps/api/src/agent-runtime/test-utils.ts`                   | Fake backend and auth fixture helpers                                         | ~256  |
+| `apps/api/src/agent-runtime/agent-runtime-config.test.ts`    | Config parsing and invalid override coverage                                  | ~75   |
+| `apps/api/src/agent-runtime/openai-account-provider.test.ts` | Auth readiness mapping and provider bootstrap coverage                        | ~122  |
+| `apps/api/src/agent-runtime/agent-runtime-service.test.ts`   | Prompt bootstrap and fake-backend runtime coverage                            | ~118  |
 
 ### Files Modified
 
-| File | Changes |
-|------|---------|
-| `apps/api/src/runtime/service-container.ts` | Added lazy agent-runtime creation, caching, and cleanup wiring |
-| `apps/api/src/runtime/service-container.test.ts` | Added caching and cleanup assertions for the new runtime service |
-| `apps/api/src/index.ts` | Extended startup diagnostics with agent-runtime readiness and session metadata |
-| `apps/api/src/server/startup-status.ts` | Added actionable auth and prompt failure mapping |
-| `apps/api/src/server/http-server.test.ts` | Added readiness assertions for startup and health payloads |
-| `apps/api/package.json` | Added package-level agent-runtime test and validation aliases |
-| `apps/api/README_api.md` | Documented the agent bootstrap contract and validation flow |
-| `package.json` | Added repo-root agent-runtime alias and included it in `app:validate` |
-| `scripts/test-app-bootstrap.mjs` | Extended bootstrap smoke coverage for the agent-runtime path |
-| `scripts/test-all.mjs` | Included the new agent-runtime contract path in the quick suite |
+| File                                             | Changes                                                                        |
+| ------------------------------------------------ | ------------------------------------------------------------------------------ |
+| `apps/api/src/runtime/service-container.ts`      | Added lazy agent-runtime creation, caching, and cleanup wiring                 |
+| `apps/api/src/runtime/service-container.test.ts` | Added caching and cleanup assertions for the new runtime service               |
+| `apps/api/src/index.ts`                          | Extended startup diagnostics with agent-runtime readiness and session metadata |
+| `apps/api/src/server/startup-status.ts`          | Added actionable auth and prompt failure mapping                               |
+| `apps/api/src/server/http-server.test.ts`        | Added readiness assertions for startup and health payloads                     |
+| `apps/api/package.json`                          | Added package-level agent-runtime test and validation aliases                  |
+| `apps/api/README_api.md`                         | Documented the agent bootstrap contract and validation flow                    |
+| `package.json`                                   | Added repo-root agent-runtime alias and included it in `app:validate`          |
+| `scripts/test-app-bootstrap.mjs`                 | Extended bootstrap smoke coverage for the agent-runtime path                   |
+| `scripts/test-all.mjs`                           | Included the new agent-runtime contract path in the quick suite                |
 
 ---
 
@@ -69,11 +69,11 @@ the repo quick suite were green, and the session validation report recorded
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 246 |
-| Passed | 246 |
-| Coverage | N/A |
+| Metric   | Value |
+| -------- | ----- |
+| Tests    | 246   |
+| Passed   | 246   |
+| Coverage | N/A   |
 
 ---
 

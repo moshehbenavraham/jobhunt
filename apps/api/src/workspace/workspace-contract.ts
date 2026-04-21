@@ -228,9 +228,10 @@ const WORKSPACE_SURFACES = [
   },
 ] as const satisfies readonly WorkspaceSurfaceDefinition[];
 
-const workspaceSurfaceMap = new Map<WorkspaceSurfaceKey, WorkspaceSurfaceDefinition>(
-  WORKSPACE_SURFACES.map((surface) => [surface.key, surface]),
-);
+const workspaceSurfaceMap = new Map<
+  WorkspaceSurfaceKey,
+  WorkspaceSurfaceDefinition
+>(WORKSPACE_SURFACES.map((surface) => [surface.key, surface]));
 
 const USER_EXACT_PATHS = new Set<string>([
   'article-digest.md',
@@ -340,7 +341,11 @@ export function classifyKnownRepoRelativePath(
     return 'user';
   }
 
-  if (USER_DIRECTORY_PREFIXES.some((prefix) => isPrefixMatch(prefix, repoRelativePath))) {
+  if (
+    USER_DIRECTORY_PREFIXES.some((prefix) =>
+      isPrefixMatch(prefix, repoRelativePath),
+    )
+  ) {
     return 'user';
   }
 

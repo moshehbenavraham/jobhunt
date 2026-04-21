@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/job-runner/job-runner-contract.ts` - durable runner lifecycle, enqueue, checkpoint, and recovery contracts
 - `apps/api/src/job-runner/job-runner-state-machine.ts` - valid lifecycle transitions and retry decision helpers
 - `apps/api/src/job-runner/job-runner-executors.ts` - executor registration and payload validation
@@ -37,26 +38,26 @@
 
 ## Validation Summary
 
-| Check | Result | Details |
-|-------|--------|---------|
-| Tasks complete | PASS | 16/16 checklist items marked complete |
-| Deliverables present | PASS | All spec deliverables exist and are non-empty |
-| ASCII and LF | PASS | Touched files are ASCII text with LF line endings |
-| Package validation | PASS | `npm run app:validate` passed |
-| Repo pipeline check | PASS | `npm run verify` passed with 0 errors |
-| DB/schema alignment | PASS | SQLite schema updates are represented in tracked schema and repository helpers |
-| Success criteria | PASS | Enqueue, recovery, retry, and cleanup paths are covered by tests |
-| Security & GDPR | PASS / N/A | No new security findings; no personal data handling added |
-| Behavioral quality | PASS | Cleanup, duplicate-prevention, and failure-path coverage are in place |
+| Check                | Result     | Details                                                                        |
+| -------------------- | ---------- | ------------------------------------------------------------------------------ |
+| Tasks complete       | PASS       | 16/16 checklist items marked complete                                          |
+| Deliverables present | PASS       | All spec deliverables exist and are non-empty                                  |
+| ASCII and LF         | PASS       | Touched files are ASCII text with LF line endings                              |
+| Package validation   | PASS       | `npm run app:validate` passed                                                  |
+| Repo pipeline check  | PASS       | `npm run verify` passed with 0 errors                                          |
+| DB/schema alignment  | PASS       | SQLite schema updates are represented in tracked schema and repository helpers |
+| Success criteria     | PASS       | Enqueue, recovery, retry, and cleanup paths are covered by tests               |
+| Security & GDPR      | PASS / N/A | No new security findings; no personal data handling added                      |
+| Behavioral quality   | PASS       | Cleanup, duplicate-prevention, and failure-path coverage are in place          |
 
 ---
 
 ## Test Results
 
-| Command | Result |
-|---------|--------|
-| `npm run app:validate` | PASS |
-| `npm run verify` | PASS |
+| Command                | Result |
+| ---------------------- | ------ |
+| `npm run app:validate` | PASS   |
+| `npm run verify`       | PASS   |
 
 **Node test totals**: 34 passed, 0 failed
 **Smoke checks**: App bootstrap smoke checks passed

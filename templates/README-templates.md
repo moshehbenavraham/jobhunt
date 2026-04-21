@@ -4,11 +4,11 @@ System-layer template files used by jobhunt scripts and modes. These files are a
 
 ## Files
 
-| File                  | Used By                                                                                      | Purpose                                                                  |
-| --------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `cv-template.html`    | `scripts/generate-pdf.mjs`                                                                   | HTML/CSS template for ATS-optimized CV PDFs                              |
-| `cv-template.tex`     | `scripts/generate-latex.mjs`                                                                 | LaTeX / Overleaf template for ATS-optimized CV PDFs                      |
-| `states.yml`          | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases                           |
+| File               | Used By                                                                                      | Purpose                                             |
+| ------------------ | -------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| `cv-template.html` | `scripts/generate-pdf.mjs`                                                                   | HTML/CSS template for ATS-optimized CV PDFs         |
+| `cv-template.tex`  | `scripts/generate-latex.mjs`                                                                 | LaTeX / Overleaf template for ATS-optimized CV PDFs |
+| `states.yml`       | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases      |
 
 ### cv-template.html
 

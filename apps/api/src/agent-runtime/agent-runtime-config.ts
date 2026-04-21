@@ -50,23 +50,25 @@ function normalizeRequiredString(
   return normalized;
 }
 
-function resolveAuthPath(
-  value: string,
-  options: RepoPathOptions = {},
-): string {
-  const normalized = normalizeRequiredString(value, AGENT_RUNTIME_AUTH_PATH_ENV);
+function resolveAuthPath(value: string, options: RepoPathOptions = {}): string {
+  const normalized = normalizeRequiredString(
+    value,
+    AGENT_RUNTIME_AUTH_PATH_ENV,
+  );
   const basePath = options.repoRoot ?? process.cwd();
   return resolve(basePath, normalized);
 }
 
 function resolveBaseUrl(value: string): string {
-  const normalized = normalizeRequiredString(value, AGENT_RUNTIME_BASE_URL_ENV)
-    .replace(/\/+$/g, '');
+  const normalized = normalizeRequiredString(
+    value,
+    AGENT_RUNTIME_BASE_URL_ENV,
+  ).replace(/\/+$/g, '');
   let parsedUrl: URL;
 
   try {
     parsedUrl = new URL(normalized);
-  } catch (error) {
+  } catch (_error) {
     throw new AgentRuntimeConfigValidationError(
       `Invalid ${AGENT_RUNTIME_BASE_URL_ENV} value: ${normalized}. Expected an absolute URL.`,
     );

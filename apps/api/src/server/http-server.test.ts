@@ -125,56 +125,73 @@ test('health and startup routes report ready diagnostics after explicit store in
     assert.equal(healthResponse.status, 200);
     assert.equal(startupResponse.status, 200);
 
-    assert.equal((healthPayload as { service: string }).service, STARTUP_SERVICE_NAME);
+    assert.equal(
+      (healthPayload as { service: string }).service,
+      STARTUP_SERVICE_NAME,
+    );
     assert.equal(
       (healthPayload as { sessionId: string }).sessionId,
       STARTUP_SESSION_ID,
     );
     assert.equal((healthPayload as { status: string }).status, 'ok');
     assert.equal(
-      (healthPayload as {
-        agentRuntime: { status: string };
-      }).agentRuntime.status,
+      (
+        healthPayload as {
+          agentRuntime: { status: string };
+        }
+      ).agentRuntime.status,
       'ready',
     );
     assert.equal(
-      (healthPayload as { operationalStore: { status: string } }).operationalStore.status,
+      (healthPayload as { operationalStore: { status: string } })
+        .operationalStore.status,
       'ready',
     );
 
     assert.equal((startupPayload as { status: string }).status, 'ready');
     assert.equal(
-      (startupPayload as {
-        diagnostics: { agentRuntime: { status: string } };
-      }).diagnostics.agentRuntime.status,
+      (
+        startupPayload as {
+          diagnostics: { agentRuntime: { status: string } };
+        }
+      ).diagnostics.agentRuntime.status,
       'ready',
     );
     assert.equal(
-      (startupPayload as { operationalStore: { status: string } }).operationalStore.status,
+      (startupPayload as { operationalStore: { status: string } })
+        .operationalStore.status,
       'ready',
     );
     assert.equal(
-      (startupPayload as {
-        diagnostics: { onboardingMissing: unknown[] };
-      }).diagnostics.onboardingMissing.length,
+      (
+        startupPayload as {
+          diagnostics: { onboardingMissing: unknown[] };
+        }
+      ).diagnostics.onboardingMissing.length,
       0,
     );
     assert.equal(
-      (startupPayload as {
-        diagnostics: { runtimeMissing: unknown[] };
-      }).diagnostics.runtimeMissing.length,
+      (
+        startupPayload as {
+          diagnostics: { runtimeMissing: unknown[] };
+        }
+      ).diagnostics.runtimeMissing.length,
       0,
     );
     assert.equal(
-      (startupPayload as {
-        diagnostics: { currentSession: { id: string } };
-      }).diagnostics.currentSession.id,
+      (
+        startupPayload as {
+          diagnostics: { currentSession: { id: string } };
+        }
+      ).diagnostics.currentSession.id,
       STARTUP_SESSION_ID,
     );
     assert.equal(
-      (startupPayload as {
-        bootSurface: { startupPath: string };
-      }).bootSurface.startupPath,
+      (
+        startupPayload as {
+          bootSurface: { startupPath: string };
+        }
+      ).bootSurface.startupPath,
       '/startup',
     );
   } finally {
@@ -219,7 +236,8 @@ test('startup route reports onboarding gaps without mutating user-layer files', 
     assert.equal(startupResponse.status, 200);
     assert.equal((healthPayload as { status: string }).status, 'degraded');
     assert.equal(
-      (healthPayload as { operationalStore: { status: string } }).operationalStore.status,
+      (healthPayload as { operationalStore: { status: string } })
+        .operationalStore.status,
       'absent',
     );
     assert.equal(
@@ -227,23 +245,28 @@ test('startup route reports onboarding gaps without mutating user-layer files', 
       'missing-prerequisites',
     );
     assert.equal(
-      (startupPayload as {
-        diagnostics: { agentRuntime: { status: string } };
-      }).diagnostics.agentRuntime.status,
+      (
+        startupPayload as {
+          diagnostics: { agentRuntime: { status: string } };
+        }
+      ).diagnostics.agentRuntime.status,
       'auth-required',
     );
     assert.equal(
-      (startupPayload as { operationalStore: { status: string } }).operationalStore.status,
+      (startupPayload as { operationalStore: { status: string } })
+        .operationalStore.status,
       'absent',
     );
     assert.deepEqual(afterSnapshot, beforeSnapshot);
     assert.equal(existsSync(appStateRoot), false);
     assert.deepEqual(
-      (startupPayload as {
-        diagnostics: {
-          onboardingMissing: Array<{ surfaceKey: string }>;
-        };
-      }).diagnostics.onboardingMissing.map((item) => item.surfaceKey),
+      (
+        startupPayload as {
+          diagnostics: {
+            onboardingMissing: Array<{ surfaceKey: string }>;
+          };
+        }
+      ).diagnostics.onboardingMissing.map((item) => item.surfaceKey),
       ['profileConfig', 'profileCv'],
     );
   } finally {
@@ -279,11 +302,16 @@ test('startup routes surface agent runtime auth-required status without mutating
     assert.equal(healthResponse.status, 200);
     assert.equal(startupResponse.status, 200);
     assert.equal((healthPayload as { status: string }).status, 'degraded');
-    assert.equal((startupPayload as { status: string }).status, 'auth-required');
     assert.equal(
-      (startupPayload as {
-        diagnostics: { agentRuntime: { auth: { authPath: string } } };
-      }).diagnostics.agentRuntime.auth.authPath,
+      (startupPayload as { status: string }).status,
+      'auth-required',
+    );
+    assert.equal(
+      (
+        startupPayload as {
+          diagnostics: { agentRuntime: { auth: { authPath: string } } };
+        }
+      ).diagnostics.agentRuntime.auth.authPath,
       join(fixture.repoRoot, 'data', 'openai-account-auth.json'),
     );
     assert.deepEqual(afterSnapshot, beforeSnapshot);
@@ -331,9 +359,11 @@ test('startup routes surface corrupt operational-store state as a runtime error'
       'runtime-error',
     );
     assert.equal(
-      (startupPayload as {
-        operationalStore: { status: string };
-      }).operationalStore.status,
+      (
+        startupPayload as {
+          operationalStore: { status: string };
+        }
+      ).operationalStore.status,
       'corrupt',
     );
   } finally {
@@ -351,7 +381,9 @@ test('startup route maps repo-root resolution failures to explicit error payload
   });
 
   try {
-    const { payload, response } = await readJsonResponse(`${handle.url}/startup`);
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/startup`,
+    );
 
     assert.equal(response.status, 500);
     assert.equal(
@@ -387,7 +419,10 @@ test('health route handles HEAD requests without emitting a response body', asyn
 
     assert.equal(response.status, 200);
     assert.equal(body, '');
-    assert.equal(response.headers.get('content-type'), 'application/json; charset=utf-8');
+    assert.equal(
+      response.headers.get('content-type'),
+      'application/json; charset=utf-8',
+    );
     assert.equal(
       Number(response.headers.get('content-length') ?? '0') > 0,
       true,
@@ -464,14 +499,16 @@ test('runtime approval and diagnostics routes expose pending approvals, failed d
     assert.ok(approvalsRequestId);
     assert.ok(approvalsTraceId);
     assert.equal(
-      (approvalsPayload as { approvals: Array<{ approvalId: string }> }).approvals[0]
-        ?.approvalId,
+      (approvalsPayload as { approvals: Array<{ approvalId: string }> })
+        .approvals[0]?.approvalId,
       approval.approval.approvalId,
     );
     assert.equal(
-      (diagnosticsPayload as {
-        diagnostics: { failedJobs: Array<{ jobId: string }> };
-      }).diagnostics.failedJobs[0]?.jobId,
+      (
+        diagnosticsPayload as {
+          diagnostics: { failedJobs: Array<{ jobId: string }> };
+        }
+      ).diagnostics.failedJobs[0]?.jobId,
       'job-runtime-route',
     );
 
@@ -480,11 +517,15 @@ test('runtime approval and diagnostics routes expose pending approvals, failed d
     });
 
     assert.equal(
-      requestEvents.some((event) => event.eventType === 'http-request-completed'),
+      requestEvents.some(
+        (event) => event.eventType === 'http-request-completed',
+      ),
       true,
     );
     assert.equal(
-      requestEvents.some((event) => event.eventType === 'http-request-received'),
+      requestEvents.some(
+        (event) => event.eventType === 'http-request-received',
+      ),
       true,
     );
   } finally {
@@ -562,12 +603,12 @@ test('startup server rate limits burst traffic per client', async () => {
 
     assert.ok(lastResponse);
     assert.equal(lastResponse.status, 429);
-    assert.equal(
-      (lastPayload as { status: string }).status,
-      'rate-limited',
-    );
+    assert.equal((lastPayload as { status: string }).status, 'rate-limited');
     assert.match(
-      String(lastPayload && (lastPayload as { error?: { message?: string } }).error?.message),
+      String(
+        lastPayload &&
+          (lastPayload as { error?: { message?: string } }).error?.message,
+      ),
       /Too many requests/i,
     );
     assert.equal(lastResponse.headers.get('retry-after') !== null, true);

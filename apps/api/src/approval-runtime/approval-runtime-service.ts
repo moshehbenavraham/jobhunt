@@ -45,14 +45,6 @@ function extractRequestString(
   return typeof candidate === 'string' ? candidate : '';
 }
 
-function extractRequestDetails(request: JsonValue): JsonValue | null {
-  if (!isJsonObject(request) || !('details' in request)) {
-    return null;
-  }
-
-  return (request.details as JsonValue | undefined) ?? null;
-}
-
 async function synchronizeSessionState(
   store: OperationalStore,
   sessionId: string,
@@ -82,11 +74,17 @@ async function synchronizeSessionState(
     status = 'waiting';
   } else if (pendingJob) {
     status = 'pending';
-  } else if (jobs.length > 0 && jobs.every((job) => job.status === 'completed')) {
+  } else if (
+    jobs.length > 0 &&
+    jobs.every((job) => job.status === 'completed')
+  ) {
     status = 'completed';
   } else if (jobs.some((job) => job.status === 'failed')) {
     status = 'failed';
-  } else if (jobs.length > 0 && jobs.every((job) => job.status === 'cancelled')) {
+  } else if (
+    jobs.length > 0 &&
+    jobs.every((job) => job.status === 'cancelled')
+  ) {
     status = 'cancelled';
   }
 
@@ -209,9 +207,9 @@ export function createApprovalRuntimeService(
       input: ApprovalRuntimeCreateInput,
     ): Promise<ApprovalRuntimeCreateResult> {
       const store = await options.getStore();
-      const existingPending = (await store.approvals.listByJobId(
-        input.request.correlation.jobId,
-      )).find((approval) => approval.status === 'pending');
+      const existingPending = (
+        await store.approvals.listByJobId(input.request.correlation.jobId)
+      ).find((approval) => approval.status === 'pending');
 
       if (existingPending) {
         return {
@@ -255,7 +253,9 @@ export function createApprovalRuntimeService(
         approval,
       };
     },
-    async getApproval(approvalId: string): Promise<RuntimeApprovalRecord | null> {
+    async getApproval(
+      approvalId: string,
+    ): Promise<RuntimeApprovalRecord | null> {
       const store = await options.getStore();
       return store.approvals.getById(approvalId);
     },

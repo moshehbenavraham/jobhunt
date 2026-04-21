@@ -26,7 +26,8 @@ test('service container reuses runtime services while reflecting live repo state
 
   try {
     const beforeFirstRead = await fixture.snapshotUserLayer();
-    const firstDiagnostics = await container.startupDiagnostics.getDiagnostics();
+    const firstDiagnostics =
+      await container.startupDiagnostics.getDiagnostics();
     const runtimeReadiness = await container.agentRuntime.getReadiness();
     const afterFirstRead = await fixture.snapshotUserLayer();
 
@@ -46,7 +47,8 @@ test('service container reuses runtime services while reflecting live repo state
     await fixture.writeText('profile/cv.md', '# CV\n');
 
     const beforeSecondRead = await fixture.snapshotUserLayer();
-    const secondDiagnostics = await container.startupDiagnostics.getDiagnostics();
+    const secondDiagnostics =
+      await container.startupDiagnostics.getDiagnostics();
     const afterSecondRead = await fixture.snapshotUserLayer();
 
     assert.deepEqual(afterSecondRead, beforeSecondRead);
@@ -80,7 +82,11 @@ test('service container cleanup is idempotent, disposes the agent runtime, and b
         return {
           auth: {
             accountId: null,
-            authPath: join(fixture.repoRoot, 'data', 'openai-account-auth.json'),
+            authPath: join(
+              fixture.repoRoot,
+              'data',
+              'openai-account-auth.json',
+            ),
             expiresAt: null,
             message: 'Stored OpenAI account credentials are required.',
             nextSteps: ['npm run auth:openai -- login'],
@@ -88,7 +94,11 @@ test('service container cleanup is idempotent, disposes the agent runtime, and b
             updatedAt: null,
           },
           config: {
-            authPath: join(fixture.repoRoot, 'data', 'openai-account-auth.json'),
+            authPath: join(
+              fixture.repoRoot,
+              'data',
+              'openai-account-auth.json',
+            ),
             baseUrl: 'https://chatgpt.com/backend-api',
             model: 'gpt-5.4-mini',
             originator: 'pi',
@@ -246,10 +256,7 @@ test('service container closes the durable job runner before generic cleanup tas
 
     assert.equal(runnerCloseCount, 1);
     assert.equal(cleanupSawClosedRunner, true);
-    await assert.rejects(
-      () => container.jobRunner.getService(),
-      /disposed/i,
-    );
+    await assert.rejects(() => container.jobRunner.getService(), /disposed/i);
   } finally {
     await fixture.cleanup();
   }

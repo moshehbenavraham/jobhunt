@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/approval-runtime/approval-runtime-contract.ts` - approval request and resolution contracts
 - `apps/api/src/approval-runtime/approval-runtime-service.ts` - approval persistence and approve/reject orchestration
 - `apps/api/src/approval-runtime/index.ts` - approval-runtime public exports
@@ -49,13 +50,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No user-controlled SQL or shell concatenation paths were introduced in the session boundary. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or API keys were added. |
-| Sensitive Data Exposure | PASS | -- | The session persists operational metadata only; no secrets or raw transcript content are written. |
-| Insecure Dependencies | PASS | -- | No new dependencies were added for this session. |
-| Security Misconfiguration | PASS | -- | The new routes remain read-only diagnostics surfaces and do not loosen auth or network controls. |
+| Category                      | Status | Severity | Details                                                                                           |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No user-controlled SQL or shell concatenation paths were introduced in the session boundary.      |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or API keys were added.                                                   |
+| Sensitive Data Exposure       | PASS   | --       | The session persists operational metadata only; no secrets or raw transcript content are written. |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were added for this session.                                                  |
+| Security Misconfiguration     | PASS   | --       | The new routes remain read-only diagnostics surfaces and do not loosen auth or network controls.  |
 
 ### Findings
 
@@ -69,14 +70,14 @@ No security findings.
 
 No personal data collection, storage, or transfer behavior was added by this session.
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection & Purpose | N/A | No new personal data collection path was added. |
-| Consent Mechanism | N/A | No consent flow was introduced. |
-| Data Minimization | N/A | No user-facing personal data handling was added. |
-| Right to Erasure | N/A | No new persistent personal data was introduced. |
-| PII in Logs | N/A | No personal data was logged in the changed files. |
-| Third-Party Data Transfers | N/A | No new external transfer path was added. |
+| Category                   | Status | Details                                           |
+| -------------------------- | ------ | ------------------------------------------------- |
+| Data Collection & Purpose  | N/A    | No new personal data collection path was added.   |
+| Consent Mechanism          | N/A    | No consent flow was introduced.                   |
+| Data Minimization          | N/A    | No user-facing personal data handling was added.  |
+| Right to Erasure           | N/A    | No new persistent personal data was introduced.   |
+| PII in Logs                | N/A    | No personal data was logged in the changed files. |
+| Third-Party Data Transfers | N/A    | No new external transfer path was added.          |
 
 ### Personal Data Inventory
 
@@ -94,13 +95,13 @@ No GDPR findings.
 
 The session adds backend runner and diagnostics code, but the reviewed files do not show clear trust-boundary, mutation-safety, or cleanup regressions.
 
-| Priority | Status | Details |
-|----------|--------|---------|
-| Trust boundary enforcement | PASS | Route and service inputs are schema-validated before approval or diagnostics processing. |
-| Resource cleanup | PASS | Container and runner cleanup paths remain explicit and covered by tests. |
-| Mutation safety | PASS | Approval resolution stays idempotent and prevents duplicate in-flight work. |
-| Failure path completeness | PASS | Approval rejection, missing approval records, and failed diagnostics paths persist explicit terminal state. |
-| Contract alignment | PASS | Store, runner, observability, and HTTP route contracts align with the tested behavior. |
+| Priority                   | Status | Details                                                                                                     |
+| -------------------------- | ------ | ----------------------------------------------------------------------------------------------------------- |
+| Trust boundary enforcement | PASS   | Route and service inputs are schema-validated before approval or diagnostics processing.                    |
+| Resource cleanup           | PASS   | Container and runner cleanup paths remain explicit and covered by tests.                                    |
+| Mutation safety            | PASS   | Approval resolution stays idempotent and prevents duplicate in-flight work.                                 |
+| Failure path completeness  | PASS   | Approval rejection, missing approval records, and failed diagnostics paths persist explicit terminal state. |
+| Contract alignment         | PASS   | Store, runner, observability, and HTTP route contracts align with the tested behavior.                      |
 
 ### Findings
 

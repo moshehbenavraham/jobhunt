@@ -1,6 +1,13 @@
-import { getRepoPaths, type RepoPathOptions, type RepoPaths } from '../config/repo-paths.js';
+import {
+  getRepoPaths,
+  type RepoPathOptions,
+  type RepoPaths,
+} from '../config/repo-paths.js';
 import { classifyWorkspacePath } from './workspace-boundary.js';
-import { getWorkspaceSurface, listWorkspaceSurfaces } from './workspace-contract.js';
+import {
+  getWorkspaceSurface,
+  listWorkspaceSurfaces,
+} from './workspace-contract.js';
 import {
   readRequiredWorkspaceSurface,
   readWorkspaceSurface,
@@ -29,7 +36,9 @@ export type WorkspaceAdapter = {
   ) => Promise<Exclude<WorkspaceReadResult, { status: 'missing' }>>;
   readSurface: (key: WorkspaceSurfaceKey) => Promise<WorkspaceReadResult>;
   repoPaths: RepoPaths;
-  resolveSurface: (key: WorkspaceSurfaceKey) => Promise<WorkspaceResolvedSurface>;
+  resolveSurface: (
+    key: WorkspaceSurfaceKey,
+  ) => Promise<WorkspaceResolvedSurface>;
   writeFile: (input: WorkspaceWriteInput) => Promise<WorkspaceWriteResult>;
 };
 

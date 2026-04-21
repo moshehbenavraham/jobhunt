@@ -315,8 +315,15 @@ function runScript(script, sandbox, args = []) {
   );
 
   const passedWithAuth = runScript('doctor.mjs', passing);
-  assert.equal(passedWithAuth.status, 0, passedWithAuth.stdout + passedWithAuth.stderr);
-  assert.match(passedWithAuth.stdout, /OpenAI account auth ready \(acct-doctor\)/);
+  assert.equal(
+    passedWithAuth.status,
+    0,
+    passedWithAuth.stdout + passedWithAuth.stderr,
+  );
+  assert.match(
+    passedWithAuth.stdout,
+    /OpenAI account auth ready \(acct-doctor\)/,
+  );
 
   rmSync(failing, { recursive: true, force: true });
   rmSync(passing, { recursive: true, force: true });
@@ -327,18 +334,15 @@ function runScript(script, sandbox, args = []) {
   mkdirSync(join(sandbox, 'scripts', 'lib', 'openai-account-auth'), {
     recursive: true,
   });
-  writeFile(join(sandbox, 'scripts', 'doctor.mjs'), readFileSync(join(ROOT, 'scripts', 'doctor.mjs'), 'utf8'));
+  writeFile(
+    join(sandbox, 'scripts', 'doctor.mjs'),
+    readFileSync(join(ROOT, 'scripts', 'doctor.mjs'), 'utf8'),
+  );
   for (const authLibFile of ['common.mjs', 'storage.mjs']) {
     writeFile(
       join(sandbox, 'scripts', 'lib', 'openai-account-auth', authLibFile),
       readFileSync(
-        join(
-          ROOT,
-          'scripts',
-          'lib',
-          'openai-account-auth',
-          authLibFile,
-        ),
+        join(ROOT, 'scripts', 'lib', 'openai-account-auth', authLibFile),
         'utf8',
       ),
     );
@@ -355,7 +359,10 @@ function runScript(script, sandbox, args = []) {
 
   assert.equal(preinstall.status, 1, preinstall.stdout + preinstall.stderr);
   assert.match(preinstall.stdout, /Dependencies not installed/);
-  assert.doesNotMatch(preinstall.stdout + preinstall.stderr, /@openai\/agents-core/);
+  assert.doesNotMatch(
+    preinstall.stdout + preinstall.stderr,
+    /@openai\/agents-core/,
+  );
 
   rmSync(sandbox, { recursive: true, force: true });
 }

@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/job-runner/job-runner-contract.ts` - durable runner lifecycle, enqueue, checkpoint, and recovery contracts
 - `apps/api/src/job-runner/job-runner-state-machine.ts` - valid lifecycle transitions and retry decision helpers
 - `apps/api/src/job-runner/job-runner-executors.ts` - executor registration and payload validation
@@ -39,13 +40,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No user-controlled SQL or shell concatenation paths were introduced in the session boundary. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or API keys were added. |
-| Sensitive Data Exposure | PASS | -- | The runner persists operational state only; no secret material or personal data is written to logs or artifacts. |
-| Insecure Dependencies | PASS | -- | No new dependencies were added for this session. |
-| Security Misconfiguration | PASS | -- | The runner stays container-owned and local-first, with no new permissive network or auth configuration. |
+| Category                      | Status | Severity | Details                                                                                                          |
+| ----------------------------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No user-controlled SQL or shell concatenation paths were introduced in the session boundary.                     |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or API keys were added.                                                                  |
+| Sensitive Data Exposure       | PASS   | --       | The runner persists operational state only; no secret material or personal data is written to logs or artifacts. |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were added for this session.                                                                 |
+| Security Misconfiguration     | PASS   | --       | The runner stays container-owned and local-first, with no new permissive network or auth configuration.          |
 
 ### Findings
 
@@ -59,14 +60,14 @@ No security findings.
 
 No personal data collection, storage, or transfer behavior was added by this session.
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection & Purpose | N/A | No new personal data collection path was added. |
-| Consent Mechanism | N/A | No consent flow was introduced. |
-| Data Minimization | N/A | No user-facing personal data handling was added. |
-| Right to Erasure | N/A | No new persistent personal data was introduced. |
-| PII in Logs | N/A | No personal data was logged in the changed files. |
-| Third-Party Data Transfers | N/A | No new external transfer path was added. |
+| Category                   | Status | Details                                           |
+| -------------------------- | ------ | ------------------------------------------------- |
+| Data Collection & Purpose  | N/A    | No new personal data collection path was added.   |
+| Consent Mechanism          | N/A    | No consent flow was introduced.                   |
+| Data Minimization          | N/A    | No user-facing personal data handling was added.  |
+| Right to Erasure           | N/A    | No new persistent personal data was introduced.   |
+| PII in Logs                | N/A    | No personal data was logged in the changed files. |
+| Third-Party Data Transfers | N/A    | No new external transfer path was added.          |
 
 ### Personal Data Inventory
 
@@ -84,13 +85,13 @@ No GDPR findings.
 
 The session adds backend runner code, but the reviewed files do not show trust-boundary or mutation-safety regressions.
 
-| Priority | Status | Details |
-|----------|--------|---------|
-| Trust boundary enforcement | PASS | Executor input is schema-validated before dispatch. |
-| Resource cleanup | PASS | Runner timers and in-flight work are cleaned up on shutdown paths. |
-| Mutation safety | PASS | Claim ownership and drain coalescing prevent duplicate in-flight execution. |
-| Failure path completeness | PASS | Unsupported payloads, stale claims, and retry exhaustion persist explicit terminal state. |
-| Contract alignment | PASS | Store, runner, and container contracts align with the tested durable-runner surface. |
+| Priority                   | Status | Details                                                                                   |
+| -------------------------- | ------ | ----------------------------------------------------------------------------------------- |
+| Trust boundary enforcement | PASS   | Executor input is schema-validated before dispatch.                                       |
+| Resource cleanup           | PASS   | Runner timers and in-flight work are cleaned up on shutdown paths.                        |
+| Mutation safety            | PASS   | Claim ownership and drain coalescing prevent duplicate in-flight execution.               |
+| Failure path completeness  | PASS   | Unsupported payloads, stale claims, and retry exhaustion persist explicit terminal state. |
+| Contract alignment         | PASS   | Store, runner, and container contracts align with the tested durable-runner surface.      |
 
 ### Findings
 

@@ -90,13 +90,13 @@ way.
 
 ### Out of Scope (Deferred)
 
-- Workflow execution, run timelines, or report generation - *Reason: later
-  phases own runtime job execution and artifact flows.*
-- Approval inbox, onboarding forms, or tracker editing UI - *Reason: Phase 03
-  owns operator-facing onboarding and approval UX.*
-- OpenAI account auth bootstrapping or agent orchestration - *Reason: later
+- Workflow execution, run timelines, or report generation - _Reason: later
+  phases own runtime job execution and artifact flows._
+- Approval inbox, onboarding forms, or tracker editing UI - _Reason: Phase 03
+  owns operator-facing onboarding and approval UX._
+- OpenAI account auth bootstrapping or agent orchestration - _Reason: later
   runtime phases own transport and agent wiring after the boot contract is
-  proven.*
+  proven._
 
 ---
 
@@ -146,29 +146,29 @@ not mutate user-layer files.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/server/startup-status.ts` | Serialize startup diagnostics into HTTP-safe boot payloads | ~120 |
-| `apps/api/src/server/http-server.ts` | Minimal HTTP server for `/health` and `/startup` responses | ~170 |
-| `apps/api/src/server/index.ts` | Server bootstrap exports separate from CLI diagnostics | ~30 |
-| `apps/api/src/server/http-server.test.ts` | Package-local endpoint and no-mutation tests | ~180 |
-| `apps/web/src/boot/startup-types.ts` | Shared client-side startup payload types | ~60 |
-| `apps/web/src/boot/startup-client.ts` | Fetch client with timeout and typed error mapping | ~110 |
-| `apps/web/src/boot/use-startup-diagnostics.ts` | Hook for loading, ready, error, and offline boot states | ~110 |
-| `apps/web/src/boot/startup-status-panel.tsx` | Main diagnostics renderer for startup summary and prompt contract state | ~170 |
-| `apps/web/src/boot/missing-files-list.tsx` | Focused renderer for onboarding-blocking prerequisites | ~80 |
-| `scripts/test-app-bootstrap.mjs` | Repo-level boot smoke harness for API and web integration | ~180 |
+| File                                           | Purpose                                                                 | Est. Lines |
+| ---------------------------------------------- | ----------------------------------------------------------------------- | ---------- |
+| `apps/api/src/server/startup-status.ts`        | Serialize startup diagnostics into HTTP-safe boot payloads              | ~120       |
+| `apps/api/src/server/http-server.ts`           | Minimal HTTP server for `/health` and `/startup` responses              | ~170       |
+| `apps/api/src/server/index.ts`                 | Server bootstrap exports separate from CLI diagnostics                  | ~30        |
+| `apps/api/src/server/http-server.test.ts`      | Package-local endpoint and no-mutation tests                            | ~180       |
+| `apps/web/src/boot/startup-types.ts`           | Shared client-side startup payload types                                | ~60        |
+| `apps/web/src/boot/startup-client.ts`          | Fetch client with timeout and typed error mapping                       | ~110       |
+| `apps/web/src/boot/use-startup-diagnostics.ts` | Hook for loading, ready, error, and offline boot states                 | ~110       |
+| `apps/web/src/boot/startup-status-panel.tsx`   | Main diagnostics renderer for startup summary and prompt contract state | ~170       |
+| `apps/web/src/boot/missing-files-list.tsx`     | Focused renderer for onboarding-blocking prerequisites                  | ~80        |
+| `scripts/test-app-bootstrap.mjs`               | Repo-level boot smoke harness for API and web integration               | ~180       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/index.ts` | Keep CLI diagnostics and server entry wiring explicit | ~50 |
-| `apps/api/package.json` | Add deterministic server and boot-contract test commands | ~12 |
-| `apps/web/src/App.tsx` | Replace placeholder content with the bootstrap status screen | ~120 |
-| `apps/web/vite.config.ts` | Add local API proxy or base-origin handling for boot requests | ~30 |
-| `package.json` | Add root boot smoke and validation commands | ~12 |
-| `scripts/test-all.mjs` | Register the cross-package boot harness in the repo quick suite | ~25 |
+| File                      | Changes                                                         | Est. Lines |
+| ------------------------- | --------------------------------------------------------------- | ---------- |
+| `apps/api/src/index.ts`   | Keep CLI diagnostics and server entry wiring explicit           | ~50        |
+| `apps/api/package.json`   | Add deterministic server and boot-contract test commands        | ~12        |
+| `apps/web/src/App.tsx`    | Replace placeholder content with the bootstrap status screen    | ~120       |
+| `apps/web/vite.config.ts` | Add local API proxy or base-origin handling for boot requests   | ~30        |
+| `package.json`            | Add root boot smoke and validation commands                     | ~12        |
+| `scripts/test-all.mjs`    | Register the cross-package boot harness in the repo quick suite | ~25        |
 
 ---
 

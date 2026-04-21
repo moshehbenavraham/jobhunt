@@ -1,14 +1,20 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { type RepoPathOptions } from './config/repo-paths.js';
+import type { RepoPathOptions } from './config/repo-paths.js';
 import {
   createAgentRuntimeService,
   type AgentRuntimeReadinessSummary,
   type AgentRuntimeService,
 } from './agent-runtime/index.js';
-import { getPromptContractSummary, type PromptContractSummary } from './prompt/index.js';
-import { DEFAULT_BOOT_HOST, DEFAULT_BOOT_PORT } from './runtime/runtime-config.js';
+import {
+  getPromptContractSummary,
+  type PromptContractSummary,
+} from './prompt/index.js';
+import {
+  DEFAULT_BOOT_HOST,
+  DEFAULT_BOOT_PORT,
+} from './runtime/runtime-config.js';
 import {
   inspectOperationalStoreStatus,
   type OperationalStoreStatus,
@@ -166,11 +172,11 @@ async function buildStartupDiagnostics(
 ): Promise<StartupDiagnostics> {
   const [summary, operationalStore, currentSession, agentRuntimeReadiness] =
     await Promise.all([
-    workspace.getSummary(),
-    getOperationalStoreStatus(),
-    getCurrentSession(),
-    agentRuntime.getReadiness(),
-  ]);
+      workspace.getSummary(),
+      getOperationalStoreStatus(),
+      getCurrentSession(),
+      agentRuntime.getReadiness(),
+    ]);
 
   return {
     agentRuntime: agentRuntimeReadiness,

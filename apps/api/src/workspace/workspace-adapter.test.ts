@@ -45,7 +45,9 @@ test('startup diagnostics report onboarding gaps without mutating user-layer fil
 
   try {
     const beforeSnapshot = await fixture.snapshotUserLayer();
-    const diagnostics = await getStartupDiagnostics({ repoRoot: fixture.repoRoot });
+    const diagnostics = await getStartupDiagnostics({
+      repoRoot: fixture.repoRoot,
+    });
     const afterSnapshot = await fixture.snapshotUserLayer();
     const onboardingKeys = diagnostics.onboardingMissing
       .map((item) => item.surfaceKey)

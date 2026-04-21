@@ -53,10 +53,12 @@ export type WorkspaceFixture = {
   writeText: (repoRelativePath: string, content: string) => Promise<void>;
 };
 
-export async function createWorkspaceFixture(options: {
-  directories?: string[];
-  files?: Record<string, string>;
-} = {}): Promise<WorkspaceFixture> {
+export async function createWorkspaceFixture(
+  options: {
+    directories?: string[];
+    files?: Record<string, string>;
+  } = {},
+): Promise<WorkspaceFixture> {
   const repoRoot = await mkdtemp(join(tmpdir(), 'jobhunt-workspace-'));
 
   for (const directory of DEFAULT_FIXTURE_DIRECTORIES) {
@@ -67,11 +69,15 @@ export async function createWorkspaceFixture(options: {
     await mkdir(join(repoRoot, directory), { recursive: true });
   }
 
-  for (const [repoRelativePath, content] of Object.entries(DEFAULT_FIXTURE_FILES)) {
+  for (const [repoRelativePath, content] of Object.entries(
+    DEFAULT_FIXTURE_FILES,
+  )) {
     await writeRepoFile(repoRoot, repoRelativePath, content);
   }
 
-  for (const [repoRelativePath, content] of Object.entries(options.files ?? {})) {
+  for (const [repoRelativePath, content] of Object.entries(
+    options.files ?? {},
+  )) {
     await writeRepoFile(repoRoot, repoRelativePath, content);
   }
 
@@ -92,7 +98,9 @@ export async function createWorkspaceFixture(options: {
     }
   };
 
-  const snapshotUserLayer = async (): Promise<Record<string, string | null>> => {
+  const snapshotUserLayer = async (): Promise<
+    Record<string, string | null>
+  > => {
     const snapshot: Record<string, string | null> = {};
 
     for (const repoRelativePath of USER_LAYER_SNAPSHOT_PATHS) {

@@ -78,7 +78,9 @@ test('openai account provider bootstraps the fake backend with normalized overri
   });
 
   let providerToClose:
-    | Awaited<ReturnType<typeof createConfiguredOpenAIAccountProvider>>['provider']
+    | Awaited<
+        ReturnType<typeof createConfiguredOpenAIAccountProvider>
+      >['provider']
     | undefined;
 
   try {
@@ -111,7 +113,10 @@ test('openai account provider bootstraps the fake backend with normalized overri
       backend.seenRequests[0]?.headers['chatgpt-account-id'],
       'acct-provider-bootstrap',
     );
-    assert.equal(backend.seenRequests[0]?.headers.originator, 'jobhunt-api-test');
+    assert.equal(
+      backend.seenRequests[0]?.headers.originator,
+      'jobhunt-api-test',
+    );
     assert.equal(backend.seenRequests[0]?.body.model, 'gpt-5.4-mini');
   } finally {
     await providerToClose?.close();

@@ -191,9 +191,10 @@ export type RuntimeJobApprovalTransitionInput = {
   timestamp: string;
 };
 
-export type RuntimeJobApprovalRejectionInput = RuntimeJobApprovalTransitionInput & {
-  error: JsonValue;
-};
+export type RuntimeJobApprovalRejectionInput =
+  RuntimeJobApprovalTransitionInput & {
+    error: JsonValue;
+  };
 
 export const RUNTIME_EVENT_LEVELS = ['error', 'info', 'warn'] as const;
 export type RuntimeEventLevel = (typeof RUNTIME_EVENT_LEVELS)[number];
@@ -244,9 +245,7 @@ export type SessionRepository = {
   listByStatus: (
     status: RuntimeSessionStatus,
   ) => Promise<RuntimeSessionRecord[]>;
-  save: (
-    record: RuntimeSessionRecord,
-  ) => Promise<RuntimeSessionRecord>;
+  save: (record: RuntimeSessionRecord) => Promise<RuntimeSessionRecord>;
   touchHeartbeat: (
     input: RuntimeSessionHeartbeatInput,
   ) => Promise<RuntimeSessionRecord>;
@@ -268,41 +267,31 @@ export type JobRepository = {
     input: RuntimeJobApprovalRejectionInput,
   ) => Promise<RuntimeJobRecord>;
   save: (record: RuntimeJobRecord) => Promise<RuntimeJobRecord>;
-  touchHeartbeat: (input: RuntimeJobHeartbeatInput) => Promise<RuntimeJobRecord>;
+  touchHeartbeat: (
+    input: RuntimeJobHeartbeatInput,
+  ) => Promise<RuntimeJobRecord>;
   wait: (input: RuntimeJobWaitingStateInput) => Promise<RuntimeJobRecord>;
 };
 
 export type ApprovalRepository = {
   getById: (approvalId: string) => Promise<RuntimeApprovalRecord | null>;
   listByJobId: (jobId: string) => Promise<RuntimeApprovalRecord[]>;
-  listBySessionId: (
-    sessionId: string,
-  ) => Promise<RuntimeApprovalRecord[]>;
+  listBySessionId: (sessionId: string) => Promise<RuntimeApprovalRecord[]>;
   listPending: (
     input?: RuntimeApprovalPendingListInput,
   ) => Promise<RuntimeApprovalRecord[]>;
   resolve: (
     input: RuntimeApprovalResolutionInput,
   ) => Promise<RuntimeApprovalResolutionResult>;
-  save: (
-    record: RuntimeApprovalRecord,
-  ) => Promise<RuntimeApprovalRecord>;
+  save: (record: RuntimeApprovalRecord) => Promise<RuntimeApprovalRecord>;
 };
 
 export type RunMetadataRepository = {
   getByRunId: (runId: string) => Promise<RuntimeRunMetadataRecord | null>;
-  getLatestByJobId: (
-    jobId: string,
-  ) => Promise<RuntimeRunMetadataRecord | null>;
-  listBySessionId: (
-    sessionId: string,
-  ) => Promise<RuntimeRunMetadataRecord[]>;
-  loadCheckpoint: (
-    runId: string,
-  ) => Promise<RuntimeRunCheckpointRecord | null>;
-  save: (
-    record: RuntimeRunMetadataRecord,
-  ) => Promise<RuntimeRunMetadataRecord>;
+  getLatestByJobId: (jobId: string) => Promise<RuntimeRunMetadataRecord | null>;
+  listBySessionId: (sessionId: string) => Promise<RuntimeRunMetadataRecord[]>;
+  loadCheckpoint: (runId: string) => Promise<RuntimeRunCheckpointRecord | null>;
+  save: (record: RuntimeRunMetadataRecord) => Promise<RuntimeRunMetadataRecord>;
   saveCheckpoint: (
     input: RuntimeRunCheckpointSaveInput,
   ) => Promise<RuntimeRunMetadataRecord>;

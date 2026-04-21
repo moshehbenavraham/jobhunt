@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/config/repo-paths.ts` - repo-root and repo-relative path helpers
 - `apps/api/src/config/app-state-root.ts` - app-owned path assertions and state-root helpers
 - `apps/api/src/index.ts` - startup diagnostics integration
@@ -35,13 +36,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No unsafe shell or query construction observed in session deliverables. |
-| Hardcoded Secrets | PASS | -- | No credentials, tokens, or secrets added. |
-| Sensitive Data Exposure | PASS | -- | No new logging or responses expose personal data. |
-| Insecure Dependencies | PASS | -- | No new runtime dependencies added. |
-| Security Misconfiguration | PASS | -- | Startup diagnostics remain read-only; user-layer writes stay disabled. |
+| Category                      | Status | Severity | Details                                                                 |
+| ----------------------------- | ------ | -------- | ----------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No unsafe shell or query construction observed in session deliverables. |
+| Hardcoded Secrets             | PASS   | --       | No credentials, tokens, or secrets added.                               |
+| Sensitive Data Exposure       | PASS   | --       | No new logging or responses expose personal data.                       |
+| Insecure Dependencies         | PASS   | --       | No new runtime dependencies added.                                      |
+| Security Misconfiguration     | PASS   | --       | Startup diagnostics remain read-only; user-layer writes stay disabled.  |
 
 ### Findings
 
@@ -53,14 +54,14 @@ No security findings.
 
 ### Overall: N/A
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection & Purpose | N/A | No new personal data collection was introduced. |
-| Consent Mechanism | N/A | No personal data storage flow was added. |
-| Data Minimization | N/A | No new personal data fields were added. |
-| Right to Erasure | N/A | No new personal-data store was introduced. |
-| PII in Logs | N/A | No PII logging paths were added. |
-| Third-Party Data Transfers | N/A | No external transfer of personal data was added. |
+| Category                   | Status | Details                                          |
+| -------------------------- | ------ | ------------------------------------------------ |
+| Data Collection & Purpose  | N/A    | No new personal data collection was introduced.  |
+| Consent Mechanism          | N/A    | No personal data storage flow was added.         |
+| Data Minimization          | N/A    | No new personal data fields were added.          |
+| Right to Erasure           | N/A    | No new personal-data store was introduced.       |
+| PII in Logs                | N/A    | No PII logging paths were added.                 |
+| Third-Party Data Transfers | N/A    | No external transfer of personal data was added. |
 
 ### Personal Data Inventory
 

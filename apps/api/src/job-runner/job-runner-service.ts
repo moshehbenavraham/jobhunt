@@ -43,7 +43,9 @@ function addMilliseconds(timestamp: string, ms: number): string {
   return new Date(Date.parse(timestamp) + ms).toISOString();
 }
 
-function toFailureDetails(error: DurableJobExecutionError): DurableJobFailureDetails {
+function toFailureDetails(
+  error: DurableJobExecutionError,
+): DurableJobFailureDetails {
   return {
     detail: error.detail,
     message: error.message,
@@ -118,11 +120,17 @@ async function synchronizeSessionState(
     status = 'waiting';
   } else if (pendingJob) {
     status = 'pending';
-  } else if (jobs.length > 0 && jobs.every((job) => job.status === 'completed')) {
+  } else if (
+    jobs.length > 0 &&
+    jobs.every((job) => job.status === 'completed')
+  ) {
     status = 'completed';
   } else if (jobs.some((job) => job.status === 'failed')) {
     status = 'failed';
-  } else if (jobs.length > 0 && jobs.every((job) => job.status === 'cancelled')) {
+  } else if (
+    jobs.length > 0 &&
+    jobs.every((job) => job.status === 'cancelled')
+  ) {
     status = 'cancelled';
   }
 
@@ -141,7 +149,9 @@ async function ensureSessionForEnqueue(
   request: DurableJobEnqueueRequest,
   timestamp: string,
 ): Promise<RuntimeSessionRecord> {
-  const existingSession = await store.sessions.getById(request.session.sessionId);
+  const existingSession = await store.sessions.getById(
+    request.session.sessionId,
+  );
 
   if (existingSession) {
     return store.sessions.save({
@@ -355,9 +365,7 @@ export function createDurableJobRunnerService(
         }, heartbeatIntervalMs);
       };
 
-      const saveCheckpoint = async (
-        checkpoint: DurableJobCheckpoint,
-      ) => {
+      const saveCheckpoint = async (checkpoint: DurableJobCheckpoint) => {
         const timestamp = toIsoTimestamp(now());
         return store.runMetadata.saveCheckpoint({
           checkpoint: {
@@ -401,7 +409,8 @@ export function createDurableJobRunnerService(
           session,
           signal: executionController.signal,
           store,
-          touchHeartbeat: async () => persistHeartbeat(store, claimedJob, claimToken),
+          touchHeartbeat: async () =>
+            persistHeartbeat(store, claimedJob, claimToken),
         });
 
         if (heartbeatFailure) {
@@ -421,7 +430,8 @@ export function createDurableJobRunnerService(
                   jobId: claimedJob.jobId,
                   requestId: null,
                   sessionId: claimedJob.sessionId,
-                  traceId: result.approval.traceId ?? buildJobTraceId(claimedJob),
+                  traceId:
+                    result.approval.traceId ?? buildJobTraceId(claimedJob),
                 },
                 details: result.approval.details,
                 title: result.approval.title,
@@ -438,7 +448,11 @@ export function createDurableJobRunnerService(
               timestamp,
               waitReason: 'approval',
             });
-            await synchronizeSessionState(store, claimedJob.sessionId, timestamp);
+            await synchronizeSessionState(
+              store,
+              claimedJob.sessionId,
+              timestamp,
+            );
             summary.waitingJobIds.push(claimedJob.jobId);
             await recordRuntimeEvent({
               correlation: {
@@ -524,7 +538,10 @@ export function createDurableJobRunnerService(
           summary: `Job ${claimedJob.jobId} completed.`,
         });
       } catch (error) {
-        if (executionController.signal.aborted && loopController?.signal.aborted) {
+        if (
+          executionController.signal.aborted &&
+          loopController?.signal.aborted
+        ) {
           return;
         }
 
@@ -719,7 +736,9 @@ export function createDurableJobRunnerService(
 
       return drainPromise;
     },
-    async enqueue(request: DurableJobEnqueueRequest): Promise<DurableJobEnqueueResult> {
+    async enqueue(
+      request: DurableJobEnqueueRequest,
+    ): Promise<DurableJobEnqueueResult> {
       assertActive();
 
       if (!request.jobId.trim()) {
@@ -746,7 +765,11 @@ export function createDurableJobRunnerService(
       const existingJob = await store.jobs.getById(request.jobId);
 
       if (existingJob) {
-        const runMetadata = await ensureRunMetadata(store, existingJob, timestamp);
+        const runMetadata = await ensureRunMetadata(
+          store,
+          existingJob,
+          timestamp,
+        );
         return {
           job: existingJob,
           runMetadata,
@@ -781,7 +804,11 @@ export function createDurableJobRunnerService(
       });
       const runMetadata = await ensureRunMetadata(store, job, timestamp);
 
-      await synchronizeSessionState(store, request.session.sessionId, timestamp);
+      await synchronizeSessionState(
+        store,
+        request.session.sessionId,
+        timestamp,
+      );
 
       return {
         job,

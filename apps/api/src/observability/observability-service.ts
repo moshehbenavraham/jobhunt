@@ -58,20 +58,20 @@ function redactMetadata(value: JsonValue | null): JsonValue | null {
   return value;
 }
 
-function toFailedJobSummary(record: RuntimeEventRecord): RuntimeFailedJobSummary | null {
+function toFailedJobSummary(
+  record: RuntimeEventRecord,
+): RuntimeFailedJobSummary | null {
   if (!record.jobId || !record.sessionId) {
     return null;
   }
 
   const metadata = isJsonObject(record.metadata) ? record.metadata : {};
   const message =
-    typeof metadata.message === 'string'
-      ? metadata.message
-      : record.summary;
+    typeof metadata.message === 'string' ? metadata.message : record.summary;
   const runId =
     typeof metadata.runId === 'string'
       ? metadata.runId
-      : record.traceId ?? record.eventId;
+      : (record.traceId ?? record.eventId);
 
   return {
     failedAt: record.occurredAt,

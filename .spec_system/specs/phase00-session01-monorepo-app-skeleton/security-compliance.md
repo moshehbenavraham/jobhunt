@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `package.json` - root workspace and app script wiring
 - `package-lock.json` - lockfile for workspace dependency changes
 - `biome.json` - lint file discovery updates
@@ -38,14 +39,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | Path helpers and scaffold scripts use explicit repo anchors and deterministic checks; no unsafe command construction found in session deliverables. |
-| Hardcoded Secrets | PASS | -- | No secrets, tokens, or credentials introduced in the reviewed files. |
-| Sensitive Data Exposure | PASS | -- | The scaffold and validation scripts do not log user-layer content or write PII outside the approved boundary. |
-| Insecure Dependencies | PASS | -- | `npm audit --omit=dev --json` reported `0` vulnerabilities. |
-| Misconfiguration | PASS | -- | Workspace and tooling changes are explicit and scoped; no debug or overly permissive runtime settings were introduced. |
-| Database Security | N/A | -- | This session does not add database access, migrations, or schema changes. |
+| Category                      | Status | Severity | Details                                                                                                                                             |
+| ----------------------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | Path helpers and scaffold scripts use explicit repo anchors and deterministic checks; no unsafe command construction found in session deliverables. |
+| Hardcoded Secrets             | PASS   | --       | No secrets, tokens, or credentials introduced in the reviewed files.                                                                                |
+| Sensitive Data Exposure       | PASS   | --       | The scaffold and validation scripts do not log user-layer content or write PII outside the approved boundary.                                       |
+| Insecure Dependencies         | PASS   | --       | `npm audit --omit=dev --json` reported `0` vulnerabilities.                                                                                         |
+| Misconfiguration              | PASS   | --       | Workspace and tooling changes are explicit and scoped; no debug or overly permissive runtime settings were introduced.                              |
+| Database Security             | N/A    | --       | This session does not add database access, migrations, or schema changes.                                                                           |
 
 ---
 
@@ -62,6 +63,7 @@ This session does not collect, persist, or transmit user personal data. The scaf
 ### Overall: PASS
 
 Spot-checked the API bootstrap and path ownership helpers for:
+
 - Trust boundary enforcement
 - Failure path completeness
 - Mutation safety

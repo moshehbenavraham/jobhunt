@@ -368,7 +368,10 @@ if (appRuntimeContract !== null) {
 
 console.log('\n3s. App agent-runtime contract');
 
-const appAgentRuntimeContract = run('npm', ['run', 'app:api:test:agent-runtime']);
+const appAgentRuntimeContract = run('npm', [
+  'run',
+  'app:api:test:agent-runtime',
+]);
 if (appAgentRuntimeContract !== null) {
   pass('App agent-runtime contract tests pass');
 } else {
@@ -509,7 +512,7 @@ for (const path of bootstrapFiles) {
     continue;
   }
 
-  if (/[^\x00-\x7F]/.test(readFile(path))) {
+  if (new RegExp('[^\\x00-\\x7F]').test(readFile(path))) {
     fail(`Bootstrap file contains non-ASCII characters: ${path}`);
   } else {
     pass(`Bootstrap file is ASCII-only: ${path}`);

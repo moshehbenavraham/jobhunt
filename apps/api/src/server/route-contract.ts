@@ -47,7 +47,9 @@ export type ApiRouteContext = {
 };
 
 export type ApiRouteDefinition = {
-  handle: (context: ApiRouteContext) => JsonRouteResponse | Promise<JsonRouteResponse>;
+  handle: (
+    context: ApiRouteContext,
+  ) => JsonRouteResponse | Promise<JsonRouteResponse>;
   methods: readonly ApiRouteMethod[];
   path: string;
 };
@@ -93,7 +95,9 @@ function normalizeRoutePath(path: string): string {
   return path;
 }
 
-export function parseApiRequestInput(request: IncomingMessage): ApiRequestInput {
+export function parseApiRequestInput(
+  request: IncomingMessage,
+): ApiRequestInput {
   let requestUrl: URL;
 
   try {
@@ -118,7 +122,9 @@ export function defineApiRoute(
   definition: ApiRouteDefinition,
 ): ApiRouteDefinition {
   if (definition.methods.length === 0) {
-    throw new Error(`Route ${definition.path} must declare at least one method.`);
+    throw new Error(
+      `Route ${definition.path} must declare at least one method.`,
+    );
   }
 
   for (const method of definition.methods) {
@@ -165,7 +171,9 @@ export function createErrorPayload(
   };
 }
 
-export function createBadRequestResponse(error: ApiRequestValidationError): JsonRouteResponse {
+export function createBadRequestResponse(
+  error: ApiRequestValidationError,
+): JsonRouteResponse {
   return createJsonRouteResponse(
     error.statusCode,
     createErrorPayload('bad-request', error.code, error.message),

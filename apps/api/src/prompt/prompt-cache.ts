@@ -69,7 +69,9 @@ export function createPromptCache(): PromptCache {
   const entries = new Map<string, PromptCacheEntry>();
 
   return {
-    async loadSource(source: PromptResolvedSource): Promise<PromptBundleSource> {
+    async loadSource(
+      source: PromptResolvedSource,
+    ): Promise<PromptBundleSource> {
       const cacheKey = toCacheKey(source);
 
       try {

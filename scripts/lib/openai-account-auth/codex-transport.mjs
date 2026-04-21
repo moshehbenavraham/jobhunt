@@ -7,8 +7,7 @@ export const OPENAI_CODEX_RESPONSES_BASE_URL =
   'https://chatgpt.com/backend-api';
 export const OPENAI_CODEX_RESPONSES_BETA_HEADER = 'responses=experimental';
 export const OPENAI_CODEX_DEFAULT_MODEL = 'gpt-5.4-mini';
-export const OPENAI_CODEX_DEFAULT_INSTRUCTIONS =
-  'You are a concise assistant.';
+export const OPENAI_CODEX_DEFAULT_INSTRUCTIONS = 'You are a concise assistant.';
 export const OPENAI_CODEX_DEFAULT_ORIGINATOR = 'pi';
 
 const RETRYABLE_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
@@ -50,7 +49,9 @@ export function createCodexRequestId() {
   return `codex_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
 }
 
-export function resolveCodexResponsesUrl(baseUrl = OPENAI_CODEX_RESPONSES_BASE_URL) {
+export function resolveCodexResponsesUrl(
+  baseUrl = OPENAI_CODEX_RESPONSES_BASE_URL,
+) {
   const normalized = String(baseUrl || OPENAI_CODEX_RESPONSES_BASE_URL)
     .trim()
     .replace(/\/+$/g, '');
@@ -76,14 +77,14 @@ export function buildCodexResponsesBody(options = {}) {
     ? options.input
     : Array.isArray(prebuiltRequestData?.input)
       ? prebuiltRequestData.input
-    : prompt
-      ? [
-          {
-            role: 'user',
-            content: [{ type: 'input_text', text: prompt }],
-          },
-        ]
-      : null;
+      : prompt
+        ? [
+            {
+              role: 'user',
+              content: [{ type: 'input_text', text: prompt }],
+            },
+          ]
+        : null;
 
   if (!input || input.length === 0) {
     throw new CodexTransportError(
@@ -420,10 +421,7 @@ export async function parseCodexErrorResponse(response) {
         const minutes =
           resetAt === null
             ? null
-            : Math.max(
-                0,
-                Math.round((resetAt * 1000 - Date.now()) / 60000),
-              );
+            : Math.max(0, Math.round((resetAt * 1000 - Date.now()) / 60000));
         friendlyMessage = `You have hit your ChatGPT usage limit${
           plan ? ` (${plan.toLowerCase()} plan)` : ''
         }.${minutes === null ? '' : ` Try again in ~${minutes} min.`}`.trim();

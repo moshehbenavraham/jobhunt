@@ -1,7 +1,15 @@
 #!/usr/bin/env node
 
 import { execFileSync, spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { createServer as createHttpServer } from 'node:http';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
@@ -266,7 +274,9 @@ const userLayerSnapshots = [
 ].map(snapshotFile);
 
 const appStateExistedBefore = existsSync(APP_STATE_ROOT);
-const appStateStatBefore = appStateExistedBefore ? statSync(APP_STATE_ROOT) : null;
+const appStateStatBefore = appStateExistedBefore
+  ? statSync(APP_STATE_ROOT)
+  : null;
 const rootPackage = readJson('package.json');
 
 for (const scriptName of [
@@ -336,8 +346,14 @@ try {
   const startupPayload = await startupResponse.json();
 
   assert(healthResponse.status === 200, 'Expected /health to return HTTP 200.');
-  assert(startupResponse.status === 200, 'Expected /startup to return HTTP 200.');
-  assert(healthPayload.status === 'ok', 'Expected /health to report status "ok".');
+  assert(
+    startupResponse.status === 200,
+    'Expected /startup to return HTTP 200.',
+  );
+  assert(
+    healthPayload.status === 'ok',
+    'Expected /health to report status "ok".',
+  );
   assert(
     healthPayload.agentRuntime.status === 'ready',
     'Expected /health to report a ready agent-runtime state.',
@@ -375,12 +391,12 @@ try {
     'Startup payload reported an unexpected session id.',
   );
   assert(
-    startupPayload.diagnostics.currentSession.id ===
-      currentSessionId,
+    startupPayload.diagnostics.currentSession.id === currentSessionId,
     'Startup payload reported unexpected current-session metadata.',
   );
   assert(
-    healthPayload.operationalStore.status === startupPayload.operationalStore.status,
+    healthPayload.operationalStore.status ===
+      startupPayload.operationalStore.status,
     'Health and startup payloads disagreed on operational-store status.',
   );
   assert(

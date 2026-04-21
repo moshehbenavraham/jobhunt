@@ -100,14 +100,14 @@ semantics itself.
 ### Out of Scope (Deferred)
 
 - Approval pause or resume semantics and approval record orchestration -
-  *Reason: Session 05 owns approval-state behavior on top of this runner.*
-- Structured logs, traces, and operator diagnostics for jobs - *Reason:
-  Session 05 owns observability.*
-- Workflow-specific evaluation, scan, PDF, or batch business logic - *Reason:
+  _Reason: Session 05 owns approval-state behavior on top of this runner._
+- Structured logs, traces, and operator diagnostics for jobs - _Reason:
+  Session 05 owns observability._
+- Workflow-specific evaluation, scan, PDF, or batch business logic - _Reason:
   later phases own workflow parity while this session only creates the runtime
-  execution surface.*
-- Public API routes or UI surfaces for job control - *Reason: later phases
-  own chat, review, and workflow-trigger UX.*
+  execution surface._
+- Public API routes or UI surfaces for job control - _Reason: later phases
+  own chat, review, and workflow-trigger UX._
 
 ---
 
@@ -164,33 +164,33 @@ approval and observability work can build on a predictable lifecycle.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/job-runner/job-runner-contract.ts` | Define runner lifecycle, enqueue, checkpoint, and recovery shapes | ~150 |
-| `apps/api/src/job-runner/job-runner-state-machine.ts` | Centralize valid lifecycle transitions and retry decisions | ~130 |
-| `apps/api/src/job-runner/job-runner-executors.ts` | Define executor registration and dispatch behavior for supported job types | ~120 |
-| `apps/api/src/job-runner/job-runner-service.ts` | Enqueue, claim, heartbeat, checkpoint, resume, and retry durable jobs | ~240 |
-| `apps/api/src/job-runner/test-utils.ts` | Provide fake handlers and restart harnesses for deterministic runner tests | ~120 |
-| `apps/api/src/job-runner/index.ts` | Export the public durable-runner surface | ~30 |
-| `apps/api/src/job-runner/job-runner-state-machine.test.ts` | Cover valid transitions and retry exhaustion behavior | ~110 |
-| `apps/api/src/job-runner/job-runner-service.test.ts` | Cover enqueue, resume, retry, and terminal failure flows | ~220 |
+| File                                                       | Purpose                                                                    | Est. Lines |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/job-runner/job-runner-contract.ts`           | Define runner lifecycle, enqueue, checkpoint, and recovery shapes          | ~150       |
+| `apps/api/src/job-runner/job-runner-state-machine.ts`      | Centralize valid lifecycle transitions and retry decisions                 | ~130       |
+| `apps/api/src/job-runner/job-runner-executors.ts`          | Define executor registration and dispatch behavior for supported job types | ~120       |
+| `apps/api/src/job-runner/job-runner-service.ts`            | Enqueue, claim, heartbeat, checkpoint, resume, and retry durable jobs      | ~240       |
+| `apps/api/src/job-runner/test-utils.ts`                    | Provide fake handlers and restart harnesses for deterministic runner tests | ~120       |
+| `apps/api/src/job-runner/index.ts`                         | Export the public durable-runner surface                                   | ~30        |
+| `apps/api/src/job-runner/job-runner-state-machine.test.ts` | Cover valid transitions and retry exhaustion behavior                      | ~110       |
+| `apps/api/src/job-runner/job-runner-service.test.ts`       | Cover enqueue, resume, retry, and terminal failure flows                   | ~220       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/store/store-contract.ts` | Add durable job-runner persistence shapes and repository method contracts | ~110 |
-| `apps/api/src/store/sqlite-schema.ts` | Add job-runner columns, indexes, and migration-safe schema updates | ~90 |
-| `apps/api/src/store/job-repository.ts` | Add claim, heartbeat, retry, and recovery-oriented query helpers | ~180 |
-| `apps/api/src/store/session-repository.ts` | Extend session persistence for runner heartbeats and active-session queries | ~70 |
-| `apps/api/src/store/run-metadata-repository.ts` | Add checkpoint-focused save and lookup helpers for recovery | ~90 |
-| `apps/api/src/store/repositories.test.ts` | Cover durable claim, checkpoint, and repeated-save behavior | ~120 |
-| `apps/api/src/runtime/service-container.ts` | Lazily create, cache, and dispose the durable job runner service | ~80 |
-| `apps/api/src/runtime/service-container.test.ts` | Verify job-runner caching, cleanup, and restart-safe lifecycle wiring | ~100 |
-| `apps/api/package.json` | Add package-level durable-runner test and validation aliases | ~12 |
-| `apps/api/README_api.md` | Document the durable-runner boundary and validation path | ~30 |
-| `package.json` | Add repo-root aliases for the durable-runner contract path | ~12 |
-| `scripts/test-all.mjs` | Include durable-runner validation in the quick regression suite | ~20 |
+| File                                             | Changes                                                                     | Est. Lines |
+| ------------------------------------------------ | --------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/store/store-contract.ts`           | Add durable job-runner persistence shapes and repository method contracts   | ~110       |
+| `apps/api/src/store/sqlite-schema.ts`            | Add job-runner columns, indexes, and migration-safe schema updates          | ~90        |
+| `apps/api/src/store/job-repository.ts`           | Add claim, heartbeat, retry, and recovery-oriented query helpers            | ~180       |
+| `apps/api/src/store/session-repository.ts`       | Extend session persistence for runner heartbeats and active-session queries | ~70        |
+| `apps/api/src/store/run-metadata-repository.ts`  | Add checkpoint-focused save and lookup helpers for recovery                 | ~90        |
+| `apps/api/src/store/repositories.test.ts`        | Cover durable claim, checkpoint, and repeated-save behavior                 | ~120       |
+| `apps/api/src/runtime/service-container.ts`      | Lazily create, cache, and dispose the durable job runner service            | ~80        |
+| `apps/api/src/runtime/service-container.test.ts` | Verify job-runner caching, cleanup, and restart-safe lifecycle wiring       | ~100       |
+| `apps/api/package.json`                          | Add package-level durable-runner test and validation aliases                | ~12        |
+| `apps/api/README_api.md`                         | Document the durable-runner boundary and validation path                    | ~30        |
+| `package.json`                                   | Add repo-root aliases for the durable-runner contract path                  | ~12        |
+| `scripts/test-all.mjs`                           | Include durable-runner validation in the quick regression suite             | ~20        |
 
 ---
 
@@ -274,6 +274,7 @@ approval and observability work can build on a predictable lifecycle.
 
 Checklist active: Yes
 Top behavioral risks for this session:
+
 - Duplicate execution after crash or restart replays a side-effecting step
   that already completed.
 - Lost heartbeat or stale claims leave jobs stranded in `running` without a

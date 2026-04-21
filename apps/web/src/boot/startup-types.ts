@@ -202,7 +202,10 @@ function parseMissingItem(value: unknown): StartupMissingItem {
   };
 }
 
-function parseMissingItems(record: JsonRecord, key: string): StartupMissingItem[] {
+function parseMissingItems(
+  record: JsonRecord,
+  key: string,
+): StartupMissingItem[] {
   const value = record[key];
 
   if (!Array.isArray(value)) {
@@ -280,11 +283,7 @@ export function parseStartupPayload(value: unknown): StartupPayload {
     throw new Error('Health startup status does not match payload status.');
   }
 
-  if (
-    protectedOwners.some(
-      (owner) => owner !== 'system' && owner !== 'user',
-    )
-  ) {
+  if (protectedOwners.some((owner) => owner !== 'system' && owner !== 'user')) {
     throw new Error('Workspace protected owners include an unsupported value.');
   }
 

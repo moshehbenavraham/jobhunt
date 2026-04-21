@@ -1,6 +1,9 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { resolveRepoRelativePath, type RepoPathOptions } from '../config/repo-paths.js';
+import {
+  resolveRepoRelativePath,
+  type RepoPathOptions,
+} from '../config/repo-paths.js';
 import type {
   AgentRuntimeAuthReadiness,
   AgentRuntimeConfig,
@@ -95,12 +98,16 @@ function toModuleImportPath(
       return providedPath;
     }
 
-    return pathToFileURL(resolve(options.repoRoot ?? process.cwd(), providedPath))
-      .href;
+    return pathToFileURL(
+      resolve(options.repoRoot ?? process.cwd(), providedPath),
+    ).href;
   }
 
   return pathToFileURL(
-    resolveRepoRelativePath('scripts/lib/openai-account-auth/index.mjs', options),
+    resolveRepoRelativePath(
+      'scripts/lib/openai-account-auth/index.mjs',
+      options,
+    ),
   ).href;
 }
 
@@ -253,7 +260,8 @@ export async function inspectOpenAIAccountReadiness(
     moduleRef?: OpenAIAccountModuleRef;
   } = {},
 ): Promise<AgentRuntimeAuthReadiness> {
-  const moduleRef = options.moduleRef ?? (await loadOpenAIAccountModule(options));
+  const moduleRef =
+    options.moduleRef ?? (await loadOpenAIAccountModule(options));
   const statusOptions: {
     authPath?: string;
     now?: number;
@@ -265,7 +273,8 @@ export async function inspectOpenAIAccountReadiness(
     statusOptions.now = options.now;
   }
 
-  const status = await moduleRef.module.getStoredCredentialsStatus(statusOptions);
+  const status =
+    await moduleRef.module.getStoredCredentialsStatus(statusOptions);
 
   if (!status.authenticated) {
     return status.reason === 'invalid'
@@ -289,7 +298,8 @@ export async function createConfiguredOpenAIAccountProvider(
   model: string;
   provider: OpenAICodexModelProviderLike;
 }> {
-  const moduleRef = options.moduleRef ?? (await loadOpenAIAccountModule(options));
+  const moduleRef =
+    options.moduleRef ?? (await loadOpenAIAccountModule(options));
   const model = moduleRef.module.normalizeOpenAICodexModelName(config.model);
   const provider = moduleRef.module.createOpenAICodexModelProvider({
     authPath: config.authPath,

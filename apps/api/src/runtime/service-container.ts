@@ -30,7 +30,10 @@ import {
   type OperationalStore,
   type OperationalStoreStatus,
 } from '../store/index.js';
-import { createWorkspaceAdapter, type WorkspaceAdapter } from '../workspace/index.js';
+import {
+  createWorkspaceAdapter,
+  type WorkspaceAdapter,
+} from '../workspace/index.js';
 
 export type ServiceCleanupTask = () => Promise<void> | void;
 
@@ -213,7 +216,9 @@ export function createApiServiceContainer(
         createApprovalRuntimeService({
           getStore: getOperationalStore,
           recordEvent: (input) =>
-            getObservabilityService().then((service) => service.recordEvent(input)),
+            getObservabilityService().then((service) =>
+              service.recordEvent(input),
+            ),
         }),
       ).then((createdService) => {
         approvalRuntimeService = createdService;
@@ -234,7 +239,8 @@ export function createApiServiceContainer(
     if (!jobRunnerPromise) {
       jobRunnerPromise = (async () => {
         const createdRunner = createDurableJobRunnerService({
-          bootstrapWorkflow: (workflow) => getAgentRuntimeService().bootstrap(workflow),
+          bootstrapWorkflow: (workflow) =>
+            getAgentRuntimeService().bootstrap(workflow),
           executors: createDurableJobExecutorRegistry(
             options.jobRunnerExecutors ?? [],
           ),

@@ -781,15 +781,15 @@ Planning assumptions for this PRD:
 This system delivers the product via phases. Each phase is implemented via
 multiple 2-4 hour sessions (12-25 tasks each).
 
-| Phase | Name | Sessions | Status |
-|-------|------|----------|--------|
-| 00 | Foundation and Repo Contract | 4 | Complete |
-| 01 | Backend Runtime and Job Infrastructure | 5 | Complete |
-| 02 | Typed Tools and Agent Orchestration | 4-5 | Not Started |
-| 03 | Chat, Onboarding, and Approvals UX | 3-5 | Not Started |
-| 04 | Evaluation, Artifacts, and Tracker Parity | 4-6 | Not Started |
-| 05 | Scan, Batch, and Application-Help Parity | 4-6 | Not Started |
-| 06 | Specialist Workflows, Dashboard Replacement, and Cutover | 4-6 | Not Started |
+| Phase | Name                                                     | Sessions | Status      |
+| ----- | -------------------------------------------------------- | -------- | ----------- |
+| 00    | Foundation and Repo Contract                             | 4        | Complete    |
+| 01    | Backend Runtime and Job Infrastructure                   | 5        | Complete    |
+| 02    | Typed Tools and Agent Orchestration                      | 4-5      | Not Started |
+| 03    | Chat, Onboarding, and Approvals UX                       | 3-5      | Not Started |
+| 04    | Evaluation, Artifacts, and Tracker Parity                | 4-6      | Not Started |
+| 05    | Scan, Batch, and Application-Help Parity                 | 4-6      | Not Started |
+| 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 4-6      | Not Started |
 
 ## Phase 00: Foundation and Repo Contract
 
@@ -824,10 +824,10 @@ Session artifacts were archived to `.spec_system/archive/phases/phase_00/`.
 
 ## Package Map
 
-| Package | Path | Stack | Purpose |
-|---------|------|-------|---------|
-| web | apps/web | TypeScript, React | Primary app UI for chat, review surfaces, approvals, and settings |
-| api | apps/api | TypeScript, Node.js | Local API, agent runtime, job orchestration, workspace adapter, and SQLite access |
+| Package | Path     | Stack               | Purpose                                                                           |
+| ------- | -------- | ------------------- | --------------------------------------------------------------------------------- |
+| web     | apps/web | TypeScript, React   | Primary app UI for chat, review surfaces, approvals, and settings                 |
+| api     | apps/api | TypeScript, Node.js | Local API, agent runtime, job orchestration, workspace adapter, and SQLite access |
 
 ## Migration Plan
 

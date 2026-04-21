@@ -9,10 +9,7 @@ import {
   writeFile,
 } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import {
-  OPENAI_CODEX_PROVIDER,
-  getDefaultAuthPath,
-} from './common.mjs';
+import { OPENAI_CODEX_PROVIDER, getDefaultAuthPath } from './common.mjs';
 
 const LOCK_RETRY_MS = 100;
 const LOCK_TIMEOUT_MS = 10_000;

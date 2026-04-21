@@ -141,14 +141,20 @@ export function createRuntimeEventRepository(
 
       return row ? mapRuntimeEventRow(row, store.databasePath) : null;
     },
-    async list(input: RuntimeEventListInput = {}): Promise<RuntimeEventRecord[]> {
+    async list(
+      input: RuntimeEventListInput = {},
+    ): Promise<RuntimeEventRecord[]> {
       const clauses: string[] = [];
       const parameters: Record<string, string | number> = {
         limit: normalizeLimit(input.limit, store.databasePath),
       };
 
       if (input.approvalId) {
-        assertNonEmptyString(input.approvalId, 'approvalId', store.databasePath);
+        assertNonEmptyString(
+          input.approvalId,
+          'approvalId',
+          store.databasePath,
+        );
         clauses.push('approval_id = @approvalId');
         parameters.approvalId = input.approvalId;
       }

@@ -182,10 +182,7 @@ function getRouteExecutionTimeout(runtimeConfig: ApiRuntimeConfig): number {
   );
 }
 
-function getTraceId(
-  request: IncomingMessage,
-  requestId: string,
-): string {
+function getTraceId(request: IncomingMessage, requestId: string): string {
   const headerValue = request.headers['x-trace-id'];
 
   if (typeof headerValue === 'string' && headerValue.trim().length > 0) {
@@ -216,7 +213,6 @@ async function handleRequest(
   rateLimiter: ReturnType<typeof createRateLimiter>,
 ): Promise<void> {
   const startedAtMs = Date.now();
-  const startedAt = new Date(startedAtMs).toISOString();
   const requestId = randomUUID();
   const traceId = getTraceId(request, requestId);
   let requestInput: ReturnType<typeof parseApiRequestInput> | undefined;
@@ -257,7 +253,9 @@ async function handleRequest(
     }
   }
 
-  async function writeRouteResponse(routeResponse: JsonRouteResponse): Promise<void> {
+  async function writeRouteResponse(
+    routeResponse: JsonRouteResponse,
+  ): Promise<void> {
     await recordRequestEvent('http-request-completed', {
       level: getEventLevel(routeResponse.statusCode),
       metadata: {
@@ -322,9 +320,7 @@ async function handleRequest(
   const matchingRoutes = getRoutesForPath(routes, requestInput.pathname);
 
   if (matchingRoutes.length === 0) {
-    await writeRouteResponse(
-      createNotFoundResponse(requestInput.pathname),
-    );
+    await writeRouteResponse(createNotFoundResponse(requestInput.pathname));
     return;
   }
 
@@ -359,9 +355,7 @@ async function handleRequest(
 
     await writeRouteResponse(routeResponse);
   } catch (error) {
-    await writeRouteResponse(
-      createUnexpectedErrorResponse(error),
-    );
+    await writeRouteResponse(createUnexpectedErrorResponse(error));
   }
 }
 

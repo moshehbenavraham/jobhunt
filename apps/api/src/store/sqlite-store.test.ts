@@ -30,7 +30,9 @@ test('store status stays absent without creating the app-state root', async () =
 
 test('explicit store initialization is idempotent and produces a ready status', async () => {
   const fixture = await createWorkspaceFixture();
-  const databasePath = resolveOperationalStorePath({ repoRoot: fixture.repoRoot });
+  const databasePath = resolveOperationalStorePath({
+    repoRoot: fixture.repoRoot,
+  });
 
   try {
     const firstStore = await createOperationalStore({
@@ -65,7 +67,9 @@ test('explicit store initialization is idempotent and produces a ready status', 
 
 test('corrupt store contents surface actionable status and init failures', async () => {
   const fixture = await createWorkspaceFixture();
-  const databasePath = resolveOperationalStorePath({ repoRoot: fixture.repoRoot });
+  const databasePath = resolveOperationalStorePath({
+    repoRoot: fixture.repoRoot,
+  });
 
   try {
     await mkdir(join(fixture.repoRoot, '.jobhunt-app'), { recursive: true });

@@ -82,7 +82,9 @@ export type StartupErrorPayload = {
   status: 'error';
 };
 
-function getMissingCounts(diagnostics: StartupDiagnostics): StartupHealthPayload['missing'] {
+function getMissingCounts(
+  diagnostics: StartupDiagnostics,
+): StartupHealthPayload['missing'] {
   return {
     onboarding: diagnostics.onboardingMissing.length,
     optional: diagnostics.optionalMissing.length,
@@ -105,7 +107,9 @@ function sortMissingItems(
   return [...items].sort(compareMissingSummary);
 }
 
-export function getStartupStatus(diagnostics: StartupDiagnostics): StartupStatus {
+export function getStartupStatus(
+  diagnostics: StartupDiagnostics,
+): StartupStatus {
   if (diagnostics.operationalStore.status === 'corrupt') {
     return 'runtime-error';
   }

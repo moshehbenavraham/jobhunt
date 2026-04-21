@@ -1,4 +1,8 @@
-import { APP_STATE_DIRNAME, getRepoPaths, type RepoPathOptions } from '../config/repo-paths.js';
+import {
+  APP_STATE_DIRNAME,
+  getRepoPaths,
+  type RepoPathOptions,
+} from '../config/repo-paths.js';
 import { getAppStateRootStatus } from '../config/app-state-root.js';
 import { partitionMissingReadResults } from './missing-file-policy.js';
 import { listWorkspaceSurfaces } from './workspace-contract.js';
@@ -9,7 +13,9 @@ export async function getWorkspaceSummary(
   options: RepoPathOptions = {},
 ): Promise<WorkspaceSummary> {
   const repoPaths = getRepoPaths(options);
-  const appStateRoot = await getAppStateRootStatus({ repoRoot: repoPaths.repoRoot });
+  const appStateRoot = await getAppStateRootStatus({
+    repoRoot: repoPaths.repoRoot,
+  });
   const results = await Promise.all(
     listWorkspaceSurfaces().map((surface) =>
       readWorkspaceSurface(surface.key, { repoRoot: repoPaths.repoRoot }),

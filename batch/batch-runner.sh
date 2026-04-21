@@ -281,6 +281,7 @@ next_report_num_unlocked() {
       local basename
       basename=$(basename "$f")
       local num="${basename%%-*}"
+      [[ "$num" =~ ^[0-9]+$ ]] || continue
       num=$((10#$num)) # Remove leading zeros for arithmetic
       if ((num > max_num)); then
         max_num=$num
