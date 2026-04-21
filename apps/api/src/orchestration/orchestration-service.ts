@@ -40,7 +40,9 @@ type OrchestrationServiceOptions = {
   bootstrapMaxAttempts?: number;
   bootstrapRetryDelayMs?: number;
   bootstrapTimeoutMs?: number;
-  bootstrapWorkflow: (workflow: WorkflowIntent) => Promise<AgentRuntimeBootstrap>;
+  bootstrapWorkflow: (
+    workflow: WorkflowIntent,
+  ) => Promise<AgentRuntimeBootstrap>;
   getStore: () => Promise<OperationalStore>;
   getToolRegistry: () => ToolRegistry;
   now?: () => number;
@@ -63,7 +65,8 @@ function toReadyRuntimeState(
     promptBundle: {
       cacheMode: bootstrap.promptBundle.cacheMode,
       loadedAt: bootstrap.promptBundle.loadedAt,
-      modeRepoRelativePath: bootstrap.promptBundle.workflow.modeRepoRelativePath,
+      modeRepoRelativePath:
+        bootstrap.promptBundle.workflow.modeRepoRelativePath,
       sourceCount: bootstrap.promptBundle.sources.length,
       sourceOrder: [...bootstrap.promptBundle.sourceOrder],
     },
@@ -92,15 +95,11 @@ async function withTimeout<TValue>(
   return Promise.race([
     promise,
     delay(timeoutMs).then(() => {
-      throw new OrchestrationError(
-        'orchestration-bootstrap-timeout',
-        message,
-        {
-          detail: {
-            timeoutMs,
-          },
+      throw new OrchestrationError('orchestration-bootstrap-timeout', message, {
+        detail: {
+          timeoutMs,
         },
-      );
+      });
     }),
   ]);
 }
@@ -281,8 +280,7 @@ export function createOrchestrationService(
                 error instanceof OrchestrationError
                   ? error.code
                   : 'orchestration-bootstrap-failed',
-              message:
-                error instanceof Error ? error.message : String(error),
+              message: error instanceof Error ? error.message : String(error),
               sessionId: session.sessionId,
             })) ?? session;
         }

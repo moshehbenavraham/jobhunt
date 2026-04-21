@@ -30,7 +30,8 @@ const DEFAULT_SESSION04_TOOL_SCRIPTS = [
   {
     command: process.execPath,
     commandArgs: ['scripts/merge-tracker.mjs'],
-    description: 'Merge staged tracker TSV additions into the applications tracker.',
+    description:
+      'Merge staged tracker TSV additions into the applications tracker.',
     name: 'merge-tracker',
     timeoutMs: DEFAULT_TOOL_SCRIPT_TIMEOUT_MS['merge-tracker'],
   },
@@ -51,7 +52,8 @@ const DEFAULT_SESSION04_TOOL_SCRIPTS = [
   {
     command: process.execPath,
     commandArgs: ['scripts/dedup-tracker.mjs'],
-    description: 'Deduplicate tracker rows while preserving the strongest record.',
+    description:
+      'Deduplicate tracker rows while preserving the strongest record.',
     name: 'dedup-tracker',
     timeoutMs: DEFAULT_TOOL_SCRIPT_TIMEOUT_MS['dedup-tracker'],
   },

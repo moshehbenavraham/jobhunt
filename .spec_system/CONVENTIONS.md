@@ -107,7 +107,7 @@
 | Type Safety   | `npm run typecheck`                           | apps/web/tsconfig.json, apps/api/tsconfig.json |
 | Testing       | `node scripts/test-all.mjs`, `npm run doctor` | repo scripts                                   |
 | Coverage      | `npm run coverage`                            | `c8`, `go test -cover`                         |
-| Observability | not configured                                | -                                              |
+| Observability | pino                                          | apps/api/src/logger.ts                         |
 | Git Hooks     | not configured                                | -                                              |
 | Database      | not configured                                | -                                              |
 
@@ -119,6 +119,18 @@
 | Coverage  | `npm run coverage`                                    | Measures Node script coverage via `c8` and dashboard package coverage via `go test -cover`                 |
 | Security  | `npm run app:boot:test`                               | API startup server rate limits burst traffic per client and returns HTTP 429 after the configured window   |
 | Local Dev | `npm run dashboard`                                   | Preferred launcher for the Go TUI dashboard; builds in `dashboard/` and defaults `--path` to the repo root |
+
+## CI/CD
+
+| Bundle       | Status     | Workflow                                                                                                | Strategy                                                               |
+| ------------ | ---------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Code Quality | configured | `.github/workflows/quality.yml`                                                                         | Repo-wide npm workspace lint, format, and quick regression validation  |
+| Build & Test | configured | `.github/workflows/test.yml`                                                                            | Repo-wide quick regression gate on pull requests                       |
+| Security     | configured | `.github/workflows/codeql.yml`, `.github/workflows/dependency-review.yml`, `.github/workflows/sbom.yml` | JavaScript/TypeScript plus Go analysis matrix and PR dependency review |
+| Integration  | configured | `.github/workflows/integration.yml`                                                                     | Repo-wide doctor, Playwright Chromium, verify, and sync-check gates    |
+| Operations   | configured | `.github/workflows/release.yml`, `.github/workflows/deploy.yml`, `.github/dependabot.yml`               | Main-branch release automation plus webhook deploy placeholder         |
+
+- `DEPLOY_WEBHOOK_URL` and `DEPLOY_HEALTHCHECK_URL` enable the deploy workflow's production webhook trigger and `/health` smoke test. Without them, `.github/workflows/deploy.yml` exits cleanly as a documented placeholder.
 
 ## When In Doubt
 

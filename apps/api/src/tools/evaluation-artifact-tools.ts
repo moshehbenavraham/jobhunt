@@ -96,9 +96,12 @@ async function listNumberedArtifacts(
   repoRoot: string,
 ): Promise<number[]> {
   try {
-    const absoluteDirectoryPath = resolveRepoRelativePath(directoryRepoRelativePath, {
-      repoRoot,
-    });
+    const absoluteDirectoryPath = resolveRepoRelativePath(
+      directoryRepoRelativePath,
+      {
+        repoRoot,
+      },
+    );
     const entries = await readdir(absoluteDirectoryPath);
 
     return entries
@@ -264,7 +267,9 @@ async function collectArtifactListItems(
           ['output', 'outputDirectory'],
           ['reports', 'reportsDirectory'],
         ] as const)
-      : ([[group, group === 'reports' ? 'reportsDirectory' : 'outputDirectory']] as const);
+      : ([
+          [group, group === 'reports' ? 'reportsDirectory' : 'outputDirectory'],
+        ] as const);
 
   const results = await Promise.all(
     groups.map(async ([label, surfaceKey]) => {
@@ -286,9 +291,11 @@ async function collectArtifactListItems(
     }),
   );
 
-  return results.flat().sort((left, right) =>
-    left.repoRelativePath.localeCompare(right.repoRelativePath),
-  );
+  return results
+    .flat()
+    .sort((left, right) =>
+      left.repoRelativePath.localeCompare(right.repoRelativePath),
+    );
 }
 
 export function createEvaluationArtifactTools(): readonly AnyToolDefinition[] {
@@ -358,7 +365,9 @@ export function createEvaluationArtifactTools(): readonly AnyToolDefinition[] {
             writtenAt,
           },
           overwrite: true,
-          repoRelativePath: getReservationRepoRelativePath(reservation.reservationId),
+          repoRelativePath: getReservationRepoRelativePath(
+            reservation.reservationId,
+          ),
           target: 'app-state',
         });
 

@@ -13,7 +13,8 @@ import type {
 } from './tool-contract.js';
 
 const TEMPLATE_FIXTURE_FILES = {
-  'config/portals.example.yml': 'title_filter:\n  positive:\n    - Forward Deployed\n',
+  'config/portals.example.yml':
+    'title_filter:\n  positive:\n    - Forward Deployed\n',
   'config/profile.example.yml': 'candidate:\n  full_name: Template User\n',
   'data/applications.example.md': [
     '# Applications Tracker',
@@ -141,7 +142,11 @@ test('repair apply creates missing files from checked-in templates', async () =>
       await fixture.readText('config/profile.yml'),
       'candidate:\n  full_name: Template User\n',
     );
-    assert.ok((await fixture.readText('data/applications.md'))?.includes('# Applications Tracker'));
+    assert.ok(
+      (await fixture.readText('data/applications.md'))?.includes(
+        '# Applications Tracker',
+      ),
+    );
   } finally {
     await fixture.cleanup();
   }

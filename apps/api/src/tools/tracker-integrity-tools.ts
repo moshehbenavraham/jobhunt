@@ -64,7 +64,9 @@ function sanitizeTsvField(value: string): string {
   return value.replace(/[\r\n\t]+/g, ' ').trim();
 }
 
-async function loadCanonicalStatusLabels(repoRoot: string): Promise<Set<string>> {
+async function loadCanonicalStatusLabels(
+  repoRoot: string,
+): Promise<Set<string>> {
   const cached = canonicalStatusLabelsCache.get(repoRoot);
   if (cached) {
     return cached;
@@ -125,19 +127,17 @@ function collectWarnings(
   }));
 }
 
-function createMaintenanceTool(
-  config: {
-    description: string;
-    name: string;
-    scriptName:
-      | 'dedup-tracker'
-      | 'merge-tracker'
-      | 'normalize-statuses'
-      | 'verify-pipeline';
-    supportsDryRun?: boolean;
-    warningCode: string;
-  },
-): ToolDefinition<
+function createMaintenanceTool(config: {
+  description: string;
+  name: string;
+  scriptName:
+    | 'dedup-tracker'
+    | 'merge-tracker'
+    | 'normalize-statuses'
+    | 'verify-pipeline';
+  supportsDryRun?: boolean;
+  warningCode: string;
+}): ToolDefinition<
   z.output<typeof emptyInputSchema> | z.output<typeof maintenanceInputSchema>,
   JsonValue
 > {
@@ -205,8 +205,7 @@ export function createTrackerIntegrityTools(): readonly AnyToolDefinition[] {
         }
 
         const companySlug = input.companySlug ?? slugifySegment(input.company);
-        const repoRelativePath =
-          `batch/tracker-additions/${input.entryNumber}-${companySlug}.tsv`;
+        const repoRelativePath = `batch/tracker-additions/${input.entryNumber}-${companySlug}.tsv`;
         const absolutePath = resolveRepoRelativePath(repoRelativePath, {
           repoRoot,
         });

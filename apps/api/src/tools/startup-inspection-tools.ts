@@ -32,9 +32,7 @@ function toJsonValue(value: unknown): JsonValue {
   return JSON.parse(JSON.stringify(value)) as JsonValue;
 }
 
-function summarizeStartupDiagnostics(
-  diagnostics: StartupDiagnostics,
-): {
+function summarizeStartupDiagnostics(diagnostics: StartupDiagnostics): {
   agentRuntime: StartupDiagnostics['agentRuntime'];
   bootSurface: StartupDiagnostics['bootSurface'];
   currentSession: StartupDiagnostics['currentSession'];
@@ -103,9 +101,9 @@ export function createStartupInspectionTools(options: {
         const selectedRoute =
           input.workflow === null
             ? null
-            : promptContract.workflowRoutes.find(
+            : (promptContract.workflowRoutes.find(
                 (route) => route.intent === input.workflow,
-              ) ?? null;
+              ) ?? null);
 
         return {
           output: toJsonValue({
@@ -120,6 +118,9 @@ export function createStartupInspectionTools(options: {
       },
       inputSchema: promptContractInputSchema,
       name: 'inspect-prompt-contract',
-    } satisfies ToolDefinition<z.output<typeof promptContractInputSchema>, JsonValue>,
+    } satisfies ToolDefinition<
+      z.output<typeof promptContractInputSchema>,
+      JsonValue
+    >,
   ];
 }

@@ -573,7 +573,8 @@ test('service container merges the default Session 03 script allowlist into tool
       'config/profile.yml': 'full_name: Test User\n',
       'modes/_profile.md': '# Profile\n',
       'profile/cv.md': '# CV\n',
-      'scripts/verify-pipeline.mjs': "process.stdout.write('pipeline-ok\\n');\n",
+      'scripts/verify-pipeline.mjs':
+        "process.stdout.write('pipeline-ok\\n');\n",
     },
   });
   const container = createApiServiceContainer({
@@ -659,7 +660,10 @@ test('service container default tool suite revalidates onboarding repair state o
       toolName: 'preview-onboarding-repair',
     });
 
-    await fixture.writeText('config/profile.yml', 'candidate:\n  full_name: Live User\n');
+    await fixture.writeText(
+      'config/profile.yml',
+      'candidate:\n  full_name: Live User\n',
+    );
 
     const toolServiceB = await container.tools.getService();
     const secondResult = await toolServiceB.execute({

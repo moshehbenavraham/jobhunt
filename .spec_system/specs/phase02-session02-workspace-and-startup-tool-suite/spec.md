@@ -162,31 +162,31 @@ custom tool definitions into every test or runtime entrypoint.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/workspace/onboarding-template-contract.ts` | Map repairable startup files to checked-in templates or tracker skeleton content | ~150 |
-| `apps/api/src/tools/startup-inspection-tools.ts` | Define startup diagnostics and prompt-contract inspection tools | ~180 |
-| `apps/api/src/tools/profile-summary.ts` | Summarize profile, portals, CV, and article-digest sources for onboarding and settings | ~170 |
-| `apps/api/src/tools/workspace-discovery-tools.ts` | Define required-file, artifact, and workflow-support inspection tools | ~180 |
-| `apps/api/src/tools/onboarding-repair-tools.ts` | Define template-backed preview and repair tools for missing onboarding files | ~220 |
-| `apps/api/src/tools/default-tool-suite.ts` | Assemble the Session 02 startup and workspace tool definitions | ~80 |
-| `apps/api/src/tools/startup-inspection-tools.test.ts` | Cover startup diagnostics and prompt-contract inspection behavior | ~170 |
-| `apps/api/src/tools/workspace-discovery-tools.test.ts` | Cover profile summaries, legacy CV fallback, and deterministic artifact listing | ~180 |
-| `apps/api/src/tools/onboarding-repair-tools.test.ts` | Cover repair preview, bounded writes, approval handling, and overwrite refusal | ~220 |
-| `data/applications.example.md` | Provide the checked-in tracker skeleton for onboarding repair flows | ~15 |
+| File                                                     | Purpose                                                                                | Est. Lines |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/workspace/onboarding-template-contract.ts` | Map repairable startup files to checked-in templates or tracker skeleton content       | ~150       |
+| `apps/api/src/tools/startup-inspection-tools.ts`         | Define startup diagnostics and prompt-contract inspection tools                        | ~180       |
+| `apps/api/src/tools/profile-summary.ts`                  | Summarize profile, portals, CV, and article-digest sources for onboarding and settings | ~170       |
+| `apps/api/src/tools/workspace-discovery-tools.ts`        | Define required-file, artifact, and workflow-support inspection tools                  | ~180       |
+| `apps/api/src/tools/onboarding-repair-tools.ts`          | Define template-backed preview and repair tools for missing onboarding files           | ~220       |
+| `apps/api/src/tools/default-tool-suite.ts`               | Assemble the Session 02 startup and workspace tool definitions                         | ~80        |
+| `apps/api/src/tools/startup-inspection-tools.test.ts`    | Cover startup diagnostics and prompt-contract inspection behavior                      | ~170       |
+| `apps/api/src/tools/workspace-discovery-tools.test.ts`   | Cover profile summaries, legacy CV fallback, and deterministic artifact listing        | ~180       |
+| `apps/api/src/tools/onboarding-repair-tools.test.ts`     | Cover repair preview, bounded writes, approval handling, and overwrite refusal         | ~220       |
+| `data/applications.example.md`                           | Provide the checked-in tracker skeleton for onboarding repair flows                    | ~15        |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/workspace/workspace-types.ts` | Add template surface keys and onboarding-template metadata types | ~90 |
-| `apps/api/src/workspace/workspace-contract.ts` | Register readable template surfaces and canonical repair targets | ~140 |
-| `apps/api/src/workspace/workspace-adapter.ts` | Expose template-surface access through the shared workspace adapter | ~40 |
-| `apps/api/src/workspace/index.ts` | Export the new onboarding-template helpers | ~20 |
-| `apps/api/src/tools/index.ts` | Export the Session 02 tool-suite modules | ~20 |
-| `apps/api/src/runtime/service-container.ts` | Register the default startup and workspace tool suite in shared runtime wiring | ~90 |
-| `apps/api/src/runtime/service-container.test.ts` | Verify default tool registration, reuse, and catalog availability | ~120 |
-| `apps/api/README_api.md` | Document startup inspection tools, repair limits, and validation path | ~50 |
+| File                                             | Changes                                                                        | Est. Lines |
+| ------------------------------------------------ | ------------------------------------------------------------------------------ | ---------- |
+| `apps/api/src/workspace/workspace-types.ts`      | Add template surface keys and onboarding-template metadata types               | ~90        |
+| `apps/api/src/workspace/workspace-contract.ts`   | Register readable template surfaces and canonical repair targets               | ~140       |
+| `apps/api/src/workspace/workspace-adapter.ts`    | Expose template-surface access through the shared workspace adapter            | ~40        |
+| `apps/api/src/workspace/index.ts`                | Export the new onboarding-template helpers                                     | ~20        |
+| `apps/api/src/tools/index.ts`                    | Export the Session 02 tool-suite modules                                       | ~20        |
+| `apps/api/src/runtime/service-container.ts`      | Register the default startup and workspace tool suite in shared runtime wiring | ~90        |
+| `apps/api/src/runtime/service-container.test.ts` | Verify default tool registration, reuse, and catalog availability              | ~120       |
+| `apps/api/README_api.md`                         | Document startup inspection tools, repair limits, and validation path          | ~50        |
 
 ---
 
@@ -270,6 +270,7 @@ custom tool definitions into every test or runtime entrypoint.
 
 Checklist active: Yes
 Top behavioral risks for this session's deliverables:
+
 - Repair tools overwriting or partially creating user-layer files during
   missing-file recovery
 - Inspection tools causing hidden writes or store initialization during

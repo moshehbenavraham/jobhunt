@@ -1,0 +1,72 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Resolve deploy configuration
+        id: config
+        env:
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+          DEPLOY_HEALTHCHECK_URL: ${{ secrets.DEPLOY_HEALTHCHECK_URL }}
+        run: |
+          # Placeholder deploy hook until infra defines a concrete platform target.
+          if [ -z "$DEPLOY_WEBHOOK_URL" ]; then
+            {
+              echo "Deploy target is not configured."
+              echo "Set DEPLOY_WEBHOOK_URL and DEPLOY_HEALTHCHECK_URL to enable production deploys."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ -z "$DEPLOY_HEALTHCHECK_URL" ]; then
+            echo "DEPLOY_HEALTHCHECK_URL is required when DEPLOY_WEBHOOK_URL is configured." >&2
+            exit 1
+          fi
+
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger deploy webhook
+        if: steps.config.outputs.enabled == 'true'
+        env:
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+        run: curl -fsSL -X POST "$DEPLOY_WEBHOOK_URL"
+
+      - name: Smoke test production health endpoint
+        if: steps.config.outputs.enabled == 'true'
+        env:
+          DEPLOY_HEALTHCHECK_URL: ${{ secrets.DEPLOY_HEALTHCHECK_URL }}
+        run: |
+          body=""
+          attempt=1
+          while [ "$attempt" -le 10 ]; do
+            if body="$(curl -fsSL "$DEPLOY_HEALTHCHECK_URL")"; then
+              break
+            fi
+
+            echo "Health check attempt $attempt/10 failed; retrying in 15s."
+            attempt=$((attempt + 1))
+            sleep 15
+          done
+
+          if [ -z "$body" ]; then
+            echo "Production health check failed for $DEPLOY_HEALTHCHECK_URL" >&2
+            exit 1
+          fi
+
+          printf '%s\n' "$body"
+          printf '%s' "$body" | tr -d '[:space:]' | grep -F '"status":"ok"' >/dev/null

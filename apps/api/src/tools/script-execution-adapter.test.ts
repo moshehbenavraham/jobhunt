@@ -50,7 +50,7 @@ test('script execution adapter maps timeouts onto tool-script-timeout errors', a
   const fixture = await createWorkspaceFixture({
     files: {
       'scripts/slow-script.mjs':
-        "await new Promise((resolve) => setTimeout(resolve, 200));\n",
+        'await new Promise((resolve) => setTimeout(resolve, 200));\n',
     },
   });
   const adapter = createScriptExecutionAdapter({

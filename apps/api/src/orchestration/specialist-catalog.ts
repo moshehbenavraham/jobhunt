@@ -115,10 +115,7 @@ const workflowRoutes = [
     specialistId: 'evaluation-specialist',
     status: 'ready',
     toolPolicy: {
-      allowedToolNames: [
-        'bootstrap-auto-pipeline',
-        ...EVALUATION_TOOLS,
-      ],
+      allowedToolNames: ['bootstrap-auto-pipeline', ...EVALUATION_TOOLS],
     },
     workflow: 'auto-pipeline',
   },
@@ -129,10 +126,7 @@ const workflowRoutes = [
     specialistId: 'evaluation-specialist',
     status: 'ready',
     toolPolicy: {
-      allowedToolNames: [
-        'bootstrap-single-evaluation',
-        ...EVALUATION_TOOLS,
-      ],
+      allowedToolNames: ['bootstrap-single-evaluation', ...EVALUATION_TOOLS],
     },
     workflow: 'single-evaluation',
   },

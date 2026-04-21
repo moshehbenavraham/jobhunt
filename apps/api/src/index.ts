@@ -25,6 +25,7 @@ import {
   type WorkspaceMissingSummary,
   type WorkspaceSummary,
 } from './workspace/index.js';
+import { captureLastError } from './logger.js';
 
 export const STARTUP_SERVICE_NAME = 'jobhunt-api-scaffold' as const;
 export const STARTUP_SESSION_ID =
@@ -257,6 +258,11 @@ function isMainModule(): boolean {
 if (isMainModule()) {
   main().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
+    void captureLastError({
+      error,
+      message: `${STARTUP_SERVICE_NAME} failed: ${message}`,
+      repoRoot: process.cwd(),
+    }).catch(() => undefined);
     console.error(`${STARTUP_SERVICE_NAME} failed: ${message}`);
     process.exitCode = 1;
   });

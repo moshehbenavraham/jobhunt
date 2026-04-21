@@ -65,8 +65,14 @@ test('tool scope applies restricted fallback tools when no direct tools are avai
   });
 
   assert.equal(scope.fallbackApplied, true);
-  assert.deepEqual(scope.catalog.map((entry) => entry.name), ['beta']);
-  assert.deepEqual(scope.catalog.map((entry) => entry.access), ['restricted']);
+  assert.deepEqual(
+    scope.catalog.map((entry) => entry.name),
+    ['beta'],
+  );
+  assert.deepEqual(
+    scope.catalog.map((entry) => entry.access),
+    ['restricted'],
+  );
   assert.deepEqual(scope.revokedToolNames, []);
 });
 

@@ -66,9 +66,9 @@ test('workflow bootstrap tool maps auth-required state without surfacing provide
     },
     repoRoot: fixture.repoRoot,
   });
-  const tool = createWorkflowTools((workflow) => service.bootstrap(workflow)).find(
-    (candidate) => candidate.name === 'bootstrap-single-evaluation',
-  );
+  const tool = createWorkflowTools((workflow) =>
+    service.bootstrap(workflow),
+  ).find((candidate) => candidate.name === 'bootstrap-single-evaluation');
 
   assert.ok(tool);
 
@@ -99,9 +99,9 @@ test('workflow bootstrap tool maps missing workflow prompts explicitly', async (
     },
     repoRoot: fixture.repoRoot,
   });
-  const tool = createWorkflowTools((workflow) => service.bootstrap(workflow)).find(
-    (candidate) => candidate.name === 'bootstrap-auto-pipeline',
-  );
+  const tool = createWorkflowTools((workflow) =>
+    service.bootstrap(workflow),
+  ).find((candidate) => candidate.name === 'bootstrap-auto-pipeline');
 
   assert.ok(tool);
 
@@ -137,9 +137,9 @@ test('workflow bootstrap tool returns prompt bundle metadata when the runtime is
     },
     repoRoot: fixture.repoRoot,
   });
-  const tool = createWorkflowTools((workflow) => service.bootstrap(workflow)).find(
-    (candidate) => candidate.name === 'bootstrap-single-evaluation',
-  );
+  const tool = createWorkflowTools((workflow) =>
+    service.bootstrap(workflow),
+  ).find((candidate) => candidate.name === 'bootstrap-single-evaluation');
 
   assert.ok(tool);
 

@@ -21,33 +21,33 @@ tool visibility deterministic for later UI phases.
 
 ### Files Created
 
-| File | Purpose | Lines |
-|------|---------|-------|
-| `apps/api/src/orchestration/orchestration-contract.ts` | Typed orchestration request, route, runtime, tooling-gap, and handoff contracts | ~220 |
-| `apps/api/src/orchestration/specialist-catalog.ts` | Specialist topology and workflow-to-specialist mapping | ~180 |
-| `apps/api/src/orchestration/tool-scope.ts` | Specialist-scoped tool catalog filtering and validation | ~120 |
-| `apps/api/src/orchestration/workflow-router.ts` | Deterministic launch and resume routing | ~220 |
-| `apps/api/src/orchestration/session-lifecycle.ts` | Create-or-resume session lifecycle helpers and state summary logic | ~180 |
-| `apps/api/src/orchestration/orchestration-service.ts` | End-to-end orchestration composition and handoff assembly | ~320 |
-| `apps/api/src/orchestration/index.ts` | Orchestration module exports | ~40 |
-| `apps/api/src/orchestration/specialist-catalog.test.ts` | Specialist coverage regression tests | ~140 |
-| `apps/api/src/orchestration/tool-scope.test.ts` | Tool-scope regression tests | ~140 |
-| `apps/api/src/orchestration/workflow-router.test.ts` | Router regression tests | ~220 |
-| `apps/api/src/orchestration/session-lifecycle.test.ts` | Session lifecycle regression tests | ~180 |
-| `apps/api/src/orchestration/orchestration-service.test.ts` | End-to-end orchestration service regression tests | ~280 |
+| File                                                       | Purpose                                                                         | Lines |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------- | ----- |
+| `apps/api/src/orchestration/orchestration-contract.ts`     | Typed orchestration request, route, runtime, tooling-gap, and handoff contracts | ~220  |
+| `apps/api/src/orchestration/specialist-catalog.ts`         | Specialist topology and workflow-to-specialist mapping                          | ~180  |
+| `apps/api/src/orchestration/tool-scope.ts`                 | Specialist-scoped tool catalog filtering and validation                         | ~120  |
+| `apps/api/src/orchestration/workflow-router.ts`            | Deterministic launch and resume routing                                         | ~220  |
+| `apps/api/src/orchestration/session-lifecycle.ts`          | Create-or-resume session lifecycle helpers and state summary logic              | ~180  |
+| `apps/api/src/orchestration/orchestration-service.ts`      | End-to-end orchestration composition and handoff assembly                       | ~320  |
+| `apps/api/src/orchestration/index.ts`                      | Orchestration module exports                                                    | ~40   |
+| `apps/api/src/orchestration/specialist-catalog.test.ts`    | Specialist coverage regression tests                                            | ~140  |
+| `apps/api/src/orchestration/tool-scope.test.ts`            | Tool-scope regression tests                                                     | ~140  |
+| `apps/api/src/orchestration/workflow-router.test.ts`       | Router regression tests                                                         | ~220  |
+| `apps/api/src/orchestration/session-lifecycle.test.ts`     | Session lifecycle regression tests                                              | ~180  |
+| `apps/api/src/orchestration/orchestration-service.test.ts` | End-to-end orchestration service regression tests                               | ~280  |
 
 ### Files Modified
 
-| File | Changes |
-|------|---------|
-| `apps/api/src/runtime/service-container.ts` | Lazily exposed the shared orchestration service through the runtime container |
-| `apps/api/src/runtime/service-container.test.ts` | Verified orchestration registration and container reuse |
-| `apps/api/src/tools/tool-contract.ts` | Extended the registry contract with specialist-scoped catalog access helpers |
-| `apps/api/src/tools/tool-registry.ts` | Added deterministic catalog filtering and missing-tool validation |
-| `apps/api/src/tools/tool-registry.test.ts` | Covered filtered catalog ordering and unknown-tool rejection |
-| `apps/api/package.json` | Added orchestration tests to the API validation commands and bumped the package version |
-| `apps/api/README_api.md` | Documented the router, specialist topology, and orchestration boundaries |
-| `scripts/test-all.mjs` | Added quick-suite coverage for the new orchestration surface |
+| File                                             | Changes                                                                                 |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------- |
+| `apps/api/src/runtime/service-container.ts`      | Lazily exposed the shared orchestration service through the runtime container           |
+| `apps/api/src/runtime/service-container.test.ts` | Verified orchestration registration and container reuse                                 |
+| `apps/api/src/tools/tool-contract.ts`            | Extended the registry contract with specialist-scoped catalog access helpers            |
+| `apps/api/src/tools/tool-registry.ts`            | Added deterministic catalog filtering and missing-tool validation                       |
+| `apps/api/src/tools/tool-registry.test.ts`       | Covered filtered catalog ordering and unknown-tool rejection                            |
+| `apps/api/package.json`                          | Added orchestration tests to the API validation commands and bumped the package version |
+| `apps/api/README_api.md`                         | Documented the router, specialist topology, and orchestration boundaries                |
+| `scripts/test-all.mjs`                           | Added quick-suite coverage for the new orchestration surface                            |
 
 ---
 
@@ -64,11 +64,11 @@ tool visibility deterministic for later UI phases.
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 4 validation commands |
-| Passed | 4/4 |
-| Coverage | N/A |
+| Metric   | Value                 |
+| -------- | --------------------- |
+| Tests    | 4 validation commands |
+| Passed   | 4/4                   |
+| Coverage | N/A                   |
 
 Validated commands:
 

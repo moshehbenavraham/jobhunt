@@ -82,9 +82,7 @@ export async function enqueueWorkflowJob(options: {
     alreadyExists: initialResult.alreadyExists,
     jobId: initialResult.job.jobId,
     jobStatus: initialResult.job.status,
-    requestStatus: initialResult.alreadyExists
-      ? 'already-queued'
-      : 'accepted',
+    requestStatus: initialResult.alreadyExists ? 'already-queued' : 'accepted',
     runId: initialResult.runMetadata.runId,
   };
 }

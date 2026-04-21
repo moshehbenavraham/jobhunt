@@ -135,9 +135,7 @@ test('tool execution service routes approval-required tools through the approval
     assert.equal(executeCount, 0);
     assert.equal(approvals.length, 1);
     assert.equal(approvals[0]?.status, 'pending');
-    assert.ok(
-      events.some((event) => event.eventType === 'approval-requested'),
-    );
+    assert.ok(events.some((event) => event.eventType === 'approval-requested'));
     assert.ok(
       events.some((event) => event.eventType === 'tool-approval-required'),
     );

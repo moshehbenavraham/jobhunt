@@ -1,6 +1,9 @@
 import { rm } from 'node:fs/promises';
 import { z } from 'zod';
-import type { WorkspaceAdapter, WorkspaceReadResult } from '../workspace/index.js';
+import type {
+  WorkspaceAdapter,
+  WorkspaceReadResult,
+} from '../workspace/index.js';
 import {
   ONBOARDING_REPAIRABLE_SURFACE_KEYS,
   type JsonValue,
@@ -60,7 +63,9 @@ async function getRepairPreviewItems(
   workspace: WorkspaceAdapter,
   targets: readonly OnboardingRepairableSurfaceKey[],
 ): Promise<RepairPreviewItem[]> {
-  const definitions = targets.map((target) => workspace.getOnboardingRepair(target));
+  const definitions = targets.map((target) =>
+    workspace.getOnboardingRepair(target),
+  );
   const previewItems = await Promise.all(
     definitions.map(async (definition) => {
       const [destinationResult, sourceResult] = await Promise.all([
@@ -68,7 +73,11 @@ async function getRepairPreviewItems(
         workspace.readSurface(definition.sourceSurfaceKey),
       ]);
 
-      return buildRepairPreviewItem(definition, destinationResult, sourceResult);
+      return buildRepairPreviewItem(
+        definition,
+        destinationResult,
+        sourceResult,
+      );
     }),
   );
 
@@ -182,8 +191,12 @@ async function prepareRepairs(
       continue;
     }
 
-    const definition = workspace.getOnboardingRepair(previewItem.destination.surfaceKey);
-    const sourceResult = await workspace.readRequiredSurface(definition.sourceSurfaceKey);
+    const definition = workspace.getOnboardingRepair(
+      previewItem.destination.surfaceKey,
+    );
+    const sourceResult = await workspace.readRequiredSurface(
+      definition.sourceSurfaceKey,
+    );
 
     if (typeof sourceResult.value !== 'string') {
       throw new ToolExecutionError(
@@ -212,7 +225,9 @@ async function rollbackCreatedFiles(
   );
 
   return rollbackResults.flatMap((result, index) =>
-    result.status === 'fulfilled' ? [] : [writes[index]?.repoRelativePath ?? 'unknown'],
+    result.status === 'fulfilled'
+      ? []
+      : [writes[index]?.repoRelativePath ?? 'unknown'],
   );
 }
 
@@ -232,7 +247,10 @@ export function createOnboardingRepairTools(options: {
                 .listOnboardingRepairs()
                 .map((definition) => definition.destinationSurfaceKey)
             : dedupeTargets(input.targets);
-        const previewItems = await getRepairPreviewItems(workspace, previewTargets);
+        const previewItems = await getRepairPreviewItems(
+          workspace,
+          previewTargets,
+        );
 
         return {
           output: {

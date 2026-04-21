@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/tools/tool-contract.ts` - typed tool metadata, policy, and result envelopes
 - `apps/api/src/tools/tool-errors.ts` - deterministic tool error mapping
 - `apps/api/src/tools/tool-registry.ts` - duplicate-safe tool registry
@@ -43,13 +44,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | Script dispatch stays allowlisted and bounded; no raw shell concatenation was introduced in the tool boundary. |
-| Hardcoded Secrets | PASS | -- | No secrets or credentials were added to source, tests, or docs. |
-| Sensitive Data Exposure | PASS | -- | Tool results and observability remain metadata-only; no unrestricted stderr or secret-bearing payloads are exposed. |
-| Insecure Dependencies | PASS | -- | No new dependencies were added for this session. |
-| Security Misconfiguration | PASS | -- | No debug or permissive security settings were introduced. |
+| Category                      | Status | Severity | Details                                                                                                             |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | Script dispatch stays allowlisted and bounded; no raw shell concatenation was introduced in the tool boundary.      |
+| Hardcoded Secrets             | PASS   | --       | No secrets or credentials were added to source, tests, or docs.                                                     |
+| Sensitive Data Exposure       | PASS   | --       | Tool results and observability remain metadata-only; no unrestricted stderr or secret-bearing payloads are exposed. |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were added for this session.                                                                    |
+| Security Misconfiguration     | PASS   | --       | No debug or permissive security settings were introduced.                                                           |
 
 ### Findings
 
@@ -63,14 +64,14 @@ No security findings.
 
 N/A - this session introduced no personal-data collection, storage, transfer, or user-facing PII handling.
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection & Purpose | N/A | No personal data was collected in this session. |
-| Consent Mechanism | N/A | No consent flow was added because no personal data collection was introduced. |
-| Data Minimization | N/A | No personal data processing was added. |
-| Right to Erasure | N/A | No stored personal data was introduced. |
-| PII in Logs | N/A | No PII logging path was added. |
-| Third-Party Data Transfers | N/A | No third-party personal-data transfer was added. |
+| Category                   | Status | Details                                                                       |
+| -------------------------- | ------ | ----------------------------------------------------------------------------- |
+| Data Collection & Purpose  | N/A    | No personal data was collected in this session.                               |
+| Consent Mechanism          | N/A    | No consent flow was added because no personal data collection was introduced. |
+| Data Minimization          | N/A    | No personal data processing was added.                                        |
+| Right to Erasure           | N/A    | No stored personal data was introduced.                                       |
+| PII in Logs                | N/A    | No PII logging path was added.                                                |
+| Third-Party Data Transfers | N/A    | No third-party personal-data transfer was added.                              |
 
 ### Personal Data Inventory
 

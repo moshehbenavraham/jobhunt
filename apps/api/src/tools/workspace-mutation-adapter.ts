@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { resolveRepoRelativePath, type RepoPathOptions } from '../config/repo-paths.js';
+import {
+  resolveRepoRelativePath,
+  type RepoPathOptions,
+} from '../config/repo-paths.js';
 import { authorizeWorkspaceMutationPath } from '../workspace/workspace-boundary.js';
 import {
   WORKSPACE_MUTATION_TARGETS,
@@ -52,8 +55,7 @@ function serializeMutationContent(
   request: z.infer<typeof workspaceMutationRequestSchema>,
 ): string {
   const format =
-    request.format ??
-    (typeof request.content === 'string' ? 'text' : 'json');
+    request.format ?? (typeof request.content === 'string' ? 'text' : 'json');
 
   if (format === 'text') {
     if (typeof request.content !== 'string') {
@@ -79,9 +81,12 @@ export function createWorkspaceMutationAdapter(
         parsedRequest.target,
         options,
       );
-      const targetPath = resolveRepoRelativePath(authorization.repoRelativePath, {
-        ...options,
-      });
+      const targetPath = resolveRepoRelativePath(
+        authorization.repoRelativePath,
+        {
+          ...options,
+        },
+      );
       const writeResult = await writeTextFileAtomically({
         content: serializeMutationContent(parsedRequest),
         targetPath,

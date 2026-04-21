@@ -111,7 +111,9 @@ test('report artifact writer persists the reserved report and becomes idempotent
 
     assert.equal(writtenOutput.status, 'written');
     assert.equal(
-      await harness.fixture.readText(String(writtenOutput.reportRepoRelativePath)),
+      await harness.fixture.readText(
+        String(writtenOutput.reportRepoRelativePath),
+      ),
       '# Evaluation: Writer Co -- Solutions Architect\n',
     );
     assert.equal(writtenAgain.status, 'completed');
@@ -147,7 +149,9 @@ test('evaluation artifact listing is deterministic across reports and PDFs', asy
 
     assert.equal(output.total, 3);
     assert.deepEqual(
-      output.items.map((item: { repoRelativePath: string }) => item.repoRelativePath),
+      output.items.map(
+        (item: { repoRelativePath: string }) => item.repoRelativePath,
+      ),
       ['reports/001-a.md', 'reports/002-b.md'],
     );
   } finally {

@@ -1,5 +1,8 @@
 import type { JsonValue } from '../workspace/workspace-types.js';
-import type { WorkspaceAdapter, WorkspaceReadResult } from '../workspace/index.js';
+import type {
+  WorkspaceAdapter,
+  WorkspaceReadResult,
+} from '../workspace/index.js';
 import { ToolExecutionError } from './tool-errors.js';
 
 export type ProfileSummaryArchetypeFit =
@@ -146,7 +149,9 @@ function normalizeRemotePolicy(value: unknown): ProfileSummaryRemotePolicy {
   }
 }
 
-async function loadYamlDocument(text: string): Promise<Record<string, unknown>> {
+async function loadYamlDocument(
+  text: string,
+): Promise<Record<string, unknown>> {
   if (!yamlModulePromise) {
     const moduleName = 'js-yaml';
     yamlModulePromise = import(moduleName) as Promise<YamlModule>;
@@ -220,7 +225,8 @@ export async function summarizeProfileSources(
     (entry) => entry.enabled === true,
   ).length;
   const cvText =
-    profileCvResult.status === 'found' && typeof profileCvResult.value === 'string'
+    profileCvResult.status === 'found' &&
+    typeof profileCvResult.value === 'string'
       ? profileCvResult.value
       : '';
   const articleDigestText =

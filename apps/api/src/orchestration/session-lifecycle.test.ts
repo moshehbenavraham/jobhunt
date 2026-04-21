@@ -232,14 +232,14 @@ test('session lifecycle marks failed orchestration sessions with compensation me
       message: 'bootstrap exploded',
       sessionId: 'session-failed',
     });
-    const storedSession = await harness.store.sessions.getById('session-failed');
+    const storedSession =
+      await harness.store.sessions.getById('session-failed');
 
     assert.equal(summary?.status, 'failed');
     assert.equal(storedSession?.status, 'failed');
     assert.deepEqual(
-      (
-        storedSession?.context as Record<string, Record<string, unknown>>
-      ).orchestrationFailure,
+      (storedSession?.context as Record<string, Record<string, unknown>>)
+        .orchestrationFailure,
       {
         code: 'orchestration-bootstrap-failed',
         failedAt: '2026-04-21T11:00:00.000Z',

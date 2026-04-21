@@ -19,7 +19,9 @@ function createReadOnlyContext(repoRoot: string) {
     },
     input: {},
     mutateWorkspace: async () => {
-      throw new Error('mutateWorkspace should not be called by discovery tools');
+      throw new Error(
+        'mutateWorkspace should not be called by discovery tools',
+      );
     },
     now: () => Date.parse('2026-04-21T08:00:00.000Z'),
     observe: async () => {},

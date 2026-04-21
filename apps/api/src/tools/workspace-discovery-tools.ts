@@ -1,8 +1,14 @@
 import { lstat } from 'node:fs/promises';
 import { z } from 'zod';
-import { getPromptContractSummary, listWorkflowModeRoutes } from '../prompt/index.js';
+import {
+  getPromptContractSummary,
+  listWorkflowModeRoutes,
+} from '../prompt/index.js';
 import { resolveRepoRelativePath } from '../config/repo-paths.js';
-import type { WorkspaceAdapter, WorkspaceReadResult } from '../workspace/index.js';
+import type {
+  WorkspaceAdapter,
+  WorkspaceReadResult,
+} from '../workspace/index.js';
 import type {
   JsonValue,
   OnboardingRepairableSurfaceKey,
@@ -14,7 +20,12 @@ import {
   type ProfileSummary,
 } from './profile-summary.js';
 
-const artifactGroupValues = ['all', 'job-descriptions', 'output', 'reports'] as const;
+const artifactGroupValues = [
+  'all',
+  'job-descriptions',
+  'output',
+  'reports',
+] as const;
 
 const artifactListInputSchema = z.object({
   group: z.enum(artifactGroupValues).default('all'),
@@ -100,7 +111,9 @@ function isSurfaceRequiredForStartup(
     return true;
   }
 
-  return surface.startupCritical || surface.missingBehavior === 'onboarding-required';
+  return (
+    surface.startupCritical || surface.missingBehavior === 'onboarding-required'
+  );
 }
 
 function toRequiredSurfaceSummary(
@@ -175,9 +188,11 @@ async function getArtifactItems(
     }),
   );
 
-  return items.flat().sort((left, right) =>
-    left.repoRelativePath.localeCompare(right.repoRelativePath),
-  );
+  return items
+    .flat()
+    .sort((left, right) =>
+      left.repoRelativePath.localeCompare(right.repoRelativePath),
+    );
 }
 
 async function fileExists(path: string): Promise<boolean> {
@@ -284,7 +299,10 @@ export function createWorkspaceDiscoveryTools(options: {
       },
       inputSchema: requiredWorkspaceInputSchema,
       name: 'inspect-required-workspace-files',
-    } satisfies ToolDefinition<z.output<typeof requiredWorkspaceInputSchema>, JsonValue>,
+    } satisfies ToolDefinition<
+      z.output<typeof requiredWorkspaceInputSchema>,
+      JsonValue
+    >,
     {
       description:
         'Project profile, portal targeting, CV, and article-digest files into a deterministic settings summary.',
@@ -301,7 +319,10 @@ export function createWorkspaceDiscoveryTools(options: {
         'List top-level generated artifact paths with bounded pagination and deterministic ordering.',
       async execute(input) {
         const items = await getArtifactItems(workspace, input.group);
-        const pagedItems = items.slice(input.offset, input.offset + input.limit);
+        const pagedItems = items.slice(
+          input.offset,
+          input.offset + input.limit,
+        );
 
         return {
           output: toJsonValue({
@@ -316,7 +337,10 @@ export function createWorkspaceDiscoveryTools(options: {
       },
       inputSchema: artifactListInputSchema,
       name: 'list-workspace-artifacts',
-    } satisfies ToolDefinition<z.output<typeof artifactListInputSchema>, JsonValue>,
+    } satisfies ToolDefinition<
+      z.output<typeof artifactListInputSchema>,
+      JsonValue
+    >,
     {
       description:
         'Summarize prompt-routed workflow support and verify that routed mode files exist.',
@@ -332,6 +356,9 @@ export function createWorkspaceDiscoveryTools(options: {
       },
       inputSchema: workflowSupportInputSchema,
       name: 'summarize-workflow-support',
-    } satisfies ToolDefinition<z.output<typeof workflowSupportInputSchema>, JsonValue>,
+    } satisfies ToolDefinition<
+      z.output<typeof workflowSupportInputSchema>,
+      JsonValue
+    >,
   ];
 }

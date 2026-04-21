@@ -70,7 +70,10 @@ export async function createToolHarness(
   options: {
     fixtureFiles?: Record<string, string>;
     initialTimestamp?: string;
-    scriptDefinitions?: readonly Omit<ScriptExecutionDefinition, 'commandArgs'>[];
+    scriptDefinitions?: readonly Omit<
+      ScriptExecutionDefinition,
+      'commandArgs'
+    >[];
     tools?: readonly AnyToolDefinition[];
   } & Pick<
     ToolExecutionServiceOptions,
@@ -119,8 +122,7 @@ export async function createToolHarness(
           getJobRunner: options.getJobRunner,
         }
       : {}),
-    getObservability:
-      options.getObservability ?? (async () => observability),
+    getObservability: options.getObservability ?? (async () => observability),
     getStore: async () => store,
     now: clock.now,
     registryInput: options.tools ?? [],

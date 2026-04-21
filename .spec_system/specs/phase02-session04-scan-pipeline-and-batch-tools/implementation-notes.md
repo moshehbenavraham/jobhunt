@@ -9,11 +9,11 @@
 
 ## Session Progress
 
-| Metric | Value |
-|--------|-------|
-| Tasks Completed | 15 / 15 |
+| Metric              | Value   |
+| ------------------- | ------- |
+| Tasks Completed     | 15 / 15 |
 | Estimated Remaining | 0 hours |
-| Blockers | 0 |
+| Blockers            | 0       |
 
 ---
 
@@ -22,6 +22,7 @@
 ### 2026-04-21 - Session Start
 
 **Environment verified**:
+
 - [x] Prerequisites confirmed
 - [x] Tools available
 - [x] Directory structure ready
@@ -35,6 +36,7 @@
 **Duration**: 10 minutes
 
 **Notes**:
+
 - Added a shared workflow-job contract module covering scan, pipeline, batch,
   and worker-result schemas so later tools and executors share one typed
   surface.
@@ -45,6 +47,7 @@
   contract type-safe under API compile checks.
 
 **Files Changed**:
+
 - `apps/api/src/job-runner/workflow-job-contract.ts` - added Session 04
   payload and result schemas for async workflow jobs
 - `apps/api/src/tools/tool-contract.ts` - added durable-job enqueue request,
@@ -65,6 +68,7 @@
   contexts with the stricter tool contract
 
 **BQC Fixes**:
+
 - Trust boundary enforcement: tools can now enqueue only the durable job types
   they explicitly declare in policy (`apps/api/src/tools/tool-execution-service.ts`)
 - Contract alignment: scan, pipeline, batch, and worker results now share
@@ -78,6 +82,7 @@
 **Duration**: 4 minutes
 
 **Notes**:
+
 - Added allowlisted script definitions for liveness, portal scan, and CV sync
   checks on top of the existing Session 03 maintenance scripts.
 - Extended the script adapter to treat configured non-zero exit codes as
@@ -87,6 +92,7 @@
   timeouts, and non-zero success exits are all covered directly.
 
 **Files Changed**:
+
 - `apps/api/src/tools/default-tool-scripts.ts` - added Session 04 script
   definitions and cloned optional exit-code policies safely
 - `apps/api/src/tools/script-execution-adapter.ts` - added configurable
@@ -97,6 +103,7 @@
   fields in the tool harness
 
 **BQC Fixes**:
+
 - External dependency resilience: script dispatch now distinguishes expected
   domain exits from genuine subprocess failures, which keeps liveness checks
   deterministic without suppressing real crashes
@@ -112,6 +119,7 @@
 **Duration**: 27 minutes
 
 **Notes**:
+
 - Registered the Session 04 tool modules in the default tool suite, exported
   the new tool and workflow modules, and wired the shared service container so
   tools can lazily access the durable job runner while the job runner lazily
@@ -129,6 +137,7 @@
   and `node scripts/test-all.mjs --quick`.
 
 **Files Changed**:
+
 - `apps/api/src/tools/default-tool-suite.ts` - registered liveness, scan,
   pipeline, and batch workflow tools in the default catalog
 - `apps/api/src/tools/index.ts` - exported Session 04 tool modules and the
@@ -146,6 +155,7 @@
   files
 
 **BQC Fixes**:
+
 - Dependency-cycle containment: the service container now uses lazy function
   injection in both directions so tools can enqueue jobs and executors can
   reuse typed tool closeout helpers without eager startup cycles
@@ -161,6 +171,7 @@
 **Duration**: 27 minutes
 
 **Notes**:
+
 - Completed the liveness, scan, pipeline, and batch tool modules with durable
   enqueue behavior, queue normalization, duplicate-trigger handling, and
   typed script output mapping.
@@ -174,6 +185,7 @@
   partially consumed report id.
 
 **Files Changed**:
+
 - `apps/api/src/tools/liveness-check-tools.ts` and
   `apps/api/src/tools/liveness-check-tools.test.ts` - added typed liveness
   tools and explicit ready or empty or offline or error coverage
@@ -196,6 +208,7 @@
   to the temp repo root during tests
 
 **BQC Fixes**:
+
 - Resume correctness: pipeline and batch execution now continue from the
   remaining queue after checkpointed re-entry instead of skipping work because
   the source list has already been mutated

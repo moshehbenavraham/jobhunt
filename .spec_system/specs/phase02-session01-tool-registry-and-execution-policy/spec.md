@@ -159,37 +159,37 @@ back into callers.
 
 ### Files to Create
 
-| File                                                   | Purpose                                                                  | Est. Lines |
-| ------------------------------------------------------ | ------------------------------------------------------------------------ | ---------- |
-| `apps/api/src/tools/tool-contract.ts`                  | Define tool metadata, invocation input, result envelopes, and policy     | ~180       |
-| `apps/api/src/tools/tool-errors.ts`                    | Define typed tool error classes and deterministic error-code mapping      | ~120       |
-| `apps/api/src/tools/tool-registry.ts`                  | Register tools, prevent duplicates, and expose catalog helpers           | ~150       |
-| `apps/api/src/tools/tool-execution-service.ts`         | Validate inputs, enforce policy, dispatch handlers, and emit events      | ~240       |
-| `apps/api/src/tools/script-execution-adapter.ts`       | Wrap allowlisted subprocess execution with timeout and result mapping    | ~190       |
-| `apps/api/src/tools/workspace-mutation-adapter.ts`     | Apply guarded repo-relative writes with atomic behavior and policy checks | ~190       |
-| `apps/api/src/tools/index.ts`                          | Export the tools boundary                                                | ~30        |
-| `apps/api/src/tools/test-utils.ts`                     | Provide shared fixtures for tool, workspace, approval, and event tests   | ~120       |
-| `apps/api/src/tools/tool-registry.test.ts`             | Cover duplicate registration and catalog ordering                        | ~120       |
-| `apps/api/src/tools/tool-execution-service.test.ts`    | Cover validation, permission, approval, and observability behavior      | ~220       |
-| `apps/api/src/tools/script-execution-adapter.test.ts`  | Cover allowlisted subprocess behavior, timeout, and failure mapping      | ~170       |
-| `apps/api/src/tools/workspace-mutation-adapter.test.ts` | Cover protected-path denial, atomic writes, and conflict handling       | ~170       |
+| File                                                    | Purpose                                                                   | Est. Lines |
+| ------------------------------------------------------- | ------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/tools/tool-contract.ts`                   | Define tool metadata, invocation input, result envelopes, and policy      | ~180       |
+| `apps/api/src/tools/tool-errors.ts`                     | Define typed tool error classes and deterministic error-code mapping      | ~120       |
+| `apps/api/src/tools/tool-registry.ts`                   | Register tools, prevent duplicates, and expose catalog helpers            | ~150       |
+| `apps/api/src/tools/tool-execution-service.ts`          | Validate inputs, enforce policy, dispatch handlers, and emit events       | ~240       |
+| `apps/api/src/tools/script-execution-adapter.ts`        | Wrap allowlisted subprocess execution with timeout and result mapping     | ~190       |
+| `apps/api/src/tools/workspace-mutation-adapter.ts`      | Apply guarded repo-relative writes with atomic behavior and policy checks | ~190       |
+| `apps/api/src/tools/index.ts`                           | Export the tools boundary                                                 | ~30        |
+| `apps/api/src/tools/test-utils.ts`                      | Provide shared fixtures for tool, workspace, approval, and event tests    | ~120       |
+| `apps/api/src/tools/tool-registry.test.ts`              | Cover duplicate registration and catalog ordering                         | ~120       |
+| `apps/api/src/tools/tool-execution-service.test.ts`     | Cover validation, permission, approval, and observability behavior        | ~220       |
+| `apps/api/src/tools/script-execution-adapter.test.ts`   | Cover allowlisted subprocess behavior, timeout, and failure mapping       | ~170       |
+| `apps/api/src/tools/workspace-mutation-adapter.test.ts` | Cover protected-path denial, atomic writes, and conflict handling         | ~170       |
 
 ### Files to Modify
 
-| File                                        | Changes                                                                    | Est. Lines |
-| ------------------------------------------- | -------------------------------------------------------------------------- | ---------- |
-| `apps/api/src/workspace/workspace-types.ts` | Add tool-facing mutation policy and adapter input or result types          | ~80        |
-| `apps/api/src/workspace/workspace-errors.ts` | Add deterministic mutation-policy denial and adapter-safe error detail    | ~70        |
-| `apps/api/src/workspace/workspace-contract.ts` | Extend surface metadata and explicit mutation targets for future tools   | ~90        |
-| `apps/api/src/workspace/workspace-boundary.ts` | Reuse boundary classification for tool mutation authorization checks     | ~80        |
-| `apps/api/src/workspace/workspace-write.ts` | Expose reusable atomic write helpers without relaxing existing defaults    | ~90        |
-| `apps/api/src/store/store-contract.ts`      | Extend runtime event typing for tool execution lifecycle events            | ~50        |
-| `apps/api/src/runtime/service-container.ts` | Lazily compose the tools surface with workspace, approval, and events      | ~120       |
-| `apps/api/src/runtime/service-container.test.ts` | Verify tool-service reuse, wiring, and cleanup behavior                | ~120       |
-| `apps/api/package.json`                     | Add tool test and validation aliases                                       | ~20        |
-| `apps/api/README_api.md`                    | Document the tools boundary, adapters, and validation path                 | ~50        |
-| `package.json`                              | Add repo-root aliases for tool validation                                  | ~20        |
-| `scripts/test-all.mjs`                      | Add the tool validation path to the repo quick suite                       | ~30        |
+| File                                             | Changes                                                                 | Est. Lines |
+| ------------------------------------------------ | ----------------------------------------------------------------------- | ---------- |
+| `apps/api/src/workspace/workspace-types.ts`      | Add tool-facing mutation policy and adapter input or result types       | ~80        |
+| `apps/api/src/workspace/workspace-errors.ts`     | Add deterministic mutation-policy denial and adapter-safe error detail  | ~70        |
+| `apps/api/src/workspace/workspace-contract.ts`   | Extend surface metadata and explicit mutation targets for future tools  | ~90        |
+| `apps/api/src/workspace/workspace-boundary.ts`   | Reuse boundary classification for tool mutation authorization checks    | ~80        |
+| `apps/api/src/workspace/workspace-write.ts`      | Expose reusable atomic write helpers without relaxing existing defaults | ~90        |
+| `apps/api/src/store/store-contract.ts`           | Extend runtime event typing for tool execution lifecycle events         | ~50        |
+| `apps/api/src/runtime/service-container.ts`      | Lazily compose the tools surface with workspace, approval, and events   | ~120       |
+| `apps/api/src/runtime/service-container.test.ts` | Verify tool-service reuse, wiring, and cleanup behavior                 | ~120       |
+| `apps/api/package.json`                          | Add tool test and validation aliases                                    | ~20        |
+| `apps/api/README_api.md`                         | Document the tools boundary, adapters, and validation path              | ~50        |
+| `package.json`                                   | Add repo-root aliases for tool validation                               | ~20        |
+| `scripts/test-all.mjs`                           | Add the tool validation path to the repo quick suite                    | ~30        |
 
 ---
 

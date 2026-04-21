@@ -42,14 +42,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No untrusted string concatenation was introduced in enqueue or executor paths |
-| Hardcoded Secrets | PASS | Critical | No secrets, tokens, or credentials added |
-| Sensitive Data Exposure | PASS | High | Session code keeps job summaries and metadata structured; no raw secret or PII logging added |
-| Insecure Dependencies | PASS | -- | No dependency changes in this session |
-| Misconfiguration | PASS | Medium | No debug modes or permissive runtime settings added |
-| Database Security | N/A | -- | No DB-layer schema or persistence changes introduced |
+| Category                      | Status | Severity | Details                                                                                      |
+| ----------------------------- | ------ | -------- | -------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No untrusted string concatenation was introduced in enqueue or executor paths                |
+| Hardcoded Secrets             | PASS   | Critical | No secrets, tokens, or credentials added                                                     |
+| Sensitive Data Exposure       | PASS   | High     | Session code keeps job summaries and metadata structured; no raw secret or PII logging added |
+| Insecure Dependencies         | PASS   | --       | No dependency changes in this session                                                        |
+| Misconfiguration              | PASS   | Medium   | No debug modes or permissive runtime settings added                                          |
+| Database Security             | N/A    | --       | No DB-layer schema or persistence changes introduced                                         |
 
 ### Notes
 
@@ -65,14 +65,14 @@
 
 No new user-data collection, consent, erasure, or third-party sharing path was introduced in this session.
 
-| Area | Status | Details |
-|------|--------|---------|
-| Data Collection | N/A | No new personal-data collection |
-| Consent | N/A | No new collection flow |
-| Data Minimization | N/A | No new user-data store added |
-| Right to Erasure | N/A | No new persistence surface added |
-| Data Logging | PASS | No personal data logging added |
-| Third-Party Sharing | N/A | No new external sharing path added |
+| Area                | Status | Details                            |
+| ------------------- | ------ | ---------------------------------- |
+| Data Collection     | N/A    | No new personal-data collection    |
+| Consent             | N/A    | No new collection flow             |
+| Data Minimization   | N/A    | No new user-data store added       |
+| Right to Erasure    | N/A    | No new persistence surface added   |
+| Data Logging        | PASS   | No personal data logging added     |
+| Third-Party Sharing | N/A    | No new external sharing path added |
 
 ---
 

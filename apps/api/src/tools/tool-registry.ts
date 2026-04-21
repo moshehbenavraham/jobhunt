@@ -22,8 +22,9 @@ function toCatalogEntry(definition: AnyToolDefinition): ToolCatalogEntry {
   return {
     description: definition.description,
     jobTypes: [...(definition.policy?.permissions?.jobTypes ?? [])].sort(),
-    mutationTargets: [...(definition.policy?.permissions?.mutationTargets ?? [])]
-      .sort(),
+    mutationTargets: [
+      ...(definition.policy?.permissions?.mutationTargets ?? []),
+    ].sort(),
     name: definition.name,
     requiresApproval: definition.policy?.approval !== undefined,
     scripts: [...(definition.policy?.permissions?.scripts ?? [])].sort(),
@@ -96,7 +97,7 @@ function normalizeCatalogListInput(
   }
 
   const limit =
-    input.limit ?? (requestedToolNames?.length ?? registry.definitions.size);
+    input.limit ?? requestedToolNames?.length ?? registry.definitions.size;
 
   if (
     !Number.isInteger(limit) ||

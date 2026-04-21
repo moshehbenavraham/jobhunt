@@ -16,14 +16,12 @@ const batchToolInputSchema = z.object({
 
 type BatchToolInput = z.output<typeof batchToolInputSchema>;
 
-function createBatchTool(
-  config: {
-    description: string;
-    dryRun: boolean;
-    mode: BatchEvaluationPayload['mode'];
-    name: string;
-  },
-): ToolDefinition<BatchToolInput, JsonValue> {
+function createBatchTool(config: {
+  description: string;
+  dryRun: boolean;
+  mode: BatchEvaluationPayload['mode'];
+  name: string;
+}): ToolDefinition<BatchToolInput, JsonValue> {
   return {
     description: config.description,
     async execute(input, context) {

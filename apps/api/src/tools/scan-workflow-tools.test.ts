@@ -248,14 +248,11 @@ test('scan workflow tool re-enqueues after a terminal prior job match', async ()
     tools: createScanWorkflowTools(),
   });
   const timestamp = harness.clock.nowIso();
-  const baseJobId = createStableWorkflowJobId(
-    'session-enqueue-portal-scan',
-    {
-      company: null,
-      compareClean: false,
-      dryRun: false,
-    },
-  );
+  const baseJobId = createStableWorkflowJobId('session-enqueue-portal-scan', {
+    company: null,
+    compareClean: false,
+    dryRun: false,
+  });
 
   await seedToolSession(harness, 'session-enqueue-portal-scan');
 
@@ -302,10 +299,7 @@ test('scan workflow tool re-enqueues after a terminal prior job match', async ()
 
     assert.equal(requests.length, 2);
     assert.equal(requests[0]?.jobId, baseJobId);
-    assert.equal(
-      requests[1]?.jobId,
-      `${baseJobId}:job-enqueue-portal-scan`,
-    );
+    assert.equal(requests[1]?.jobId, `${baseJobId}:job-enqueue-portal-scan`);
     assert.equal(
       requests[1]?.currentRunId,
       `${baseJobId}:job-enqueue-portal-scan`,

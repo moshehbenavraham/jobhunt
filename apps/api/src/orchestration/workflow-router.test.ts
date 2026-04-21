@@ -129,9 +129,10 @@ test('workflow router rejects malformed requests with explicit validation errors
 
   try {
     await assert.rejects(
-      () => router.route({
-        workflow: 'single-evaluation',
-      }),
+      () =>
+        router.route({
+          workflow: 'single-evaluation',
+        }),
       (error: unknown) => {
         assert.ok(error instanceof OrchestrationError);
         assert.equal(error.code, 'orchestration-invalid-request');

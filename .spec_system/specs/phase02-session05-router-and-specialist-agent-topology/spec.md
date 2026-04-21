@@ -189,33 +189,33 @@ free-form shell behavior.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/orchestration/orchestration-contract.ts` | Define typed specialist, route, session-launch, and handoff envelopes | ~220 |
-| `apps/api/src/orchestration/specialist-catalog.ts` | Define the initial specialist topology and workflow-to-specialist mapping | ~180 |
-| `apps/api/src/orchestration/tool-scope.ts` | Filter and validate specialist-scoped tool catalogs from the shared registry | ~120 |
-| `apps/api/src/orchestration/workflow-router.ts` | Resolve requested workflow or resume state into a deterministic route decision | ~220 |
-| `apps/api/src/orchestration/session-lifecycle.ts` | Create or resume runtime sessions and summarize persisted state | ~180 |
-| `apps/api/src/orchestration/orchestration-service.ts` | Compose routing, prompt bootstrap, tool scoping, and session state into one service | ~320 |
-| `apps/api/src/orchestration/index.ts` | Export the orchestration module surface | ~40 |
-| `apps/api/src/orchestration/specialist-catalog.test.ts` | Verify specialist definitions and workflow coverage | ~140 |
-| `apps/api/src/orchestration/tool-scope.test.ts` | Verify bounded tool filtering and drift detection | ~140 |
-| `apps/api/src/orchestration/workflow-router.test.ts` | Verify routing, resume precedence, and blocked-state classification | ~220 |
-| `apps/api/src/orchestration/session-lifecycle.test.ts` | Verify session creation, reuse, and stored-state summarization | ~180 |
-| `apps/api/src/orchestration/orchestration-service.test.ts` | Verify end-to-end orchestration envelopes and filtered specialist handoff data | ~280 |
+| File                                                       | Purpose                                                                             | Est. Lines |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/orchestration/orchestration-contract.ts`     | Define typed specialist, route, session-launch, and handoff envelopes               | ~220       |
+| `apps/api/src/orchestration/specialist-catalog.ts`         | Define the initial specialist topology and workflow-to-specialist mapping           | ~180       |
+| `apps/api/src/orchestration/tool-scope.ts`                 | Filter and validate specialist-scoped tool catalogs from the shared registry        | ~120       |
+| `apps/api/src/orchestration/workflow-router.ts`            | Resolve requested workflow or resume state into a deterministic route decision      | ~220       |
+| `apps/api/src/orchestration/session-lifecycle.ts`          | Create or resume runtime sessions and summarize persisted state                     | ~180       |
+| `apps/api/src/orchestration/orchestration-service.ts`      | Compose routing, prompt bootstrap, tool scoping, and session state into one service | ~320       |
+| `apps/api/src/orchestration/index.ts`                      | Export the orchestration module surface                                             | ~40        |
+| `apps/api/src/orchestration/specialist-catalog.test.ts`    | Verify specialist definitions and workflow coverage                                 | ~140       |
+| `apps/api/src/orchestration/tool-scope.test.ts`            | Verify bounded tool filtering and drift detection                                   | ~140       |
+| `apps/api/src/orchestration/workflow-router.test.ts`       | Verify routing, resume precedence, and blocked-state classification                 | ~220       |
+| `apps/api/src/orchestration/session-lifecycle.test.ts`     | Verify session creation, reuse, and stored-state summarization                      | ~180       |
+| `apps/api/src/orchestration/orchestration-service.test.ts` | Verify end-to-end orchestration envelopes and filtered specialist handoff data      | ~280       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/runtime/service-container.ts` | Lazily create and expose the shared orchestration service using existing runtime dependencies | ~120 |
-| `apps/api/src/runtime/service-container.test.ts` | Verify default orchestration registration and reuse through the container | ~180 |
-| `apps/api/src/tools/tool-contract.ts` | Extend the registry contract with specialist-scoped catalog access helpers | ~40 |
-| `apps/api/src/tools/tool-registry.ts` | Implement deterministic catalog filtering and missing-tool validation | ~80 |
-| `apps/api/src/tools/tool-registry.test.ts` | Cover filtered catalog ordering and unknown-tool rejection | ~100 |
-| `apps/api/package.json` | Include orchestration tests in the API validation commands | ~20 |
-| `apps/api/README_api.md` | Document the router, specialist topology, and orchestration-service boundaries | ~90 |
-| `scripts/test-all.mjs` | Add Session 05 file coverage and orchestration validation to the quick suite | ~40 |
+| File                                             | Changes                                                                                       | Est. Lines |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/runtime/service-container.ts`      | Lazily create and expose the shared orchestration service using existing runtime dependencies | ~120       |
+| `apps/api/src/runtime/service-container.test.ts` | Verify default orchestration registration and reuse through the container                     | ~180       |
+| `apps/api/src/tools/tool-contract.ts`            | Extend the registry contract with specialist-scoped catalog access helpers                    | ~40        |
+| `apps/api/src/tools/tool-registry.ts`            | Implement deterministic catalog filtering and missing-tool validation                         | ~80        |
+| `apps/api/src/tools/tool-registry.test.ts`       | Cover filtered catalog ordering and unknown-tool rejection                                    | ~100       |
+| `apps/api/package.json`                          | Include orchestration tests in the API validation commands                                    | ~20        |
+| `apps/api/README_api.md`                         | Document the router, specialist topology, and orchestration-service boundaries                | ~90        |
+| `scripts/test-all.mjs`                           | Add Session 05 file coverage and orchestration validation to the quick suite                  | ~40        |
 
 ---
 

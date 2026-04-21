@@ -14,6 +14,8 @@ coverage/
 experimental/
 batch/logs/*
 !batch/logs/.gitkeep
+logs/*
+!logs/.gitignore
 batch/batch-state.tsv
 batch/batch-input.tsv
 batch/tracker-additions/**/*.tsv

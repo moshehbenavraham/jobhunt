@@ -118,7 +118,9 @@ function normalizeExitCode(error: ExecFileError): number {
   return 1;
 }
 
-function getSuccessExitCodes(definition: ScriptExecutionDefinition): readonly number[] {
+function getSuccessExitCodes(
+  definition: ScriptExecutionDefinition,
+): readonly number[] {
   return definition.successExitCodes ?? [0];
 }
 

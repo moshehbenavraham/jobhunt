@@ -29,7 +29,9 @@ function parseLivenessStdout(stdout: string): ParsedLivenessSummary[] {
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index]?.trimEnd() ?? '';
-    const match = line.match(/\b(active|expired|uncertain)\b\s+(https?:\/\/\S+)/);
+    const match = line.match(
+      /\b(active|expired|uncertain)\b\s+(https?:\/\/\S+)/,
+    );
 
     if (!match) {
       continue;
@@ -97,7 +99,8 @@ async function runLivenessCheck(
 
     if (!parsed) {
       return {
-        message: 'Liveness output did not include a result for the requested URL.',
+        message:
+          'Liveness output did not include a result for the requested URL.',
         rawExitCode: dispatch.exitCode,
         state: 'error',
         url,
@@ -124,9 +127,7 @@ async function runLivenessCheck(
   }
 }
 
-function summarizeBatchStates(
-  items: readonly JsonValue[],
-): {
+function summarizeBatchStates(items: readonly JsonValue[]): {
   active: number;
   error: number;
   expired: number;
@@ -184,9 +185,7 @@ function summarizeBatchStates(
   return summary;
 }
 
-function resolveBatchState(
-  items: readonly JsonValue[],
-): LivenessViewState {
+function resolveBatchState(items: readonly JsonValue[]): LivenessViewState {
   if (items.length === 0) {
     return 'empty';
   }

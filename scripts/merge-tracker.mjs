@@ -138,12 +138,8 @@ function roleFuzzyMatch(a, b) {
     return false;
   }
 
-  const wordsA = new Set(
-    normalizedA.split(/\s+/).filter((w) => w.length > 3),
-  );
-  const wordsB = new Set(
-    normalizedB.split(/\s+/).filter((w) => w.length > 3),
-  );
+  const wordsA = new Set(normalizedA.split(/\s+/).filter((w) => w.length > 3));
+  const wordsB = new Set(normalizedB.split(/\s+/).filter((w) => w.length > 3));
 
   const overlap = [...wordsA].filter((w) =>
     [...wordsB].some((wb) => wb.includes(w) || w.includes(wb)),

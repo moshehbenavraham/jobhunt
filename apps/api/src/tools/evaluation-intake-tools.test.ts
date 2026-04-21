@@ -20,13 +20,13 @@ test('ATS intake tool returns normalized evaluation input for supported URLs', a
   const harness = await createToolHarness({
     fixtureFiles: {
       'scripts/extract-job.mjs': [
-        "const payload = {",
+        'const payload = {',
         "  apiUrl: 'https://api.example.com/jobs/123',",
         "  applyUrl: 'https://jobs.example.com/apply/123',",
         "  ats: 'greenhouse',",
         "  company: 'Example Co',",
         "  companyKey: 'example-co',",
-        "  compensation: null,",
+        '  compensation: null,',
         "  datePosted: '2026-04-21T00:00:00.000Z',",
         "  department: 'Engineering',",
         "  descriptionHtml: '<p>Hello</p>',",
@@ -40,7 +40,7 @@ test('ATS intake tool returns normalized evaluation input for supported URLs', a
         "  url: 'https://jobs.example.com/123',",
         "  workplaceType: 'remote'",
         '};',
-        "process.stdout.write(`${JSON.stringify(payload)}\\n`);",
+        'process.stdout.write(`${JSON.stringify(payload)}\\n`);',
       ].join('\n'),
     },
     scriptDefinitions: [

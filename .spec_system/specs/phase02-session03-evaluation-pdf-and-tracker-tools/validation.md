@@ -9,17 +9,17 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Tasks Complete | PASS | 16/16 tasks complete |
-| Files Exist | PASS | 21/21 deliverables found |
-| ASCII Encoding | PASS | All reviewed deliverables are ASCII text with LF line endings |
-| Tests Passing | PASS | `app:api:test:tools` 49/49, `app:api:test:runtime` 21/21, `app:api:build`, `app:boot:test`, and `test-all --quick` 272/272 passed |
-| Database/Schema Alignment | N/A | No DB-layer changes were introduced |
-| Quality Gates | PASS | Required package gates and repo quick suite passed |
-| Conventions | PASS | Spot-check passed against `.spec_system/CONVENTIONS.md` |
-| Security & GDPR | PASS | See `security-compliance.md` |
-| Behavioral Quality | PASS | Trust-boundary, cleanup, and failure-path spot-checks held up |
+| Check                     | Status | Notes                                                                                                                             |
+| ------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| Tasks Complete            | PASS   | 16/16 tasks complete                                                                                                              |
+| Files Exist               | PASS   | 21/21 deliverables found                                                                                                          |
+| ASCII Encoding            | PASS   | All reviewed deliverables are ASCII text with LF line endings                                                                     |
+| Tests Passing             | PASS   | `app:api:test:tools` 49/49, `app:api:test:runtime` 21/21, `app:api:build`, `app:boot:test`, and `test-all --quick` 272/272 passed |
+| Database/Schema Alignment | N/A    | No DB-layer changes were introduced                                                                                               |
+| Quality Gates             | PASS   | Required package gates and repo quick suite passed                                                                                |
+| Conventions               | PASS   | Spot-check passed against `.spec_system/CONVENTIONS.md`                                                                           |
+| Security & GDPR           | PASS   | See `security-compliance.md`                                                                                                      |
+| Behavioral Quality        | PASS   | Trust-boundary, cleanup, and failure-path spot-checks held up                                                                     |
 
 **Overall**: PASS
 
@@ -29,12 +29,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-|----------|----------|-----------|--------|
-| Setup | 3 | 3 | PASS |
-| Foundation | 4 | 4 | PASS |
-| Implementation | 5 | 5 | PASS |
-| Testing | 4 | 4 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 3        | 3         | PASS   |
+| Foundation     | 4        | 4         | PASS   |
+| Implementation | 5        | 5         | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -48,29 +48,29 @@ None
 
 #### Files Created or Modified
 
-| File | Found | Status |
-|------|-------|--------|
-| `apps/api/src/tools/default-tool-scripts.ts` | Yes | PASS |
-| `apps/api/src/tools/evaluation-intake-tools.ts` | Yes | PASS |
-| `apps/api/src/tools/evaluation-workflow-tools.ts` | Yes | PASS |
-| `apps/api/src/tools/evaluation-artifact-tools.ts` | Yes | PASS |
-| `apps/api/src/tools/pdf-generation-tools.ts` | Yes | PASS |
-| `apps/api/src/tools/tracker-integrity-tools.ts` | Yes | PASS |
-| `apps/api/src/tools/evaluation-intake-tools.test.ts` | Yes | PASS |
-| `apps/api/src/tools/evaluation-workflow-tools.test.ts` | Yes | PASS |
-| `apps/api/src/tools/evaluation-artifact-tools.test.ts` | Yes | PASS |
-| `apps/api/src/tools/pdf-generation-tools.test.ts` | Yes | PASS |
-| `apps/api/src/tools/tracker-integrity-tools.test.ts` | Yes | PASS |
-| `apps/api/src/workspace/workspace-types.ts` | Yes | PASS |
-| `apps/api/src/workspace/workspace-contract.ts` | Yes | PASS |
-| `apps/api/src/workspace/workspace-boundary.ts` | Yes | PASS |
-| `apps/api/src/workspace/workspace-summary.ts` | Yes | PASS |
-| `apps/api/src/tools/default-tool-suite.ts` | Yes | PASS |
-| `apps/api/src/tools/index.ts` | Yes | PASS |
-| `apps/api/src/runtime/service-container.ts` | Yes | PASS |
-| `apps/api/src/runtime/service-container.test.ts` | Yes | PASS |
-| `apps/api/README_api.md` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
+| File                                                   | Found | Status |
+| ------------------------------------------------------ | ----- | ------ |
+| `apps/api/src/tools/default-tool-scripts.ts`           | Yes   | PASS   |
+| `apps/api/src/tools/evaluation-intake-tools.ts`        | Yes   | PASS   |
+| `apps/api/src/tools/evaluation-workflow-tools.ts`      | Yes   | PASS   |
+| `apps/api/src/tools/evaluation-artifact-tools.ts`      | Yes   | PASS   |
+| `apps/api/src/tools/pdf-generation-tools.ts`           | Yes   | PASS   |
+| `apps/api/src/tools/tracker-integrity-tools.ts`        | Yes   | PASS   |
+| `apps/api/src/tools/evaluation-intake-tools.test.ts`   | Yes   | PASS   |
+| `apps/api/src/tools/evaluation-workflow-tools.test.ts` | Yes   | PASS   |
+| `apps/api/src/tools/evaluation-artifact-tools.test.ts` | Yes   | PASS   |
+| `apps/api/src/tools/pdf-generation-tools.test.ts`      | Yes   | PASS   |
+| `apps/api/src/tools/tracker-integrity-tools.test.ts`   | Yes   | PASS   |
+| `apps/api/src/workspace/workspace-types.ts`            | Yes   | PASS   |
+| `apps/api/src/workspace/workspace-contract.ts`         | Yes   | PASS   |
+| `apps/api/src/workspace/workspace-boundary.ts`         | Yes   | PASS   |
+| `apps/api/src/workspace/workspace-summary.ts`          | Yes   | PASS   |
+| `apps/api/src/tools/default-tool-suite.ts`             | Yes   | PASS   |
+| `apps/api/src/tools/index.ts`                          | Yes   | PASS   |
+| `apps/api/src/runtime/service-container.ts`            | Yes   | PASS   |
+| `apps/api/src/runtime/service-container.test.ts`       | Yes   | PASS   |
+| `apps/api/README_api.md`                               | Yes   | PASS   |
+| `scripts/test-all.mjs`                                 | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -82,29 +82,29 @@ None
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-|------|----------|--------------|--------|
-| `apps/api/src/tools/default-tool-scripts.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/evaluation-intake-tools.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/evaluation-workflow-tools.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/evaluation-artifact-tools.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/pdf-generation-tools.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/tracker-integrity-tools.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/evaluation-intake-tools.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/evaluation-workflow-tools.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/evaluation-artifact-tools.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/pdf-generation-tools.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/tracker-integrity-tools.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/workspace/workspace-types.ts` | ASCII | LF | PASS |
-| `apps/api/src/workspace/workspace-contract.ts` | ASCII | LF | PASS |
-| `apps/api/src/workspace/workspace-boundary.ts` | ASCII | LF | PASS |
-| `apps/api/src/workspace/workspace-summary.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/default-tool-suite.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/index.ts` | ASCII | LF | PASS |
-| `apps/api/src/runtime/service-container.ts` | ASCII | LF | PASS |
-| `apps/api/src/runtime/service-container.test.ts` | ASCII | LF | PASS |
-| `apps/api/README_api.md` | ASCII | LF | PASS |
-| `scripts/test-all.mjs` | ASCII | LF | PASS |
+| File                                                   | Encoding | Line Endings | Status |
+| ------------------------------------------------------ | -------- | ------------ | ------ |
+| `apps/api/src/tools/default-tool-scripts.ts`           | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/evaluation-intake-tools.ts`        | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/evaluation-workflow-tools.ts`      | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/evaluation-artifact-tools.ts`      | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/pdf-generation-tools.ts`           | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/tracker-integrity-tools.ts`        | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/evaluation-intake-tools.test.ts`   | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/evaluation-workflow-tools.test.ts` | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/evaluation-artifact-tools.test.ts` | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/pdf-generation-tools.test.ts`      | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/tracker-integrity-tools.test.ts`   | ASCII    | LF           | PASS   |
+| `apps/api/src/workspace/workspace-types.ts`            | ASCII    | LF           | PASS   |
+| `apps/api/src/workspace/workspace-contract.ts`         | ASCII    | LF           | PASS   |
+| `apps/api/src/workspace/workspace-boundary.ts`         | ASCII    | LF           | PASS   |
+| `apps/api/src/workspace/workspace-summary.ts`          | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/default-tool-suite.ts`             | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/index.ts`                          | ASCII    | LF           | PASS   |
+| `apps/api/src/runtime/service-container.ts`            | ASCII    | LF           | PASS   |
+| `apps/api/src/runtime/service-container.test.ts`       | ASCII    | LF           | PASS   |
+| `apps/api/README_api.md`                               | ASCII    | LF           | PASS   |
+| `scripts/test-all.mjs`                                 | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -116,14 +116,14 @@ None
 
 ### Status: PASS
 
-| Metric | Value |
-|--------|-------|
-| `app:api:test:tools` | 49 passed, 0 failed |
-| `app:api:test:runtime` | 21 passed, 0 failed |
-| `app:api:build` | Passed |
-| `app:boot:test` | Passed |
+| Metric                              | Value                            |
+| ----------------------------------- | -------------------------------- |
+| `app:api:test:tools`                | 49 passed, 0 failed              |
+| `app:api:test:runtime`              | 21 passed, 0 failed              |
+| `app:api:build`                     | Passed                           |
+| `app:boot:test`                     | Passed                           |
 | `node scripts/test-all.mjs --quick` | 272 passed, 0 failed, 0 warnings |
-| Coverage | N/A |
+| Coverage                            | N/A                              |
 
 ### Failed Tests
 
@@ -169,13 +169,13 @@ From `spec.md`:
 
 ### Status: PASS
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| Naming | PASS | File and symbol names follow repo conventions. |
-| File Structure | PASS | Tool, workspace, runtime, and repo-script files live in the expected locations. |
-| Error Handling | PASS | Tool errors use explicit envelopes and workspace write conflicts are guarded. |
-| Comments | PASS | Comments are sparse and only used where they clarify behavior. |
-| Testing | PASS | Session tests cover the new tool surface and runtime registration. |
+| Category       | Status | Notes                                                                           |
+| -------------- | ------ | ------------------------------------------------------------------------------- |
+| Naming         | PASS   | File and symbol names follow repo conventions.                                  |
+| File Structure | PASS   | Tool, workspace, runtime, and repo-script files live in the expected locations. |
+| Error Handling | PASS   | Tool errors use explicit envelopes and workspace write conflicts are guarded.   |
+| Comments       | PASS   | Comments are sparse and only used where they clarify behavior.                  |
+| Testing        | PASS   | Session tests cover the new tool surface and runtime registration.              |
 
 ### Convention Violations
 
@@ -191,10 +191,10 @@ None
 
 #### Summary
 
-| Area | Status | Findings |
-|------|--------|----------|
-| Security | PASS | 0 issues |
-| GDPR | N/A | 0 issues |
+| Area     | Status | Findings |
+| -------- | ------ | -------- |
+| Security | PASS   | 0 issues |
+| GDPR     | N/A    | 0 issues |
 
 ### Critical Violations
 
@@ -209,13 +209,13 @@ None
 **Checklist applied**: Yes
 **Files spot-checked**: `apps/api/src/tools/evaluation-intake-tools.ts`, `apps/api/src/tools/evaluation-artifact-tools.ts`, `apps/api/src/tools/pdf-generation-tools.ts`, `apps/api/src/tools/tracker-integrity-tools.ts`, `apps/api/src/runtime/service-container.ts`
 
-| Category | Status | File | Details |
-|----------|--------|------|---------|
-| Trust boundaries | PASS | `apps/api/src/tools/evaluation-intake-tools.ts` | ATS intake validates script output before exposing evaluation input to callers. |
-| Resource cleanup | PASS | `apps/api/src/runtime/service-container.ts` | Shared runtime cleanup remains idempotent and disposes acquired services. |
-| Mutation safety | PASS | `apps/api/src/tools/evaluation-artifact-tools.ts` | Report reservation prevents duplicate in-flight allocation and re-entry writes stay idempotent. |
-| Failure paths | PASS | `apps/api/src/tools/pdf-generation-tools.ts` | Failed PDF runs clean up partial output and surface explicit errors. |
-| Contract alignment | PASS | `apps/api/src/tools/tracker-integrity-tools.ts` | Tracker staging and maintenance wrappers stay aligned with the allowlisted script contract. |
+| Category           | Status | File                                              | Details                                                                                         |
+| ------------------ | ------ | ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Trust boundaries   | PASS   | `apps/api/src/tools/evaluation-intake-tools.ts`   | ATS intake validates script output before exposing evaluation input to callers.                 |
+| Resource cleanup   | PASS   | `apps/api/src/runtime/service-container.ts`       | Shared runtime cleanup remains idempotent and disposes acquired services.                       |
+| Mutation safety    | PASS   | `apps/api/src/tools/evaluation-artifact-tools.ts` | Report reservation prevents duplicate in-flight allocation and re-entry writes stay idempotent. |
+| Failure paths      | PASS   | `apps/api/src/tools/pdf-generation-tools.ts`      | Failed PDF runs clean up partial output and surface explicit errors.                            |
+| Contract alignment | PASS   | `apps/api/src/tools/tracker-integrity-tools.ts`   | Tracker staging and maintenance wrappers stay aligned with the allowlisted script contract.     |
 
 ### Violations Found
 

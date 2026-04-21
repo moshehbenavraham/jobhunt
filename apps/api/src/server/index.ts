@@ -1,5 +1,6 @@
 import { pathToFileURL } from 'node:url';
 import { STARTUP_SERVICE_NAME } from '../index.js';
+import { createJobhuntLogger } from '../logger.js';
 import { readRuntimeConfigFromEnv } from '../runtime/runtime-config.js';
 import {
   startStartupHttpServer,
@@ -30,9 +31,13 @@ export async function runStartupHttpServer(): Promise<StartupHttpServerHandle> {
 
 async function main(): Promise<void> {
   const handle = await runStartupHttpServer();
+  const logger = createJobhuntLogger({
+    repoRoot: process.env.JOBHUNT_API_REPO_ROOT ?? process.cwd(),
+    service: STARTUP_SERVICE_NAME,
+  });
   let shuttingDown = false;
 
-  console.log(`${STARTUP_SERVICE_NAME} listening on ${handle.url}`);
+  logger.info({ url: handle.url }, `${STARTUP_SERVICE_NAME} listening`);
 
   const shutdown = async (signal: 'SIGINT' | 'SIGTERM'): Promise<void> => {
     if (shuttingDown) {
@@ -45,9 +50,9 @@ async function main(): Promise<void> {
       await handle.close();
       process.exit(0);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(
-        `${STARTUP_SERVICE_NAME} shutdown failed after ${signal}: ${message}`,
+      logger.error(
+        error,
+        `${STARTUP_SERVICE_NAME} shutdown failed after ${signal}`,
       );
       process.exit(1);
     }
@@ -63,8 +68,11 @@ async function main(): Promise<void> {
 
 if (isMainModule()) {
   main().catch((error: unknown) => {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`${STARTUP_SERVICE_NAME} server failed: ${message}`);
+    const logger = createJobhuntLogger({
+      repoRoot: process.env.JOBHUNT_API_REPO_ROOT ?? process.cwd(),
+      service: STARTUP_SERVICE_NAME,
+    });
+    logger.error(error, `${STARTUP_SERVICE_NAME} server failed`);
     process.exitCode = 1;
   });
 }

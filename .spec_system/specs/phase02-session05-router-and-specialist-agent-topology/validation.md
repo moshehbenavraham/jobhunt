@@ -9,17 +9,17 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Tasks Complete | PASS | 15/15 tasks complete |
-| Files Exist | PASS | 20/20 deliverables found |
-| ASCII Encoding | PASS | All deliverables are ASCII-only with LF endings |
-| Tests Passing | PASS | 407 reported checks passed, 0 failed |
-| Database/Schema Alignment | N/A | No DB-layer changes in this session |
-| Quality Gates | PASS | Build, package regressions, and repo quick-suite passed |
-| Conventions | PASS | `.spec_system/CONVENTIONS.md` present and observed |
-| Security & GDPR | PASS | See `security-compliance.md` |
-| Behavioral Quality | PASS | Application code reviewed and spot-checked |
+| Check                     | Status | Notes                                                   |
+| ------------------------- | ------ | ------------------------------------------------------- |
+| Tasks Complete            | PASS   | 15/15 tasks complete                                    |
+| Files Exist               | PASS   | 20/20 deliverables found                                |
+| ASCII Encoding            | PASS   | All deliverables are ASCII-only with LF endings         |
+| Tests Passing             | PASS   | 407 reported checks passed, 0 failed                    |
+| Database/Schema Alignment | N/A    | No DB-layer changes in this session                     |
+| Quality Gates             | PASS   | Build, package regressions, and repo quick-suite passed |
+| Conventions               | PASS   | `.spec_system/CONVENTIONS.md` present and observed      |
+| Security & GDPR           | PASS   | See `security-compliance.md`                            |
+| Behavioral Quality        | PASS   | Application code reviewed and spot-checked              |
 
 **Overall**: PASS
 
@@ -29,12 +29,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-|----------|----------|-----------|--------|
-| Setup | 3 | 3 | PASS |
-| Foundation | 4 | 4 | PASS |
-| Implementation | 4 | 4 | PASS |
-| Testing | 4 | 4 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 3        | 3         | PASS   |
+| Foundation     | 4        | 4         | PASS   |
+| Implementation | 4        | 4         | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -48,28 +48,28 @@ None.
 
 #### Files Created
 
-| File | Found | Status |
-|------|-------|--------|
-| `apps/api/src/orchestration/orchestration-contract.ts` | Yes | PASS |
-| `apps/api/src/orchestration/specialist-catalog.ts` | Yes | PASS |
-| `apps/api/src/orchestration/tool-scope.ts` | Yes | PASS |
-| `apps/api/src/orchestration/workflow-router.ts` | Yes | PASS |
-| `apps/api/src/orchestration/session-lifecycle.ts` | Yes | PASS |
-| `apps/api/src/orchestration/orchestration-service.ts` | Yes | PASS |
-| `apps/api/src/orchestration/index.ts` | Yes | PASS |
-| `apps/api/src/orchestration/specialist-catalog.test.ts` | Yes | PASS |
-| `apps/api/src/orchestration/tool-scope.test.ts` | Yes | PASS |
-| `apps/api/src/orchestration/workflow-router.test.ts` | Yes | PASS |
-| `apps/api/src/orchestration/session-lifecycle.test.ts` | Yes | PASS |
-| `apps/api/src/orchestration/orchestration-service.test.ts` | Yes | PASS |
-| `apps/api/src/runtime/service-container.ts` | Yes | PASS |
-| `apps/api/src/runtime/service-container.test.ts` | Yes | PASS |
-| `apps/api/src/tools/tool-contract.ts` | Yes | PASS |
-| `apps/api/src/tools/tool-registry.ts` | Yes | PASS |
-| `apps/api/src/tools/tool-registry.test.ts` | Yes | PASS |
-| `apps/api/package.json` | Yes | PASS |
-| `apps/api/README_api.md` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
+| File                                                       | Found | Status |
+| ---------------------------------------------------------- | ----- | ------ |
+| `apps/api/src/orchestration/orchestration-contract.ts`     | Yes   | PASS   |
+| `apps/api/src/orchestration/specialist-catalog.ts`         | Yes   | PASS   |
+| `apps/api/src/orchestration/tool-scope.ts`                 | Yes   | PASS   |
+| `apps/api/src/orchestration/workflow-router.ts`            | Yes   | PASS   |
+| `apps/api/src/orchestration/session-lifecycle.ts`          | Yes   | PASS   |
+| `apps/api/src/orchestration/orchestration-service.ts`      | Yes   | PASS   |
+| `apps/api/src/orchestration/index.ts`                      | Yes   | PASS   |
+| `apps/api/src/orchestration/specialist-catalog.test.ts`    | Yes   | PASS   |
+| `apps/api/src/orchestration/tool-scope.test.ts`            | Yes   | PASS   |
+| `apps/api/src/orchestration/workflow-router.test.ts`       | Yes   | PASS   |
+| `apps/api/src/orchestration/session-lifecycle.test.ts`     | Yes   | PASS   |
+| `apps/api/src/orchestration/orchestration-service.test.ts` | Yes   | PASS   |
+| `apps/api/src/runtime/service-container.ts`                | Yes   | PASS   |
+| `apps/api/src/runtime/service-container.test.ts`           | Yes   | PASS   |
+| `apps/api/src/tools/tool-contract.ts`                      | Yes   | PASS   |
+| `apps/api/src/tools/tool-registry.ts`                      | Yes   | PASS   |
+| `apps/api/src/tools/tool-registry.test.ts`                 | Yes   | PASS   |
+| `apps/api/package.json`                                    | Yes   | PASS   |
+| `apps/api/README_api.md`                                   | Yes   | PASS   |
+| `scripts/test-all.mjs`                                     | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -81,28 +81,28 @@ None.
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-|------|----------|--------------|--------|
-| `apps/api/src/orchestration/orchestration-contract.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/specialist-catalog.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/tool-scope.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/workflow-router.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/session-lifecycle.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/orchestration-service.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/index.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/specialist-catalog.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/tool-scope.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/workflow-router.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/session-lifecycle.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/orchestration/orchestration-service.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/runtime/service-container.ts` | ASCII | LF | PASS |
-| `apps/api/src/runtime/service-container.test.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/tool-contract.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/tool-registry.ts` | ASCII | LF | PASS |
-| `apps/api/src/tools/tool-registry.test.ts` | ASCII | LF | PASS |
-| `apps/api/package.json` | ASCII | LF | PASS |
-| `apps/api/README_api.md` | ASCII | LF | PASS |
-| `scripts/test-all.mjs` | ASCII | LF | PASS |
+| File                                                       | Encoding | Line Endings | Status |
+| ---------------------------------------------------------- | -------- | ------------ | ------ |
+| `apps/api/src/orchestration/orchestration-contract.ts`     | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/specialist-catalog.ts`         | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/tool-scope.ts`                 | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/workflow-router.ts`            | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/session-lifecycle.ts`          | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/orchestration-service.ts`      | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/index.ts`                      | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/specialist-catalog.test.ts`    | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/tool-scope.test.ts`            | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/workflow-router.test.ts`       | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/session-lifecycle.test.ts`     | ASCII    | LF           | PASS   |
+| `apps/api/src/orchestration/orchestration-service.test.ts` | ASCII    | LF           | PASS   |
+| `apps/api/src/runtime/service-container.ts`                | ASCII    | LF           | PASS   |
+| `apps/api/src/runtime/service-container.test.ts`           | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/tool-contract.ts`                      | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/tool-registry.ts`                      | ASCII    | LF           | PASS   |
+| `apps/api/src/tools/tool-registry.test.ts`                 | ASCII    | LF           | PASS   |
+| `apps/api/package.json`                                    | ASCII    | LF           | PASS   |
+| `apps/api/README_api.md`                                   | ASCII    | LF           | PASS   |
+| `scripts/test-all.mjs`                                     | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -114,12 +114,12 @@ None.
 
 ### Status: PASS
 
-| Metric | Value |
-|--------|-------|
+| Metric      | Value               |
+| ----------- | ------------------- |
 | Total Tests | 407 reported checks |
-| Passed | 407 |
-| Failed | 0 |
-| Coverage | N/A |
+| Passed      | 407                 |
+| Failed      | 0                   |
+| Coverage    | N/A                 |
 
 ### Validated Commands
 
@@ -180,13 +180,13 @@ From `spec.md`:
 
 ### Status: PASS
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| Naming | PASS | File and symbol naming matched repo conventions |
-| File Structure | PASS | Session files live under the expected `apps/api`, `scripts`, and `.spec_system` paths |
-| Error Handling | PASS | Request validation, unsupported-workflow handling, and bootstrap failures stay explicit and deterministic |
-| Comments | PASS | Comments remain sparse and behavior-focused |
-| Testing | PASS | New tests cover routing, lifecycle, scoped tools, and shared container wiring |
+| Category       | Status | Notes                                                                                                     |
+| -------------- | ------ | --------------------------------------------------------------------------------------------------------- |
+| Naming         | PASS   | File and symbol naming matched repo conventions                                                           |
+| File Structure | PASS   | Session files live under the expected `apps/api`, `scripts`, and `.spec_system` paths                     |
+| Error Handling | PASS   | Request validation, unsupported-workflow handling, and bootstrap failures stay explicit and deterministic |
+| Comments       | PASS   | Comments remain sparse and behavior-focused                                                               |
+| Testing        | PASS   | New tests cover routing, lifecycle, scoped tools, and shared container wiring                             |
 
 ### Convention Violations
 
@@ -202,10 +202,10 @@ None.
 
 #### Summary
 
-| Area | Status | Findings |
-|------|--------|----------|
-| Security | PASS | 0 issues |
-| GDPR | N/A | No user-data collection or new sharing paths introduced |
+| Area     | Status | Findings                                                |
+| -------- | ------ | ------------------------------------------------------- |
+| Security | PASS   | 0 issues                                                |
+| GDPR     | N/A    | No user-data collection or new sharing paths introduced |
 
 ### Critical Violations (if any)
 
@@ -226,13 +226,13 @@ None.
 - `apps/api/src/orchestration/tool-scope.ts`
 - `apps/api/src/runtime/service-container.ts`
 
-| Category | Status | File | Details |
-|----------|--------|------|---------|
-| Trust boundaries | PASS | `apps/api/src/orchestration/workflow-router.ts` | Launch and resume input is schema-validated before workflow routing |
-| Resource cleanup | PASS | `apps/api/src/orchestration/orchestration-service.ts` | Bootstrapped providers are closed before returning ready metadata and also on failure |
-| Mutation safety | PASS | `apps/api/src/orchestration/session-lifecycle.ts` | Existing sessions are reused and cross-workflow session id collisions are rejected explicitly |
-| Failure paths | PASS | `apps/api/src/orchestration/orchestration-service.ts` | Expected bootstrap blockers map to typed blocked states and unexpected failures trigger compensation |
-| Contract alignment | PASS | `apps/api/src/orchestration/tool-scope.ts` | Scoped tool catalogs enforce explicit allowlists and unknown-tool drift fails loudly |
+| Category           | Status | File                                                  | Details                                                                                              |
+| ------------------ | ------ | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Trust boundaries   | PASS   | `apps/api/src/orchestration/workflow-router.ts`       | Launch and resume input is schema-validated before workflow routing                                  |
+| Resource cleanup   | PASS   | `apps/api/src/orchestration/orchestration-service.ts` | Bootstrapped providers are closed before returning ready metadata and also on failure                |
+| Mutation safety    | PASS   | `apps/api/src/orchestration/session-lifecycle.ts`     | Existing sessions are reused and cross-workflow session id collisions are rejected explicitly        |
+| Failure paths      | PASS   | `apps/api/src/orchestration/orchestration-service.ts` | Expected bootstrap blockers map to typed blocked states and unexpected failures trigger compensation |
+| Contract alignment | PASS   | `apps/api/src/orchestration/tool-scope.ts`            | Scoped tool catalogs enforce explicit allowlists and unknown-tool drift fails loudly                 |
 
 ### Violations Found
 

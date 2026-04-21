@@ -175,34 +175,34 @@ codes.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/tools/default-tool-scripts.ts` | Define the default script allowlist for evaluation, PDF, and tracker commands | ~80 |
-| `apps/api/src/tools/evaluation-intake-tools.ts` | Define ATS URL extraction and raw JD intake tools | ~180 |
-| `apps/api/src/tools/evaluation-workflow-tools.ts` | Define workflow bootstrap tools for `single-evaluation` and `auto-pipeline` | ~180 |
-| `apps/api/src/tools/evaluation-artifact-tools.ts` | Define report path reservation, report writes, and artifact discovery tools | ~220 |
-| `apps/api/src/tools/pdf-generation-tools.ts` | Define ATS PDF generation tools backed by the allowlisted script adapter | ~180 |
-| `apps/api/src/tools/tracker-integrity-tools.ts` | Define tracker TSV staging and merge or verify maintenance tools | ~220 |
-| `apps/api/src/tools/evaluation-intake-tools.test.ts` | Cover ATS extraction, raw JD intake, and deterministic error mapping | ~170 |
-| `apps/api/src/tools/evaluation-workflow-tools.test.ts` | Cover prompt bootstrap readiness, auth failures, and workflow routing | ~170 |
-| `apps/api/src/tools/evaluation-artifact-tools.test.ts` | Cover report-path validation, writes, and artifact discovery ordering | ~200 |
-| `apps/api/src/tools/pdf-generation-tools.test.ts` | Cover PDF tool input validation and script-dispatch behavior | ~160 |
-| `apps/api/src/tools/tracker-integrity-tools.test.ts` | Cover TSV staging, merge or verify dispatch, and warning propagation | ~220 |
+| File                                                   | Purpose                                                                       | Est. Lines |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/tools/default-tool-scripts.ts`           | Define the default script allowlist for evaluation, PDF, and tracker commands | ~80        |
+| `apps/api/src/tools/evaluation-intake-tools.ts`        | Define ATS URL extraction and raw JD intake tools                             | ~180       |
+| `apps/api/src/tools/evaluation-workflow-tools.ts`      | Define workflow bootstrap tools for `single-evaluation` and `auto-pipeline`   | ~180       |
+| `apps/api/src/tools/evaluation-artifact-tools.ts`      | Define report path reservation, report writes, and artifact discovery tools   | ~220       |
+| `apps/api/src/tools/pdf-generation-tools.ts`           | Define ATS PDF generation tools backed by the allowlisted script adapter      | ~180       |
+| `apps/api/src/tools/tracker-integrity-tools.ts`        | Define tracker TSV staging and merge or verify maintenance tools              | ~220       |
+| `apps/api/src/tools/evaluation-intake-tools.test.ts`   | Cover ATS extraction, raw JD intake, and deterministic error mapping          | ~170       |
+| `apps/api/src/tools/evaluation-workflow-tools.test.ts` | Cover prompt bootstrap readiness, auth failures, and workflow routing         | ~170       |
+| `apps/api/src/tools/evaluation-artifact-tools.test.ts` | Cover report-path validation, writes, and artifact discovery ordering         | ~200       |
+| `apps/api/src/tools/pdf-generation-tools.test.ts`      | Cover PDF tool input validation and script-dispatch behavior                  | ~160       |
+| `apps/api/src/tools/tracker-integrity-tools.test.ts`   | Cover TSV staging, merge or verify dispatch, and warning propagation          | ~220       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/workspace/workspace-types.ts` | Add artifact and tracker-addition surface metadata used by Session 03 tools | ~80 |
-| `apps/api/src/workspace/workspace-contract.ts` | Register canonical report and tracker-addition ownership and mutation targets | ~120 |
-| `apps/api/src/workspace/workspace-boundary.ts` | Enforce the new tracker-addition and report-artifact authorization rules | ~60 |
-| `apps/api/src/workspace/workspace-summary.ts` | Keep internal artifact surfaces out of startup summaries where appropriate | ~30 |
-| `apps/api/src/tools/default-tool-suite.ts` | Register the Session 03 evaluation, PDF, and tracker tools in the default catalog | ~40 |
-| `apps/api/src/tools/index.ts` | Export the Session 03 tool modules and default script definitions | ~20 |
-| `apps/api/src/runtime/service-container.ts` | Merge the default Session 03 script allowlist into the shared tool execution service | ~40 |
-| `apps/api/src/runtime/service-container.test.ts` | Verify default tool and script registration plus reuse semantics | ~120 |
-| `apps/api/README_api.md` | Document evaluation, PDF, and tracker tool boundaries and validation commands | ~60 |
-| `scripts/test-all.mjs` | Add ASCII and quick-suite coverage for the Session 03 tool files | ~40 |
+| File                                             | Changes                                                                              | Est. Lines |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------ | ---------- |
+| `apps/api/src/workspace/workspace-types.ts`      | Add artifact and tracker-addition surface metadata used by Session 03 tools          | ~80        |
+| `apps/api/src/workspace/workspace-contract.ts`   | Register canonical report and tracker-addition ownership and mutation targets        | ~120       |
+| `apps/api/src/workspace/workspace-boundary.ts`   | Enforce the new tracker-addition and report-artifact authorization rules             | ~60        |
+| `apps/api/src/workspace/workspace-summary.ts`    | Keep internal artifact surfaces out of startup summaries where appropriate           | ~30        |
+| `apps/api/src/tools/default-tool-suite.ts`       | Register the Session 03 evaluation, PDF, and tracker tools in the default catalog    | ~40        |
+| `apps/api/src/tools/index.ts`                    | Export the Session 03 tool modules and default script definitions                    | ~20        |
+| `apps/api/src/runtime/service-container.ts`      | Merge the default Session 03 script allowlist into the shared tool execution service | ~40        |
+| `apps/api/src/runtime/service-container.test.ts` | Verify default tool and script registration plus reuse semantics                     | ~120       |
+| `apps/api/README_api.md`                         | Document evaluation, PDF, and tracker tool boundaries and validation commands        | ~60        |
+| `scripts/test-all.mjs`                           | Add ASCII and quick-suite coverage for the Session 03 tool files                     | ~40        |
 
 ---
 

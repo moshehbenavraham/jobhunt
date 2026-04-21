@@ -46,7 +46,9 @@ function getCatalogEntryByName(
   registry: ToolRegistry,
   toolName: string,
 ): ReturnType<ToolRegistry['listCatalog']>[number] {
-  const entry = registry.listCatalog().find((candidate) => candidate.name === toolName);
+  const entry = registry
+    .listCatalog()
+    .find((candidate) => candidate.name === toolName);
 
   if (!entry) {
     throw new Error(
@@ -130,8 +132,11 @@ export function resolveSpecialistToolScope(
   const fallbackEntries = fallbackApplied
     ? toScopedEntries(registry, fallbackToolNames, 'restricted')
     : [];
-  const visibleCatalog = [...allowedEntries, ...restrictedEntries, ...fallbackEntries]
-    .sort((left, right) => left.name.localeCompare(right.name));
+  const visibleCatalog = [
+    ...allowedEntries,
+    ...restrictedEntries,
+    ...fallbackEntries,
+  ].sort((left, right) => left.name.localeCompare(right.name));
   const visibleToolNames = new Set(visibleCatalog.map((entry) => entry.name));
   const deniedRegistryTools = registry
     .listNames()
@@ -139,8 +144,9 @@ export function resolveSpecialistToolScope(
       (toolName) =>
         !visibleToolNames.has(toolName) && !revokedToolNames.includes(toolName),
     );
-  const combinedDeniedToolNames = [...new Set([...deniedToolNames, ...deniedRegistryTools])]
-    .sort();
+  const combinedDeniedToolNames = [
+    ...new Set([...deniedToolNames, ...deniedRegistryTools]),
+  ].sort();
 
   return {
     catalog: visibleCatalog,

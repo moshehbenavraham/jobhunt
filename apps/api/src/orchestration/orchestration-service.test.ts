@@ -380,19 +380,18 @@ test('orchestration service compensates by marking the session failed on unexpec
       },
     );
 
-    const storedSession = await harness.store.sessions.getById(
-      'session-failure',
-    );
+    const storedSession =
+      await harness.store.sessions.getById('session-failure');
 
     assert.equal(storedSession?.status, 'failed');
     assert.deepEqual(
-      (
-        storedSession?.context as Record<string, Record<string, unknown>>
-      ).orchestrationFailure,
+      (storedSession?.context as Record<string, Record<string, unknown>>)
+        .orchestrationFailure,
       {
         code: 'orchestration-bootstrap-failed',
         failedAt: '2026-04-21T12:00:00.000Z',
-        message: 'Workflow bootstrap failed after retry attempts were exhausted.',
+        message:
+          'Workflow bootstrap failed after retry attempts were exhausted.',
       },
     );
   } finally {

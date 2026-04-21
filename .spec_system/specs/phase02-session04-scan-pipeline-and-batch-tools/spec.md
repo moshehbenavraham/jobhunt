@@ -179,35 +179,35 @@ metadata-only summaries instead of persisting raw prompt or report contents.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/job-runner/workflow-job-contract.ts` | Define shared payload and result schemas for scan, pipeline, and batch durable jobs | ~180 |
-| `apps/api/src/job-runner/workflow-job-executors.ts` | Define default durable executors for scan, pipeline, and batch workflows | ~340 |
-| `apps/api/src/job-runner/workflow-job-executors.test.ts` | Cover checkpoint resume, partial failures, and status mapping for workflow executors | ~280 |
-| `apps/api/src/tools/liveness-check-tools.ts` | Define typed liveness-check tools backed by the Playwright script adapter | ~160 |
-| `apps/api/src/tools/liveness-check-tools.test.ts` | Cover typed liveness summaries, validation, and script error mapping | ~160 |
-| `apps/api/src/tools/scan-workflow-tools.ts` | Define scan-job enqueue tools and scan request normalization | ~180 |
-| `apps/api/src/tools/scan-workflow-tools.test.ts` | Cover scan enqueue, duplicate protection, and request validation | ~170 |
-| `apps/api/src/tools/pipeline-processing-tools.ts` | Define pipeline-processing enqueue tools and queue-selection normalization | ~200 |
-| `apps/api/src/tools/pipeline-processing-tools.test.ts` | Cover pipeline enqueue input validation and queue-selection behavior | ~180 |
-| `apps/api/src/tools/batch-workflow-tools.ts` | Define batch-orchestration enqueue tools and status-policy normalization | ~220 |
-| `apps/api/src/tools/batch-workflow-tools.test.ts` | Cover batch dry-run, retry selection, and deterministic status mapping | ~200 |
+| File                                                     | Purpose                                                                              | Est. Lines |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------ | ---------- |
+| `apps/api/src/job-runner/workflow-job-contract.ts`       | Define shared payload and result schemas for scan, pipeline, and batch durable jobs  | ~180       |
+| `apps/api/src/job-runner/workflow-job-executors.ts`      | Define default durable executors for scan, pipeline, and batch workflows             | ~340       |
+| `apps/api/src/job-runner/workflow-job-executors.test.ts` | Cover checkpoint resume, partial failures, and status mapping for workflow executors | ~280       |
+| `apps/api/src/tools/liveness-check-tools.ts`             | Define typed liveness-check tools backed by the Playwright script adapter            | ~160       |
+| `apps/api/src/tools/liveness-check-tools.test.ts`        | Cover typed liveness summaries, validation, and script error mapping                 | ~160       |
+| `apps/api/src/tools/scan-workflow-tools.ts`              | Define scan-job enqueue tools and scan request normalization                         | ~180       |
+| `apps/api/src/tools/scan-workflow-tools.test.ts`         | Cover scan enqueue, duplicate protection, and request validation                     | ~170       |
+| `apps/api/src/tools/pipeline-processing-tools.ts`        | Define pipeline-processing enqueue tools and queue-selection normalization           | ~200       |
+| `apps/api/src/tools/pipeline-processing-tools.test.ts`   | Cover pipeline enqueue input validation and queue-selection behavior                 | ~180       |
+| `apps/api/src/tools/batch-workflow-tools.ts`             | Define batch-orchestration enqueue tools and status-policy normalization             | ~220       |
+| `apps/api/src/tools/batch-workflow-tools.test.ts`        | Cover batch dry-run, retry selection, and deterministic status mapping               | ~200       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/tools/tool-contract.ts` | Add durable-job enqueue support to the tool execution context and result typing | ~80 |
-| `apps/api/src/tools/tool-execution-service.ts` | Wire durable-job enqueue behavior, correlation reuse, and async workflow observability into tool execution | ~160 |
-| `apps/api/src/tools/default-tool-scripts.ts` | Add allowlisted scan, liveness, and pipeline-support script definitions | ~60 |
-| `apps/api/src/tools/default-tool-suite.ts` | Register Session 04 tool modules and provide durable-job enqueue dependencies | ~40 |
-| `apps/api/src/tools/index.ts` | Export Session 04 tool modules | ~20 |
-| `apps/api/src/tools/test-utils.ts` | Extend tool harness support for durable-job-aware tool tests | ~60 |
-| `apps/api/src/job-runner/index.ts` | Export Session 04 workflow job contracts and executors | ~20 |
-| `apps/api/src/runtime/service-container.ts` | Merge default workflow executors into the shared job runner and pass runner access into tools | ~100 |
-| `apps/api/src/runtime/service-container.test.ts` | Verify default Session 04 tool and executor registration plus lazy dependency reuse | ~150 |
-| `apps/api/README_api.md` | Document async workflow tools, executor boundaries, and validation commands | ~80 |
-| `scripts/test-all.mjs` | Add Session 04 file coverage to the repo quick suite and ASCII guardrails | ~40 |
+| File                                             | Changes                                                                                                    | Est. Lines |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/tools/tool-contract.ts`            | Add durable-job enqueue support to the tool execution context and result typing                            | ~80        |
+| `apps/api/src/tools/tool-execution-service.ts`   | Wire durable-job enqueue behavior, correlation reuse, and async workflow observability into tool execution | ~160       |
+| `apps/api/src/tools/default-tool-scripts.ts`     | Add allowlisted scan, liveness, and pipeline-support script definitions                                    | ~60        |
+| `apps/api/src/tools/default-tool-suite.ts`       | Register Session 04 tool modules and provide durable-job enqueue dependencies                              | ~40        |
+| `apps/api/src/tools/index.ts`                    | Export Session 04 tool modules                                                                             | ~20        |
+| `apps/api/src/tools/test-utils.ts`               | Extend tool harness support for durable-job-aware tool tests                                               | ~60        |
+| `apps/api/src/job-runner/index.ts`               | Export Session 04 workflow job contracts and executors                                                     | ~20        |
+| `apps/api/src/runtime/service-container.ts`      | Merge default workflow executors into the shared job runner and pass runner access into tools              | ~100       |
+| `apps/api/src/runtime/service-container.test.ts` | Verify default Session 04 tool and executor registration plus lazy dependency reuse                        | ~150       |
+| `apps/api/README_api.md`                         | Document async workflow tools, executor boundaries, and validation commands                                | ~80        |
+| `scripts/test-all.mjs`                           | Add Session 04 file coverage to the repo quick suite and ASCII guardrails                                  | ~40        |
 
 ---
 

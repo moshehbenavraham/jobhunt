@@ -30,10 +30,7 @@ import {
   type ScriptExecutionAdapter,
   type ScriptExecutionDefinition,
 } from './script-execution-adapter.js';
-import {
-  ToolExecutionError,
-  toToolErrorEnvelope,
-} from './tool-errors.js';
+import { ToolExecutionError, toToolErrorEnvelope } from './tool-errors.js';
 import {
   createToolRegistry,
   getToolDefinitionOrThrow,
@@ -129,7 +126,9 @@ function buildEnqueuedJobSessionContext(
   toolName: string,
 ): JsonValue {
   const context =
-    request.context && typeof request.context === 'object' && !Array.isArray(request.context)
+    request.context &&
+    typeof request.context === 'object' &&
+    !Array.isArray(request.context)
       ? request.context
       : request.context === null || request.context === undefined
         ? {}
@@ -485,9 +484,7 @@ function buildToolContext<TInput extends JsonValue>(
 }
 
 async function recordToolEvent(
-  getObservability:
-    | (() => Promise<ObservabilityService>)
-    | undefined,
+  getObservability: (() => Promise<ObservabilityService>) | undefined,
   now: () => number,
   request: z.infer<typeof toolExecutionRequestSchema>,
   input: ToolObservabilityEventInput,
@@ -500,7 +497,9 @@ async function recordToolEvent(
     const observability = await getObservability();
 
     const metadata =
-      input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata)
+      input.metadata &&
+      typeof input.metadata === 'object' &&
+      !Array.isArray(input.metadata)
         ? input.metadata
         : input.metadata === null
           ? {}
@@ -586,8 +585,7 @@ export function createToolExecutionService(
   options: ToolExecutionServiceOptions,
 ): ToolExecutionService {
   const registry =
-    options.registry ??
-    createToolRegistry(options.registryInput ?? []);
+    options.registry ?? createToolRegistry(options.registryInput ?? []);
   const scriptAdapter =
     options.scriptAdapter ??
     createScriptExecutionAdapter({
@@ -603,8 +601,11 @@ export function createToolExecutionService(
   const inFlightInvocations = new Set<string>();
 
   return {
-    async execute(request: ToolExecutionRequest): Promise<ToolExecutionEnvelope> {
-      let parsedRequest: z.infer<typeof toolExecutionRequestSchema> | null = null;
+    async execute(
+      request: ToolExecutionRequest,
+    ): Promise<ToolExecutionEnvelope> {
+      let parsedRequest: z.infer<typeof toolExecutionRequestSchema> | null =
+        null;
       let duplicateKey: string | null = null;
       let runtimeState: ToolRuntimeState | null = null;
 

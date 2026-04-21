@@ -94,7 +94,9 @@ test('workspace mutation adapter cleans temp state after write conflicts', async
       WorkspaceWriteConflictError,
     );
 
-    const reportDirectoryEntries = await readdir(join(fixture.repoRoot, 'reports'));
+    const reportDirectoryEntries = await readdir(
+      join(fixture.repoRoot, 'reports'),
+    );
 
     assert.deepEqual(reportDirectoryEntries, ['conflict.md']);
   } finally {

@@ -133,7 +133,7 @@ test('liveness tool maps timeouts onto the offline state', async () => {
   const harness = await createToolHarness({
     fixtureFiles: {
       'scripts/check-liveness.mjs':
-        "await new Promise((resolve) => setTimeout(resolve, 200));\n",
+        'await new Promise((resolve) => setTimeout(resolve, 200));\n',
     },
     scriptDefinitions: [
       {
@@ -169,7 +169,8 @@ test('liveness tool maps timeouts onto the offline state', async () => {
 test('liveness tool returns the error state when output cannot be parsed', async () => {
   const harness = await createToolHarness({
     fixtureFiles: {
-      'scripts/check-liveness.mjs': "process.stdout.write('garbage output\\n');\n",
+      'scripts/check-liveness.mjs':
+        "process.stdout.write('garbage output\\n');\n",
     },
     scriptDefinitions: [
       {

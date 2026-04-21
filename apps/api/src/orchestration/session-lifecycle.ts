@@ -236,7 +236,9 @@ export function createSessionLifecycle(
       const timestamp = toIsoTimestamp(now());
 
       if (input.request.kind === 'resume') {
-        const existingSession = await store.sessions.getById(input.request.sessionId);
+        const existingSession = await store.sessions.getById(
+          input.request.sessionId,
+        );
 
         if (!existingSession) {
           return null;
@@ -259,7 +261,10 @@ export function createSessionLifecycle(
       const sessionId = input.request.sessionId ?? randomUUID();
       const existingSession = await store.sessions.getById(sessionId);
 
-      if (existingSession && existingSession.workflow !== input.route.workflow) {
+      if (
+        existingSession &&
+        existingSession.workflow !== input.route.workflow
+      ) {
         throw new OrchestrationError(
           'orchestration-invalid-request',
           `Session ${sessionId} already exists for workflow ${existingSession.workflow}.`,
@@ -299,7 +304,9 @@ export function createSessionLifecycle(
         existingSession !== null,
       );
     },
-    async markSessionFailed(input): Promise<OrchestrationSessionSummary | null> {
+    async markSessionFailed(
+      input,
+    ): Promise<OrchestrationSessionSummary | null> {
       const store = await options.getStore();
       const timestamp = toIsoTimestamp(now());
       const existingSession = await store.sessions.getById(input.sessionId);

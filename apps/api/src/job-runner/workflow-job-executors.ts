@@ -25,7 +25,10 @@ import {
   type ScanWorkflowResult,
   type WorkflowWarning,
 } from './workflow-job-contract.js';
-import type { ToolExecutionEnvelope, ToolExecutionService } from '../tools/index.js';
+import type {
+  ToolExecutionEnvelope,
+  ToolExecutionService,
+} from '../tools/index.js';
 import type { JsonValue } from '../workspace/workspace-types.js';
 
 const execFileAsync = promisify(execFile);
@@ -269,8 +272,7 @@ async function runNodeScript(options: {
       );
     }
 
-    const exitCode =
-      typeof execError.code === 'number' ? execError.code : 1;
+    const exitCode = typeof execError.code === 'number' ? execError.code : 1;
     const successExitCodes = options.successExitCodes ?? [0];
 
     if (successExitCodes.includes(exitCode)) {
@@ -358,10 +360,7 @@ function collectScanWarnings(stdout: string): WorkflowWarning[] {
 
     if (inErrorsBlock && line.startsWith('-')) {
       warnings.push(
-        toWorkflowWarning(
-          'scan-script-warning',
-          line.slice(1).trim(),
-        ),
+        toWorkflowWarning('scan-script-warning', line.slice(1).trim()),
       );
     }
   }
@@ -423,7 +422,8 @@ function formatInfrastructureFailure(
   stderr: string,
   stdout: string,
 ): string {
-  const detail = stderr.trim() || stdout.trim() || 'worker exited without output';
+  const detail =
+    stderr.trim() || stdout.trim() || 'worker exited without output';
   return `infrastructure: exit ${exitCode}; ${detail}`;
 }
 
@@ -510,8 +510,14 @@ async function defaultRunBatchWorker(
 ): Promise<DefaultBatchWorkerRunResult> {
   const batchDir = join(input.repoRoot, 'batch');
   const logsDir = join(batchDir, 'logs');
-  const promptTemplate = await readFile(join(batchDir, 'batch-prompt.md'), 'utf8');
-  const resultFilePath = join(logsDir, `${input.reportNumber}-${input.id}.result.json`);
+  const promptTemplate = await readFile(
+    join(batchDir, 'batch-prompt.md'),
+    'utf8',
+  );
+  const resultFilePath = join(
+    logsDir,
+    `${input.reportNumber}-${input.id}.result.json`,
+  );
   const lastMessageFilePath = join(
     logsDir,
     `${input.reportNumber}-${input.id}.last-message.json`,
@@ -708,7 +714,9 @@ async function updatePipelineFile(
     `^- \\[ \\] ${url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?: .+)?$`,
     'm',
   );
-  let updated = original.replace(pendingLinePattern, '').replace(/\n{3,}/g, '\n\n');
+  let updated = original
+    .replace(pendingLinePattern, '')
+    .replace(/\n{3,}/g, '\n\n');
 
   if (updated.includes('## Processed')) {
     updated = updated.replace(
@@ -727,8 +735,7 @@ function formatPipelineProcessedLine(item: PipelineItemResult): string {
     return `- [!] ${item.url} -- Error: ${item.error ?? 'workflow failed'}`;
   }
 
-  const score =
-    item.score === null ? 'N/A' : `${item.score.toFixed(2)}/5`;
+  const score = item.score === null ? 'N/A' : `${item.score.toFixed(2)}/5`;
 
   return `- [x] #${item.reportNumber ?? '---'} | ${item.url} | ${item.role} | ${score} | PDF ${item.pdf ? 'Yes' : 'No'}`;
 }
@@ -736,7 +743,10 @@ function formatPipelineProcessedLine(item: PipelineItemResult): string {
 function createPipelineSyntheticId(url: string): string {
   const digest = url
     .split('')
-    .reduce((accumulator, character) => accumulator + character.charCodeAt(0), 0);
+    .reduce(
+      (accumulator, character) => accumulator + character.charCodeAt(0),
+      0,
+    );
 
   return String(100000 + (digest % 900000));
 }
@@ -786,7 +796,9 @@ async function readBatchInputRows(repoRoot: string): Promise<BatchInputRow[]> {
         url: url ?? '',
       };
     })
-    .filter((row) => Number.isFinite(row.id) && row.id > 0 && row.url.length > 0);
+    .filter(
+      (row) => Number.isFinite(row.id) && row.id > 0 && row.url.length > 0,
+    );
 }
 
 async function ensureBatchStateFile(repoRoot: string): Promise<void> {
@@ -799,7 +811,9 @@ async function ensureBatchStateFile(repoRoot: string): Promise<void> {
   }
 }
 
-async function readBatchState(repoRoot: string): Promise<Map<number, BatchStateRow>> {
+async function readBatchState(
+  repoRoot: string,
+): Promise<Map<number, BatchStateRow>> {
   const statePath = join(repoRoot, 'batch', 'batch-state.tsv');
 
   try {
@@ -848,7 +862,9 @@ async function writeBatchState(
   const statePath = join(repoRoot, 'batch', 'batch-state.tsv');
   const lines = [batchStateHeader.trimEnd()];
 
-  for (const row of [...state.values()].sort((left, right) => left.id - right.id)) {
+  for (const row of [...state.values()].sort(
+    (left, right) => left.id - right.id,
+  )) {
     lines.push(
       [
         row.id,
@@ -873,9 +889,9 @@ function isRetryableStateRow(
 ): boolean {
   return Boolean(
     row &&
-      row.status === 'failed' &&
-      row.error.startsWith('infrastructure:') &&
-      row.retries < maxRetries,
+    row.status === 'failed' &&
+    row.error.startsWith('infrastructure:') &&
+    row.retries < maxRetries,
   );
 }
 
@@ -915,7 +931,9 @@ function selectBatchRows(
   });
 }
 
-function summarizeBatchItems(items: readonly BatchItemSummary[]): BatchEvaluationResult['counts'] {
+function summarizeBatchItems(
+  items: readonly BatchItemSummary[],
+): BatchEvaluationResult['counts'] {
   const counts = {
     completed: 0,
     failed: 0,
@@ -969,11 +987,9 @@ export function createWorkflowJobExecutors(
     options.runScanWorkflow ??
     ((payload: ScanWorkflowPayload) =>
       defaultRunScanWorkflow(options.repoRoot, payload));
-  const runBatchWorker =
-    options.runBatchWorker ?? defaultRunBatchWorker;
+  const runBatchWorker = options.runBatchWorker ?? defaultRunBatchWorker;
   const runSyncCheck =
-    options.runSyncCheck ??
-    (() => defaultRunSyncCheck(options.repoRoot));
+    options.runSyncCheck ?? (() => defaultRunSyncCheck(options.repoRoot));
 
   return [
     {
@@ -993,7 +1009,10 @@ export function createWorkflowJobExecutors(
 
         const result = await runScanWorkflow(payload);
         await saveProgressCheckpoint(context, {
-          completedSteps: nextCompletedSteps(context.checkpoint, 'scan-complete'),
+          completedSteps: nextCompletedSteps(
+            context.checkpoint,
+            'scan-complete',
+          ),
           cursor: null,
           value: {
             items: [result],
@@ -1019,7 +1038,9 @@ export function createWorkflowJobExecutors(
         );
         const selectedEntries = selectPipelineEntries(pendingEntries, payload);
         const reservedReportNumbers = new Set<number>();
-        const items = parseCheckpointItems<PipelineItemResult>(context.checkpoint);
+        const items = parseCheckpointItems<PipelineItemResult>(
+          context.checkpoint,
+        );
         let processedCount = Math.max(
           parseCheckpointCursor(context.checkpoint),
           items.length,
@@ -1106,7 +1127,12 @@ export function createWorkflowJobExecutors(
             await context.touchHeartbeat();
           }
 
-          if (items.some((item) => item.status === 'completed' || item.status === 'partial')) {
+          if (
+            items.some(
+              (item) =>
+                item.status === 'completed' || item.status === 'partial',
+            )
+          ) {
             await runTool({
               context,
               input: {},
@@ -1170,7 +1196,9 @@ export function createWorkflowJobExecutors(
           state,
           payload,
         );
-        const items = parseCheckpointItems<BatchItemSummary>(context.checkpoint);
+        const items = parseCheckpointItems<BatchItemSummary>(
+          context.checkpoint,
+        );
         let processedCount = Math.max(
           parseCheckpointCursor(context.checkpoint),
           items.length,
@@ -1315,7 +1343,8 @@ export function createWorkflowJobExecutors(
             }
           } else {
             const retries = (existing?.retries ?? 0) + 1;
-            const retryable = workerResult.retryable && retries < payload.maxRetries;
+            const retryable =
+              workerResult.retryable && retries < payload.maxRetries;
             state.set(row.id, {
               completedAt: new Date().toISOString(),
               error: workerResult.error,
@@ -1354,7 +1383,11 @@ export function createWorkflowJobExecutors(
           await context.touchHeartbeat();
         }
 
-        if (items.some((item) => item.status === 'completed' || item.status === 'partial')) {
+        if (
+          items.some(
+            (item) => item.status === 'completed' || item.status === 'partial',
+          )
+        ) {
           try {
             await runTool({
               context,

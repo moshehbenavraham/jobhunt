@@ -9,11 +9,11 @@
 
 ## Session Progress
 
-| Metric | Value |
-|--------|-------|
-| Tasks Completed | 15 / 15 |
+| Metric              | Value     |
+| ------------------- | --------- |
+| Tasks Completed     | 15 / 15   |
 | Estimated Remaining | 3-4 hours |
-| Blockers | 0 |
+| Blockers            | 0         |
 
 ---
 
@@ -24,6 +24,7 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added the typed orchestration request, route, runtime, tooling-gap, and
   handoff envelope contracts for the new backend-owned orchestration surface.
 - Added a small contract-level parser plus a dedicated orchestration error type
@@ -31,6 +32,7 @@
   system failures.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/orchestration-contract.ts` - created the shared
   orchestration contract definitions, request schemas, and error surface
 - `apps/api/src/orchestration/index.ts` - exported the orchestration contract
@@ -43,6 +45,7 @@
 **Duration**: 3 minutes
 
 **Notes**:
+
 - Added a checked-in specialist topology that covers every supported workflow
   intent and marks not-yet-typed workflows as deterministic `tooling-gap`
   routes instead of leaving routing implicit.
@@ -50,6 +53,7 @@
   explicit allowed or restricted tool catalog plus denied and revoked outputs.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/specialist-catalog.ts` - created the workflow to
   specialist mapping, tool policies, and full workflow-coverage validation
 - `apps/api/src/orchestration/tool-scope.ts` - created the specialist-scoped
@@ -64,6 +68,7 @@
 **Duration**: 5 minutes
 
 **Notes**:
+
 - Extended the tool registry contract with validated catalog filters so later
   orchestration code can request bounded, deterministic tool subsets instead of
   scanning the full registry each time.
@@ -71,6 +76,7 @@
   so specialist catalog drift fails explicitly instead of degrading silently.
 
 **Files Changed**:
+
 - `apps/api/src/tools/tool-contract.ts` - added the filtered catalog list input
   contract and updated the registry interface
 - `apps/api/src/tools/tool-registry.ts` - added bounded pagination, tool-name
@@ -83,6 +89,7 @@
 **Duration**: 3 minutes
 
 **Notes**:
+
 - Added a router service that accepts launch or resume requests, validates the
   request shape, resolves the stored session workflow on resume, and classifies
   unsupported or missing-session cases without free-form branching.
@@ -90,6 +97,7 @@
   the checked-in specialist catalog.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/workflow-router.ts` - created the schema-aware
   workflow router for launch and resume routing
 - `apps/api/src/orchestration/index.ts` - exported the workflow router module
@@ -101,6 +109,7 @@
 **Duration**: 3 minutes
 
 **Notes**:
+
 - Added create or reuse session handling that updates orchestration metadata in
   stored session context and rejects cross-workflow reuse for the same
   caller-supplied session id.
@@ -109,6 +118,7 @@
   deterministic failed state when needed.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/session-lifecycle.ts` - created create or reuse,
   activity summary, and failure-compensation helpers for orchestration sessions
 - `apps/api/src/orchestration/index.ts` - exported the session lifecycle module
@@ -120,6 +130,7 @@
 **Duration**: 3 minutes
 
 **Notes**:
+
 - Added the orchestration service that composes routing, session lifecycle,
   scoped tool catalogs, and agent-runtime bootstrap into one backend-owned
   handoff contract.
@@ -127,6 +138,7 @@
   close the acquired runtime provider before returning metadata to the caller.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/orchestration-service.ts` - created the typed
   orchestration service bootstrap and specialist handoff flow
 - `apps/api/src/orchestration/index.ts` - exported the orchestration service
@@ -138,6 +150,7 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Reused the same orchestration service for resume requests so callers get the
   stored session workflow, active job summary, pending approval summary, and
   deterministic tooling-gap metadata through one path.
@@ -146,6 +159,7 @@
   stale session context.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/orchestration-service.ts` - added the unified
   resume flow, activity summary integration, and tooling-gap handoff behavior
 
@@ -156,6 +170,7 @@
 **Duration**: 3 minutes
 
 **Notes**:
+
 - Added a lazy orchestration service surface to the shared API container so
   later phases can reuse the same store, agent-runtime bootstrap, and tool
   registry without assembling a second router stack.
@@ -164,6 +179,7 @@
   services.
 
 **Files Changed**:
+
 - `apps/api/src/runtime/service-container.ts` - added lazy orchestration
   service creation and the new container surface
 
@@ -174,6 +190,7 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added an orchestration-focused test entrypoint and folded the orchestration
   tests into the runtime validation path so the new module is exercised through
   normal package validation.
@@ -181,6 +198,7 @@
   no-raw-prompt persistence boundary in the API package guide.
 
 **Files Changed**:
+
 - `apps/api/package.json` - added orchestration test and runtime validation
   commands
 - `apps/api/README_api.md` - documented the orchestration module and blocked
@@ -193,6 +211,7 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added direct coverage for full workflow-to-specialist routing coverage and
   for the tool-scope resolver's allowed, restricted, revoked, and fallback
   behavior.
@@ -200,6 +219,7 @@
   tests.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/specialist-catalog.test.ts` - added workflow
   coverage and tooling-gap route assertions
 - `apps/api/src/orchestration/tool-scope.test.ts` - added scope resolution,
@@ -212,6 +232,7 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added router coverage for launch routing, unsupported workflows, resume
   precedence, missing-session handling, and malformed-request validation.
 - Added lifecycle coverage for launch creation, same-workflow reuse,
@@ -219,6 +240,7 @@
   compensation.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/workflow-router.test.ts` - added routing and
   validation coverage for launch and resume requests
 - `apps/api/src/orchestration/session-lifecycle.test.ts` - added create or
@@ -231,6 +253,7 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added end-to-end orchestration tests for ready launches, resume summaries,
   tooling-gap envelopes, expected bootstrap readiness failures, and unexpected
   bootstrap failures.
@@ -238,6 +261,7 @@
   before returning prompt metadata to callers.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/orchestration-service.test.ts` - added end-to-end
   orchestration envelope coverage
 
@@ -248,12 +272,14 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Extended the registry tests for filtered catalog reads and unknown-tool
   rejection.
 - Added service-container coverage for lazy orchestration-service creation and
   reuse through the default runtime container surface.
 
 **Files Changed**:
+
 - `apps/api/src/tools/tool-registry.test.ts` - added filtered catalog and
   unknown-tool validation coverage
 - `apps/api/src/runtime/service-container.test.ts` - added orchestration
@@ -266,6 +292,7 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added the new orchestration source and test files to the quick-suite ASCII
   validation list so Session 05 stays inside the same deterministic repo gate
   as the earlier app runtime files.
@@ -274,6 +301,7 @@
   script.
 
 **Files Changed**:
+
 - `scripts/test-all.mjs` - added the orchestration files to the quick-suite
   ASCII validation surface
 
@@ -284,6 +312,7 @@
 **Duration**: 12 minutes
 
 **Notes**:
+
 - Resolved two validation issues discovered during the first regression pass:
   duplicate scan-specialist tool names in the catalog and prompt-source typing
   in the test bootstrap helpers.
@@ -294,6 +323,7 @@
   suite and the session is ready for the `validate` workflow step.
 
 **Files Changed**:
+
 - `apps/api/src/orchestration/specialist-catalog.ts` - removed duplicate
   scan-specialist tool declarations surfaced by regression validation
 - `apps/api/src/runtime/service-container.test.ts` - tightened prompt-source
@@ -306,6 +336,7 @@
 ### [2026-04-21] - Session Start
 
 **Environment verified**:
+
 - [x] Prerequisites confirmed
 - [x] Tools available
 - [x] Directory structure ready

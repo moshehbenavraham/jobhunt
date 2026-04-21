@@ -226,8 +226,7 @@ export const ORCHESTRATION_ERROR_CODES = [
   'orchestration-invalid-request',
 ] as const;
 
-export type OrchestrationErrorCode =
-  (typeof ORCHESTRATION_ERROR_CODES)[number];
+export type OrchestrationErrorCode = (typeof ORCHESTRATION_ERROR_CODES)[number];
 
 export class OrchestrationError extends Error {
   readonly code: OrchestrationErrorCode;
@@ -251,7 +250,7 @@ export class OrchestrationError extends Error {
 export function isBootstrapErrorCode(
   candidate: string,
 ): candidate is AgentRuntimeBootstrapErrorCode {
-  return (
-    AGENT_RUNTIME_BOOTSTRAP_ERROR_CODES as readonly string[]
-  ).includes(candidate);
+  return (AGENT_RUNTIME_BOOTSTRAP_ERROR_CODES as readonly string[]).includes(
+    candidate,
+  );
 }

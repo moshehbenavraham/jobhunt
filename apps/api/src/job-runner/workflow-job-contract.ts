@@ -83,9 +83,7 @@ export type PipelineQueueSelectionMode =
 export const pipelineQueueSelectionSchema = z
   .object({
     limit: z.number().int().min(1).max(50).nullable().default(null),
-    mode: z
-      .enum(pipelineQueueSelectionModeValues)
-      .default('first-pending'),
+    mode: z.enum(pipelineQueueSelectionModeValues).default('first-pending'),
     urls: z.array(z.string().url()).max(50).default([]),
   })
   .superRefine((value, context) => {
@@ -124,7 +122,10 @@ export const pipelineItemResultSchema = z.object({
   error: z.string().nullable(),
   pdf: z.string().nullable(),
   report: z.string().nullable(),
-  reportNumber: z.string().regex(/^\d{3}$/).nullable(),
+  reportNumber: z
+    .string()
+    .regex(/^\d{3}$/)
+    .nullable(),
   role: z.string().trim().min(1),
   score: z.number().nullable(),
   status: z.enum(pipelineItemStatusValues),
@@ -162,11 +163,18 @@ export type PipelineProcessingResult = z.output<
   typeof pipelineProcessingResultSchema
 >;
 
-export const batchExecutionModeValues = ['run-pending', 'retry-failed'] as const;
+export const batchExecutionModeValues = [
+  'run-pending',
+  'retry-failed',
+] as const;
 
 export type BatchExecutionMode = (typeof batchExecutionModeValues)[number];
 
-export const batchWorkerStatusValues = ['completed', 'failed', 'partial'] as const;
+export const batchWorkerStatusValues = [
+  'completed',
+  'failed',
+  'partial',
+] as const;
 
 export type BatchWorkerStatus = (typeof batchWorkerStatusValues)[number];
 
@@ -176,14 +184,16 @@ export const batchWorkerResultSchema = z
     error: z.string().nullable(),
     id: z.string().trim().min(1),
     legitimacy: z
-      .enum([
-        'High Confidence',
-        'Proceed with Caution',
-        'Suspicious',
-      ])
+      .enum(['High Confidence', 'Proceed with Caution', 'Suspicious'])
       .nullable(),
-    pdf: z.string().regex(/^output\/.+\.pdf$/).nullable(),
-    report: z.string().regex(/^reports\/.+\.md$/).nullable(),
+    pdf: z
+      .string()
+      .regex(/^output\/.+\.pdf$/)
+      .nullable(),
+    report: z
+      .string()
+      .regex(/^reports\/.+\.md$/)
+      .nullable(),
     report_num: z.string().regex(/^\d{3}$/),
     role: z.string().trim().min(1),
     score: z.number().nullable(),
@@ -213,7 +223,11 @@ export const batchWorkerResultSchema = z
         });
       }
 
-      if (value.pdf === null || value.report === null || value.tracker === null) {
+      if (
+        value.pdf === null ||
+        value.report === null ||
+        value.tracker === null
+      ) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message:
@@ -233,7 +247,11 @@ export const batchWorkerResultSchema = z
     }
 
     if (value.status === 'partial') {
-      if (value.score === null || value.legitimacy === null || value.report === null) {
+      if (
+        value.score === null ||
+        value.legitimacy === null ||
+        value.report === null
+      ) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message:
@@ -270,7 +288,11 @@ export const batchWorkerResultSchema = z
         });
       }
 
-      if (value.pdf !== null || value.tracker !== null || value.warnings.length > 0) {
+      if (
+        value.pdf !== null ||
+        value.tracker !== null ||
+        value.warnings.length > 0
+      ) {
         context.addIssue({
           code: z.ZodIssueCode.custom,
           message:
@@ -306,7 +328,10 @@ export type BatchItemSummaryStatus =
 export const batchItemSummarySchema = z.object({
   error: z.string().nullable(),
   id: z.number().int().positive(),
-  reportNumber: z.string().regex(/^\d{3}$/).nullable(),
+  reportNumber: z
+    .string()
+    .regex(/^\d{3}$/)
+    .nullable(),
   retries: z.number().int().nonnegative(),
   score: z.number().nullable(),
   status: z.enum(batchItemSummaryStatusValues),

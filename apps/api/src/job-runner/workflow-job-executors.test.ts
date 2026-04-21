@@ -7,9 +7,7 @@ import {
 } from './test-utils.js';
 import { createWorkflowJobExecutors } from './workflow-job-executors.js';
 
-function createToolServiceStub(
-  calls: string[],
-): ToolExecutionService {
+function createToolServiceStub(calls: string[]): ToolExecutionService {
   return {
     async execute(request) {
       calls.push(request.toolName);
@@ -44,7 +42,8 @@ test('scan workflow executor returns the checkpointed result without rerunning t
   const harness = await createDurableJobRunnerHarness({
     createExecutors: (repoRoot) => createWorkflowJobExecutors({ repoRoot }),
     fixtureFiles: {
-      'scripts/scan.mjs': "throw new Error('scan script should not run on resume');\n",
+      'scripts/scan.mjs':
+        "throw new Error('scan script should not run on resume');\n",
     },
   });
   const checkpointedResult = {
@@ -202,7 +201,10 @@ test('pipeline workflow executor resumes the remaining queue and runs closeout t
     assert.equal(job?.status, 'completed');
     assert.notEqual(pipelineText, null);
     assert.deepEqual(batchWorkerCalls, ['https://example.com/jobs/second']);
-    assert.deepEqual(toolCalls, ['merge-tracker-additions', 'verify-tracker-pipeline']);
+    assert.deepEqual(toolCalls, [
+      'merge-tracker-additions',
+      'verify-tracker-pipeline',
+    ]);
     assert.equal(result?.workflow, 'process-pipeline');
     assert.equal(result?.selectedCount, 2);
     assert.equal(result?.trackerMerged, true);
@@ -216,8 +218,14 @@ test('pipeline workflow executor resumes the remaining queue and runs closeout t
       ['https://example.com/jobs/first', 'https://example.com/jobs/second'],
     );
     assert.equal(result?.items?.[1]?.reportNumber, '002');
-    assert.match(pipelineContent, /\[x\] #002 \| https:\/\/example\.com\/jobs\/second/);
-    assert.doesNotMatch(pipelineContent, /\[ \] https:\/\/example\.com\/jobs\/second/);
+    assert.match(
+      pipelineContent,
+      /\[x\] #002 \| https:\/\/example\.com\/jobs\/second/,
+    );
+    assert.doesNotMatch(
+      pipelineContent,
+      /\[ \] https:\/\/example\.com\/jobs\/second/,
+    );
   } finally {
     await harness.cleanup();
   }
@@ -325,7 +333,11 @@ test('batch workflow executor resumes remaining rows and preserves retryable plu
         skipped: number;
         total: number;
       };
-      items?: Array<{ id: number; reportNumber: string | null; status: string }>;
+      items?: Array<{
+        id: number;
+        reportNumber: string | null;
+        status: string;
+      }>;
       workflow?: string;
     } | null;
     const batchState = await harness.fixture.readText('batch/batch-state.tsv');
@@ -343,7 +355,10 @@ test('batch workflow executor resumes remaining rows and preserves retryable plu
         url: 'https://example.com/jobs/third',
       },
     ]);
-    assert.deepEqual(toolCalls, ['merge-tracker-additions', 'verify-tracker-pipeline']);
+    assert.deepEqual(toolCalls, [
+      'merge-tracker-additions',
+      'verify-tracker-pipeline',
+    ]);
     assert.equal(result?.workflow, 'batch-evaluation');
     assert.deepEqual(result?.counts, {
       completed: 1,

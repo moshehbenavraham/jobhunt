@@ -40,14 +40,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | Orchestration input is schema-validated before routing, and no shell or SQL string concatenation was introduced in the new orchestration paths |
-| Hardcoded Secrets | PASS | Critical | No secrets, tokens, or credentials were added |
-| Sensitive Data Exposure | PASS | High | The new runtime handoff returns prompt metadata only and does not persist raw prompt text in store records |
-| Insecure Dependencies | PASS | -- | No dependency changes were introduced in this session |
-| Misconfiguration | PASS | Medium | Specialist tool access is allowlisted and deterministic; unsupported workflows stay blocked instead of falling through to unrestricted behavior |
-| Database Security | N/A | -- | No DB-layer schema or persistence shape changes were introduced |
+| Category                      | Status | Severity | Details                                                                                                                                         |
+| ----------------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | Orchestration input is schema-validated before routing, and no shell or SQL string concatenation was introduced in the new orchestration paths  |
+| Hardcoded Secrets             | PASS   | Critical | No secrets, tokens, or credentials were added                                                                                                   |
+| Sensitive Data Exposure       | PASS   | High     | The new runtime handoff returns prompt metadata only and does not persist raw prompt text in store records                                      |
+| Insecure Dependencies         | PASS   | --       | No dependency changes were introduced in this session                                                                                           |
+| Misconfiguration              | PASS   | Medium   | Specialist tool access is allowlisted and deterministic; unsupported workflows stay blocked instead of falling through to unrestricted behavior |
+| Database Security             | N/A    | --       | No DB-layer schema or persistence shape changes were introduced                                                                                 |
 
 ### Notes
 
@@ -63,14 +63,14 @@
 
 No new user-data collection, consent, erasure, or third-party sharing path was introduced in this session.
 
-| Area | Status | Details |
-|------|--------|---------|
-| Data Collection | N/A | No new personal-data collection |
-| Consent | N/A | No new collection flow |
-| Data Minimization | N/A | No new user-data store added |
-| Right to Erasure | N/A | No new persistence surface added |
-| Data Logging | PASS | No personal data logging added |
-| Third-Party Sharing | N/A | No new external sharing path added |
+| Area                | Status | Details                            |
+| ------------------- | ------ | ---------------------------------- |
+| Data Collection     | N/A    | No new personal-data collection    |
+| Consent             | N/A    | No new collection flow             |
+| Data Minimization   | N/A    | No new user-data store added       |
+| Right to Erasure    | N/A    | No new persistence surface added   |
+| Data Logging        | PASS   | No personal data logging added     |
+| Third-Party Sharing | N/A    | No new external sharing path added |
 
 ---
 

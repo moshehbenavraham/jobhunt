@@ -488,7 +488,10 @@ export function findSurfaceByRepoRelativePath(
 
 export function classifyWorkspaceMutationPolicy(
   repoRelativePath: string,
-): Pick<WorkspaceMutationAuthorization, 'approval' | 'surface' | 'target'> | null {
+): Pick<
+  WorkspaceMutationAuthorization,
+  'approval' | 'surface' | 'target'
+> | null {
   const surface = findSurfaceByRepoRelativePath(repoRelativePath);
 
   if (!surface || surface.mutationTarget === null) {
