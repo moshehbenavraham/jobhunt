@@ -128,6 +128,41 @@ When you are working from the repo root, the corresponding aliases are
   workflow tools reuse shared workspace, approval-runtime, and observability
   services instead of creating another execution path.
 
+### Default Tool Suite
+
+- `inspect-startup-diagnostics` exposes startup readiness, prompt metadata,
+  missing startup files, and workspace write boundaries without mutating the
+  repo.
+- `inspect-prompt-contract` exposes prompt source order and workflow route
+  metadata for one workflow or the full supported set.
+- `inspect-required-workspace-files` reports startup-critical and repairable
+  repo surfaces in canonical path order.
+- `summarize-profile-sources` projects `config/profile.yml`,
+  `config/portals.yml`, CV, and article-digest data into a deterministic
+  settings summary with legacy `cv.md` and `article-digest.md` fallback.
+- `list-workspace-artifacts` lists top-level `reports/`, `output/`, and `jds/`
+  entries with bounded offset and limit pagination.
+- `summarize-workflow-support` verifies that prompt-routed workflow mode files
+  still exist at their declared paths.
+- `preview-onboarding-repair` shows which onboarding files can be created from
+  checked-in templates.
+- `repair-onboarding-files` maps missing onboarding files to checked-in
+  templates and the tracker skeleton through the guarded mutation path.
+
+### Repair Boundaries
+
+- Onboarding repair is limited to `config/profile.yml`, `config/portals.yml`,
+  `profile/cv.md`, `modes/_profile.md`, and `data/applications.md`.
+- Repair sources are the checked-in repo templates:
+  `config/profile.example.yml`, `config/portals.example.yml`,
+  `profile/cv.example.md`, `modes/_profile.template.md`, and
+  `data/applications.example.md`.
+- Repair preview stays read-only.
+- Repair execution refuses to overwrite existing user files, including the
+  accepted legacy `cv.md` fallback.
+- Multi-file repair uses best-effort rollback if a later write fails after
+  earlier files were created.
+
 ## Current Routes
 
 - `GET` and `HEAD` `/health` - health summary for runtime readiness

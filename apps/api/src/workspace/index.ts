@@ -1,4 +1,5 @@
 export * from './missing-file-policy.js';
+export * from './onboarding-template-contract.js';
 export * from './workspace-adapter.js';
 export * from './workspace-boundary.js';
 export * from './workspace-contract.js';

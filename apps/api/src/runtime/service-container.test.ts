@@ -326,6 +326,8 @@ test('service container lazily creates and reuses a tool execution service with 
     });
 
     assert.equal(toolServiceA, toolServiceB);
+    assert.ok(catalogNames.includes('inspect-startup-diagnostics'));
+    assert.ok(catalogNames.includes('preview-onboarding-repair'));
     assert.ok(catalogNames.includes('write-tool-state'));
     assert.equal(result.status, 'completed');
     assert.deepEqual(result.output, {
@@ -340,6 +342,70 @@ test('service container lazily creates and reuses a tool execution service with 
     );
     assert.ok(
       events.some((event) => event.eventType === 'tool-execution-completed'),
+    );
+  } finally {
+    await container.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('service container default tool suite revalidates onboarding repair state on repeated calls', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.example.yml': 'title_filter:\n  positive: []\n',
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.example.yml': 'candidate:\n  full_name: Template User\n',
+      'data/applications.example.md': '# Applications Tracker\n',
+      'modes/_profile.md': '# Profile\n',
+      'modes/_profile.template.md': '# Profile Template\n',
+      'profile/cv.example.md': '# Template CV\n',
+    },
+  });
+  const container = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const toolServiceA = await container.tools.getService();
+    const firstResult = await toolServiceA.execute({
+      correlation: {
+        jobId: 'job-preview-a',
+        requestId: 'request-preview-a',
+        sessionId: 'session-preview',
+        traceId: 'trace-preview-a',
+      },
+      input: {
+        targets: null,
+      },
+      toolName: 'preview-onboarding-repair',
+    });
+
+    await fixture.writeText('config/profile.yml', 'candidate:\n  full_name: Live User\n');
+
+    const toolServiceB = await container.tools.getService();
+    const secondResult = await toolServiceB.execute({
+      correlation: {
+        jobId: 'job-preview-b',
+        requestId: 'request-preview-b',
+        sessionId: 'session-preview',
+        traceId: 'trace-preview-b',
+      },
+      input: {
+        targets: null,
+      },
+      toolName: 'preview-onboarding-repair',
+    });
+
+    assert.equal(toolServiceA, toolServiceB);
+    assert.equal(firstResult.status, 'completed');
+    assert.equal(secondResult.status, 'completed');
+    assert.equal(
+      (firstResult.output as { repairableCount: number }).repairableCount,
+      3,
+    );
+    assert.equal(
+      (secondResult.output as { repairableCount: number }).repairableCount,
+      2,
     );
   } finally {
     await container.dispose();

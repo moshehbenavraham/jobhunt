@@ -5,6 +5,10 @@ import {
 } from '../config/repo-paths.js';
 import { classifyWorkspacePath } from './workspace-boundary.js';
 import {
+  getOnboardingRepairDefinition,
+  listOnboardingRepairDefinitions,
+} from './onboarding-template-contract.js';
+import {
   getWorkspaceSurface,
   listWorkspaceSurfaces,
 } from './workspace-contract.js';
@@ -16,6 +20,8 @@ import {
 import { getWorkspaceSummary } from './workspace-summary.js';
 import { writeWorkspaceFile } from './workspace-write.js';
 import type {
+  OnboardingRepairDefinition,
+  OnboardingRepairableSurfaceKey,
   WorkspaceReadResult,
   WorkspaceResolvedSurface,
   WorkspaceSummary,
@@ -29,8 +35,12 @@ import type {
 export type WorkspaceAdapter = {
   classifyPath: (candidatePath: string) => WorkspacePathClassification;
   getSummary: () => Promise<WorkspaceSummary>;
+  getOnboardingRepair: (
+    key: OnboardingRepairableSurfaceKey,
+  ) => OnboardingRepairDefinition;
   getSurface: (key: WorkspaceSurfaceKey) => WorkspaceSurfaceDefinition;
   listSurfaces: () => readonly WorkspaceSurfaceDefinition[];
+  listOnboardingRepairs: () => readonly OnboardingRepairDefinition[];
   readRequiredSurface: (
     key: WorkspaceSurfaceKey,
   ) => Promise<Exclude<WorkspaceReadResult, { status: 'missing' }>>;
@@ -55,8 +65,16 @@ export function createWorkspaceAdapter(
     async getSummary(): Promise<WorkspaceSummary> {
       return getWorkspaceSummary(adapterOptions);
     },
+    getOnboardingRepair(
+      key: OnboardingRepairableSurfaceKey,
+    ): OnboardingRepairDefinition {
+      return getOnboardingRepairDefinition(key);
+    },
     getSurface(key: WorkspaceSurfaceKey): WorkspaceSurfaceDefinition {
       return getWorkspaceSurface(key);
+    },
+    listOnboardingRepairs(): readonly OnboardingRepairDefinition[] {
+      return listOnboardingRepairDefinitions();
     },
     listSurfaces(): readonly WorkspaceSurfaceDefinition[] {
       return listWorkspaceSurfaces();

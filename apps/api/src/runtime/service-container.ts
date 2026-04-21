@@ -25,6 +25,7 @@ import {
   type StartupDiagnosticsService,
 } from '../index.js';
 import {
+  createDefaultToolSuite,
   createToolExecutionService,
   type ScriptExecutionDefinition,
   type ToolExecutionService,
@@ -291,11 +292,18 @@ export function createApiServiceContainer(
     assertActive();
 
     if (!toolExecutionService) {
+      const defaultToolDefinitions = createDefaultToolSuite({
+        startupDiagnostics: getStartupDiagnosticsService(),
+        workspace: getWorkspace(),
+      });
       toolExecutionService = createToolExecutionService({
         getApprovalRuntime: getApprovalRuntimeService,
         getObservability: getObservabilityService,
         getStore: getOperationalStore,
-        registryInput: options.toolDefinitions ?? [],
+        registryInput: [
+          ...defaultToolDefinitions,
+          ...(options.toolDefinitions ?? []),
+        ],
         scriptAllowlist: options.toolScripts ?? [],
         workspace: getWorkspace(),
       });
