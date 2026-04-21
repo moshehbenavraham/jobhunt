@@ -131,4 +131,4 @@ Before marking session complete:
 
 ## Next Steps
 
-Run the `implement` workflow step to begin AI-led implementation.
+Session complete. Run `plansession` for the next Phase 01 session.
