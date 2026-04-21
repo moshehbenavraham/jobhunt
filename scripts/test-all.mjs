@@ -110,6 +110,7 @@ const scripts = [
   { name: 'normalize-statuses.mjs', expectExit: 0 },
   { name: 'dedup-tracker.mjs', expectExit: 0 },
   { name: 'merge-tracker.mjs', expectExit: 0 },
+  { name: 'backup-app-state.mjs', expectExit: 0 },
   { name: 'update-system.mjs check', expectExit: 0 },
 ];
 
@@ -428,9 +429,20 @@ if (appStoreContract !== null) {
   fail('App store contract tests failed');
 }
 
-// -- 3x. App bootstrap smoke -------------------------------------
+// -- 3x. App tools contract --------------------------------------
 
-console.log('\n3x. App bootstrap smoke');
+console.log('\n3x. App tools contract');
+
+const appToolsContract = run('npm', ['run', 'app:api:test:tools']);
+if (appToolsContract !== null) {
+  pass('App tools contract tests pass');
+} else {
+  fail('App tools contract tests failed');
+}
+
+// -- 3y. App bootstrap smoke -------------------------------------
+
+console.log('\n3y. App bootstrap smoke');
 
 const appBootstrap = run('node', ['scripts/test-app-bootstrap.mjs']);
 if (appBootstrap !== null) {
@@ -439,9 +451,9 @@ if (appBootstrap !== null) {
   fail('App bootstrap smoke tests failed');
 }
 
-// -- 3y. Bootstrap ASCII validation ------------------------------
+// -- 3z. Bootstrap ASCII validation ------------------------------
 
-console.log('\n3y. Bootstrap ASCII validation');
+console.log('\n3z. Bootstrap ASCII validation');
 
 const bootstrapFiles = [
   'apps/api/src/approval-runtime/approval-runtime-contract.ts',
@@ -495,6 +507,18 @@ const bootstrapFiles = [
   'apps/api/src/store/sqlite-store.test.ts',
   'apps/api/src/store/sqlite-store.ts',
   'apps/api/src/store/store-contract.ts',
+  'apps/api/src/tools/index.ts',
+  'apps/api/src/tools/script-execution-adapter.test.ts',
+  'apps/api/src/tools/script-execution-adapter.ts',
+  'apps/api/src/tools/test-utils.ts',
+  'apps/api/src/tools/tool-contract.ts',
+  'apps/api/src/tools/tool-errors.ts',
+  'apps/api/src/tools/tool-execution-service.test.ts',
+  'apps/api/src/tools/tool-execution-service.ts',
+  'apps/api/src/tools/tool-registry.test.ts',
+  'apps/api/src/tools/tool-registry.ts',
+  'apps/api/src/tools/workspace-mutation-adapter.test.ts',
+  'apps/api/src/tools/workspace-mutation-adapter.ts',
   'apps/web/src/App.tsx',
   'apps/web/src/boot/missing-files-list.tsx',
   'apps/web/src/boot/startup-client.ts',

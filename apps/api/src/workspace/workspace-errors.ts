@@ -1,4 +1,5 @@
 import type {
+  WorkspaceMutationDeniedDetail,
   WorkspaceMissingBehavior,
   WorkspacePathClassification,
   WorkspaceSurfaceDefinition,
@@ -36,6 +37,24 @@ export class WorkspaceWriteDeniedError extends WorkspaceBoundaryError {
       `Refusing to write protected ${classification.owner} path: ${classification.path}`,
       classification,
     );
+  }
+}
+
+export class WorkspaceMutationPolicyDeniedError extends WorkspaceBoundaryError {
+  detail: WorkspaceMutationDeniedDetail;
+
+  constructor(
+    classification: WorkspacePathClassification,
+    detail: WorkspaceMutationDeniedDetail,
+  ) {
+    const allowedTargetText =
+      detail.allowedTarget === null ? 'none' : detail.allowedTarget;
+
+    super(
+      `Refusing to mutate ${classification.path} with target ${detail.requestedTarget}. Allowed target: ${allowedTargetText}.`,
+      classification,
+    );
+    this.detail = detail;
   }
 }
 

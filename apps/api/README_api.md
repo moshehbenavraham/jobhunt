@@ -20,11 +20,13 @@ npm run test:observability
 npm run test:runtime-contract
 npm run test:prompt-contract
 npm run test:store-contract
+npm run test:tools
 npm run validate:approval-runtime
 npm run validate:agent-runtime
 npm run validate:job-runner
 npm run validate:observability
 npm run validate:store
+npm run validate:tools
 ```
 
 ## What Lives Here
@@ -38,6 +40,7 @@ npm run validate:store
 - `src/server/index.ts` - the long-lived HTTP runtime entrypoint
 - `src/store/` - SQLite-backed operational store for sessions, jobs, approvals, run metadata, and runtime events
 - `src/server/routes/` - registry-backed HTTP route modules
+- `src/tools/` - typed backend-owned tool contracts, execution policy, and constrained side-effect adapters
 - `src/workspace/` - repo-bound file contract helpers and guarded read/write logic
 - `src/prompt/` - prompt source ordering, cache, composition, and loader logic
 
@@ -46,6 +49,7 @@ When you are working from the repo root, the corresponding aliases are
 `npm run app:api:test:runtime`, `npm run app:api:test:agent-runtime`,
 `npm run app:api:test:approval-runtime`, `npm run app:api:test:observability`,
 `npm run app:api:test:job-runner`, `npm run app:api:test:store`,
+`npm run app:api:test:tools`,
 `npm run app:check`, and `npm run app:boot:test`.
 
 ## Runtime Boundaries
@@ -108,6 +112,22 @@ When you are working from the repo root, the corresponding aliases are
 - Failed-run diagnostics are derived from structured `job-failed` events and
   recent correlated event history in `runtime_events`.
 
+## Tools
+
+- `src/tools/tool-registry.ts` owns duplicate-safe tool registration and the
+  deterministic backend tool catalog.
+- `src/tools/tool-execution-service.ts` validates tool input, enforces
+  declared script and workspace-mutation permissions, requests approval when
+  policy requires it, and emits metadata-only lifecycle events.
+- `src/tools/script-execution-adapter.ts` wraps allowlisted repo script
+  dispatch with bounded cwd, environment, timeout, and retry behavior.
+- `src/tools/workspace-mutation-adapter.ts` authorizes explicit user-layer or
+  app-layer mutation targets at the workspace boundary before writing
+  atomically.
+- `src/runtime/service-container.ts` exposes one cached tools surface so
+  workflow tools reuse shared workspace, approval-runtime, and observability
+  services instead of creating another execution path.
+
 ## Current Routes
 
 - `GET` and `HEAD` `/health` - health summary for runtime readiness
@@ -129,6 +149,7 @@ npm run app:api:test:approval-runtime
 npm run app:api:test:observability
 npm run app:api:test:job-runner
 npm run app:api:test:store
+npm run app:api:test:tools
 npm run app:api:build
 npm run app:boot:test
 ```

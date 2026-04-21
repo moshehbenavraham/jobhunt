@@ -6,14 +6,20 @@ import {
   toRepoRelativePath,
 } from '../config/repo-paths.js';
 import {
+  classifyWorkspaceMutationPolicy,
   classifyKnownRepoRelativePath,
   findSurfaceByRepoRelativePath,
 } from './workspace-contract.js';
 import {
+  WorkspaceMutationPolicyDeniedError,
   WorkspaceUnknownPathError,
   WorkspaceWriteDeniedError,
 } from './workspace-errors.js';
-import type { WorkspacePathClassification } from './workspace-types.js';
+import type {
+  WorkspaceMutationAuthorization,
+  WorkspaceMutationTarget,
+  WorkspacePathClassification,
+} from './workspace-types.js';
 
 function buildReason(owner: WorkspacePathClassification['owner']): string {
   switch (owner) {
@@ -108,4 +114,49 @@ export function assertWritableWorkspacePath(
   }
 
   throw new WorkspaceWriteDeniedError(classification);
+}
+
+export function authorizeWorkspaceMutationPath(
+  candidatePath: string,
+  target: WorkspaceMutationTarget,
+  options: RepoPathOptions = {},
+): WorkspaceMutationAuthorization {
+  const classification = assertKnownWorkspacePath(candidatePath, options);
+  const repoRelativePath = classification.repoRelativePath;
+
+  if (repoRelativePath === null) {
+    throw new WorkspaceMutationPolicyDeniedError(classification, {
+      allowedTarget: null,
+      requestedTarget: target,
+      requiredApproval: 'required',
+      surfaceKey: classification.surfaceKey,
+    });
+  }
+
+  const mutationPolicy =
+    classification.owner === 'app'
+      ? {
+          approval: 'none' as const,
+          surface: findSurfaceByRepoRelativePath(repoRelativePath),
+          target: 'app-state' as const,
+        }
+      : classifyWorkspaceMutationPolicy(repoRelativePath);
+
+  if (!mutationPolicy || mutationPolicy.target !== target) {
+    throw new WorkspaceMutationPolicyDeniedError(classification, {
+      allowedTarget: mutationPolicy?.target ?? null,
+      requestedTarget: target,
+      requiredApproval: mutationPolicy?.approval ?? 'required',
+      surfaceKey: classification.surfaceKey,
+    });
+  }
+
+  return {
+    approval: mutationPolicy.approval,
+    classification,
+    path: classification.path,
+    repoRelativePath,
+    surface: mutationPolicy.surface,
+    target,
+  };
 }

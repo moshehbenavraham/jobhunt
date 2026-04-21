@@ -728,7 +728,7 @@ Planning assumptions for this PRD:
 
 - Objective: replace implicit shell-heavy orchestration with app-owned tools
   and agent wiring
-- Sessions: `4-5`
+- Sessions: `5`
 - Key outcomes: typed wrappers around existing scripts, deterministic error
   mapping, router and specialist agent topology, unit coverage for tool
   wrappers
@@ -785,7 +785,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | ----- | -------------------------------------------------------- | -------- | ----------- |
 | 00    | Foundation and Repo Contract                             | 4        | Complete    |
 | 01    | Backend Runtime and Job Infrastructure                   | 5        | Complete    |
-| 02    | Typed Tools and Agent Orchestration                      | 4-5      | Not Started |
+| 02    | Typed Tools and Agent Orchestration                      | 5        | In Progress |
 | 03    | Chat, Onboarding, and Approvals UX                       | 3-5      | Not Started |
 | 04    | Evaluation, Artifacts, and Tracker Parity                | 4-6      | Not Started |
 | 05    | Scan, Batch, and Application-Help Parity                 | 4-6      | Not Started |

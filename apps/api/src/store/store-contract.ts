@@ -210,6 +210,10 @@ export const RUNTIME_EVENT_TYPES = [
   'job-failed',
   'job-waiting-approval',
   'job-waiting-retry',
+  'tool-approval-required',
+  'tool-execution-completed',
+  'tool-execution-failed',
+  'tool-execution-started',
 ] as const;
 
 export type RuntimeEventType = (typeof RUNTIME_EVENT_TYPES)[number];

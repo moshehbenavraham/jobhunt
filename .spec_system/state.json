@@ -31,8 +31,9 @@
     },
     "2": {
       "name": "Typed Tools and Agent Orchestration",
-      "status": "not_started",
-      "session_count": 0
+      "description": "Wrap repo scripts and workspace actions in typed backend tools, then wire router and specialist agent orchestration on top of the Phase 01 runtime.",
+      "status": "in_progress",
+      "session_count": 5
     },
     "3": {
       "name": "Chat, Onboarding, and Approvals UX",
@@ -90,6 +91,10 @@
     },
     {
       "id": "phase01-session05-approval-and-observability-contract",
+      "package": "apps/api"
+    },
+    {
+      "id": "phase02-session01-tool-registry-and-execution-policy",
       "package": "apps/api"
     }
   ],
@@ -176,6 +181,18 @@
     {
       "date": "2026-04-21",
       "session": "phase01-session05-approval-and-observability-contract",
+      "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase02-session01-tool-registry-and-execution-policy",
+      "package": "apps/api",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase02-session01-tool-registry-and-execution-policy",
       "package": "apps/api",
       "status": "completed"
     }

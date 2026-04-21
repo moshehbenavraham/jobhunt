@@ -25,6 +25,12 @@ import {
   type StartupDiagnosticsService,
 } from '../index.js';
 import {
+  createToolExecutionService,
+  type ScriptExecutionDefinition,
+  type ToolExecutionService,
+  type ToolRegistryInput,
+} from '../tools/index.js';
+import {
   createOperationalStore,
   inspectOperationalStoreStatus,
   type OperationalStore,
@@ -59,6 +65,9 @@ export type ApiServiceContainer = {
   };
   repoPaths: RepoPaths;
   startupDiagnostics: StartupDiagnosticsService;
+  tools: {
+    getService: () => Promise<ToolExecutionService>;
+  };
   workspace: WorkspaceAdapter;
 };
 
@@ -69,6 +78,9 @@ export type ApiServiceContainerOptions = RepoPathOptions & {
   jobRunnerExecutors?: DurableJobExecutorRegistryInput;
   observability?: ObservabilityService;
   startupDiagnostics?: StartupDiagnosticsService;
+  toolDefinitions?: ToolRegistryInput;
+  toolScripts?: readonly ScriptExecutionDefinition[];
+  tools?: ToolExecutionService;
   workspace?: WorkspaceAdapter;
 };
 
@@ -87,6 +99,7 @@ export function createApiServiceContainer(
   let observabilityService = options.observability;
   let observabilityPromise: Promise<ObservabilityService> | undefined;
   let startupDiagnosticsService = options.startupDiagnostics;
+  let toolExecutionService = options.tools;
   let workspace = options.workspace;
   let disposed = false;
 
@@ -274,6 +287,23 @@ export function createApiServiceContainer(
     return jobRunnerPromise;
   }
 
+  function getToolExecutionService(): ToolExecutionService {
+    assertActive();
+
+    if (!toolExecutionService) {
+      toolExecutionService = createToolExecutionService({
+        getApprovalRuntime: getApprovalRuntimeService,
+        getObservability: getObservabilityService,
+        getStore: getOperationalStore,
+        registryInput: options.toolDefinitions ?? [],
+        scriptAllowlist: options.toolScripts ?? [],
+        workspace: getWorkspace(),
+      });
+    }
+
+    return toolExecutionService;
+  }
+
   return {
     addCleanupTask(task: ServiceCleanupTask): void {
       assertActive();
@@ -357,6 +387,11 @@ export function createApiServiceContainer(
     observability: {
       async getService(): Promise<ObservabilityService> {
         return getObservabilityService();
+      },
+    },
+    tools: {
+      async getService(): Promise<ToolExecutionService> {
+        return getToolExecutionService();
       },
     },
     get workspace(): WorkspaceAdapter {

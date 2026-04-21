@@ -4,6 +4,7 @@ import test from 'node:test';
 import { z } from 'zod';
 import { createAgentRuntimeService } from '../agent-runtime/index.js';
 import { createTestExecutor } from '../job-runner/index.js';
+import type { ToolDefinition } from '../tools/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { createApiServiceContainer } from './service-container.js';
 import { getRepoOpenAIAccountModuleImportPath } from '../agent-runtime/test-utils.js';
@@ -257,6 +258,115 @@ test('service container closes the durable job runner before generic cleanup tas
     assert.equal(runnerCloseCount, 1);
     assert.equal(cleanupSawClosedRunner, true);
     await assert.rejects(() => container.jobRunner.getService(), /disposed/i);
+  } finally {
+    await fixture.cleanup();
+  }
+});
+
+test('service container lazily creates and reuses a tool execution service with shared runtime dependencies', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.yml': 'full_name: Test User\n',
+      'modes/_profile.md': '# Profile\n',
+      'profile/cv.md': '# CV\n',
+    },
+  });
+  const container = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+    toolDefinitions: [
+      {
+        description: 'Writes app-owned tool state.',
+        async execute(_input, context) {
+          const write = await context.mutateWorkspace({
+            content: {
+              ok: true,
+            },
+            repoRelativePath: '.jobhunt-app/tool-state.json',
+            target: 'app-state',
+          });
+
+          return {
+            output: {
+              repoRelativePath: write.repoRelativePath,
+            },
+          };
+        },
+        inputSchema: z.object({}),
+        name: 'write-tool-state',
+        policy: {
+          permissions: {
+            mutationTargets: ['app-state'],
+          },
+        },
+      } satisfies ToolDefinition<{}>,
+    ],
+  });
+
+  try {
+    await container.operationalStore.getStore();
+    const toolServiceA = await container.tools.getService();
+    const toolServiceB = await container.tools.getService();
+    const catalogNames = toolServiceA.getRegistry().listNames();
+    const result = await toolServiceA.execute({
+      correlation: {
+        jobId: 'job-tool-service',
+        requestId: 'request-tool-service',
+        sessionId: 'session-tool-service',
+        traceId: 'trace-tool-service',
+      },
+      input: {},
+      toolName: 'write-tool-state',
+    });
+    const events = await (
+      await container.operationalStore.getStore()
+    ).events.list({
+      jobId: 'job-tool-service',
+      limit: 10,
+    });
+
+    assert.equal(toolServiceA, toolServiceB);
+    assert.ok(catalogNames.includes('write-tool-state'));
+    assert.equal(result.status, 'completed');
+    assert.deepEqual(result.output, {
+      repoRelativePath: '.jobhunt-app/tool-state.json',
+    });
+    assert.equal(
+      await fixture.readText('.jobhunt-app/tool-state.json'),
+      '{\n  "ok": true\n}\n',
+    );
+    assert.ok(
+      events.some((event) => event.eventType === 'tool-execution-started'),
+    );
+    assert.ok(
+      events.some((event) => event.eventType === 'tool-execution-completed'),
+    );
+  } finally {
+    await container.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('service container blocks tool access after dispose', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.yml': 'full_name: Test User\n',
+      'modes/_profile.md': '# Profile\n',
+      'profile/cv.md': '# CV\n',
+    },
+  });
+  const container = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const toolService = await container.tools.getService();
+
+    assert.ok(toolService);
+
+    await container.dispose();
+    await assert.rejects(() => container.tools.getService(), /disposed/i);
   } finally {
     await fixture.cleanup();
   }

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { lstat, mkdir, rename, rm, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import {
@@ -23,6 +24,19 @@ import type {
 } from './workspace-types.js';
 
 type NodeError = NodeJS.ErrnoException;
+
+export type AtomicFileWriteInput = {
+  content: string;
+  overwrite?: boolean;
+  targetPath: string;
+};
+
+export type AtomicFileWriteResult = {
+  bytesWritten: number;
+  created: boolean;
+  overwritten: boolean;
+  path: string;
+};
 
 function isNodeError(error: unknown): error is NodeError {
   return typeof error === 'object' && error !== null && 'code' in error;
@@ -54,6 +68,38 @@ async function fileExists(path: string): Promise<boolean> {
 
     throw error;
   }
+}
+
+export async function writeTextFileAtomically(
+  input: AtomicFileWriteInput,
+): Promise<AtomicFileWriteResult> {
+  const targetDirectory = dirname(input.targetPath);
+  const tempPath = `${input.targetPath}.tmp-${randomUUID()}`;
+  const existedBeforeWrite = await fileExists(input.targetPath);
+
+  if (existedBeforeWrite && !input.overwrite) {
+    throw new WorkspaceWriteConflictError(input.targetPath);
+  }
+
+  await mkdir(targetDirectory, { recursive: true });
+
+  try {
+    await writeFile(tempPath, input.content, {
+      encoding: 'utf8',
+      flag: 'wx',
+    });
+    await rename(tempPath, input.targetPath);
+  } catch (error) {
+    await rm(tempPath, { force: true });
+    throw error;
+  }
+
+  return {
+    bytesWritten: Buffer.byteLength(input.content, 'utf8'),
+    created: !existedBeforeWrite,
+    overwritten: existedBeforeWrite,
+    path: input.targetPath,
+  };
 }
 
 function getWritableTarget(
@@ -131,26 +177,15 @@ export async function writeWorkspaceFile(
     input,
     repoPaths.repoRoot,
   );
-  const targetDirectory = dirname(targetPath);
-  const tempPath = `${targetPath}.tmp-${process.pid}-${Date.now()}`;
-  const existedBeforeWrite = await fileExists(targetPath);
-
-  if (existedBeforeWrite && !input.overwrite) {
-    throw new WorkspaceWriteConflictError(targetPath);
-  }
-
-  await mkdir(targetDirectory, { recursive: true });
-
-  try {
-    await writeFile(tempPath, serializedContent, {
-      encoding: 'utf8',
-      flag: 'wx',
-    });
-    await rename(tempPath, targetPath);
-  } catch (error) {
-    await rm(tempPath, { force: true });
-    throw error;
-  }
+  const writeResult = await writeTextFileAtomically({
+    content: serializedContent,
+    targetPath,
+    ...(input.overwrite !== undefined
+      ? {
+          overwrite: input.overwrite,
+        }
+      : {}),
+  });
 
   const owner = classification.owner;
 
@@ -159,9 +194,9 @@ export async function writeWorkspaceFile(
   }
 
   return {
-    bytesWritten: Buffer.byteLength(serializedContent, 'utf8'),
-    created: !existedBeforeWrite,
-    overwritten: existedBeforeWrite,
+    bytesWritten: writeResult.bytesWritten,
+    created: writeResult.created,
+    overwritten: writeResult.overwritten,
     owner,
     path: targetPath,
     repoRelativePath,
