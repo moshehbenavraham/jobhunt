@@ -3,7 +3,8 @@
 The API package owns the local app runtime for Job-Hunt. It provides the
 one-shot diagnostics entrypoint, the long-lived boot server, the workspace
 adapter, the prompt-loading contract used by the app shell, and the
-authenticated agent-runtime bootstrap used by later runner and tool work.
+authenticated agent-runtime bootstrap plus the durable job-runner surface used
+by later runner and tool work.
 
 ## Quick Start
 
@@ -13,10 +14,12 @@ npm run serve:runtime
 npm run build
 npm run check
 npm run test:agent-runtime
+npm run test:job-runner
 npm run test:runtime-contract
 npm run test:prompt-contract
 npm run test:store-contract
 npm run validate:agent-runtime
+npm run validate:job-runner
 npm run validate:store
 ```
 
@@ -25,6 +28,7 @@ npm run validate:store
 - `src/index.ts` - one-shot diagnostics and the shared startup-diagnostics service
 - `src/runtime/` - validated runtime config and the package service container
 - `src/agent-runtime/` - typed auth readiness, provider bridge, and prompt bootstrap service
+- `src/job-runner/` - durable queueing, checkpoint recovery, executor registry, and service tests
 - `src/server/index.ts` - the long-lived HTTP runtime entrypoint
 - `src/store/` - SQLite-backed operational store for sessions, jobs, approvals, and run metadata
 - `src/server/routes/` - registry-backed HTTP route modules
@@ -34,7 +38,8 @@ npm run validate:store
 When you are working from the repo root, the corresponding aliases are
 `npm run app:api:dev`, `npm run app:api:serve`, `npm run app:api:build`,
 `npm run app:api:test:runtime`, `npm run app:api:test:agent-runtime`,
-`npm run app:api:test:store`, `npm run app:check`, and `npm run app:boot:test`.
+`npm run app:api:test:job-runner`, `npm run app:api:test:store`,
+`npm run app:check`, and `npm run app:boot:test`.
 
 ## Runtime Boundaries
 
@@ -62,6 +67,18 @@ When you are working from the repo root, the corresponding aliases are
   `JOBHUNT_API_OPENAI_ORIGINATOR`, and `JOBHUNT_API_OPENAI_MODEL` when you
   need deterministic test fixtures or backend overrides.
 
+## Durable Job Runner
+
+- `src/job-runner/job-runner-service.ts` owns durable enqueue, claim,
+  heartbeat, checkpoint, and retry flows for app-owned jobs.
+- `src/job-runner/job-runner-executors.ts` validates payloads against the
+  registered executor schemas before a job runs.
+- `src/runtime/service-container.ts` exposes one cached durable job-runner
+  instance and starts it lazily when the container first needs it.
+- Recovery state stays in `.jobhunt-app/app.db`; checkpoint progress is stored
+  in `runtime_run_metadata`, and lease plus retry state is stored in
+  `runtime_jobs`.
+
 ## Current Routes
 
 - `GET` and `HEAD` `/health` - health summary for runtime readiness
@@ -74,6 +91,7 @@ From the repo root, the runtime validation path is:
 ```bash
 npm run app:api:test:runtime
 npm run app:api:test:agent-runtime
+npm run app:api:test:job-runner
 npm run app:api:test:store
 npm run app:api:build
 npm run app:boot:test

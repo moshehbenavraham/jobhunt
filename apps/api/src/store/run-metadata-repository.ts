@@ -1,12 +1,15 @@
 import type { DatabaseSync } from 'node:sqlite';
 import type {
   RunMetadataRepository,
+  RuntimeRunCheckpointRecord,
+  RuntimeRunCheckpointSaveInput,
   RuntimeRunMetadataRecord,
 } from './store-contract.js';
 import {
   OperationalStoreError,
   type SqliteStoreContext,
 } from './sqlite-store.js';
+import type { JsonValue } from '../workspace/workspace-types.js';
 
 type RunMetadataRow = {
   created_at: string;
@@ -46,7 +49,7 @@ function parseMetadataJson(
   serializedMetadata: string,
   databasePath: string,
   runId: string,
-) {
+): JsonValue {
   try {
     return JSON.parse(serializedMetadata);
   } catch (error) {
@@ -94,6 +97,65 @@ function selectRunMetadataById(
   );
 }
 
+function isJsonObject(value: JsonValue): value is Record<string, JsonValue> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function normalizeCheckpoint(
+  checkpoint: RuntimeRunCheckpointRecord,
+): RuntimeRunCheckpointRecord {
+  return {
+    completedSteps: [...checkpoint.completedSteps],
+    cursor: checkpoint.cursor,
+    updatedAt: checkpoint.updatedAt,
+    value: checkpoint.value,
+  };
+}
+
+function extractCheckpoint(
+  metadata: JsonValue,
+): RuntimeRunCheckpointRecord | null {
+  if (!isJsonObject(metadata)) {
+    return null;
+  }
+
+  const candidate =
+    'checkpoint' in metadata
+      ? ((metadata.checkpoint as JsonValue | undefined) ?? null)
+      : null;
+
+  if (!isJsonObject(candidate)) {
+    return null;
+  }
+
+  const completedSteps = Array.isArray(candidate.completedSteps)
+    ? candidate.completedSteps.filter(
+        (value): value is string => typeof value === 'string',
+      )
+    : null;
+  const cursor =
+    typeof candidate.cursor === 'string' || candidate.cursor === null
+      ? candidate.cursor
+      : null;
+  const updatedAt =
+    typeof candidate.updatedAt === 'string' ? candidate.updatedAt : null;
+  const value =
+    'value' in candidate
+      ? ((candidate.value as JsonValue | undefined) ?? null)
+      : null;
+
+  if (completedSteps === null || updatedAt === null) {
+    return null;
+  }
+
+  return {
+    completedSteps,
+    cursor,
+    updatedAt,
+    value,
+  };
+}
+
 export function createRunMetadataRepository(
   store: SqliteStoreContext,
 ): RunMetadataRepository {
@@ -103,6 +165,20 @@ export function createRunMetadataRepository(
       const row = await store.get<RunMetadataRow>(
         `${SELECT_RUN_METADATA_SQL} WHERE run_id = @runId LIMIT 1`,
         { runId },
+      );
+
+      return row ? mapRunMetadataRow(row, store.databasePath) : null;
+    },
+    async getLatestByJobId(jobId: string): Promise<RuntimeRunMetadataRecord | null> {
+      assertNonEmptyString(jobId, 'jobId', store.databasePath);
+      const row = await store.get<RunMetadataRow>(
+        `
+          ${SELECT_RUN_METADATA_SQL}
+          WHERE job_id = @jobId
+          ORDER BY updated_at DESC, run_id ASC
+          LIMIT 1
+        `,
+        { jobId },
       );
 
       return row ? mapRunMetadataRow(row, store.databasePath) : null;
@@ -117,6 +193,23 @@ export function createRunMetadataRepository(
       );
 
       return rows.map((row) => mapRunMetadataRow(row, store.databasePath));
+    },
+    async loadCheckpoint(
+      runId: string,
+    ): Promise<RuntimeRunCheckpointRecord | null> {
+      assertNonEmptyString(runId, 'runId', store.databasePath);
+      const row = await store.get<RunMetadataRow>(
+        `${SELECT_RUN_METADATA_SQL} WHERE run_id = @runId LIMIT 1`,
+        { runId },
+      );
+
+      if (!row) {
+        return null;
+      }
+
+      return extractCheckpoint(
+        parseMetadataJson(row.metadata_json, store.databasePath, runId),
+      );
     },
     async save(
       record: RuntimeRunMetadataRecord,
@@ -165,6 +258,84 @@ export function createRunMetadataRepository(
             'operational-store-init-failed',
             store.databasePath,
             `Runtime run metadata was not persisted: ${record.runId}`,
+          );
+        }
+
+        return mapRunMetadataRow(row, store.databasePath);
+      });
+    },
+    async saveCheckpoint(
+      input: RuntimeRunCheckpointSaveInput,
+    ): Promise<RuntimeRunMetadataRecord> {
+      assertNonEmptyString(input.runId, 'runId', store.databasePath);
+      assertNonEmptyString(input.sessionId, 'sessionId', store.databasePath);
+      assertNonEmptyString(
+        input.checkpoint.updatedAt,
+        'checkpoint.updatedAt',
+        store.databasePath,
+      );
+
+      return store.withTransaction((database) => {
+        const existingRow = selectRunMetadataById(database, input.runId);
+        const existingMetadata = existingRow
+          ? parseMetadataJson(
+              existingRow.metadata_json,
+              store.databasePath,
+              input.runId,
+            )
+          : {};
+        const metadataObject = isJsonObject(existingMetadata)
+          ? { ...existingMetadata }
+          : {
+              legacyValue: existingMetadata,
+            };
+        const nextMetadata = {
+          ...metadataObject,
+          checkpoint: normalizeCheckpoint(input.checkpoint),
+        };
+        const createdAt = existingRow?.created_at ?? input.checkpoint.updatedAt;
+
+        database
+          .prepare(
+            `
+              INSERT INTO runtime_run_metadata (
+                run_id,
+                session_id,
+                job_id,
+                metadata_json,
+                created_at,
+                updated_at
+              ) VALUES (
+                @runId,
+                @sessionId,
+                @jobId,
+                @metadataJson,
+                @createdAt,
+                @updatedAt
+              )
+              ON CONFLICT(run_id) DO UPDATE SET
+                session_id = excluded.session_id,
+                job_id = excluded.job_id,
+                metadata_json = excluded.metadata_json,
+                updated_at = excluded.updated_at
+            `,
+          )
+          .run({
+            createdAt,
+            jobId: input.jobId,
+            metadataJson: JSON.stringify(nextMetadata),
+            runId: input.runId,
+            sessionId: input.sessionId,
+            updatedAt: input.checkpoint.updatedAt,
+          });
+
+        const row = selectRunMetadataById(database, input.runId);
+
+        if (!row) {
+          throw new OperationalStoreError(
+            'operational-store-init-failed',
+            store.databasePath,
+            `Runtime run checkpoint was not persisted: ${input.runId}`,
           );
         }
 

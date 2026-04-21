@@ -6,6 +6,12 @@ import {
   type AgentRuntimeService,
 } from '../agent-runtime/index.js';
 import {
+  createDurableJobExecutorRegistry,
+  createDurableJobRunnerService,
+  type DurableJobExecutorRegistryInput,
+  type DurableJobRunnerService,
+} from '../job-runner/index.js';
+import {
   createStartupDiagnosticsService,
   type StartupDiagnostics,
   type StartupDiagnosticsService,
@@ -27,6 +33,9 @@ export type ApiServiceContainer = {
     getReadiness: () => Promise<AgentRuntimeReadinessSummary>;
   };
   dispose: () => Promise<void>;
+  jobRunner: {
+    getService: () => Promise<DurableJobRunnerService>;
+  };
   operationalStore: {
     getStatus: () => Promise<OperationalStoreStatus>;
     getStore: () => Promise<OperationalStore>;
@@ -38,6 +47,8 @@ export type ApiServiceContainer = {
 
 export type ApiServiceContainerOptions = RepoPathOptions & {
   agentRuntime?: AgentRuntimeService;
+  jobRunner?: DurableJobRunnerService;
+  jobRunnerExecutors?: DurableJobExecutorRegistryInput;
   startupDiagnostics?: StartupDiagnosticsService;
   workspace?: WorkspaceAdapter;
 };
@@ -50,6 +61,8 @@ export function createApiServiceContainer(
   let operationalStorePromise: Promise<OperationalStore> | undefined;
   let agentRuntimeService = options.agentRuntime;
   let agentRuntimeCleanupRegistered = false;
+  let jobRunnerService = options.jobRunner;
+  let jobRunnerPromise: Promise<DurableJobRunnerService> | undefined;
   let startupDiagnosticsService = options.startupDiagnostics;
   let workspace = options.workspace;
   let disposed = false;
@@ -146,6 +159,48 @@ export function createApiServiceContainer(
     return operationalStorePromise;
   }
 
+  async function getJobRunnerService(): Promise<DurableJobRunnerService> {
+    assertActive();
+
+    if (jobRunnerService) {
+      return jobRunnerService;
+    }
+
+    if (!jobRunnerPromise) {
+      jobRunnerPromise = (async () => {
+        const createdRunner = createDurableJobRunnerService({
+          bootstrapWorkflow: (workflow) => getAgentRuntimeService().bootstrap(workflow),
+          executors: createDurableJobExecutorRegistry(
+            options.jobRunnerExecutors ?? [],
+          ),
+          getStore: getOperationalStore,
+        });
+
+        try {
+          await createdRunner.start();
+        } catch (error) {
+          await createdRunner.close();
+          throw error;
+        }
+
+        if (disposed) {
+          await createdRunner.close();
+          throw new Error(
+            'API service container was disposed before the durable job runner finished initializing.',
+          );
+        }
+
+        jobRunnerService = createdRunner;
+        return createdRunner;
+      })().catch((error: unknown) => {
+        jobRunnerPromise = undefined;
+        throw error;
+      });
+    }
+
+    return jobRunnerPromise;
+  }
+
   return {
     addCleanupTask(task: ServiceCleanupTask): void {
       assertActive();
@@ -166,6 +221,16 @@ export function createApiServiceContainer(
 
       disposed = true;
       const cleanupErrors: Error[] = [];
+
+      if (jobRunnerService) {
+        try {
+          await jobRunnerService.close();
+        } catch (error) {
+          cleanupErrors.push(
+            error instanceof Error ? error : new Error(String(error)),
+          );
+        }
+      }
 
       while (cleanupTasks.length > 0) {
         const cleanupTask = cleanupTasks.pop();
@@ -189,6 +254,11 @@ export function createApiServiceContainer(
           'API service container cleanup failed.',
         );
       }
+    },
+    jobRunner: {
+      async getService(): Promise<DurableJobRunnerService> {
+        return getJobRunnerService();
+      },
     },
     get repoPaths(): RepoPaths {
       return getWorkspace().repoPaths;

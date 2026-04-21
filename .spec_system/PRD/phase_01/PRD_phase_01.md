@@ -4,7 +4,7 @@
 **Sessions**: 5
 **Estimated Duration**: 4-6 days
 
-**Progress**: 3/5 sessions (60%)
+**Progress**: 4/5 sessions (80%)
 
 ---
 
@@ -29,7 +29,7 @@ repo-owned data contract and the checked-in prompt and workspace rules.
 | 01 | API Service Runtime | Completed | ~14 | 2026-04-21 |
 | 02 | SQLite Operational Store | Completed | ~15 | 2026-04-21 |
 | 03 | Agent Runtime Bootstrap | Completed | ~14 | 2026-04-21 |
-| 04 | Durable Job Runner | Not Started | ~16 | - |
+| 04 | Durable Job Runner | Completed | ~16 | 2026-04-21 |
 | 05 | Approval and Observability Contract | Not Started | ~13 | - |
 
 ---
@@ -39,12 +39,13 @@ repo-owned data contract and the checked-in prompt and workspace rules.
 - Session 01: API Service Runtime - Completed 2026-04-21
 - Session 02: SQLite Operational Store - Completed 2026-04-21
 - Session 03: Agent Runtime Bootstrap - Completed 2026-04-21
+- Session 04: Durable Job Runner - Completed 2026-04-21
 
 ---
 
 ## Upcoming Sessions
 
-- Session 04: Durable Job Runner
+- Session 05: Approval and Observability Contract
 
 ---
 

@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { join } from 'node:path';
 import test from 'node:test';
+import { z } from 'zod';
 import { createAgentRuntimeService } from '../agent-runtime/index.js';
+import { createTestExecutor } from '../job-runner/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { createApiServiceContainer } from './service-container.js';
 import { getRepoOpenAIAccountModuleImportPath } from '../agent-runtime/test-utils.js';
@@ -123,4 +125,132 @@ test('service container cleanup is idempotent, disposes the agent runtime, and b
   );
 
   await fixture.cleanup();
+});
+
+test('service container lazily creates and reuses a durable job runner', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.yml': 'full_name: Test User\n',
+      'modes/_profile.md': '# Profile\n',
+      'profile/cv.md': '# CV\n',
+    },
+  });
+  let executeCount = 0;
+  const container = createApiServiceContainer({
+    jobRunnerExecutors: [
+      createTestExecutor({
+        description: 'Completes a container-owned durable job.',
+        execute: async (payload) => {
+          executeCount += 1;
+          return {
+            result: {
+              company: payload.company,
+              ok: true,
+            },
+            status: 'completed',
+          };
+        },
+        jobType: 'evaluate-job',
+        payloadSchema: z.object({
+          company: z.string(),
+        }),
+      }),
+    ],
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const runnerA = await container.jobRunner.getService();
+    const runnerB = await container.jobRunner.getService();
+
+    assert.equal(runnerA, runnerB);
+
+    await runnerA.enqueue({
+      jobId: 'job-container',
+      jobType: 'evaluate-job',
+      payload: {
+        company: 'Container Co',
+      },
+      session: {
+        context: {
+          workflow: 'single-evaluation',
+        },
+        sessionId: 'session-container',
+        workflow: 'single-evaluation',
+      },
+    });
+    await runnerA.drainOnce();
+
+    const store = await container.operationalStore.getStore();
+    const job = await store.jobs.getById('job-container');
+
+    assert.equal(executeCount, 1);
+    assert.equal(job?.status, 'completed');
+  } finally {
+    await container.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('service container closes the durable job runner before generic cleanup tasks', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.yml': 'full_name: Test User\n',
+      'modes/_profile.md': '# Profile\n',
+      'profile/cv.md': '# CV\n',
+    },
+  });
+  let cleanupSawClosedRunner = false;
+  let runnerCloseCount = 0;
+  const fakeJobRunner = {
+    async close() {
+      runnerCloseCount += 1;
+    },
+    async drainOnce() {
+      return {
+        claimedJobIds: [],
+        completedJobIds: [],
+        recoveredJobIds: [],
+        scannedAt: '2026-04-21T06:00:00.000Z',
+        waitingJobIds: [],
+      };
+    },
+    async enqueue() {
+      throw new Error('enqueue not needed in this test');
+    },
+    getRecoverySummary() {
+      return null;
+    },
+    async start() {},
+  };
+  const container = createApiServiceContainer({
+    jobRunner: fakeJobRunner,
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const runnerA = await container.jobRunner.getService();
+    const runnerB = await container.jobRunner.getService();
+
+    container.addCleanupTask(() => {
+      cleanupSawClosedRunner = runnerCloseCount === 1;
+    });
+
+    assert.equal(runnerA, fakeJobRunner);
+    assert.equal(runnerB, fakeJobRunner);
+
+    await container.dispose();
+    await container.dispose();
+
+    assert.equal(runnerCloseCount, 1);
+    assert.equal(cleanupSawClosedRunner, true);
+    await assert.rejects(
+      () => container.jobRunner.getService(),
+      /disposed/i,
+    );
+  } finally {
+    await fixture.cleanup();
+  }
 });

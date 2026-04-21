@@ -60,8 +60,13 @@ const appStateStatBefore = appStateExistedBefore ? statSync(APP_STATE_ROOT) : nu
 const rootPackage = readJson('package.json');
 const webPackage = readJson('apps/web/package.json');
 const apiPackage = readJson('apps/api/package.json');
+const state = readJson('.spec_system/state.json');
 const lockfile = readJson('package-lock.json');
 const gitignore = readText('.gitignore');
+const currentSessionId =
+  typeof state.current_session === 'string'
+    ? state.current_session
+    : 'phase01-session03-agent-runtime-bootstrap';
 
 assert(
   Array.isArray(rootPackage.workspaces) &&
@@ -78,6 +83,7 @@ for (const scriptName of [
   'app:api:build',
   'app:api:check',
   'app:api:test:agent-runtime',
+  'app:api:test:job-runner',
   'app:check',
 ]) {
   assert(
@@ -164,7 +170,7 @@ assert(
   'API scaffold diagnostics did not report ready prompt prerequisites.',
 );
 assert(
-  diagnostics.currentSession?.id === 'phase01-session03-agent-runtime-bootstrap',
+  diagnostics.currentSession?.id === currentSessionId,
   'API scaffold diagnostics did not report the current session metadata.',
 );
 assert(

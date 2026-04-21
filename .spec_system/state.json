@@ -83,6 +83,10 @@
     {
       "id": "phase01-session03-agent-runtime-bootstrap",
       "package": "apps/api"
+    },
+    {
+      "id": "phase01-session04-durable-job-runner",
+      "package": "apps/api"
     }
   ],
   "current_session": null,
@@ -144,6 +148,18 @@
     {
       "date": "2026-04-21",
       "session": "phase01-session03-agent-runtime-bootstrap",
+      "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase01-session04-durable-job-runner",
+      "package": "apps/api",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase01-session04-durable-job-runner",
       "package": "apps/api",
       "status": "completed"
     }

@@ -36,9 +36,11 @@ export type RuntimeSessionStatus =
   | 'waiting';
 
 export type RuntimeSessionRecord = {
+  activeJobId: string | null;
   context: JsonValue;
   createdAt: string;
   lastHeartbeatAt: string | null;
+  runnerId: string | null;
   sessionId: string;
   status: RuntimeSessionStatus;
   updatedAt: string;
@@ -56,12 +58,20 @@ export type RuntimeJobStatus =
 
 export type RuntimeJobRecord = {
   attempt: number;
+  claimOwnerId: string | null;
+  claimToken: string | null;
   completedAt: string | null;
   createdAt: string;
+  currentRunId: string;
   error: JsonValue | null;
   jobId: string;
   jobType: string;
+  lastHeartbeatAt: string | null;
+  leaseExpiresAt: string | null;
+  maxAttempts: number;
+  nextAttemptAt: string | null;
   payload: JsonValue;
+  retryBackoffMs: number;
   result: JsonValue | null;
   sessionId: string;
   startedAt: string | null;
@@ -92,20 +102,86 @@ export type RuntimeRunMetadataRecord = {
   updatedAt: string;
 };
 
+export type RuntimeRunCheckpointRecord = {
+  completedSteps: string[];
+  cursor: string | null;
+  updatedAt: string;
+  value: JsonValue | null;
+};
+
+export type RuntimeSessionHeartbeatInput = {
+  activeJobId: string | null;
+  runnerId: string | null;
+  sessionId: string;
+  status: RuntimeSessionStatus;
+  timestamp: string;
+};
+
+export type RuntimeJobClaimInput = {
+  claimOwnerId: string;
+  claimToken: string;
+  leaseExpiresAt: string;
+  timestamp: string;
+};
+
+export type RuntimeJobHeartbeatInput = {
+  claimToken: string;
+  jobId: string;
+  leaseExpiresAt: string;
+  timestamp: string;
+};
+
+export type RuntimeJobTerminalStateInput = {
+  claimToken: string;
+  error: JsonValue | null;
+  jobId: string;
+  result: JsonValue | null;
+  status: Extract<RuntimeJobStatus, 'cancelled' | 'completed' | 'failed'>;
+  timestamp: string;
+};
+
+export type RuntimeJobWaitingStateInput = {
+  claimToken: string;
+  error: JsonValue | null;
+  jobId: string;
+  nextAttemptAt: string;
+  result: JsonValue | null;
+  timestamp: string;
+};
+
+export type RuntimeRunCheckpointSaveInput = {
+  checkpoint: RuntimeRunCheckpointRecord;
+  jobId: string | null;
+  runId: string;
+  sessionId: string;
+};
+
 export type SessionRepository = {
   getById: (sessionId: string) => Promise<RuntimeSessionRecord | null>;
+  listActive: () => Promise<RuntimeSessionRecord[]>;
   listByStatus: (
     status: RuntimeSessionStatus,
   ) => Promise<RuntimeSessionRecord[]>;
   save: (
     record: RuntimeSessionRecord,
   ) => Promise<RuntimeSessionRecord>;
+  touchHeartbeat: (
+    input: RuntimeSessionHeartbeatInput,
+  ) => Promise<RuntimeSessionRecord>;
 };
 
 export type JobRepository = {
+  cancel: (input: RuntimeJobTerminalStateInput) => Promise<RuntimeJobRecord>;
+  claimNext: (input: RuntimeJobClaimInput) => Promise<RuntimeJobRecord | null>;
+  complete: (input: RuntimeJobTerminalStateInput) => Promise<RuntimeJobRecord>;
+  fail: (input: RuntimeJobTerminalStateInput) => Promise<RuntimeJobRecord>;
   getById: (jobId: string) => Promise<RuntimeJobRecord | null>;
+  listClaimable: (now: string) => Promise<RuntimeJobRecord[]>;
+  listRecoverable: (now: string) => Promise<RuntimeJobRecord[]>;
   listBySessionId: (sessionId: string) => Promise<RuntimeJobRecord[]>;
   save: (record: RuntimeJobRecord) => Promise<RuntimeJobRecord>;
+  touchHeartbeat: (input: RuntimeJobHeartbeatInput) => Promise<RuntimeJobRecord>;
+  wait: (input: RuntimeJobWaitingStateInput) => Promise<RuntimeJobRecord>;
 };
 
 export type ApprovalRepository = {
@@ -120,11 +196,20 @@ export type ApprovalRepository = {
 
 export type RunMetadataRepository = {
   getByRunId: (runId: string) => Promise<RuntimeRunMetadataRecord | null>;
+  getLatestByJobId: (
+    jobId: string,
+  ) => Promise<RuntimeRunMetadataRecord | null>;
   listBySessionId: (
     sessionId: string,
   ) => Promise<RuntimeRunMetadataRecord[]>;
+  loadCheckpoint: (
+    runId: string,
+  ) => Promise<RuntimeRunCheckpointRecord | null>;
   save: (
     record: RuntimeRunMetadataRecord,
+  ) => Promise<RuntimeRunMetadataRecord>;
+  saveCheckpoint: (
+    input: RuntimeRunCheckpointSaveInput,
   ) => Promise<RuntimeRunMetadataRecord>;
 };
 

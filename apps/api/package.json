@@ -1,6 +1,6 @@
 {
   "name": "@jobhunt/api",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,11 +12,13 @@
     "test": "npm run build && node --test dist/**/*.test.js",
     "test:agent-runtime": "npm run build && node --test dist/agent-runtime/*.test.js",
     "test:boot-contract": "npm run test:runtime-contract",
+    "test:job-runner": "npm run build && node --test dist/job-runner/*.test.js",
     "test:runtime-contract": "npm run build && node --test dist/runtime/*.test.js dist/server/http-server.test.js",
     "test:prompt-contract": "npm run build && node --test dist/prompt/prompt-loader.test.js",
     "test:store": "npm run test:store-contract",
     "test:store-contract": "npm run build && node --test dist/store/*.test.js",
     "validate:agent-runtime": "npm run check && npm run test:agent-runtime",
+    "validate:job-runner": "npm run check && npm run test:job-runner",
     "validate:store": "npm run check && npm run test:store-contract"
   },
   "devDependencies": {

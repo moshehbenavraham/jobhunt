@@ -377,7 +377,18 @@ if (appAgentRuntimeContract !== null) {
 
 // -- 3t. App store contract -------------------------------------
 
-console.log('\n3t. App store contract');
+console.log('\n3t. App durable job-runner contract');
+
+const appJobRunnerContract = run('npm', ['run', 'app:api:test:job-runner']);
+if (appJobRunnerContract !== null) {
+  pass('App durable job-runner contract tests pass');
+} else {
+  fail('App durable job-runner contract tests failed');
+}
+
+// -- 3u. App store contract -------------------------------------
+
+console.log('\n3u. App store contract');
 
 const appStoreContract = run('npm', ['run', 'app:api:test:store']);
 if (appStoreContract !== null) {
@@ -386,9 +397,9 @@ if (appStoreContract !== null) {
   fail('App store contract tests failed');
 }
 
-// -- 3u. App bootstrap smoke ------------------------------------
+// -- 3v. App bootstrap smoke ------------------------------------
 
-console.log('\n3u. App bootstrap smoke');
+console.log('\n3v. App bootstrap smoke');
 
 const appBootstrap = run('node', ['scripts/test-app-bootstrap.mjs']);
 if (appBootstrap !== null) {
@@ -397,9 +408,9 @@ if (appBootstrap !== null) {
   fail('App bootstrap smoke tests failed');
 }
 
-// -- 3v. Bootstrap ASCII validation -----------------------------
+// -- 3w. Bootstrap ASCII validation -----------------------------
 
-console.log('\n3v. Bootstrap ASCII validation');
+console.log('\n3w. Bootstrap ASCII validation');
 
 const bootstrapFiles = [
   'apps/api/src/agent-runtime/agent-runtime-config.test.ts',
@@ -412,6 +423,14 @@ const bootstrapFiles = [
   'apps/api/src/agent-runtime/openai-account-provider.ts',
   'apps/api/src/agent-runtime/test-utils.ts',
   'apps/api/src/index.ts',
+  'apps/api/src/job-runner/index.ts',
+  'apps/api/src/job-runner/job-runner-contract.ts',
+  'apps/api/src/job-runner/job-runner-executors.ts',
+  'apps/api/src/job-runner/job-runner-service.test.ts',
+  'apps/api/src/job-runner/job-runner-service.ts',
+  'apps/api/src/job-runner/job-runner-state-machine.test.ts',
+  'apps/api/src/job-runner/job-runner-state-machine.ts',
+  'apps/api/src/job-runner/test-utils.ts',
   'apps/api/src/runtime/runtime-config.test.ts',
   'apps/api/src/runtime/runtime-config.ts',
   'apps/api/src/runtime/service-container.test.ts',

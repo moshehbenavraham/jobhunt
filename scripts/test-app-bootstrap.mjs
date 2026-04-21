@@ -12,6 +12,11 @@ import { fileURLToPath } from 'node:url';
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
 const APP_STATE_ROOT = join(ROOT, '.jobhunt-app');
+const state = readJson('.spec_system/state.json');
+const currentSessionId =
+  typeof state.current_session === 'string'
+    ? state.current_session
+    : 'phase01-session03-agent-runtime-bootstrap';
 
 function run(command, args) {
   return execFileSync(command, args, {
@@ -371,7 +376,7 @@ try {
   );
   assert(
     startupPayload.diagnostics.currentSession.id ===
-      'phase01-session03-agent-runtime-bootstrap',
+      currentSessionId,
     'Startup payload reported unexpected current-session metadata.',
   );
   assert(
