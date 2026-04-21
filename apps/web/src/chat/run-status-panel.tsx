@@ -10,6 +10,7 @@ import type { ChatConsoleViewStatus } from './use-chat-console';
 type RunStatusPanelProps = {
   command: ChatConsoleCommandHandoff | null;
   error: ChatConsoleClientError | null;
+  onOpenApprovals: (focus: { approvalId: string | null; sessionId: string | null }) => void;
   selectedSession: ChatConsoleSessionDetail | null;
   selectedWorkflow: ChatConsoleWorkflowOption | null;
   startupMessage: string;
@@ -25,6 +26,18 @@ const panelStyle: CSSProperties = {
   display: 'grid',
   gap: '0.95rem',
   padding: '1.05rem 1.1rem',
+};
+
+const buttonStyle: CSSProperties = {
+  background: '#f8fafc',
+  border: 0,
+  borderRadius: '999px',
+  color: '#0f172a',
+  cursor: 'pointer',
+  font: 'inherit',
+  fontWeight: 700,
+  minHeight: '2.5rem',
+  padding: '0.65rem 0.95rem',
 };
 
 function getTone(state: string): {
@@ -172,6 +185,7 @@ function resolveDisplay(input: {
 export function RunStatusPanel({
   command,
   error,
+  onOpenApprovals,
   selectedSession,
   selectedWorkflow,
   startupMessage,
@@ -185,6 +199,28 @@ export function RunStatusPanel({
     status,
   });
   const tone = getTone(display.state);
+  const focus = command?.pendingApproval
+    ? {
+        approvalId: command.pendingApproval.approvalId,
+        sessionId:
+          command.selectedSession?.session.sessionId ??
+          command.session?.sessionId ??
+          null,
+      }
+    : selectedSession?.session.pendingApproval
+      ? {
+          approvalId: selectedSession.session.pendingApproval.approvalId,
+          sessionId: selectedSession.session.sessionId,
+        }
+      : display.state === 'waiting-for-approval' ||
+          (display.state === 'failed' &&
+            (command?.session?.sessionId ?? selectedSession?.session.sessionId))
+        ? {
+            approvalId: null,
+            sessionId:
+              command?.session?.sessionId ?? selectedSession?.session.sessionId ?? null,
+          }
+        : null;
 
   return (
     <section aria-live="polite" aria-labelledby="chat-console-status-title" style={panelStyle}>
@@ -265,6 +301,21 @@ export function RunStatusPanel({
           </p>
           <p style={{ margin: 0 }}>{error.message}</p>
         </section>
+      ) : null}
+
+      {focus ? (
+        <button
+          aria-label={
+            focus.approvalId
+              ? 'Open the approval inbox for the selected review'
+              : 'Open the approval inbox for the interrupted session'
+          }
+          onClick={() => onOpenApprovals(focus)}
+          style={buttonStyle}
+          type="button"
+        >
+          {focus.approvalId ? 'Open approval review' : 'Open interrupted run'}
+        </button>
       ) : null}
     </section>
   );

@@ -5,6 +5,10 @@ import { RunTimeline } from './run-timeline';
 import { useChatConsole } from './use-chat-console';
 import { WorkflowComposer } from './workflow-composer';
 
+type ChatConsoleSurfaceProps = {
+  onOpenApprovals: (focus: { approvalId: string | null; sessionId: string | null }) => void;
+};
+
 const surfaceStyle: CSSProperties = {
   display: 'grid',
   gap: '1rem',
@@ -66,7 +70,9 @@ function formatTimestamp(value: string | null): string {
   return date.toLocaleString();
 }
 
-export function ChatConsoleSurface() {
+export function ChatConsoleSurface({
+  onOpenApprovals,
+}: ChatConsoleSurfaceProps) {
   const chatConsole = useChatConsole();
   const selectedWorkflow =
     chatConsole.state.data?.workflows.find(
@@ -145,6 +151,7 @@ export function ChatConsoleSurface() {
         <RunStatusPanel
           command={chatConsole.state.command}
           error={chatConsole.state.error}
+          onOpenApprovals={onOpenApprovals}
           selectedSession={selectedSession}
           selectedWorkflow={selectedWorkflow}
           startupMessage={startupMessage}

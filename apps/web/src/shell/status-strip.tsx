@@ -10,6 +10,7 @@ type StatusStripProps = {
   error: OperatorShellClientError | null;
   isRefreshing: boolean;
   lastUpdatedAt: string | null;
+  onOpenApprovals: (focus: { approvalId: string | null; sessionId: string | null }) => void;
   onRefresh: () => void;
   status: OperatorShellViewStatus;
   summary: OperatorShellSummaryPayload | null;
@@ -149,6 +150,7 @@ export function StatusStrip({
   error,
   isRefreshing,
   lastUpdatedAt,
+  onOpenApprovals,
   onRefresh,
   status,
   summary,
@@ -216,6 +218,35 @@ export function StatusStrip({
 
   const tone = getStatusTone(summary.status);
   const hasDegradedClientState = status === 'offline' || status === 'error';
+  const approvalFocus = summary.activity.latestPendingApprovals[0]
+    ? {
+        approvalId: summary.activity.latestPendingApprovals[0].approvalId,
+        sessionId: summary.activity.latestPendingApprovals[0].sessionId,
+      }
+    : summary.activity.recentFailures[0]
+      ? {
+          approvalId: null,
+          sessionId: summary.activity.recentFailures[0].sessionId,
+        }
+      : summary.activity.activeSession
+        ? {
+            approvalId: null,
+            sessionId: summary.activity.activeSession.sessionId,
+          }
+        : null;
+  const approvalHeading =
+    summary.activity.pendingApprovalCount > 0
+      ? `${summary.activity.pendingApprovalCount} pending`
+      : summary.activity.recentFailureCount > 0
+        ? `${summary.activity.recentFailureCount} interrupted`
+        : 'No review work waiting';
+  const approvalBody =
+    summary.activity.pendingApprovalCount > 0
+      ? summary.activity.latestPendingApprovals[0]?.title ??
+        'Pending approvals require review in the inbox.'
+      : summary.activity.recentFailureCount > 0
+        ? 'Recent failed runs can be reopened from the approval inbox.'
+        : 'No approval work is waiting right now.';
 
   return (
     <section style={panelStyle}>
@@ -346,16 +377,29 @@ export function StatusStrip({
             Approvals
           </p>
           <h2 style={{ marginBottom: '0.4rem', marginTop: 0 }}>
-            {summary.activity.pendingApprovalCount} pending
+            {approvalHeading}
           </h2>
           <p style={{ marginBottom: '0.35rem' }}>
-            {summary.activity.latestPendingApprovals[0]
-              ? summary.activity.latestPendingApprovals[0].title
-              : 'No approval work is waiting right now.'}
+            {approvalBody}
           </p>
           <p style={{ color: '#475569', marginBottom: 0 }}>
-            Approval badge is kept live in the left rail.
+            {approvalFocus
+              ? 'Open the inbox to review live approvals or interrupted runs.'
+              : 'Approval badge is kept live in the left rail.'}
           </p>
+          {approvalFocus ? (
+            <button
+              aria-label="Open approval inbox"
+              onClick={() => onOpenApprovals(approvalFocus)}
+              style={{
+                ...buttonStyle,
+                marginTop: '0.85rem',
+              }}
+              type="button"
+            >
+              Open approval inbox
+            </button>
+          ) : null}
         </article>
 
         <article style={cardStyle}>

@@ -1,5 +1,7 @@
 import type { CSSProperties } from 'react';
 import { useDeferredValue } from 'react';
+import { ApprovalInboxSurface } from '../approvals/approval-inbox-surface';
+import { syncApprovalInboxFocus } from '../approvals/approval-inbox-client';
 import { StartupStatusPanel } from '../boot/startup-status-panel';
 import { useStartupDiagnostics } from '../boot/use-startup-diagnostics';
 import { ChatConsoleSurface } from '../chat/chat-console-surface';
@@ -251,6 +253,15 @@ export function OperatorShell() {
   const shell = useOperatorShell();
   const renderedSurfaceId = useDeferredValue(shell.state.selectedSurface);
   const renderedSurface = getShellSurface(renderedSurfaceId);
+  const openApprovals = (focus: {
+    approvalId: string | null;
+    sessionId: string | null;
+  }) => {
+    syncApprovalInboxFocus(focus, {
+      openSurface: true,
+    });
+    shell.selectSurface('approvals');
+  };
 
   return (
     <main style={pageStyle}>
@@ -259,6 +270,7 @@ export function OperatorShell() {
           error={shell.state.error}
           isRefreshing={shell.state.isRefreshing || startup.state.isRefreshing}
           lastUpdatedAt={shell.state.lastUpdatedAt}
+          onOpenApprovals={openApprovals}
           onRefresh={() => {
             shell.refresh();
             startup.refresh();
@@ -285,7 +297,7 @@ export function OperatorShell() {
                     () => shell.selectSurface('onboarding'),
                   )
                 : renderedSurface.id === 'chat'
-                  ? <ChatConsoleSurface />
+                  ? <ChatConsoleSurface onOpenApprovals={openApprovals} />
                   : renderedSurface.id === 'onboarding'
                     ? (
                         <OnboardingWizardSurface
@@ -297,6 +309,8 @@ export function OperatorShell() {
                           }}
                         />
                       )
+                  : renderedSurface.id === 'approvals'
+                    ? <ApprovalInboxSurface />
                   : (
                       <SurfacePlaceholder
                         key={`${renderedSurface.id}:${shell.state.data?.generatedAt ?? 'empty'}`}

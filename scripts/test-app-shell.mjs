@@ -468,11 +468,15 @@ try {
     await page.getByRole('heading', { name: 'Launch a supported workflow' }).waitFor();
     await page.getByRole('heading', { name: 'No recent sessions yet' }).waitFor();
     await page.getByRole('link', { name: /Approvals/ }).click();
-    await page.getByRole('heading', { name: 'Approval inbox lands in Session 04' }).waitFor();
+    await page
+      .getByRole('heading', { name: 'Approval inbox and human review flow' })
+      .waitFor();
     assert.match(page.url(), /#approvals$/);
 
     await page.reload({ waitUntil: 'networkidle' });
-    await page.getByRole('heading', { name: 'Approval inbox lands in Session 04' }).waitFor();
+    await page
+      .getByRole('heading', { name: 'Approval inbox and human review flow' })
+      .waitFor();
 
     fakeApi.setShellMode('runtime-error');
     await page

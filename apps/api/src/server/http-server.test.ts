@@ -10,7 +10,10 @@ import {
 } from '../agent-runtime/test-utils.js';
 import { createAgentRuntimeService } from '../agent-runtime/index.js';
 import { STARTUP_SESSION_ID, STARTUP_SERVICE_NAME } from '../index.js';
-import { createApiServiceContainer } from '../runtime/service-container.js';
+import {
+  createApiServiceContainer,
+  type ApiServiceContainer,
+} from '../runtime/service-container.js';
 import { createOperationalStore } from '../store/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { startStartupHttpServer } from './http-server.js';
@@ -117,6 +120,128 @@ async function seedRuntimeContext(
   });
 }
 
+async function seedWaitingApprovalContext(
+  input: {
+    approvalRuntime: Awaited<
+      ReturnType<ApiServiceContainer['approvalRuntime']['getService']>
+    >;
+    observability: Awaited<
+      ReturnType<ApiServiceContainer['observability']['getService']>
+    >;
+    store: Awaited<ReturnType<typeof createOperationalStore>>;
+    title: string;
+    jobId: string;
+    requestId: string;
+    sessionId: string;
+    timestamp: string;
+    traceId: string;
+    workflow: string;
+  },
+) {
+  await input.store.sessions.save({
+    activeJobId: input.jobId,
+    context: {
+      workflow: input.workflow,
+    },
+    createdAt: input.timestamp,
+    lastHeartbeatAt: input.timestamp,
+    runnerId: 'runner-approval-http',
+    sessionId: input.sessionId,
+    status: 'waiting',
+    updatedAt: input.timestamp,
+    workflow: input.workflow,
+  });
+
+  await input.store.jobs.save({
+    attempt: 1,
+    claimOwnerId: 'runner-approval-http',
+    claimToken: 'claim-approval-http',
+    completedAt: null,
+    createdAt: input.timestamp,
+    currentRunId: `${input.jobId}-run`,
+    error: null,
+    jobId: input.jobId,
+    jobType: 'evaluate-job',
+    lastHeartbeatAt: input.timestamp,
+    leaseExpiresAt: null,
+    maxAttempts: 3,
+    nextAttemptAt: null,
+    payload: {
+      company: input.title,
+    },
+    result: null,
+    retryBackoffMs: 1_000,
+    sessionId: input.sessionId,
+    startedAt: input.timestamp,
+    status: 'running',
+    updatedAt: input.timestamp,
+    waitApprovalId: null,
+    waitReason: null,
+  });
+
+  const approval = await input.approvalRuntime.createApproval({
+    requestedAt: input.timestamp,
+    request: {
+      action: 'approval-review',
+      correlation: {
+        jobId: input.jobId,
+        requestId: input.requestId,
+        sessionId: input.sessionId,
+        traceId: input.traceId,
+      },
+      details: {
+        label: input.title,
+      },
+      title: input.title,
+    },
+  });
+
+  await input.store.jobs.save({
+    attempt: 1,
+    claimOwnerId: 'runner-approval-http',
+    claimToken: 'claim-approval-http',
+    completedAt: null,
+    createdAt: input.timestamp,
+    currentRunId: `${input.jobId}-run`,
+    error: null,
+    jobId: input.jobId,
+    jobType: 'evaluate-job',
+    lastHeartbeatAt: input.timestamp,
+    leaseExpiresAt: null,
+    maxAttempts: 3,
+    nextAttemptAt: null,
+    payload: {
+      company: input.title,
+    },
+    result: null,
+    retryBackoffMs: 1_000,
+    sessionId: input.sessionId,
+    startedAt: input.timestamp,
+    status: 'waiting',
+    updatedAt: input.timestamp,
+    waitApprovalId: approval.approval.approvalId,
+    waitReason: 'approval',
+  });
+
+  await input.observability.recordEvent({
+    correlation: {
+      approvalId: approval.approval.approvalId,
+      jobId: input.jobId,
+      requestId: input.requestId,
+      sessionId: input.sessionId,
+      traceId: input.traceId,
+    },
+    eventType: 'job-waiting-approval',
+    metadata: {
+      waitReason: 'approval',
+    },
+    occurredAt: input.timestamp,
+    summary: `${input.title} is waiting for approval.`,
+  });
+
+  return approval.approval;
+}
+
 test('health and startup routes report ready diagnostics after explicit store initialization', async () => {
   const fixture = await createReadyFixture();
   const authFixture = await createAgentRuntimeAuthFixture();
@@ -140,6 +265,7 @@ test('health and startup routes report ready diagnostics after explicit store in
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
+    rateLimitMaxRequests: 20,
     services,
   });
 
@@ -249,6 +375,7 @@ test('startup route reports onboarding gaps without mutating user-layer files', 
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
+    rateLimitMaxRequests: 20,
     services,
   });
 
@@ -316,6 +443,7 @@ test('startup routes surface agent runtime auth-required status without mutating
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
+    rateLimitMaxRequests: 20,
     services,
   });
 
@@ -366,6 +494,7 @@ test('operator-shell route reports missing prerequisites without creating runtim
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
+    rateLimitMaxRequests: 20,
     services,
   });
 
@@ -1074,6 +1203,367 @@ test('runtime approval and diagnostics routes expose pending approvals, failed d
   } finally {
     await handle.close();
     await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('approval inbox and resolution routes cover filtered queue reads, stale states, rejected handoffs, and invalid input handling', async () => {
+  const fixture = await createReadyFixture();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-approval-inbox' });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-http-approval-inbox-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const runtimeStore = await services.operationalStore.getStore();
+  const approvalRuntime = await services.approvalRuntime.getService();
+  const observability = await services.observability.getService();
+  const primaryApproval = await seedWaitingApprovalContext({
+    approvalRuntime,
+    jobId: 'job-approval-primary',
+    observability,
+    requestId: 'request-approval-primary',
+    sessionId: 'session-approval-primary',
+    store: runtimeStore,
+    timestamp: '2026-04-21T09:00:00.000Z',
+    title: 'Review primary approval',
+    traceId: 'trace-approval-primary',
+    workflow: 'single-evaluation',
+  });
+  const rejectedApproval = await seedWaitingApprovalContext({
+    approvalRuntime,
+    jobId: 'job-approval-rejected',
+    observability,
+    requestId: 'request-approval-rejected',
+    sessionId: 'session-approval-rejected',
+    store: runtimeStore,
+    timestamp: '2026-04-21T09:01:00.000Z',
+    title: 'Review rejected approval',
+    traceId: 'trace-approval-rejected',
+    workflow: 'single-evaluation',
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    rateLimitMaxRequests: 20,
+    services,
+  });
+
+  try {
+    const { payload: filteredPayload, response: filteredResponse } =
+      await readJsonResponse(
+        `${handle.url}/approval-inbox?sessionId=session-approval-primary&approvalId=${primaryApproval.approvalId}&limit=1`,
+      );
+
+    assert.equal(filteredResponse.status, 200);
+    assert.equal((filteredPayload as { status: string }).status, 'ready');
+    assert.equal(
+      (
+        filteredPayload as {
+          pendingApprovalCount: number;
+        }
+      ).pendingApprovalCount,
+      1,
+    );
+    assert.equal(
+      (
+        filteredPayload as {
+          queue: Array<{ approvalId: string }>;
+        }
+      ).queue[0]?.approvalId,
+      primaryApproval.approvalId,
+    );
+    assert.equal(
+      (
+        filteredPayload as {
+          selected: {
+            selectionState: string;
+            approval: { approvalId: string; status: string };
+            interruptedRun: { state: string };
+            route: { message: string };
+            session: { pendingApprovalCount: number };
+            timeline: Array<{ summary: string }>;
+          };
+        }
+      ).selected.selectionState,
+      'active',
+    );
+    assert.equal(
+      (
+        filteredPayload as {
+          selected: {
+            approval: { approvalId: string; status: string };
+          };
+        }
+      ).selected.approval.approvalId,
+      primaryApproval.approvalId,
+    );
+    assert.equal(
+      (
+        filteredPayload as {
+          selected: {
+            approval: { approvalId: string; status: string };
+          };
+        }
+      ).selected.approval.status,
+      'pending',
+    );
+    assert.equal(
+      (
+        filteredPayload as {
+          selected: {
+            interruptedRun: { state: string };
+          };
+        }
+      ).selected.interruptedRun.state,
+      'waiting-for-approval',
+    );
+    assert.equal(
+      (
+        filteredPayload as {
+          selected: {
+            session: { pendingApprovalCount: number };
+          };
+        }
+      ).selected.session.pendingApprovalCount,
+      1,
+    );
+    assert.equal(
+      (
+        filteredPayload as {
+          selected: {
+            timeline: Array<{ summary: string }>;
+          };
+        }
+      ).selected.timeline.some(
+        (item) => item.summary === 'Review primary approval is waiting for approval.',
+      ),
+      true,
+    );
+    assert.equal(
+      'request' in
+        (
+          filteredPayload as {
+            selected: { approval: Record<string, unknown> };
+          }
+        ).selected.approval,
+      false,
+    );
+
+    const { payload: approvePayload, response: approveResponse } =
+      await readJsonResponse(`${handle.url}/approval-resolution`, {
+        body: JSON.stringify({
+          approvalId: primaryApproval.approvalId,
+          decision: 'approved',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+    assert.equal(approveResponse.status, 200);
+    assert.equal(
+      (
+        approvePayload as {
+          resolution: { outcome: string; applied: boolean; job: { status: string } };
+        }
+      ).resolution.outcome,
+      'approved',
+    );
+    assert.equal(
+      (
+        approvePayload as {
+          resolution: { outcome: string; applied: boolean; job: { status: string } };
+        }
+      ).resolution.applied,
+      true,
+    );
+    assert.equal(
+      (
+        approvePayload as {
+          resolution: { outcome: string; applied: boolean; job: { status: string } };
+        }
+      ).resolution.job.status,
+      'queued',
+    );
+
+    const { payload: staleApprovePayload, response: staleApproveResponse } =
+      await readJsonResponse(`${handle.url}/approval-resolution`, {
+        body: JSON.stringify({
+          approvalId: primaryApproval.approvalId,
+          decision: 'approved',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+    assert.equal(staleApproveResponse.status, 200);
+    assert.equal(
+      (
+        staleApprovePayload as {
+          resolution: { outcome: string; applied: boolean };
+        }
+      ).resolution.outcome,
+      'already-approved',
+    );
+    assert.equal(
+      (
+        staleApprovePayload as {
+          resolution: { outcome: string; applied: boolean };
+        }
+      ).resolution.applied,
+      false,
+    );
+
+    const { payload: approvedSummaryPayload, response: approvedSummaryResponse } =
+      await readJsonResponse(
+        `${handle.url}/approval-inbox?approvalId=${primaryApproval.approvalId}`,
+      );
+
+    assert.equal(approvedSummaryResponse.status, 200);
+    assert.equal(
+      (
+        approvedSummaryPayload as {
+          selected: { selectionState: string };
+        }
+      ).selected.selectionState,
+      'approved',
+    );
+
+    const { payload: rejectedPayload, response: rejectedResponse } =
+      await readJsonResponse(`${handle.url}/approval-resolution`, {
+        body: JSON.stringify({
+          approvalId: rejectedApproval.approvalId,
+          decision: 'rejected',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+    assert.equal(rejectedResponse.status, 200);
+    assert.equal(
+      (
+        rejectedPayload as {
+          resolution: { outcome: string; applied: boolean; job: { status: string } };
+        }
+      ).resolution.outcome,
+      'rejected',
+    );
+    assert.equal(
+      (
+        rejectedPayload as {
+          resolution: { outcome: string; applied: boolean; job: { status: string } };
+        }
+      ).resolution.job.status,
+      'failed',
+    );
+
+    const { payload: rejectedSummaryPayload, response: rejectedSummaryResponse } =
+      await readJsonResponse(
+        `${handle.url}/approval-inbox?approvalId=${rejectedApproval.approvalId}`,
+      );
+
+    assert.equal(rejectedSummaryResponse.status, 200);
+    assert.equal(
+      (
+        rejectedSummaryPayload as {
+          selected: {
+            selectionState: string;
+            interruptedRun: { state: string };
+          };
+        }
+      ).selected.selectionState,
+      'rejected',
+    );
+    assert.equal(
+      (
+        rejectedSummaryPayload as {
+          selected: {
+            selectionState: string;
+            interruptedRun: { state: string };
+          };
+        }
+      ).selected.interruptedRun.state,
+      'resume-ready',
+    );
+
+    const { payload: invalidSummaryPayload, response: invalidSummaryResponse } =
+      await readJsonResponse(`${handle.url}/approval-inbox?limit=0`);
+
+    assert.equal(invalidSummaryResponse.status, 400);
+    assert.equal(
+      (
+        invalidSummaryPayload as {
+          error: { code: string };
+        }
+      ).error.code,
+      'invalid-approval-inbox-query',
+    );
+
+    const { payload: invalidResolutionPayload, response: invalidResolutionResponse } =
+      await readJsonResponse(`${handle.url}/approval-resolution`, {
+        body: JSON.stringify({
+          approvalId: rejectedApproval.approvalId,
+          decision: 'maybe',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+    assert.equal(invalidResolutionResponse.status, 400);
+    assert.equal(
+      (
+        invalidResolutionPayload as {
+          error: { code: string };
+        }
+      ).error.code,
+      'invalid-approval-resolution-request',
+    );
+
+    const { payload: missingResolutionPayload, response: missingResolutionResponse } =
+      await readJsonResponse(`${handle.url}/approval-resolution`, {
+        body: JSON.stringify({
+          approvalId: 'missing-approval',
+          decision: 'approved',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+    assert.equal(missingResolutionResponse.status, 404);
+    assert.equal(
+      (
+        missingResolutionPayload as {
+          error: { code: string };
+        }
+      ).error.code,
+      'approval-not-found',
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
     await fixture.cleanup();
   }
 });

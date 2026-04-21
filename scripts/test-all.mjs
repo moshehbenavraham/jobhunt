@@ -472,9 +472,20 @@ if (appChatConsole !== null) {
   fail('App chat-console smoke tests failed');
 }
 
-// -- 3ab. App onboarding smoke -----------------------------------
+// -- 3ab. App approval inbox smoke -------------------------------
 
-console.log('\n3ab. App onboarding smoke');
+console.log('\n3ab. App approval inbox smoke');
+
+const appApprovalInbox = run('node', ['scripts/test-app-approval-inbox.mjs']);
+if (appApprovalInbox !== null) {
+  pass('App approval inbox smoke tests pass');
+} else {
+  fail('App approval inbox smoke tests failed');
+}
+
+// -- 3ac. App onboarding smoke -----------------------------------
+
+console.log('\n3ac. App onboarding smoke');
 
 const appOnboarding = run('node', ['scripts/test-app-onboarding.mjs']);
 if (appOnboarding !== null) {
@@ -483,9 +494,9 @@ if (appOnboarding !== null) {
   fail('App onboarding smoke tests failed');
 }
 
-// -- 3ac. Bootstrap ASCII validation -----------------------------
+// -- 3ad. Bootstrap ASCII validation -----------------------------
 
-console.log('\n3ac. Bootstrap ASCII validation');
+console.log('\n3ad. Bootstrap ASCII validation');
 
 const bootstrapFiles = [
   'apps/api/src/approval-runtime/approval-runtime-contract.ts',
@@ -533,6 +544,7 @@ const bootstrapFiles = [
   'apps/api/src/runtime/runtime-config.ts',
   'apps/api/src/runtime/service-container.test.ts',
   'apps/api/src/runtime/service-container.ts',
+  'apps/api/src/server/approval-inbox-summary.ts',
   'apps/api/src/server/http-server.test.ts',
   'apps/api/src/server/http-server.ts',
   'apps/api/src/server/index.ts',
@@ -547,6 +559,8 @@ const bootstrapFiles = [
   'apps/api/src/server/routes/onboarding-route.ts',
   'apps/api/src/server/routes/orchestration-route.ts',
   'apps/api/src/server/routes/operator-shell-route.ts',
+  'apps/api/src/server/routes/approval-inbox-route.ts',
+  'apps/api/src/server/routes/approval-resolution-route.ts',
   'apps/api/src/server/routes/runtime-approvals-route.ts',
   'apps/api/src/server/routes/runtime-diagnostics-route.ts',
   'apps/api/src/server/routes/startup-route.ts',
@@ -600,6 +614,14 @@ const bootstrapFiles = [
   'apps/api/src/tools/workspace-mutation-adapter.test.ts',
   'apps/api/src/tools/workspace-mutation-adapter.ts',
   'apps/web/src/App.tsx',
+  'apps/web/src/approvals/approval-context-panel.tsx',
+  'apps/web/src/approvals/approval-decision-bar.tsx',
+  'apps/web/src/approvals/approval-inbox-client.ts',
+  'apps/web/src/approvals/approval-inbox-surface.tsx',
+  'apps/web/src/approvals/approval-inbox-types.ts',
+  'apps/web/src/approvals/approval-queue-list.tsx',
+  'apps/web/src/approvals/interrupted-run-panel.tsx',
+  'apps/web/src/approvals/use-approval-inbox.ts',
   'apps/web/src/boot/missing-files-list.tsx',
   'apps/web/src/boot/startup-client.ts',
   'apps/web/src/boot/startup-status-panel.tsx',
@@ -630,6 +652,7 @@ const bootstrapFiles = [
   'apps/web/src/shell/use-operator-shell.ts',
   'apps/web/vite.config.ts',
   'scripts/test-app-scaffold.mjs',
+  'scripts/test-app-approval-inbox.mjs',
   'scripts/test-app-bootstrap.mjs',
   'scripts/test-app-chat-console.mjs',
   'scripts/test-app-onboarding.mjs',
