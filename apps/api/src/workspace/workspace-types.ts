@@ -22,9 +22,11 @@ export const WORKSPACE_MUTATION_TARGETS = [
   'job-descriptions',
   'pipeline',
   'profile',
+  'reports',
   'scan-history',
   'story-bank',
   'tracker',
+  'tracker-additions',
 ] as const;
 export type WorkspaceMutationTarget =
   (typeof WORKSPACE_MUTATION_TARGETS)[number];
@@ -77,7 +79,8 @@ export type WorkspaceSurfaceKey =
   | 'reportsDirectory'
   | 'scanHistory'
   | 'sharedMode'
-  | 'storyBank';
+  | 'storyBank'
+  | 'trackerAdditionsDirectory';
 
 export type WorkspaceSurfaceDefinition = {
   key: WorkspaceSurfaceKey;

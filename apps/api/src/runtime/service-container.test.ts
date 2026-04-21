@@ -326,8 +326,13 @@ test('service container lazily creates and reuses a tool execution service with 
     });
 
     assert.equal(toolServiceA, toolServiceB);
+    assert.ok(catalogNames.includes('bootstrap-single-evaluation'));
+    assert.ok(catalogNames.includes('extract-ats-job'));
+    assert.ok(catalogNames.includes('generate-ats-pdf'));
     assert.ok(catalogNames.includes('inspect-startup-diagnostics'));
     assert.ok(catalogNames.includes('preview-onboarding-repair'));
+    assert.ok(catalogNames.includes('reserve-report-artifact'));
+    assert.ok(catalogNames.includes('stage-tracker-addition'));
     assert.ok(catalogNames.includes('write-tool-state'));
     assert.equal(result.status, 'completed');
     assert.deepEqual(result.output, {
@@ -343,6 +348,68 @@ test('service container lazily creates and reuses a tool execution service with 
     assert.ok(
       events.some((event) => event.eventType === 'tool-execution-completed'),
     );
+  } finally {
+    await container.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('service container merges the default Session 03 script allowlist into tool execution', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.yml': 'full_name: Test User\n',
+      'modes/_profile.md': '# Profile\n',
+      'profile/cv.md': '# CV\n',
+      'scripts/verify-pipeline.mjs': "process.stdout.write('pipeline-ok\\n');\n",
+    },
+  });
+  const container = createApiServiceContainer({
+    repoRoot: fixture.repoRoot,
+    toolDefinitions: [
+      {
+        description: 'Runs a default verify-pipeline script.',
+        async execute(_input, context) {
+          const scriptResult = await context.runScript({
+            scriptName: 'verify-pipeline',
+          });
+
+          return {
+            output: {
+              exitCode: scriptResult.exitCode,
+              stdout: scriptResult.stdout,
+            },
+          };
+        },
+        inputSchema: z.object({}),
+        name: 'run-default-verify-script',
+        policy: {
+          permissions: {
+            scripts: ['verify-pipeline'],
+          },
+        },
+      } satisfies ToolDefinition<{}>,
+    ],
+  });
+
+  try {
+    const toolService = await container.tools.getService();
+    const result = await toolService.execute({
+      correlation: {
+        jobId: 'job-default-script',
+        requestId: 'request-default-script',
+        sessionId: 'session-default-script',
+        traceId: 'trace-default-script',
+      },
+      input: {},
+      toolName: 'run-default-verify-script',
+    });
+
+    assert.equal(result.status, 'completed');
+    assert.deepEqual(result.output, {
+      exitCode: 0,
+      stdout: 'pipeline-ok\n',
+    });
   } finally {
     await container.dispose();
     await fixture.cleanup();

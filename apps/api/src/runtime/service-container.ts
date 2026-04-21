@@ -26,6 +26,7 @@ import {
 } from '../index.js';
 import {
   createDefaultToolSuite,
+  createDefaultToolScripts,
   createToolExecutionService,
   type ScriptExecutionDefinition,
   type ToolExecutionService,
@@ -84,6 +85,23 @@ export type ApiServiceContainerOptions = RepoPathOptions & {
   tools?: ToolExecutionService;
   workspace?: WorkspaceAdapter;
 };
+
+function mergeScriptDefinitions(
+  defaults: readonly ScriptExecutionDefinition[],
+  overrides: readonly ScriptExecutionDefinition[],
+): readonly ScriptExecutionDefinition[] {
+  const merged = new Map<string, ScriptExecutionDefinition>();
+
+  for (const definition of defaults) {
+    merged.set(definition.name, definition);
+  }
+
+  for (const definition of overrides) {
+    merged.set(definition.name, definition);
+  }
+
+  return [...merged.values()];
+}
 
 export function createApiServiceContainer(
   options: ApiServiceContainerOptions = {},
@@ -293,9 +311,12 @@ export function createApiServiceContainer(
 
     if (!toolExecutionService) {
       const defaultToolDefinitions = createDefaultToolSuite({
+        bootstrapWorkflow: (workflow) =>
+          getAgentRuntimeService().bootstrap(workflow),
         startupDiagnostics: getStartupDiagnosticsService(),
         workspace: getWorkspace(),
       });
+      const defaultToolScripts = createDefaultToolScripts();
       toolExecutionService = createToolExecutionService({
         getApprovalRuntime: getApprovalRuntimeService,
         getObservability: getObservabilityService,
@@ -304,7 +325,10 @@ export function createApiServiceContainer(
           ...defaultToolDefinitions,
           ...(options.toolDefinitions ?? []),
         ],
-        scriptAllowlist: options.toolScripts ?? [],
+        scriptAllowlist: mergeScriptDefinitions(
+          defaultToolScripts,
+          options.toolScripts ?? [],
+        ),
         workspace: getWorkspace(),
       });
     }

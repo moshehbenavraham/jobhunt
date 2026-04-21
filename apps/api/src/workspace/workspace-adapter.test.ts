@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getStartupDiagnostics } from '../index.js';
+import { createStartupDiagnosticsService } from '../index.js';
 import {
   WorkspaceMissingSurfaceError,
   WorkspaceUnknownPathError,
@@ -9,6 +9,43 @@ import {
 } from './workspace-errors.js';
 import { createWorkspaceAdapter } from './workspace-adapter.js';
 import { createWorkspaceFixture } from './test-utils.js';
+
+function createStubAgentRuntime(repoRoot: string) {
+  return {
+    async bootstrap() {
+      throw new Error('bootstrap is not used by workspace adapter tests');
+    },
+    async close() {},
+    async getReadiness() {
+      return {
+        auth: {
+          accountId: null,
+          authPath: `${repoRoot}/data/openai-account-auth.json`,
+          expiresAt: null,
+          message: 'Stored OpenAI account credentials are required.',
+          nextSteps: ['npm run auth:openai -- login'],
+          state: 'auth-required' as const,
+          updatedAt: null,
+        },
+        config: {
+          authPath: `${repoRoot}/data/openai-account-auth.json`,
+          baseUrl: 'https://chatgpt.com/backend-api',
+          model: 'gpt-5.4-mini',
+          originator: 'pi',
+          overrides: {
+            authPath: false,
+            baseUrl: false,
+            model: false,
+            originator: false,
+          },
+        },
+        message: 'Stored OpenAI account credentials are required.',
+        prompt: null,
+        status: 'auth-required' as const,
+      };
+    },
+  };
+}
 
 test('workspace adapter resolves repo root from a temp api package and reads legacy CV fallback', async () => {
   const fixture = await createWorkspaceFixture({
@@ -45,9 +82,18 @@ test('startup diagnostics report onboarding gaps without mutating user-layer fil
 
   try {
     const beforeSnapshot = await fixture.snapshotUserLayer();
-    const diagnostics = await getStartupDiagnostics({
+    const workspace = createWorkspaceAdapter({
       repoRoot: fixture.repoRoot,
     });
+    const diagnostics = await createStartupDiagnosticsService(
+      {
+        repoRoot: fixture.repoRoot,
+      },
+      {
+        agentRuntime: createStubAgentRuntime(fixture.repoRoot),
+        workspace,
+      },
+    ).getDiagnostics();
     const afterSnapshot = await fixture.snapshotUserLayer();
     const onboardingKeys = diagnostics.onboardingMissing
       .map((item) => item.surfaceKey)
@@ -57,8 +103,13 @@ test('startup diagnostics report onboarding gaps without mutating user-layer fil
     assert.deepEqual(onboardingKeys, ['profileConfig', 'profileCv']);
     assert.equal(diagnostics.runtimeMissing.length, 0);
     assert.ok(
-      diagnostics.optionalMissing.some(
+      !diagnostics.optionalMissing.some(
         (item) => item.surfaceKey === 'reportsDirectory',
+      ),
+    );
+    assert.ok(
+      !diagnostics.optionalMissing.some(
+        (item) => item.surfaceKey === 'trackerAdditionsDirectory',
       ),
     );
   } finally {

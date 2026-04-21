@@ -1,5 +1,10 @@
 export * from './default-tool-suite.js';
+export * from './default-tool-scripts.js';
+export * from './evaluation-artifact-tools.js';
+export * from './evaluation-intake-tools.js';
+export * from './evaluation-workflow-tools.js';
 export * from './onboarding-repair-tools.js';
+export * from './pdf-generation-tools.js';
 export * from './profile-summary.js';
 export * from './script-execution-adapter.js';
 export * from './startup-inspection-tools.js';
@@ -8,5 +13,6 @@ export * from './tool-errors.js';
 export * from './tool-execution-service.js';
 export * from './tool-registry.js';
 export * from './test-utils.js';
+export * from './tracker-integrity-tools.js';
 export * from './workspace-discovery-tools.js';
 export * from './workspace-mutation-adapter.js';

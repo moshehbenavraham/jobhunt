@@ -16,12 +16,13 @@ export async function getWorkspaceSummary(
   const appStateRoot = await getAppStateRootStatus({
     repoRoot: repoPaths.repoRoot,
   });
+  const startupSurfaces = listWorkspaceSurfaces().filter(
+    (surface) => surface.summaryExposure === 'startup',
+  );
   const results = await Promise.all(
-    listWorkspaceSurfaces()
-      .filter((surface) => surface.summaryExposure === 'startup')
-      .map((surface) =>
+    startupSurfaces.map((surface) =>
       readWorkspaceSurface(surface.key, { repoRoot: repoPaths.repoRoot }),
-      ),
+    ),
   );
   const missingResults = results.filter(
     (result) => result.surface.key !== 'appStateRoot',

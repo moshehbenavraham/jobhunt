@@ -148,6 +148,39 @@ When you are working from the repo root, the corresponding aliases are
   checked-in templates.
 - `repair-onboarding-files` maps missing onboarding files to checked-in
   templates and the tracker skeleton through the guarded mutation path.
+- `extract-ats-job` wraps the allowlisted ATS extractor and returns either a
+  normalized intake payload or an explicit `unsupported-ats` state.
+- `normalize-raw-job-description` converts pasted JD text into the shared
+  evaluation input shape without script dispatch.
+- `bootstrap-single-evaluation` and `bootstrap-auto-pipeline` reuse the
+  authenticated agent runtime and return typed readiness states such as
+  `auth-required`, `prompt-missing`, or `ready`.
+- `reserve-report-artifact` allocates the next canonical report path through
+  `.jobhunt-app/report-reservations/` before later writes target `reports/`.
+- `write-report-artifact` writes the reserved report file and marks the
+  reservation as written instead of reusing raw shell writes.
+- `list-evaluation-artifacts` paginates `reports/` and `output/` entries in
+  deterministic repo-relative order.
+- `generate-ats-pdf` validates that output stays inside `output/`, rejects
+  collisions, and wraps the checked-in Playwright PDF generator.
+- `stage-tracker-addition` writes exactly one TSV row into
+  `batch/tracker-additions/` and rejects non-canonical status labels.
+- `merge-tracker-additions`, `verify-tracker-pipeline`,
+  `normalize-tracker-statuses`, and `dedup-tracker-entries` expose the tracker
+  closeout scripts with structured warning propagation.
+
+### Evaluation And Tracker Boundaries
+
+- Report reservations live in `.jobhunt-app/report-reservations/`; the user
+  report is only written once a reservation is consumed by
+  `write-report-artifact`.
+- Report writes are limited to `reports/`, PDF writes are limited to `output/`,
+  and staged tracker rows are limited to `batch/tracker-additions/`.
+- Tracker closeout still follows the repo contract: stage TSV -> merge ->
+  verify, with normalize or dedup available only as explicit cleanup steps.
+- Session 03 tool warnings come from repo-script warning lines, but
+  observability remains metadata-only and never persists raw prompt text,
+  report bodies, or PDF bytes.
 
 ### Repair Boundaries
 

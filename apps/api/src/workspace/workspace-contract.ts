@@ -259,10 +259,10 @@ const WORKSPACE_SURFACES = [
     contentType: 'directory',
     candidates: ['reports'],
     mutationApproval: 'required',
-    mutationTarget: 'artifacts',
+    mutationTarget: 'reports',
     startupCritical: false,
     missingBehavior: 'optional',
-    summaryExposure: 'startup',
+    summaryExposure: 'internal',
     writePolicy: 'read-only',
   },
   {
@@ -276,7 +276,7 @@ const WORKSPACE_SURFACES = [
     mutationTarget: 'artifacts',
     startupCritical: false,
     missingBehavior: 'optional',
-    summaryExposure: 'startup',
+    summaryExposure: 'internal',
     writePolicy: 'read-only',
   },
   {
@@ -290,7 +290,21 @@ const WORKSPACE_SURFACES = [
     mutationTarget: 'job-descriptions',
     startupCritical: false,
     missingBehavior: 'optional',
-    summaryExposure: 'startup',
+    summaryExposure: 'internal',
+    writePolicy: 'read-only',
+  },
+  {
+    key: 'trackerAdditionsDirectory',
+    description: 'Pending tracker TSV additions directory',
+    owner: 'user',
+    kind: 'directory',
+    contentType: 'directory',
+    candidates: ['batch/tracker-additions'],
+    mutationApproval: 'required',
+    mutationTarget: 'tracker-additions',
+    startupCritical: false,
+    missingBehavior: 'optional',
+    summaryExposure: 'internal',
     writePolicy: 'read-only',
   },
   {
@@ -390,6 +404,7 @@ const USER_EXACT_PATHS = new Set<string>([
 ]);
 
 const USER_DIRECTORY_PREFIXES = ['jds', 'output', 'reports'] as const;
+const USER_BATCH_DIRECTORY_PREFIXES = ['batch/tracker-additions'] as const;
 const SYSTEM_DIRECTORY_PREFIXES = [
   '.codex',
   '.spec_system',
@@ -500,6 +515,14 @@ export function classifyKnownRepoRelativePath(
 
   if (
     USER_DIRECTORY_PREFIXES.some((prefix) =>
+      isPrefixMatch(prefix, repoRelativePath),
+    )
+  ) {
+    return 'user';
+  }
+
+  if (
+    USER_BATCH_DIRECTORY_PREFIXES.some((prefix) =>
       isPrefixMatch(prefix, repoRelativePath),
     )
   ) {

@@ -96,6 +96,14 @@
     {
       "id": "phase02-session01-tool-registry-and-execution-policy",
       "package": "apps/api"
+    },
+    {
+      "id": "phase02-session02-workspace-and-startup-tool-suite",
+      "package": "apps/api"
+    },
+    {
+      "id": "phase02-session03-evaluation-pdf-and-tracker-tools",
+      "package": "apps/api"
     }
   ],
   "current_session": null,
@@ -211,6 +219,12 @@
     {
       "date": "2026-04-21",
       "session": "phase02-session02-workspace-and-startup-tool-suite",
+      "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase02-session03-evaluation-pdf-and-tracker-tools",
       "package": "apps/api",
       "status": "completed"
     }

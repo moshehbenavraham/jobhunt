@@ -1,11 +1,20 @@
+import type { AgentRuntimeBootstrap } from '../agent-runtime/index.js';
 import type { StartupDiagnosticsService } from '../index.js';
 import type { WorkspaceAdapter } from '../workspace/index.js';
 import type { ToolRegistryInput } from './tool-contract.js';
+import { createEvaluationArtifactTools } from './evaluation-artifact-tools.js';
+import { createEvaluationIntakeTools } from './evaluation-intake-tools.js';
+import { createEvaluationWorkflowTools } from './evaluation-workflow-tools.js';
 import { createOnboardingRepairTools } from './onboarding-repair-tools.js';
+import { createPdfGenerationTools } from './pdf-generation-tools.js';
 import { createStartupInspectionTools } from './startup-inspection-tools.js';
+import { createTrackerIntegrityTools } from './tracker-integrity-tools.js';
 import { createWorkspaceDiscoveryTools } from './workspace-discovery-tools.js';
 
 export function createDefaultToolSuite(options: {
+  bootstrapWorkflow: (
+    workflow: 'auto-pipeline' | 'single-evaluation',
+  ) => Promise<AgentRuntimeBootstrap>;
   startupDiagnostics: StartupDiagnosticsService;
   workspace: WorkspaceAdapter;
 }): ToolRegistryInput {
@@ -19,5 +28,12 @@ export function createDefaultToolSuite(options: {
     ...createOnboardingRepairTools({
       workspace: options.workspace,
     }),
+    ...createEvaluationIntakeTools(),
+    ...createEvaluationWorkflowTools({
+      bootstrapWorkflow: options.bootstrapWorkflow,
+    }),
+    ...createEvaluationArtifactTools(),
+    ...createPdfGenerationTools(),
+    ...createTrackerIntegrityTools(),
   ];
 }
