@@ -2,7 +2,7 @@
   "version": "2.0",
   "project_name": "Job-Hunt",
   "description": "Local-first single-user app parity effort for jobhunt",
-  "current_phase": 2,
+  "current_phase": 3,
   "monorepo": true,
   "packages": [
     {
@@ -37,8 +37,9 @@
     },
     "3": {
       "name": "Chat, Onboarding, and Approvals UX",
-      "status": "not_started",
-      "session_count": 0
+      "description": "Build the first operator-facing app experience for chat, startup repair, approval handling, and settings on top of the Phase 02 orchestration surface.",
+      "status": "in_progress",
+      "session_count": 5
     },
     "4": {
       "name": "Evaluation, Artifacts, and Tracker Parity",
@@ -108,6 +109,14 @@
     {
       "id": "phase02-session04-scan-pipeline-and-batch-tools",
       "package": "apps/api"
+    },
+    {
+      "id": "phase03-session01-operator-shell-and-navigation-foundation",
+      "package": "apps/web"
+    },
+    {
+      "id": "phase03-session02-chat-console-and-session-resume",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
@@ -248,6 +257,30 @@
       "date": "2026-04-21",
       "session": "phase02-session05-router-and-specialist-agent-topology",
       "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase03-session01-operator-shell-and-navigation-foundation",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase03-session01-operator-shell-and-navigation-foundation",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase03-session02-chat-console-and-session-resume",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase03-session02-chat-console-and-session-resume",
+      "package": "apps/web",
       "status": "completed"
     }
   ]
