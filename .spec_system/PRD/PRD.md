@@ -785,7 +785,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | ----- | -------------------------------------------------------- | -------- | ----------- |
 | 00    | Foundation and Repo Contract                             | 4        | Complete    |
 | 01    | Backend Runtime and Job Infrastructure                   | 5        | Complete    |
-| 02    | Typed Tools and Agent Orchestration                      | 5        | In Progress |
+| 02    | Typed Tools and Agent Orchestration                      | 5        | Complete    |
 | 03    | Chat, Onboarding, and Approvals UX                       | 3-5      | Not Started |
 | 04    | Evaluation, Artifacts, and Tracker Parity                | 4-6      | Not Started |
 | 05    | Scan, Batch, and Application-Help Parity                 | 4-6      | Not Started |
@@ -858,6 +858,8 @@ Archived phase artifacts live under `.spec_system/archive/phases/phase_01/`.
 - Add deterministic error mapping
 - Add unit coverage for tool wrappers
 - Wire router and specialist agent boundaries
+
+Archived phase artifacts live under `.spec_system/archive/phases/phase_02/`.
 
 ### Phase 03: Chat, Onboarding, and Approvals UX
 

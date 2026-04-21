@@ -154,10 +154,16 @@ export type ToolCatalogEntry = {
   scripts: readonly string[];
 };
 
+export type ToolCatalogListInput = {
+  limit?: number;
+  offset?: number;
+  toolNames?: readonly string[] | null;
+};
+
 export type ToolRegistry = {
   definitions: ReadonlyMap<string, AnyToolDefinition>;
   get: (name: string) => AnyToolDefinition | null;
-  listCatalog: () => ToolCatalogEntry[];
+  listCatalog: (input?: ToolCatalogListInput) => ToolCatalogEntry[];
   listNames: () => string[];
 };
 

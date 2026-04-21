@@ -1,10 +1,10 @@
 # PRD Phase 02: Typed Tools and Agent Orchestration
 
-**Status**: In Progress
+**Status**: Complete
 **Sessions**: 5
 **Estimated Duration**: 4-6 days
 
-**Progress**: 4/5 sessions (80%)
+**Progress**: 5/5 sessions (100%)
 
 ---
 
@@ -32,7 +32,7 @@ space.
 | 02 | Workspace and Startup Tool Suite | Complete | ~14 | 2026-04-21 |
 | 03 | Evaluation, PDF, and Tracker Tools | Complete | ~16 | 2026-04-21 |
 | 04 | Scan, Pipeline, and Batch Tools | Complete | ~15 | 2026-04-21 |
-| 05 | Router and Specialist Agent Topology | Not Started | ~14 | - |
+| 05 | Router and Specialist Agent Topology | Completed | ~14 | 2026-04-21 |
 
 ---
 
@@ -42,12 +42,13 @@ space.
 - `phase02-session02-workspace-and-startup-tool-suite`
 - `phase02-session03-evaluation-pdf-and-tracker-tools`
 - `phase02-session04-scan-pipeline-and-batch-tools`
+- `phase02-session05-router-and-specialist-agent-topology`
 
 ---
 
 ## Upcoming Sessions
 
-- Session 04: Scan, Pipeline, and Batch Tools
+- Phase 02 complete; archived under `.spec_system/archive/phases/phase_02/`
 
 ---
 
@@ -121,14 +122,14 @@ introducing a second runtime path.
 
 Phase complete when:
 
-- [ ] All 5 sessions completed
-- [ ] Backend-owned typed tools can call repo logic without exposing raw shell
+- [x] All 5 sessions completed
+- [x] Backend-owned typed tools can call repo logic without exposing raw shell
       access to end-user prompt space
-- [ ] Tool execution returns deterministic validation, warning, and error
+- [x] Tool execution returns deterministic validation, warning, and error
       shapes suitable for UI and runtime diagnostics
-- [ ] Router and specialist agents can select workflows and call typed tools
+- [x] Router and specialist agents can select workflows and call typed tools
       through one orchestrated backend surface
-- [ ] Later parity phases can reuse these contracts without reintroducing
+- [x] Later parity phases can reuse these contracts without reintroducing
       Codex-specific execution semantics
 
 ---

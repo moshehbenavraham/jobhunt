@@ -67,3 +67,53 @@ test('tool registry rejects duplicate registrations', () => {
     },
   );
 });
+
+test('tool registry supports deterministic filtered catalog reads with pagination', () => {
+  const registry = createToolRegistry([
+    createTestTool('write-report'),
+    createTestTool('check-health'),
+    createTestTool('archive-report'),
+  ]);
+
+  assert.deepEqual(
+    registry.listCatalog({
+      limit: 2,
+      offset: 0,
+      toolNames: ['write-report', 'archive-report', 'check-health'],
+    }),
+    [
+      {
+        description: 'Tool archive-report',
+        jobTypes: ['scan-portals'],
+        mutationTargets: ['app-state'],
+        name: 'archive-report',
+        requiresApproval: false,
+        scripts: ['health-check'],
+      },
+      {
+        description: 'Tool check-health',
+        jobTypes: ['scan-portals'],
+        mutationTargets: ['app-state'],
+        name: 'check-health',
+        requiresApproval: false,
+        scripts: ['health-check'],
+      },
+    ],
+  );
+});
+
+test('tool registry rejects unknown tool names in filtered catalog reads', () => {
+  const registry = createToolRegistry([createTestTool('write-report')]);
+
+  assert.throws(
+    () =>
+      registry.listCatalog({
+        toolNames: ['missing-tool'],
+      }),
+    (error: unknown) => {
+      assert.ok(error instanceof ToolExecutionError);
+      assert.equal(error.code, 'tool-not-found');
+      return true;
+    },
+  );
+});

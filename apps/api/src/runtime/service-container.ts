@@ -22,6 +22,10 @@ import {
   type ObservabilityService,
 } from '../observability/index.js';
 import {
+  createOrchestrationService,
+  type OrchestrationService,
+} from '../orchestration/index.js';
+import {
   createStartupDiagnosticsService,
   type StartupDiagnostics,
   type StartupDiagnosticsService,
@@ -60,6 +64,9 @@ export type ApiServiceContainer = {
   jobRunner: {
     getService: () => Promise<DurableJobRunnerService>;
   };
+  orchestration: {
+    getService: () => Promise<OrchestrationService>;
+  };
   operationalStore: {
     getStatus: () => Promise<OperationalStoreStatus>;
     getStore: () => Promise<OperationalStore>;
@@ -81,6 +88,7 @@ export type ApiServiceContainerOptions = RepoPathOptions & {
   jobRunner?: DurableJobRunnerService;
   jobRunnerExecutors?: DurableJobExecutorRegistryInput;
   observability?: ObservabilityService;
+  orchestration?: OrchestrationService;
   startupDiagnostics?: StartupDiagnosticsService;
   toolDefinitions?: ToolRegistryInput;
   toolScripts?: readonly ScriptExecutionDefinition[];
@@ -136,6 +144,7 @@ export function createApiServiceContainer(
   let jobRunnerPromise: Promise<DurableJobRunnerService> | undefined;
   let observabilityService = options.observability;
   let observabilityPromise: Promise<ObservabilityService> | undefined;
+  let orchestrationService = options.orchestration;
   let startupDiagnosticsService = options.startupDiagnostics;
   let toolExecutionService = options.tools;
   let workspace = options.workspace;
@@ -363,6 +372,21 @@ export function createApiServiceContainer(
     return toolExecutionService;
   }
 
+  async function getOrchestrationService(): Promise<OrchestrationService> {
+    assertActive();
+
+    if (!orchestrationService) {
+      orchestrationService = createOrchestrationService({
+        bootstrapWorkflow: (workflow) =>
+          getAgentRuntimeService().bootstrap(workflow),
+        getStore: getOperationalStore,
+        getToolRegistry: () => getToolExecutionService().getRegistry(),
+      });
+    }
+
+    return orchestrationService;
+  }
+
   return {
     addCleanupTask(task: ServiceCleanupTask): void {
       assertActive();
@@ -425,6 +449,11 @@ export function createApiServiceContainer(
     jobRunner: {
       async getService(): Promise<DurableJobRunnerService> {
         return getJobRunnerService();
+      },
+    },
+    orchestration: {
+      async getService(): Promise<OrchestrationService> {
+        return getOrchestrationService();
       },
     },
     get repoPaths(): RepoPaths {

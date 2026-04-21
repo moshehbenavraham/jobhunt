@@ -4,10 +4,81 @@ import test from 'node:test';
 import { z } from 'zod';
 import { createAgentRuntimeService } from '../agent-runtime/index.js';
 import { createTestExecutor } from '../job-runner/index.js';
+import { getWorkflowModeRoute, type PromptSourceKey } from '../prompt/index.js';
 import type { ToolDefinition } from '../tools/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { createApiServiceContainer } from './service-container.js';
 import { getRepoOpenAIAccountModuleImportPath } from '../agent-runtime/test-utils.js';
+
+function createReadyBootstrap(
+  workflow: 'single-evaluation',
+  closeState: { count: number },
+) {
+  const sourceOrder: PromptSourceKey[] = [
+    'agents-guide',
+    'shared-mode',
+    'profile-mode',
+    'workflow-mode',
+    'profile-config',
+    'profile-cv',
+  ];
+
+  return {
+    auth: {
+      accountId: 'account-test',
+      authPath: '/tmp/openai-account-auth.json',
+      expiresAt: null,
+      message: 'Runtime ready.',
+      nextSteps: [],
+      state: 'ready' as const,
+      updatedAt: '2026-04-21T13:00:00.000Z',
+    },
+    config: {
+      authPath: '/tmp/openai-account-auth.json',
+      baseUrl: 'https://chatgpt.com/backend-api',
+      model: 'gpt-5.4-mini',
+      originator: 'pi',
+      overrides: {
+        authPath: false,
+        baseUrl: false,
+        model: false,
+        originator: false,
+      },
+    },
+    model: 'gpt-5.4-mini',
+    prompt: {
+      emptySources: [],
+      issues: [],
+      message: `Prompt bundle for workflow ${workflow} is ready.`,
+      missingSources: [],
+      modeRepoRelativePath: getWorkflowModeRoute(workflow).modeRepoRelativePath,
+      requestedWorkflow: workflow,
+      state: 'ready' as const,
+      supportedWorkflows: [workflow],
+      workflow,
+    },
+    promptBundle: {
+      cacheMode: 'read-through-mtime' as const,
+      composedText: `Prompt bundle for ${workflow}`,
+      loadedAt: '2026-04-21T13:00:00.000Z',
+      sourceOrder,
+      sources: [],
+      workflow: getWorkflowModeRoute(workflow),
+    },
+    provider: {
+      async close() {
+        closeState.count += 1;
+      },
+      getModel() {
+        return {
+          id: 'gpt-5.4-mini',
+        };
+      },
+    },
+    startedAt: '2026-04-21T13:00:01.000Z',
+    status: 'ready' as const,
+  };
+}
 
 test('service container reuses runtime services while reflecting live repo state', async () => {
   const fixture = await createWorkspaceFixture({
@@ -354,6 +425,78 @@ test('service container lazily creates and reuses a tool execution service with 
     assert.ok(
       events.some((event) => event.eventType === 'tool-execution-completed'),
     );
+  } finally {
+    await container.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('service container lazily creates and reuses an orchestration service', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'config/profile.yml': 'full_name: Test User\n',
+      'modes/_profile.md': '# Profile\n',
+      'profile/cv.md': '# CV\n',
+    },
+  });
+  const closeState = {
+    count: 0,
+  };
+  const container = createApiServiceContainer({
+    agentRuntime: {
+      async bootstrap(workflow) {
+        assert.equal(workflow, 'single-evaluation');
+        return createReadyBootstrap('single-evaluation', closeState);
+      },
+      async close() {},
+      async getReadiness() {
+        return {
+          auth: {
+            accountId: 'account-test',
+            authPath: '/tmp/openai-account-auth.json',
+            expiresAt: null,
+            message: 'Runtime ready.',
+            nextSteps: [],
+            state: 'ready' as const,
+            updatedAt: '2026-04-21T13:00:00.000Z',
+          },
+          config: {
+            authPath: '/tmp/openai-account-auth.json',
+            baseUrl: 'https://chatgpt.com/backend-api',
+            model: 'gpt-5.4-mini',
+            originator: 'pi',
+            overrides: {
+              authPath: false,
+              baseUrl: false,
+              model: false,
+              originator: false,
+            },
+          },
+          message: 'Runtime ready.',
+          prompt: null,
+          status: 'ready' as const,
+        };
+      },
+    },
+    repoRoot: fixture.repoRoot,
+  });
+
+  try {
+    const orchestrationA = await container.orchestration.getService();
+    const orchestrationB = await container.orchestration.getService();
+    const result = await orchestrationA.orchestrate({
+      kind: 'launch',
+      sessionId: 'session-container-orchestration',
+      workflow: 'single-evaluation',
+    });
+
+    assert.equal(orchestrationA, orchestrationB);
+    assert.equal(result.route.status, 'ready');
+    assert.equal(result.specialist?.id, 'evaluation-specialist');
+    assert.equal(result.runtime.status, 'ready');
+    assert.equal(result.session?.sessionId, 'session-container-orchestration');
+    assert.equal(closeState.count, 1);
   } finally {
     await container.dispose();
     await fixture.cleanup();

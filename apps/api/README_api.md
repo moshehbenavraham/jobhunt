@@ -17,6 +17,7 @@ npm run test:approval-runtime
 npm run test:agent-runtime
 npm run test:job-runner
 npm run test:observability
+npm run test:orchestration
 npm run test:runtime-contract
 npm run test:prompt-contract
 npm run test:store-contract
@@ -25,6 +26,7 @@ npm run validate:approval-runtime
 npm run validate:agent-runtime
 npm run validate:job-runner
 npm run validate:observability
+npm run validate:runtime
 npm run validate:store
 npm run validate:tools
 ```
@@ -37,6 +39,7 @@ npm run validate:tools
 - `src/approval-runtime/` - persisted approval creation, resolution, and pending-approval summaries
 - `src/job-runner/` - durable queueing, checkpoint recovery, executor registry, and service tests
 - `src/observability/` - redacted runtime event writes and bounded diagnostics summaries
+- `src/orchestration/` - workflow routing, specialist topology, session reuse, and typed orchestration handoff envelopes
 - `src/server/index.ts` - the long-lived HTTP runtime entrypoint
 - `src/store/` - SQLite-backed operational store for sessions, jobs, approvals, run metadata, and runtime events
 - `src/server/routes/` - registry-backed HTTP route modules
@@ -51,6 +54,23 @@ When you are working from the repo root, the corresponding aliases are
 `npm run app:api:test:job-runner`, `npm run app:api:test:store`,
 `npm run app:api:test:tools`,
 `npm run app:check`, and `npm run app:boot:test`.
+
+## Orchestration
+
+- `src/orchestration/specialist-catalog.ts` owns the checked-in workflow to
+  specialist mapping and marks partial workflows as deterministic
+  `tooling-gap` outcomes instead of free-form fallbacks.
+- `src/orchestration/tool-scope.ts` reduces the shared tool registry to the
+  selected specialist's allowed or restricted catalog before the caller sees
+  it.
+- `src/orchestration/workflow-router.ts` resolves launch vs resume requests,
+  session reuse, and unsupported workflow classification without prompt-side
+  branching.
+- `src/orchestration/orchestration-service.ts` composes routing, session
+  lifecycle, prompt bootstrap metadata, scoped tools, and active job or
+  approval summaries into one backend-owned handoff envelope.
+- `src/runtime/service-container.ts` exposes one cached orchestration service
+  that reuses the shared agent-runtime, store, and tool execution surfaces.
 
 ## Runtime Boundaries
 
@@ -94,6 +114,9 @@ When you are working from the repo root, the corresponding aliases are
   exposing raw shell orchestration to later phases.
 - `src/runtime/service-container.ts` exposes one cached durable job-runner
   instance plus shared approval-runtime and observability services.
+- `src/orchestration/orchestration-service.ts` returns only prompt metadata and
+  specialist-scoped tool catalogs; it does not persist raw prompt text, source
+  contents, or live provider handles in the store.
 - Recovery state stays in `.jobhunt-app/app.db`; checkpoint progress is stored
   in `runtime_run_metadata`, and lease plus retry state is stored in
   `runtime_jobs`.

@@ -32,7 +32,7 @@
     "2": {
       "name": "Typed Tools and Agent Orchestration",
       "description": "Wrap repo scripts and workspace actions in typed backend tools, then wire router and specialist agent orchestration on top of the Phase 01 runtime.",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 5
     },
     "3": {
@@ -241,6 +241,12 @@
     {
       "date": "2026-04-21",
       "session": "phase02-session04-scan-pipeline-and-batch-tools",
+      "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-21",
+      "session": "phase02-session05-router-and-specialist-agent-topology",
       "package": "apps/api",
       "status": "completed"
     }
