@@ -61,7 +61,7 @@ function createStartupPayload(input) {
 		},
 		bootSurface: {
 			defaultHost: "127.0.0.1",
-			defaultPort: 4174,
+			defaultPort: 5172,
 			healthPath: "/health",
 			startupPath: "/startup",
 		},
