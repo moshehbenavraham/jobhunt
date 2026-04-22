@@ -21,6 +21,7 @@ import {
 	MAX_TRACKER_PENDING_ADDITIONS,
 	MAX_TRACKER_WORKSPACE_LIMIT,
 	type TrackerWorkspaceArtifactLink,
+	type TrackerWorkspaceFocusedPendingAddition,
 	type TrackerWorkspaceLegitimacy,
 	type TrackerWorkspacePendingAdditionItem,
 	type TrackerWorkspaceReportHeader,
@@ -54,6 +55,20 @@ type EnrichedTrackerRow = {
 
 const REPORT_FILE_NAME_PATTERN =
 	/^\d{3}-[a-z0-9]+(?:-[a-z0-9]+)*-\d{4}-\d{2}-\d{2}\.md$/;
+
+function parseReportNumber(candidate: string | null): string | null {
+	if (!candidate) {
+		return null;
+	}
+
+	const directMatch = candidate.match(/^\d{3}$/);
+	if (directMatch) {
+		return candidate;
+	}
+
+	const pathMatch = candidate.match(/(?:^|\/)(\d{3})-/);
+	return pathMatch?.[1] ?? null;
+}
 
 export class TrackerWorkspaceInputError extends Error {
 	readonly code: string;
@@ -371,6 +386,89 @@ function normalizeReportPath(
 	);
 }
 
+function normalizePendingAdditionReportPath(
+	candidate: string | null,
+): string | null {
+	if (!candidate) {
+		return null;
+	}
+
+	try {
+		return normalizeRepoRelativePath(candidate);
+	} catch {
+		return null;
+	}
+}
+
+function parsePendingAdditionLine(input: {
+	fileName: string;
+	line: string;
+}): TrackerWorkspacePendingAdditionItem {
+	const columns = input.line.split("\t");
+	const parsedEntryNumber = Number.parseInt(columns[0] ?? "", 10);
+	const reportPath = normalizePendingAdditionReportPath(
+		parseTrackerReportPath(columns[7] ?? ""),
+	);
+
+	return {
+		company: columns[2]?.trim() || null,
+		entryNumber:
+			Number.isInteger(parsedEntryNumber) && parsedEntryNumber > 0
+				? parsedEntryNumber
+				: 0,
+		fileName: input.fileName,
+		notes: columns[8]?.trim() || null,
+		reportNumber: parseReportNumber(reportPath),
+		reportRepoRelativePath: reportPath,
+		repoRelativePath: `batch/tracker-additions/${input.fileName}`,
+		role: columns[3]?.trim() || null,
+		status: columns[4]?.trim() || null,
+	};
+}
+
+async function readPendingAdditionItem(
+	fileName: string,
+	repoRoot: string,
+): Promise<TrackerWorkspacePendingAdditionItem> {
+	const repoRelativePath = `batch/tracker-additions/${fileName}`;
+
+	try {
+		const content = await readFile(
+			resolveRepoRelativePath(repoRelativePath, { repoRoot }),
+			"utf8",
+		);
+		const firstLine =
+			content
+				.replace(/\r\n?/g, "\n")
+				.split("\n")
+				.map((line) => line.trim())
+				.find((line) => line.length > 0) ?? "";
+
+		if (firstLine.length > 0) {
+			return parsePendingAdditionLine({
+				fileName,
+				line: firstLine,
+			});
+		}
+	} catch {
+		// Fall through to the filename-derived fallback below.
+	}
+
+	const match = fileName.match(/^(\d+)-/);
+
+	return {
+		company: null,
+		entryNumber: match?.[1] ? Number.parseInt(match[1], 10) : 0,
+		fileName,
+		notes: null,
+		reportNumber: null,
+		reportRepoRelativePath: null,
+		repoRelativePath,
+		role: null,
+		status: null,
+	};
+}
+
 async function createPendingAdditionSummary(
 	services: ApiServiceContainer,
 ): Promise<PendingAdditionSummary> {
@@ -388,19 +486,14 @@ async function createPendingAdditionSummary(
 	const items = (result.directoryEntries ?? [])
 		.filter((entry) => entry.endsWith(".tsv"))
 		.sort((left, right) => left.localeCompare(right))
-		.map((fileName) => {
-			const match = fileName.match(/^(\d+)-/);
-
-			return {
-				entryNumber: match?.[1] ? Number.parseInt(match[1], 10) : 0,
-				fileName,
-				repoRelativePath: `batch/tracker-additions/${fileName}`,
-			} satisfies TrackerWorkspacePendingAdditionItem;
-		});
+		.map((fileName) =>
+			readPendingAdditionItem(fileName, services.workspace.repoPaths.repoRoot),
+		);
+	const resolvedItems = await Promise.all(items);
 
 	return {
-		count: items.length,
-		items: items.slice(0, MAX_TRACKER_PENDING_ADDITIONS),
+		count: resolvedItems.length,
+		items: resolvedItems.slice(0, MAX_TRACKER_PENDING_ADDITIONS),
 	};
 }
 
@@ -542,15 +635,28 @@ function toSelectedRow(input: {
 }
 
 function createEmptySelectedDetail(
-	entryNumber: number | null,
+	focus: {
+		entryNumber: number | null;
+		reportNumber: string | null;
+	},
 	message: string,
 ): TrackerWorkspaceSelectedDetail {
 	return {
 		message,
-		origin: entryNumber === null ? "none" : "entry-number",
-		requestedEntryNumber: entryNumber,
+		origin:
+			focus.entryNumber !== null
+				? "entry-number"
+				: focus.reportNumber !== null
+					? "report-number"
+					: "none",
+		pendingAddition: null,
+		requestedEntryNumber: focus.entryNumber,
+		requestedReportNumber: focus.reportNumber,
 		row: null,
-		state: entryNumber === null ? "empty" : "missing",
+		state:
+			focus.entryNumber === null && focus.reportNumber === null
+				? "empty"
+				: "missing",
 	};
 }
 
@@ -564,6 +670,58 @@ function createPendingAdditionsMessage(count: number): string {
 	}
 
 	return `${count} pending tracker TSV additions are waiting to merge.`;
+}
+
+function getRowReportNumber(row: ParsedTrackerRow): string | null {
+	return parseReportNumber(parseTrackerReportPath(row.report));
+}
+
+function selectRowByFocus(
+	rows: readonly ParsedTrackerRow[],
+	focus: {
+		entryNumber: number | null;
+		reportNumber: string | null;
+	},
+): ParsedTrackerRow | null {
+	if (focus.entryNumber !== null) {
+		return rows.find((row) => row.entryNumber === focus.entryNumber) ?? null;
+	}
+
+	if (focus.reportNumber !== null) {
+		return (
+			rows.find((row) => getRowReportNumber(row) === focus.reportNumber) ?? null
+		);
+	}
+
+	return null;
+}
+
+function selectPendingAdditionByReportNumber(
+	items: readonly TrackerWorkspacePendingAdditionItem[],
+	reportNumber: string | null,
+): TrackerWorkspaceFocusedPendingAddition | null {
+	if (!reportNumber) {
+		return null;
+	}
+
+	const item =
+		items.find((candidate) => candidate.reportNumber === reportNumber) ?? null;
+
+	if (!item) {
+		return null;
+	}
+
+	return {
+		company: item.company,
+		entryNumber: item.entryNumber,
+		fileName: item.fileName,
+		notes: item.notes,
+		reportNumber: item.reportNumber,
+		reportRepoRelativePath: item.reportRepoRelativePath,
+		repoRelativePath: item.repoRelativePath,
+		role: item.role,
+		status: item.status,
+	};
 }
 
 function createSummaryMessage(input: {
@@ -596,6 +754,15 @@ export async function createTrackerWorkspaceSummary(
 	services: ApiServiceContainer,
 	options: TrackerWorkspaceSummaryOptions = {},
 ): Promise<TrackerWorkspaceSummaryPayload> {
+	const requestedEntryNumber = options.entryNumber ?? null;
+	const requestedReportNumber = options.reportNumber?.trim() || null;
+
+	if (requestedEntryNumber !== null && requestedReportNumber !== null) {
+		throw new TrackerWorkspaceInputError(
+			"Select a tracker row by entry number or report number, not both at once.",
+		);
+	}
+
 	const diagnostics = await services.startupDiagnostics.getDiagnostics();
 	const repoRoot = services.workspace.repoPaths.repoRoot;
 	const startupStatus = getStartupStatus(diagnostics);
@@ -648,25 +815,29 @@ export async function createTrackerWorkspaceSummary(
 		.sort((left, right) => compareRows(options.sort ?? "date", left, right));
 
 	const pagedRows = filteredRows.slice(offset, offset + limit);
-	const requestedEntryNumber = options.entryNumber ?? null;
-	const selectedSourceRow =
-		requestedEntryNumber === null
-			? null
-			: (rows.find((row) => row.entryNumber === requestedEntryNumber) ?? null);
-	const selectedVisibleRow =
-		requestedEntryNumber === null
-			? null
-			: (pagedRows.find((row) => row.entryNumber === requestedEntryNumber) ??
-				null);
-	const selectedFilteredRow =
-		requestedEntryNumber === null
-			? null
-			: (filteredRows.find((row) => row.entryNumber === requestedEntryNumber) ??
-				null);
+	const selectedSourceRow = selectRowByFocus(rows, {
+		entryNumber: requestedEntryNumber,
+		reportNumber: requestedReportNumber,
+	});
+	const selectedVisibleRow = selectRowByFocus(pagedRows, {
+		entryNumber: requestedEntryNumber,
+		reportNumber: requestedReportNumber,
+	});
+	const selectedFilteredRow = selectRowByFocus(filteredRows, {
+		entryNumber: requestedEntryNumber,
+		reportNumber: requestedReportNumber,
+	});
 	const selectedIsStale =
-		requestedEntryNumber !== null &&
+		(requestedEntryNumber !== null || requestedReportNumber !== null) &&
 		selectedSourceRow !== null &&
 		selectedVisibleRow === null;
+	const focusedPendingAddition =
+		selectedSourceRow === null
+			? selectPendingAdditionByReportNumber(
+					pendingAdditions.items,
+					requestedReportNumber,
+				)
+			: null;
 
 	const enrichedPageRows = await Promise.all(
 		pagedRows.map((row) =>
@@ -690,8 +861,11 @@ export async function createTrackerWorkspaceSummary(
 			canonicalStatuses: canonicalStatusLabels,
 			enrichedRow,
 			isSelected:
-				requestedEntryNumber !== null &&
-				enrichedRow.row.entryNumber === requestedEntryNumber,
+				requestedEntryNumber !== null
+					? enrichedRow.row.entryNumber === requestedEntryNumber
+					: requestedReportNumber !== null
+						? getRowReportNumber(enrichedRow.row) === requestedReportNumber
+						: false,
 			isStaleSelection: false,
 			pendingAdditionCount: pendingAdditions.count,
 		}),
@@ -699,30 +873,60 @@ export async function createTrackerWorkspaceSummary(
 
 	let selectedDetail: TrackerWorkspaceSelectedDetail;
 
-	if (requestedEntryNumber === null) {
+	if (requestedEntryNumber === null && requestedReportNumber === null) {
 		selectedDetail = createEmptySelectedDetail(
-			null,
+			{
+				entryNumber: null,
+				reportNumber: null,
+			},
 			filteredRows.length === 0
 				? "Select a tracker row once matching items are available."
 				: "Select a tracker row to inspect report links, notes, and status.",
 		);
+	} else if (
+		requestedReportNumber !== null &&
+		selectedSourceRow === null &&
+		focusedPendingAddition !== null
+	) {
+		selectedDetail = {
+			message: `Showing staged tracker addition for report #${requestedReportNumber}. Merge tracker additions to create the canonical row.`,
+			origin: "report-number",
+			pendingAddition: focusedPendingAddition,
+			requestedEntryNumber: null,
+			requestedReportNumber,
+			row: null,
+			state: "ready",
+		};
 	} else if (!selectedSourceRow || !selectedEnrichedRow) {
 		selectedDetail = createEmptySelectedDetail(
-			requestedEntryNumber,
-			`Selected tracker row #${requestedEntryNumber} is no longer available.`,
+			{
+				entryNumber: requestedEntryNumber,
+				reportNumber: requestedReportNumber,
+			},
+			requestedReportNumber
+				? `Focused report #${requestedReportNumber} is no longer available in tracker rows or pending TSV additions.`
+				: `Selected tracker row #${requestedEntryNumber} is no longer available.`,
 		);
 	} else {
 		const message =
-			selectedFilteredRow === null
-				? `Selected tracker row #${requestedEntryNumber} no longer matches the active filters.`
-				: selectedVisibleRow === null
-					? `Selected tracker row #${requestedEntryNumber} is outside the current page.`
-					: `Showing selected tracker row #${requestedEntryNumber}.`;
+			requestedReportNumber !== null
+				? selectedFilteredRow === null
+					? `Focused report #${requestedReportNumber} no longer matches the active filters.`
+					: selectedVisibleRow === null
+						? `Focused report #${requestedReportNumber} is outside the current page.`
+						: `Showing tracker row for report #${requestedReportNumber}.`
+				: selectedFilteredRow === null
+					? `Selected tracker row #${requestedEntryNumber} no longer matches the active filters.`
+					: selectedVisibleRow === null
+						? `Selected tracker row #${requestedEntryNumber} is outside the current page.`
+						: `Showing selected tracker row #${requestedEntryNumber}.`;
 
 		selectedDetail = {
 			message,
-			origin: "entry-number",
+			origin: requestedReportNumber !== null ? "report-number" : "entry-number",
+			pendingAddition: null,
 			requestedEntryNumber,
+			requestedReportNumber,
 			row: toSelectedRow({
 				canonicalStatuses: canonicalStatusLabels,
 				enrichedRow: selectedEnrichedRow,
@@ -746,6 +950,7 @@ export async function createTrackerWorkspaceSummary(
 			entryNumber: requestedEntryNumber,
 			limit,
 			offset,
+			reportNumber: requestedReportNumber,
 			search,
 			sort: options.sort ?? "date",
 			status: statusFilter,

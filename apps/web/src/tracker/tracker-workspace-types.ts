@@ -13,6 +13,7 @@ export type TrackerWorkspaceSort =
 export const TRACKER_WORKSPACE_SELECTION_ORIGINS = [
 	"entry-number",
 	"none",
+	"report-number",
 ] as const;
 
 export type TrackerWorkspaceSelectionOrigin =
@@ -105,18 +106,38 @@ export type TrackerWorkspaceSelectedRow = TrackerWorkspaceRowPreview & {
 	sourceLine: string;
 };
 
+export type TrackerWorkspaceFocusedPendingAddition = {
+	company: string | null;
+	entryNumber: number;
+	fileName: string;
+	notes: string | null;
+	reportNumber: string | null;
+	reportRepoRelativePath: string | null;
+	repoRelativePath: string;
+	role: string | null;
+	status: string | null;
+};
+
 export type TrackerWorkspaceSelectedDetail = {
 	message: string;
 	origin: TrackerWorkspaceSelectionOrigin;
+	pendingAddition: TrackerWorkspaceFocusedPendingAddition | null;
 	requestedEntryNumber: number | null;
+	requestedReportNumber: string | null;
 	row: TrackerWorkspaceSelectedRow | null;
 	state: TrackerWorkspaceSelectionState;
 };
 
 export type TrackerWorkspacePendingAdditionItem = {
+	company: string | null;
 	entryNumber: number;
 	fileName: string;
+	notes: string | null;
+	reportNumber: string | null;
+	reportRepoRelativePath: string | null;
 	repoRelativePath: string;
+	role: string | null;
+	status: string | null;
 };
 
 export type TrackerWorkspacePendingAdditionSummary = {
@@ -130,6 +151,7 @@ export type TrackerWorkspaceSummaryPayload = {
 		entryNumber: number | null;
 		limit: number;
 		offset: number;
+		reportNumber: string | null;
 		search: string | null;
 		sort: TrackerWorkspaceSort;
 		status: string | null;
@@ -411,7 +433,13 @@ function parseSelectedDetail(value: unknown): TrackerWorkspaceSelectedDetail {
 			TRACKER_WORKSPACE_SELECTION_ORIGINS,
 			"tracker-workspace selection origin",
 		),
+		pendingAddition: readNullableObject(
+			record,
+			"pendingAddition",
+			parsePendingAdditionItem,
+		),
 		requestedEntryNumber: readNullableNumber(record, "requestedEntryNumber"),
+		requestedReportNumber: readNullableString(record, "requestedReportNumber"),
 		row: readNullableObject(record, "row", parseSelectedRow),
 		state: readEnum(
 			record,
@@ -428,9 +456,18 @@ function parsePendingAdditionItem(
 	const record = assertRecord(value, "tracker-workspace pending addition");
 
 	return {
+		company: readNullableString(record, "company"),
 		entryNumber: readNumber(record, "entryNumber"),
 		fileName: readString(record, "fileName"),
+		notes: readNullableString(record, "notes"),
+		reportNumber: readNullableString(record, "reportNumber"),
+		reportRepoRelativePath: readNullableString(
+			record,
+			"reportRepoRelativePath",
+		),
 		repoRelativePath: readString(record, "repoRelativePath"),
+		role: readNullableString(record, "role"),
+		status: readNullableString(record, "status"),
 	};
 }
 
@@ -482,6 +519,7 @@ export function parseTrackerWorkspaceSummaryPayload(
 			entryNumber: readNullableNumber(filters, "entryNumber"),
 			limit: readNumber(filters, "limit"),
 			offset: readNumber(filters, "offset"),
+			reportNumber: readNullableString(filters, "reportNumber"),
 			search: readNullableString(filters, "search"),
 			sort: readEnum(
 				filters,

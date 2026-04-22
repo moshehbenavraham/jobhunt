@@ -88,6 +88,7 @@ function focusEquals(
 	return (
 		left.entryNumber === right.entryNumber &&
 		left.offset === right.offset &&
+		left.reportNumber === right.reportNumber &&
 		left.search === right.search &&
 		left.sort === right.sort &&
 		left.status === right.status
@@ -268,6 +269,7 @@ export function useTrackerWorkspace(): {
 		clearSelection: () => {
 			syncTrackerWorkspaceFocus({
 				entryNumber: null,
+				reportNumber: null,
 			});
 		},
 		goToNextPage: () => {
@@ -328,6 +330,7 @@ export function useTrackerWorkspace(): {
 							? {
 									...state.focus,
 									entryNumber: input.entryNumber,
+									reportNumber: null,
 								}
 							: state.focus;
 
@@ -335,6 +338,7 @@ export function useTrackerWorkspace(): {
 						syncTrackerWorkspaceFocus(
 							{
 								entryNumber: input.entryNumber,
+								reportNumber: null,
 							},
 							{
 								replace: true,
@@ -372,6 +376,7 @@ export function useTrackerWorkspace(): {
 		selectRow: (row) => {
 			syncTrackerWorkspaceFocus({
 				entryNumber: row.entryNumber,
+				reportNumber: null,
 			});
 		},
 		selectSearch: (search) => {

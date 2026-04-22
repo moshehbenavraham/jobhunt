@@ -21,6 +21,7 @@ export const TRACKER_WORKSPACE_FOCUS_EVENT =
 export type TrackerWorkspaceFocus = {
 	entryNumber: number | null;
 	offset: number;
+	reportNumber: string | null;
 	search: string | null;
 	sort: TrackerWorkspaceSort;
 	status: string | null;
@@ -88,6 +89,14 @@ function readEntryNumber(value: string | null): number | null {
 	return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
 }
 
+function readReportNumber(value: string | null): string | null {
+	if (!value) {
+		return null;
+	}
+
+	return /^\d{3}$/.test(value) ? value : null;
+}
+
 function readSort(value: string | null): TrackerWorkspaceSort {
 	if (
 		value &&
@@ -109,17 +118,47 @@ function readSearch(value: string | null): string | null {
 	return trimmed.length > 0 ? trimmed : null;
 }
 
+function readSelection(value: {
+	entryNumber: number | null;
+	reportNumber: string | null;
+}): {
+	entryNumber: number | null;
+	reportNumber: string | null;
+} {
+	if (value.entryNumber !== null) {
+		return {
+			entryNumber: value.entryNumber,
+			reportNumber: null,
+		};
+	}
+
+	return {
+		entryNumber: null,
+		reportNumber: value.reportNumber,
+	};
+}
+
 function mergeFocus(
 	focus: Partial<TrackerWorkspaceFocus> | undefined,
 ): TrackerWorkspaceFocus {
 	const currentFocus = readTrackerWorkspaceFocusFromUrl();
-
-	return {
+	const nextSelection = readSelection({
 		entryNumber:
 			focus?.entryNumber !== undefined
 				? focus.entryNumber
 				: currentFocus.entryNumber,
+		reportNumber:
+			focus?.reportNumber !== undefined
+				? focus.reportNumber
+				: currentFocus.reportNumber,
+	});
+
+	return {
+		...currentFocus,
+		...focus,
+		...nextSelection,
 		offset: focus?.offset ?? currentFocus.offset,
+		reportNumber: nextSelection.reportNumber,
 		search: focus?.search !== undefined ? focus.search : currentFocus.search,
 		sort: focus?.sort ?? currentFocus.sort,
 		status: focus?.status !== undefined ? focus.status : currentFocus.status,
@@ -278,6 +317,10 @@ function buildSummaryUrl(options: {
 
 	if (focus.entryNumber !== null) {
 		url.searchParams.set("entryNumber", String(focus.entryNumber));
+	}
+
+	if (focus.reportNumber) {
+		url.searchParams.set("reportNumber", focus.reportNumber);
 	}
 
 	if (focus.search) {
@@ -451,7 +494,12 @@ export function readTrackerWorkspaceFocusFromUrl(): TrackerWorkspaceFocus {
 	const url = new URL(window.location.href);
 
 	return {
-		entryNumber: readEntryNumber(url.searchParams.get("trackerEntry")),
+		...readSelection({
+			entryNumber: readEntryNumber(url.searchParams.get("trackerEntry")),
+			reportNumber: readReportNumber(
+				url.searchParams.get("trackerReportNumber"),
+			),
+		}),
 		offset: readOffset(url.searchParams.get("trackerOffset")),
 		search: readSearch(url.searchParams.get("trackerSearch")),
 		sort: readSort(url.searchParams.get("trackerSort")),
@@ -471,8 +519,15 @@ export function syncTrackerWorkspaceFocus(
 
 	if (nextFocus.entryNumber !== null) {
 		url.searchParams.set("trackerEntry", String(nextFocus.entryNumber));
+		url.searchParams.delete("trackerReportNumber");
 	} else {
 		url.searchParams.delete("trackerEntry");
+
+		if (nextFocus.reportNumber) {
+			url.searchParams.set("trackerReportNumber", nextFocus.reportNumber);
+		} else {
+			url.searchParams.delete("trackerReportNumber");
+		}
 	}
 
 	if (nextFocus.offset > 0) {

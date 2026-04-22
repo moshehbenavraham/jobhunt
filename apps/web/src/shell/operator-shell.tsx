@@ -11,6 +11,7 @@ import { PipelineReviewSurface } from "../pipeline/pipeline-review-surface";
 import { syncReportViewerFocus } from "../reports/report-viewer-client";
 import { ReportViewerSurface } from "../reports/report-viewer-surface";
 import { SettingsSurface } from "../settings/settings-surface";
+import { syncTrackerWorkspaceFocus } from "../tracker/tracker-workspace-client";
 import { TrackerWorkspaceSurface } from "../tracker/tracker-workspace-surface";
 import { NavigationRail } from "./navigation-rail";
 import { getShellSurface } from "./shell-types";
@@ -285,13 +286,14 @@ export function OperatorShell() {
 	};
 	const openPipeline = (focus: {
 		reportNumber: string | null;
+		section: "all" | "processed";
 		url: string | null;
 	}) => {
 		syncPipelineReviewFocus(
 			{
 				offset: 0,
 				reportNumber: focus.reportNumber,
-				section: focus.reportNumber || focus.url ? "processed" : "all",
+				section: focus.section,
 				url: focus.reportNumber ? null : focus.url,
 			},
 			{
@@ -299,6 +301,19 @@ export function OperatorShell() {
 			},
 		);
 		shell.selectSurface("pipeline");
+	};
+	const openTracker = (focus: { reportNumber: string | null }) => {
+		syncTrackerWorkspaceFocus(
+			{
+				entryNumber: null,
+				offset: 0,
+				reportNumber: focus.reportNumber,
+			},
+			{
+				openSurface: true,
+			},
+		);
+		shell.selectSurface("tracker");
 	};
 
 	return (
@@ -340,6 +355,7 @@ export function OperatorShell() {
 									onOpenApprovals={openApprovals}
 									onOpenPipelineReview={openPipeline}
 									onOpenReportViewer={openArtifacts}
+									onOpenTrackerReview={openTracker}
 								/>
 							) : renderedSurface.id === "pipeline" ? (
 								<PipelineReviewSurface onOpenReportViewer={openArtifacts} />

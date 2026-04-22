@@ -2,7 +2,7 @@
   "version": "2.0",
   "project_name": "Job-Hunt",
   "description": "Local-first single-user app parity effort for jobhunt",
-  "current_phase": 4,
+  "current_phase": 5,
   "monorepo": true,
   "packages": [
     {
@@ -44,7 +44,7 @@
     "4": {
       "name": "Evaluation, Artifacts, and Tracker Parity",
       "description": "Land the core evaluate-to-artifact loop end to end through typed evaluation results, artifact review surfaces, pipeline and tracker workspaces, and full auto-pipeline parity.",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 6
     },
     "5": {
@@ -404,6 +404,12 @@
       "date": "2026-04-22",
       "session": "phase04-session05-tracker-workspace-and-integrity-actions",
       "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session06-auto-pipeline-parity-and-regression",
+      "package": "apps/api",
       "status": "completed"
     }
   ]

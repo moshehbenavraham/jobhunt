@@ -540,9 +540,22 @@ if (appTrackerWorkspace !== null) {
 	fail("App tracker-workspace smoke tests failed");
 }
 
-// -- 3ah. Bootstrap ASCII validation -----------------------------
+// -- 3ah. Auto-pipeline parity smoke -----------------------------
 
-console.log("\n3ah. Bootstrap ASCII validation");
+console.log("\n3ah. Auto-pipeline parity smoke");
+
+const appAutoPipelineParity = run("node", [
+	"scripts/test-app-auto-pipeline-parity.mjs",
+]);
+if (appAutoPipelineParity !== null) {
+	pass("Auto-pipeline parity smoke tests pass");
+} else {
+	fail("Auto-pipeline parity smoke tests failed");
+}
+
+// -- 3ai. Bootstrap ASCII validation -----------------------------
+
+console.log("\n3ai. Bootstrap ASCII validation");
 
 const bootstrapFiles = [
 	"apps/api/src/approval-runtime/approval-runtime-contract.ts",
@@ -575,6 +588,7 @@ const bootstrapFiles = [
 	"apps/api/src/observability/observability-service.test.ts",
 	"apps/api/src/observability/observability-service.ts",
 	"apps/api/src/orchestration/index.ts",
+	"apps/api/src/orchestration/evaluation-launch-context.ts",
 	"apps/api/src/orchestration/orchestration-contract.ts",
 	"apps/api/src/orchestration/orchestration-service.test.ts",
 	"apps/api/src/orchestration/orchestration-service.ts",
@@ -595,6 +609,9 @@ const bootstrapFiles = [
 	"apps/api/src/server/http-server.ts",
 	"apps/api/src/server/index.ts",
 	"apps/api/src/server/chat-console-summary.ts",
+	"apps/api/src/server/evaluation-result-contract.ts",
+	"apps/api/src/server/evaluation-result-summary.ts",
+	"apps/api/src/server/evaluation-review-focus.ts",
 	"apps/api/src/server/pipeline-review-contract.ts",
 	"apps/api/src/server/pipeline-review-summary.ts",
 	"apps/api/src/server/report-viewer-contract.ts",
@@ -737,6 +754,7 @@ const bootstrapFiles = [
 	"apps/web/vite.config.ts",
 	"scripts/test-app-scaffold.mjs",
 	"scripts/test-app-approval-inbox.mjs",
+	"scripts/test-app-auto-pipeline-parity.mjs",
 	"scripts/test-app-bootstrap.mjs",
 	"scripts/test-app-chat-console.mjs",
 	"scripts/test-app-onboarding.mjs",

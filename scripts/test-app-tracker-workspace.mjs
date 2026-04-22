@@ -132,13 +132,20 @@ function createReadyShellSummary() {
 	};
 }
 
-function createReportViewerPayload() {
+function createReportViewerPayload(requestUrl = "/report-viewer") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const reportPath =
+		url.searchParams.get("reportPath") ??
+		"reports/019-cohere-agentic-2026-04-22.md";
+	const isPendingFocus =
+		reportPath === "reports/020-future-company-2026-04-22.md";
+
 	return {
 		filters: {
 			group: "reports",
 			limit: 8,
 			offset: 0,
-			reportPath: "reports/019-cohere-agentic-2026-04-22.md",
+			reportPath,
 		},
 		generatedAt: "2026-04-22T00:00:00.000Z",
 		message: "Showing the selected report artifact.",
@@ -153,38 +160,59 @@ function createReportViewerPayload() {
 					kind: "report",
 					repoRelativePath: "reports/019-cohere-agentic-2026-04-22.md",
 					reportNumber: "019",
-					selected: true,
+					selected:
+						!isPendingFocus &&
+						reportPath === "reports/019-cohere-agentic-2026-04-22.md",
+				},
+				{
+					artifactDate: "2026-04-22",
+					fileName: "020-future-company-2026-04-22.md",
+					kind: "report",
+					repoRelativePath: "reports/020-future-company-2026-04-22.md",
+					reportNumber: "020",
+					selected: isPendingFocus,
 				},
 			],
 			limit: 8,
 			offset: 0,
-			totalCount: 1,
+			totalCount: 2,
 		},
 		selectedReport: {
-			body: [
-				"# Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
-				"",
-				"Tracker workspace smoke handoff report body.",
-			].join("\n"),
+			body: isPendingFocus
+				? [
+						"# Evaluation: Future Company -- Forward Deployed Engineer",
+						"",
+						"Pending tracker handoff report body.",
+					].join("\n")
+				: [
+						"# Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
+						"",
+						"Tracker workspace smoke handoff report body.",
+					].join("\n"),
 			header: {
-				archetype: "Applied AI",
+				archetype: isPendingFocus ? "Forward Deployed" : "Applied AI",
 				date: "2026-04-22",
 				legitimacy: "High Confidence",
 				pdf: {
-					exists: true,
-					repoRelativePath: "output/cv-cohere-agentic-2026-04-22.pdf",
+					exists: !isPendingFocus,
+					repoRelativePath: isPendingFocus
+						? null
+						: "output/cv-cohere-agentic-2026-04-22.pdf",
 				},
-				score: 4.4,
-				title: "Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
-				url: "https://example.com/jobs/cohere-agentic",
+				score: isPendingFocus ? 4.1 : 4.4,
+				title: isPendingFocus
+					? "Evaluation: Future Company -- Forward Deployed Engineer"
+					: "Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
+				url: isPendingFocus
+					? "https://example.com/jobs/future-company"
+					: "https://example.com/jobs/cohere-agentic",
 				verification: "active via browser review",
 			},
-			message:
-				"Showing selected report reports/019-cohere-agentic-2026-04-22.md.",
+			message: `Showing selected report ${reportPath}.`,
 			origin: "selected",
-			repoRelativePath: "reports/019-cohere-agentic-2026-04-22.md",
-			reportNumber: "019",
-			requestedRepoRelativePath: "reports/019-cohere-agentic-2026-04-22.md",
+			repoRelativePath: reportPath,
+			reportNumber: isPendingFocus ? "020" : "019",
+			requestedRepoRelativePath: reportPath,
 			state: "ready",
 		},
 		service: "jobhunt-api-scaffold",
@@ -281,6 +309,7 @@ function createTrackerPayload(state, requestUrl) {
 				entryNumber: null,
 				limit: 12,
 				offset: 0,
+				reportNumber: null,
 				search: null,
 				sort: "date",
 				status: null,
@@ -306,7 +335,9 @@ function createTrackerPayload(state, requestUrl) {
 			selectedDetail: {
 				message: "Select a tracker row once matching items are available.",
 				origin: "none",
+				pendingAddition: null,
 				requestedEntryNumber: null,
+				requestedReportNumber: null,
 				row: null,
 				state: "empty",
 			},
@@ -336,10 +367,14 @@ function createTrackerPayload(state, requestUrl) {
 	const selectedEntryNumber = Number.isInteger(requestedEntryNumber)
 		? requestedEntryNumber
 		: null;
+	const selectedReportNumber =
+		requestUrl.searchParams.get("reportNumber")?.trim() || null;
 	const statusFilter = requestUrl.searchParams.get("status")?.trim() || null;
 	const filteredRows = statusFilter
 		? rows.filter((row) => row.status === statusFilter)
 		: rows;
+	const rowReportNumber = (row) =>
+		row.report.repoRelativePath?.match(/(?:^|\/)(\d{3})-/)?.[1] ?? null;
 	const visibleRows = filteredRows.map((row) => ({
 		company: row.company,
 		date: row.date,
@@ -349,24 +384,51 @@ function createTrackerPayload(state, requestUrl) {
 		role: row.role,
 		score: row.score,
 		scoreLabel: row.scoreLabel,
-		selected: row.entryNumber === selectedEntryNumber,
+		selected:
+			selectedEntryNumber !== null
+				? row.entryNumber === selectedEntryNumber
+				: selectedReportNumber !== null
+					? rowReportNumber(row) === selectedReportNumber
+					: false,
 		status: row.status,
 		warningCount: row.warnings.length,
 		warnings: row.warnings,
 	}));
 	const selectedRow =
-		selectedEntryNumber === null
-			? null
-			: (rows.find((row) => row.entryNumber === selectedEntryNumber) ?? null);
+		selectedEntryNumber !== null
+			? (rows.find((row) => row.entryNumber === selectedEntryNumber) ?? null)
+			: selectedReportNumber !== null
+				? (rows.find((row) => rowReportNumber(row) === selectedReportNumber) ??
+					null)
+				: null;
+	const focusedPendingAddition =
+		selectedRow === null && selectedReportNumber === "020"
+			? {
+					company: "Future Company",
+					entryNumber: 20,
+					fileName: "20-future-company.tsv",
+					notes: "Pending add",
+					reportNumber: "020",
+					reportRepoRelativePath: "reports/020-future-company-2026-04-22.md",
+					repoRelativePath: "batch/tracker-additions/20-future-company.tsv",
+					role: "Forward Deployed Engineer",
+					status: "Evaluated",
+				}
+			: null;
 	const selectedIsStale =
 		selectedRow !== null &&
-		!filteredRows.some((row) => row.entryNumber === selectedEntryNumber);
+		(selectedEntryNumber !== null
+			? !filteredRows.some((row) => row.entryNumber === selectedEntryNumber)
+			: !filteredRows.some(
+					(row) => rowReportNumber(row) === selectedReportNumber,
+				));
 
 	return {
 		filters: {
 			entryNumber: selectedEntryNumber,
 			limit: 12,
 			offset: 0,
+			reportNumber: selectedReportNumber,
 			search: null,
 			sort: "date",
 			status: statusFilter,
@@ -378,9 +440,15 @@ function createTrackerPayload(state, requestUrl) {
 			count: 1,
 			items: [
 				{
+					company: "Future Company",
 					entryNumber: 20,
 					fileName: "20-future-company.tsv",
+					notes: "Pending add",
+					reportNumber: "020",
+					reportRepoRelativePath: "reports/020-future-company-2026-04-22.md",
 					repoRelativePath: "batch/tracker-additions/20-future-company.tsv",
+					role: "Forward Deployed Engineer",
+					status: "Evaluated",
 				},
 			],
 			message: state.pendingAdditionsMessage,
@@ -395,50 +463,69 @@ function createTrackerPayload(state, requestUrl) {
 			totalCount: rows.length,
 		},
 		selectedDetail:
-			selectedRow === null
+			selectedRow === null && focusedPendingAddition === null
 				? {
 						message:
 							"Select a tracker row to inspect report links, notes, and status.",
 						origin: "none",
+						pendingAddition: null,
 						requestedEntryNumber: null,
+						requestedReportNumber: selectedReportNumber,
 						row: null,
 						state: "empty",
 					}
-				: {
-						message: selectedIsStale
-							? `Selected tracker row #${selectedRow.entryNumber} no longer matches the active filters.`
-							: `Showing selected tracker row #${selectedRow.entryNumber}.`,
-						origin: "entry-number",
-						requestedEntryNumber: selectedRow.entryNumber,
-						row: {
-							company: selectedRow.company,
-							date: selectedRow.date,
-							entryNumber: selectedRow.entryNumber,
-							header: selectedRow.header,
-							notes: selectedRow.notes,
-							pdf: selectedRow.pdf,
-							report: selectedRow.report,
-							role: selectedRow.role,
-							score: selectedRow.score,
-							scoreLabel: selectedRow.scoreLabel,
-							selected: true,
-							sourceLine: selectedRow.sourceLine,
-							status: selectedRow.status,
-							warningCount:
-								selectedRow.warnings.length + (selectedIsStale ? 1 : 0),
-							warnings: selectedIsStale
-								? [
-										...selectedRow.warnings,
-										{
-											code: "stale-selection",
-											message:
-												"The selected tracker row is outside the current filtered page, so detail is shown separately.",
-										},
-									]
-								: selectedRow.warnings,
+				: selectedRow === null && focusedPendingAddition !== null
+					? {
+							message:
+								"Showing staged tracker addition for report #020. Merge tracker additions to create the canonical row.",
+							origin: "report-number",
+							pendingAddition: focusedPendingAddition,
+							requestedEntryNumber: null,
+							requestedReportNumber: "020",
+							row: null,
+							state: "ready",
+						}
+					: {
+							message: selectedIsStale
+								? selectedReportNumber
+									? `Focused report #${selectedReportNumber} no longer matches the active filters.`
+									: `Selected tracker row #${selectedRow.entryNumber} no longer matches the active filters.`
+								: selectedReportNumber
+									? `Showing tracker row for report #${selectedReportNumber}.`
+									: `Showing selected tracker row #${selectedRow.entryNumber}.`,
+							origin: selectedReportNumber ? "report-number" : "entry-number",
+							pendingAddition: null,
+							requestedEntryNumber: selectedRow.entryNumber,
+							requestedReportNumber: selectedReportNumber,
+							row: {
+								company: selectedRow.company,
+								date: selectedRow.date,
+								entryNumber: selectedRow.entryNumber,
+								header: selectedRow.header,
+								notes: selectedRow.notes,
+								pdf: selectedRow.pdf,
+								report: selectedRow.report,
+								role: selectedRow.role,
+								score: selectedRow.score,
+								scoreLabel: selectedRow.scoreLabel,
+								selected: true,
+								sourceLine: selectedRow.sourceLine,
+								status: selectedRow.status,
+								warningCount:
+									selectedRow.warnings.length + (selectedIsStale ? 1 : 0),
+								warnings: selectedIsStale
+									? [
+											...selectedRow.warnings,
+											{
+												code: "stale-selection",
+												message:
+													"The selected tracker row is outside the current filtered page, so detail is shown separately.",
+											},
+										]
+									: selectedRow.warnings,
+							},
+							state: "ready",
 						},
-						state: "ready",
-					},
 		service: "jobhunt-api-scaffold",
 		sessionId: "phase01-session03-agent-runtime-bootstrap",
 		status: "ready",
@@ -590,7 +677,13 @@ async function startFakeApiServer() {
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
 			});
-			response.end(JSON.stringify(createReportViewerPayload(), null, 2));
+			response.end(
+				JSON.stringify(
+					createReportViewerPayload(request.url ?? "/report-viewer"),
+					null,
+					2,
+				),
+			);
 			return;
 		}
 
@@ -862,6 +955,29 @@ try {
 			.getByText("Tracker workspace smoke handoff report body.")
 			.waitFor();
 		assert.match(page.url(), /#artifacts$/);
+		await page.goto(`${webUrl}?trackerReportNumber=020#tracker`, {
+			waitUntil: "networkidle",
+		});
+		await page
+			.getByRole("heading", {
+				name: "Tracker workspace and integrity actions",
+			})
+			.waitFor();
+		await page.getByText("Auto-pipeline closeout focus").waitFor();
+		await page
+			.getByText(
+				"Showing staged tracker addition for report #020. Merge tracker additions to create the canonical row.",
+			)
+			.waitFor();
+		await page.getByText("Pending TSV 20-future-company.tsv").waitFor();
+		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page
+			.getByRole("heading", { name: "Artifact review surface" })
+			.waitFor();
+		assert.match(
+			page.url(),
+			/report=reports%2F020-future-company-2026-04-22\.md/,
+		);
 
 		fakeApi.setTrackerMode("slow");
 		const loadingPage = await browser.newPage();

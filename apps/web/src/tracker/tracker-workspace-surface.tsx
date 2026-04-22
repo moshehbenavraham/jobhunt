@@ -168,6 +168,10 @@ export function TrackerWorkspaceSurface({
 	const tracker = useTrackerWorkspace();
 	const payload = tracker.state.data;
 	const selectedRow = payload?.selectedDetail.row ?? null;
+	const focusedPendingAddition =
+		payload?.selectedDetail.pendingAddition ?? null;
+	const requestedReportNumber =
+		payload?.selectedDetail.requestedReportNumber ?? null;
 	const [searchDraft, setSearchDraft] = useState(
 		tracker.state.focus.search ?? "",
 	);
@@ -639,7 +643,33 @@ export function TrackerWorkspaceSurface({
 							</p>
 						</header>
 
-						{!selectedRow ? (
+						{requestedReportNumber ? (
+							<section
+								style={{
+									background: "rgba(219, 234, 254, 0.7)",
+									border: "1px solid rgba(59, 130, 246, 0.28)",
+									borderRadius: "0.9rem",
+									padding: "0.75rem 0.8rem",
+								}}
+							>
+								<p
+									style={{
+										fontWeight: 700,
+										marginBottom: "0.2rem",
+										marginTop: 0,
+									}}
+								>
+									Auto-pipeline closeout focus
+								</p>
+								<p style={{ margin: 0 }}>
+									Tracker review is focused by report #{requestedReportNumber},
+									so the workspace can resolve either the merged tracker row or
+									the staged TSV addition without local guessing.
+								</p>
+							</section>
+						) : null}
+
+						{!selectedRow && !focusedPendingAddition ? (
 							<section style={stackedCardStyle}>
 								<p style={{ marginBottom: "0.5rem", marginTop: 0 }}>
 									Choose a tracker row to inspect notes, artifact links, report
@@ -653,7 +683,100 @@ export function TrackerWorkspaceSurface({
 									Clear selection
 								</button>
 							</section>
-						) : (
+						) : focusedPendingAddition ? (
+							<>
+								<section style={stackedCardStyle}>
+									<p style={{ marginBottom: "0.25rem", marginTop: 0 }}>
+										<strong>Pending TSV</strong>{" "}
+										{focusedPendingAddition.fileName}
+									</p>
+									<p
+										style={{
+											color: "#475569",
+											marginBottom: "0.35rem",
+											marginTop: 0,
+										}}
+									>
+										{focusedPendingAddition.company ?? "Unknown company"} |{" "}
+										{focusedPendingAddition.role ?? "Unknown role"}
+									</p>
+									<p style={{ color: "#64748b", margin: 0 }}>
+										Entry #{focusedPendingAddition.entryNumber || "n/a"} |{" "}
+										{focusedPendingAddition.status ?? "No status"} | Report #
+										{focusedPendingAddition.reportNumber ?? "n/a"}
+									</p>
+								</section>
+
+								<section style={stackedCardStyle}>
+									<h4 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
+										Staged tracker addition
+									</h4>
+									<p style={{ marginBottom: "0.5rem", marginTop: 0 }}>
+										This closeout has not been merged into
+										`data/applications.md` yet. The tracker workspace is showing
+										the staged TSV so you can review it before merge.
+									</p>
+									<p style={{ color: "#475569", margin: 0 }}>
+										{focusedPendingAddition.notes ??
+											"No notes are stored in the staged TSV."}
+									</p>
+								</section>
+
+								<section style={stackedCardStyle}>
+									<h4 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
+										Report handoff
+									</h4>
+									<div
+										style={{
+											display: "flex",
+											flexWrap: "wrap",
+											gap: "0.5rem",
+										}}
+									>
+										<button
+											disabled={!focusedPendingAddition.reportRepoRelativePath}
+											onClick={() =>
+												onOpenReportViewer({
+													reportPath:
+														focusedPendingAddition.reportRepoRelativePath,
+												})
+											}
+											style={{
+												...buttonStyle,
+												opacity: focusedPendingAddition.reportRepoRelativePath
+													? 1
+													: 0.65,
+											}}
+											type="button"
+										>
+											Open report viewer
+										</button>
+										<button
+											disabled={actionsDisabled}
+											onClick={() =>
+												tracker.runAction({
+													action: "merge-tracker-additions",
+												})
+											}
+											style={{
+												...subtleButtonStyle,
+												opacity: actionsDisabled ? 0.65 : 1,
+											}}
+											type="button"
+										>
+											Merge TSVs
+										</button>
+										<button
+											onClick={() => tracker.clearSelection()}
+											style={subtleButtonStyle}
+											type="button"
+										>
+											Clear selection
+										</button>
+									</div>
+								</section>
+							</>
+						) : selectedRow ? (
 							<>
 								<section style={stackedCardStyle}>
 									<p style={{ marginBottom: "0.25rem", marginTop: 0 }}>
@@ -965,7 +1088,7 @@ export function TrackerWorkspaceSurface({
 									</code>
 								</section>
 							</>
-						)}
+						) : null}
 					</section>
 				</section>
 			</section>

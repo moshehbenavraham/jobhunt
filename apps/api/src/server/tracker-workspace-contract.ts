@@ -13,6 +13,7 @@ export type TrackerWorkspaceSort = (typeof trackerWorkspaceSortValues)[number];
 export const trackerWorkspaceSelectionOriginValues = [
 	"entry-number",
 	"none",
+	"report-number",
 ] as const;
 
 export type TrackerWorkspaceSelectionOrigin =
@@ -109,18 +110,38 @@ export type TrackerWorkspaceSelectedRow = TrackerWorkspaceRowPreview & {
 	sourceLine: string;
 };
 
+export type TrackerWorkspaceFocusedPendingAddition = {
+	company: string | null;
+	entryNumber: number;
+	fileName: string;
+	notes: string | null;
+	reportNumber: string | null;
+	reportRepoRelativePath: string | null;
+	repoRelativePath: string;
+	role: string | null;
+	status: string | null;
+};
+
 export type TrackerWorkspaceSelectedDetail = {
 	message: string;
 	origin: TrackerWorkspaceSelectionOrigin;
+	pendingAddition: TrackerWorkspaceFocusedPendingAddition | null;
 	requestedEntryNumber: number | null;
+	requestedReportNumber: string | null;
 	row: TrackerWorkspaceSelectedRow | null;
 	state: TrackerWorkspaceSelectionState;
 };
 
 export type TrackerWorkspacePendingAdditionItem = {
+	company: string | null;
 	entryNumber: number;
 	fileName: string;
+	notes: string | null;
+	reportNumber: string | null;
+	reportRepoRelativePath: string | null;
 	repoRelativePath: string;
+	role: string | null;
+	status: string | null;
 };
 
 export type TrackerWorkspacePendingAdditionSummary = {
@@ -133,6 +154,7 @@ export type TrackerWorkspaceSummaryOptions = {
 	entryNumber?: number;
 	limit?: number;
 	offset?: number;
+	reportNumber?: string;
 	search?: string;
 	sort?: TrackerWorkspaceSort;
 	status?: string;
@@ -143,6 +165,7 @@ export type TrackerWorkspaceSummaryPayload = {
 		entryNumber: number | null;
 		limit: number;
 		offset: number;
+		reportNumber: string | null;
 		search: string | null;
 		sort: TrackerWorkspaceSort;
 		status: string | null;

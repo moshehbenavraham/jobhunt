@@ -307,6 +307,7 @@ async function saveEvaluationSession(
 	store: Awaited<ReturnType<typeof createOperationalStore>>,
 	input: {
 		activeJobId?: string | null;
+		context?: JsonValue | null;
 		createdAt?: string;
 		lastHeartbeatAt?: string | null;
 		sessionId: string;
@@ -317,9 +318,12 @@ async function saveEvaluationSession(
 ): Promise<void> {
 	await store.sessions.save({
 		activeJobId: input.activeJobId ?? null,
-		context: {
-			workflow: input.workflow,
-		},
+		context:
+			input.context === undefined
+				? {
+						workflow: input.workflow,
+					}
+				: input.context,
 		createdAt: input.createdAt ?? input.updatedAt,
 		lastHeartbeatAt: input.lastHeartbeatAt ?? input.updatedAt,
 		runnerId:
@@ -1452,7 +1456,19 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 	await writeRepoArtifact(
 		fixture.repoRoot,
 		"reports/001-ready-http.md",
-		"# Ready report\n",
+		[
+			"# Ready report",
+			"",
+			"**Date:** 2026-04-21",
+			"**URL:** https://example.com/jobs/ready-http",
+			"**Legitimacy:** High Confidence",
+			"**Verification:** active via browser review",
+			"",
+			"---",
+			"",
+			"Ready report body.",
+			"",
+		].join("\n"),
 	);
 	await writeRepoArtifact(
 		fixture.repoRoot,
@@ -1467,7 +1483,19 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 	await writeRepoArtifact(
 		fixture.repoRoot,
 		"reports/002-degraded-http.md",
-		"# Degraded report\n",
+		[
+			"# Degraded report",
+			"",
+			"**Date:** 2026-04-21",
+			"**URL:** https://example.com/jobs/degraded-http",
+			"**Legitimacy:** Proceed with Caution",
+			"**Verification:** manual review",
+			"",
+			"---",
+			"",
+			"Degraded report body.",
+			"",
+		].join("\n"),
 	);
 	await writeRepoArtifact(
 		fixture.repoRoot,
@@ -1567,6 +1595,15 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 		sessionId: "session-eval-completed",
 		status: "completed",
 		updatedAt: "2026-04-21T09:40:00.000Z",
+		context: {
+			evaluationLaunch: {
+				canonicalUrl: null,
+				host: null,
+				kind: "raw-jd",
+				promptRedacted: true,
+			},
+			workflow: "single-evaluation",
+		},
 		workflow: "single-evaluation",
 	});
 	await saveEvaluationJob(runtimeStore, {
@@ -1589,6 +1626,15 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 		sessionId: "session-eval-degraded",
 		status: "completed",
 		updatedAt: "2026-04-21T09:50:00.000Z",
+		context: {
+			evaluationLaunch: {
+				canonicalUrl: "https://example.com/jobs/degraded-http",
+				host: "example.com",
+				kind: "job-url",
+				promptRedacted: true,
+			},
+			workflow: "auto-pipeline",
+		},
 		workflow: "auto-pipeline",
 	});
 	await saveEvaluationJob(runtimeStore, {
@@ -1772,6 +1818,26 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 			(
 				completedPayload as {
 					summary: {
+						inputProvenance: {
+							kind: string;
+							canonicalUrl: string | null;
+						};
+						reviewFocus: {
+							pipelineReview: {
+								availability: string;
+								reportNumber: string | null;
+								section: string;
+								url: string | null;
+							};
+							reportViewer: {
+								availability: string;
+								reportPath: string | null;
+							};
+							trackerWorkspace: {
+								availability: string;
+								reportNumber: string | null;
+							};
+						};
 						state: string;
 						closeout: { state: string };
 						score: number;
@@ -1861,6 +1927,133 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 			).summary.artifacts.tracker.state,
 			"ready",
 		);
+		assert.equal(
+			(
+				completedPayload as {
+					summary: {
+						inputProvenance: {
+							kind: string;
+							canonicalUrl: string | null;
+						};
+					};
+				}
+			).summary.inputProvenance.kind,
+			"raw-jd",
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					summary: {
+						verification: {
+							status: string;
+							source: string;
+							url: string | null;
+						};
+					};
+				}
+			).summary.verification.status,
+			"not-applicable",
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					summary: {
+						verification: {
+							status: string;
+							source: string;
+							url: string | null;
+						};
+					};
+				}
+			).summary.verification.source,
+			"none",
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					summary: {
+						reviewFocus: {
+							reportViewer: {
+								availability: string;
+								reportPath: string | null;
+							};
+							pipelineReview: {
+								availability: string;
+								reportNumber: string | null;
+								section: string;
+							};
+							trackerWorkspace: {
+								availability: string;
+								reportNumber: string | null;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.reportViewer.availability,
+			"ready",
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					summary: {
+						reviewFocus: {
+							reportViewer: {
+								availability: string;
+								reportPath: string | null;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.reportViewer.reportPath,
+			"reports/001-ready-http.md",
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					summary: {
+						reviewFocus: {
+							pipelineReview: {
+								availability: string;
+								reportNumber: string | null;
+								section: string;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.pipelineReview.reportNumber,
+			"001",
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					summary: {
+						reviewFocus: {
+							pipelineReview: {
+								availability: string;
+								reportNumber: string | null;
+								section: string;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.pipelineReview.section,
+			"processed",
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					summary: {
+						reviewFocus: {
+							trackerWorkspace: {
+								availability: string;
+								reportNumber: string | null;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.trackerWorkspace.reportNumber,
+			"001",
+		);
 
 		const { payload: degradedPayload } = await readJsonResponse(
 			`${handle.url}/evaluation-result?sessionId=session-eval-degraded&previewLimit=1`,
@@ -1873,6 +2066,30 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 						state: string;
 						closeout: { state: string };
 						artifacts: { pdf: { state: string } };
+						inputProvenance: {
+							kind: string;
+							canonicalUrl: string | null;
+							host: string | null;
+						};
+						reviewFocus: {
+							pipelineReview: {
+								availability: string;
+								reportNumber: string | null;
+								section: string;
+								url: string | null;
+							};
+							trackerWorkspace: {
+								availability: string;
+								reportNumber: string | null;
+							};
+						};
+						verification: {
+							message: string;
+							result: string;
+							source: string;
+							status: string;
+							url: string | null;
+						};
 						warnings: { items: Array<{ message: string }>; hasMore: boolean };
 						workflow: string;
 					};
@@ -1929,6 +2146,30 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 						state: string;
 						closeout: { state: string };
 						artifacts: { pdf: { state: string } };
+						inputProvenance: {
+							kind: string;
+							canonicalUrl: string | null;
+							host: string | null;
+						};
+						reviewFocus: {
+							pipelineReview: {
+								availability: string;
+								reportNumber: string | null;
+								section: string;
+								url: string | null;
+							};
+							trackerWorkspace: {
+								availability: string;
+								reportNumber: string | null;
+							};
+						};
+						verification: {
+							message: string;
+							result: string;
+							source: string;
+							status: string;
+							url: string | null;
+						};
 						warnings: { items: Array<{ message: string }>; hasMore: boolean };
 						workflow: string;
 					};
@@ -1949,6 +2190,176 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 				}
 			).summary.workflow,
 			"auto-pipeline",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						inputProvenance: {
+							kind: string;
+							canonicalUrl: string | null;
+							host: string | null;
+						};
+					};
+				}
+			).summary.inputProvenance.kind,
+			"job-url",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						inputProvenance: {
+							kind: string;
+							canonicalUrl: string | null;
+							host: string | null;
+						};
+					};
+				}
+			).summary.inputProvenance.canonicalUrl,
+			"https://example.com/jobs/degraded-http",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						inputProvenance: {
+							kind: string;
+							canonicalUrl: string | null;
+							host: string | null;
+						};
+					};
+				}
+			).summary.inputProvenance.host,
+			"example.com",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						verification: {
+							message: string;
+							result: string;
+							source: string;
+							status: string;
+							url: string | null;
+						};
+					};
+				}
+			).summary.verification.source,
+			"report-header",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						verification: {
+							message: string;
+							result: string;
+							source: string;
+							status: string;
+							url: string | null;
+						};
+					};
+				}
+			).summary.verification.status,
+			"needs-review",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						verification: {
+							message: string;
+							result: string;
+							source: string;
+							status: string;
+							url: string | null;
+						};
+					};
+				}
+			).summary.verification.result,
+			"uncertain",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						verification: {
+							message: string;
+							result: string;
+							source: string;
+							status: string;
+							url: string | null;
+						};
+					};
+				}
+			).summary.verification.url,
+			"https://example.com/jobs/degraded-http",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						reviewFocus: {
+							pipelineReview: {
+								availability: string;
+								reportNumber: string | null;
+								section: string;
+								url: string | null;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.pipelineReview.availability,
+			"ready",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						reviewFocus: {
+							pipelineReview: {
+								availability: string;
+								reportNumber: string | null;
+								section: string;
+								url: string | null;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.pipelineReview.reportNumber,
+			"002",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						reviewFocus: {
+							trackerWorkspace: {
+								availability: string;
+								reportNumber: string | null;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.trackerWorkspace.availability,
+			"ready",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					summary: {
+						reviewFocus: {
+							trackerWorkspace: {
+								availability: string;
+								reportNumber: string | null;
+							};
+						};
+					};
+				}
+			).summary.reviewFocus.trackerWorkspace.reportNumber,
+			"002",
 		);
 	} finally {
 		await handle.close();
@@ -2999,7 +3410,7 @@ test("pipeline-review route reports missing pipeline data, parsed queue rows, wa
 	}
 });
 
-test("tracker-workspace routes cover missing tracker data, parsed rows, stale selection, canonical status updates, and maintenance warnings", async () => {
+test("tracker-workspace routes cover missing tracker data, report-number focus, canonical status updates, and maintenance warnings", async () => {
 	const fixture = await createReadyFixture();
 	await writeRepoArtifact(
 		fixture.repoRoot,
@@ -3299,6 +3710,173 @@ test("tracker-workspace routes cover missing tracker data, parsed rows, stale se
 			1,
 		);
 
+		const { payload: reportFocusPayload } = await readJsonResponse(
+			`${handle.url}/tracker-workspace?reportNumber=031`,
+		);
+
+		assert.equal(
+			(
+				reportFocusPayload as {
+					filters: { reportNumber: string | null };
+					selectedDetail: {
+						origin: string;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).filters.reportNumber,
+			"031",
+		);
+		assert.equal(
+			(
+				reportFocusPayload as {
+					filters: { reportNumber: string | null };
+					selectedDetail: {
+						origin: string;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).selectedDetail.origin,
+			"report-number",
+		);
+		assert.equal(
+			(
+				reportFocusPayload as {
+					selectedDetail: {
+						origin: string;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).selectedDetail.requestedReportNumber,
+			"031",
+		);
+		assert.equal(
+			(
+				reportFocusPayload as {
+					selectedDetail: {
+						origin: string;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).selectedDetail.row?.entryNumber,
+			31,
+		);
+
+		const { payload: pendingFocusPayload } = await readJsonResponse(
+			`${handle.url}/tracker-workspace?reportNumber=033`,
+		);
+
+		assert.equal(
+			(
+				pendingFocusPayload as {
+					filters: { reportNumber: string | null };
+					selectedDetail: {
+						origin: string;
+						pendingAddition: {
+							reportNumber: string | null;
+							repoRelativePath: string;
+						} | null;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).filters.reportNumber,
+			"033",
+		);
+		assert.equal(
+			(
+				pendingFocusPayload as {
+					selectedDetail: {
+						origin: string;
+						pendingAddition: {
+							reportNumber: string | null;
+							repoRelativePath: string;
+						} | null;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).selectedDetail.origin,
+			"report-number",
+		);
+		assert.equal(
+			(
+				pendingFocusPayload as {
+					selectedDetail: {
+						origin: string;
+						pendingAddition: {
+							reportNumber: string | null;
+							repoRelativePath: string;
+						} | null;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).selectedDetail.state,
+			"ready",
+		);
+		assert.equal(
+			(
+				pendingFocusPayload as {
+					selectedDetail: {
+						origin: string;
+						pendingAddition: {
+							reportNumber: string | null;
+							repoRelativePath: string;
+						} | null;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).selectedDetail.requestedReportNumber,
+			"033",
+		);
+		assert.equal(
+			(
+				pendingFocusPayload as {
+					selectedDetail: {
+						origin: string;
+						pendingAddition: {
+							reportNumber: string | null;
+							repoRelativePath: string;
+						} | null;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).selectedDetail.pendingAddition?.reportNumber,
+			"033",
+		);
+		assert.equal(
+			(
+				pendingFocusPayload as {
+					selectedDetail: {
+						origin: string;
+						pendingAddition: {
+							reportNumber: string | null;
+							repoRelativePath: string;
+						} | null;
+						requestedReportNumber: string | null;
+						row: { entryNumber: number } | null;
+						state: string;
+					};
+				}
+			).selectedDetail.pendingAddition?.repoRelativePath,
+			"batch/tracker-additions/33-gamma.tsv",
+		);
+
 		const { payload: stalePayload } = await readJsonResponse(
 			`${handle.url}/tracker-workspace?status=Applied&entryNumber=31`,
 		);
@@ -3439,6 +4017,23 @@ test("tracker-workspace routes cover missing tracker data, parsed rows, stale se
 		assert.equal(
 			(
 				invalidQueryPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-tracker-workspace-query",
+		);
+
+		const {
+			payload: mutuallyExclusiveQueryPayload,
+			response: mutuallyExclusiveQueryResponse,
+		} = await readJsonResponse(
+			`${handle.url}/tracker-workspace?entryNumber=31&reportNumber=031`,
+		);
+
+		assert.equal(mutuallyExclusiveQueryResponse.status, 400);
+		assert.equal(
+			(
+				mutuallyExclusiveQueryPayload as {
 					error: { code: string };
 				}
 			).error.code,

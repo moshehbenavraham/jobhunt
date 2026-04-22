@@ -353,12 +353,79 @@ function createPipelineReviewPayload() {
 	};
 }
 
-function createTrackerWorkspacePayload() {
+function createTrackerWorkspacePayload(requestUrl = "/tracker-workspace") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const requestedReportNumber =
+		url.searchParams.get("reportNumber")?.trim() || null;
+	const focusedPendingAddition =
+		requestedReportNumber === "020"
+			? {
+					company: "Future Company",
+					entryNumber: 20,
+					fileName: "20-future-company.tsv",
+					notes: "Pending add",
+					reportNumber: "020",
+					reportRepoRelativePath: "reports/020-future-company-2026-04-22.md",
+					repoRelativePath: "batch/tracker-additions/20-future-company.tsv",
+					role: "Forward Deployed Engineer",
+					status: "Evaluated",
+				}
+			: null;
+	const selectedEntryNumber = requestedReportNumber ? null : 19;
+	const selectedRow =
+		requestedReportNumber === "019" || requestedReportNumber === null
+			? {
+					company: "Cohere",
+					date: "2026-04-22",
+					entryNumber: 19,
+					header: {
+						date: "2026-04-22",
+						legitimacy: "High Confidence",
+						pdf: {
+							exists: true,
+							message:
+								"Checked-in PDF artifact output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf is available.",
+							repoRelativePath:
+								"output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf",
+						},
+						score: 4.4,
+						title:
+							"Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
+						url: "https://example.com/jobs/cohere-agentic",
+						verification: "active via browser review",
+					},
+					notes:
+						"Strongest current agentic-workflows fit in the queue; remote-flexible and worth prioritizing.",
+					pdf: {
+						exists: true,
+						message:
+							"Checked-in PDF artifact output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf is available.",
+						repoRelativePath:
+							"output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf",
+					},
+					report: {
+						exists: true,
+						message:
+							"Checked-in report artifact reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md is available.",
+						repoRelativePath:
+							"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+					},
+					role: "Applied AI Engineer - Agentic Workflows",
+					score: 4.4,
+					scoreLabel: "4.4/5",
+					sourceLine:
+						"| 19 | 2026-04-22 | Cohere | Applied AI Engineer - Agentic Workflows | 4.4/5 | Evaluated | Y | [019](reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md) | Strongest current agentic-workflows fit in the queue; remote-flexible and worth prioritizing. |",
+					status: "Evaluated",
+					warnings: [],
+				}
+			: null;
+
 	return {
 		filters: {
-			entryNumber: 19,
+			entryNumber: selectedEntryNumber,
 			limit: 12,
 			offset: 0,
+			reportNumber: requestedReportNumber,
 			search: null,
 			sort: "date",
 			status: null,
@@ -371,9 +438,15 @@ function createTrackerWorkspacePayload() {
 			count: 1,
 			items: [
 				{
+					company: "Future Company",
 					entryNumber: 20,
 					fileName: "20-future-company.tsv",
+					notes: "Pending add",
+					reportNumber: "020",
+					reportRepoRelativePath: "reports/020-future-company-2026-04-22.md",
 					repoRelativePath: "batch/tracker-additions/20-future-company.tsv",
+					role: "Forward Deployed Engineer",
+					status: "Evaluated",
 				},
 			],
 			message: "1 pending tracker TSV addition is waiting to merge.",
@@ -403,7 +476,8 @@ function createTrackerWorkspacePayload() {
 					role: "Applied AI Engineer - Agentic Workflows",
 					score: 4.4,
 					scoreLabel: "4.4/5",
-					selected: true,
+					selected:
+						requestedReportNumber === null || requestedReportNumber === "019",
 					status: "Evaluated",
 					warningCount: 0,
 					warnings: [],
@@ -441,56 +515,23 @@ function createTrackerWorkspacePayload() {
 			totalCount: 2,
 		},
 		selectedDetail: {
-			message: "Showing selected tracker row #19.",
-			origin: "entry-number",
-			requestedEntryNumber: 19,
-			row: {
-				company: "Cohere",
-				date: "2026-04-22",
-				entryNumber: 19,
-				header: {
-					date: "2026-04-22",
-					legitimacy: "High Confidence",
-					pdf: {
-						exists: true,
-						message:
-							"Checked-in PDF artifact output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf is available.",
-						repoRelativePath:
-							"output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf",
-					},
-					score: 4.4,
-					title:
-						"Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
-					url: "https://example.com/jobs/cohere-agentic",
-					verification: "active via browser review",
-				},
-				notes:
-					"Strongest current agentic-workflows fit in the queue; remote-flexible and worth prioritizing.",
-				pdf: {
-					exists: true,
-					message:
-						"Checked-in PDF artifact output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf is available.",
-					repoRelativePath:
-						"output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf",
-				},
-				report: {
-					exists: true,
-					message:
-						"Checked-in report artifact reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md is available.",
-					repoRelativePath:
-						"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
-				},
-				role: "Applied AI Engineer - Agentic Workflows",
-				score: 4.4,
-				scoreLabel: "4.4/5",
-				selected: true,
-				sourceLine:
-					"| 19 | 2026-04-22 | Cohere | Applied AI Engineer - Agentic Workflows | 4.4/5 | Evaluated | Y | [019](reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md) | Strongest current agentic-workflows fit in the queue; remote-flexible and worth prioritizing. |",
-				status: "Evaluated",
-				warningCount: 0,
-				warnings: [],
-			},
-			state: "ready",
+			message: focusedPendingAddition
+				? "Showing staged tracker addition for report #020. Merge tracker additions to create the canonical row."
+				: requestedReportNumber === "019"
+					? "Showing tracker row for report #019."
+					: "Showing selected tracker row #19.",
+			origin: requestedReportNumber === null ? "entry-number" : "report-number",
+			pendingAddition: focusedPendingAddition,
+			requestedEntryNumber: selectedRow?.entryNumber ?? null,
+			requestedReportNumber,
+			row: selectedRow
+				? {
+						...selectedRow,
+						selected: true,
+						warningCount: selectedRow.warnings.length,
+					}
+				: null,
+			state: focusedPendingAddition || selectedRow ? "ready" : "empty",
 		},
 		service: "jobhunt-api-scaffold",
 		sessionId: "phase01-session03-agent-runtime-bootstrap",
@@ -515,14 +556,20 @@ function createTrackerWorkspacePayload() {
 	};
 }
 
-function createReportViewerPayload() {
+function createReportViewerPayload(requestUrl = "/report-viewer") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const reportPath =
+		url.searchParams.get("reportPath") ??
+		"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md";
+	const isPendingFocus =
+		reportPath === "reports/020-future-company-2026-04-22.md";
+
 	return {
 		filters: {
 			group: "reports",
 			limit: 8,
 			offset: 0,
-			reportPath:
-				"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+			reportPath,
 		},
 		generatedAt: "2026-04-22T00:00:00.000Z",
 		message: "Showing the selected report artifact.",
@@ -539,41 +586,60 @@ function createReportViewerPayload() {
 					repoRelativePath:
 						"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
 					reportNumber: "019",
-					selected: true,
+					selected:
+						!isPendingFocus &&
+						reportPath ===
+							"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+				},
+				{
+					artifactDate: "2026-04-22",
+					fileName: "020-future-company-2026-04-22.md",
+					kind: "report",
+					repoRelativePath: "reports/020-future-company-2026-04-22.md",
+					reportNumber: "020",
+					selected: isPendingFocus,
 				},
 			],
 			limit: 8,
 			offset: 0,
-			totalCount: 1,
+			totalCount: 2,
 		},
 		selectedReport: {
-			body: [
-				"# Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
-				"",
-				"Tracker handoff report body.",
-			].join("\n"),
+			body: isPendingFocus
+				? [
+						"# Evaluation: Future Company -- Forward Deployed Engineer",
+						"",
+						"Pending tracker report body.",
+					].join("\n")
+				: [
+						"# Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
+						"",
+						"Tracker handoff report body.",
+					].join("\n"),
 			header: {
-				archetype: "Applied AI",
+				archetype: isPendingFocus ? "Forward Deployed" : "Applied AI",
 				date: "2026-04-22",
 				legitimacy: "High Confidence",
 				pdf: {
-					exists: true,
-					repoRelativePath:
-						"output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf",
+					exists: !isPendingFocus,
+					repoRelativePath: isPendingFocus
+						? null
+						: "output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf",
 				},
-				score: 4.4,
-				title: "Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
-				url: "https://example.com/jobs/cohere-agentic",
+				score: isPendingFocus ? 4.1 : 4.4,
+				title: isPendingFocus
+					? "Evaluation: Future Company -- Forward Deployed Engineer"
+					: "Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
+				url: isPendingFocus
+					? "https://example.com/jobs/future-company"
+					: "https://example.com/jobs/cohere-agentic",
 				verification: "active via browser review",
 			},
-			message:
-				"Showing selected report reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md.",
+			message: `Showing selected report ${reportPath}.`,
 			origin: "selected",
-			repoRelativePath:
-				"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
-			reportNumber: "019",
-			requestedRepoRelativePath:
-				"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+			repoRelativePath: reportPath,
+			reportNumber: isPendingFocus ? "020" : "019",
+			requestedRepoRelativePath: reportPath,
 			state: "ready",
 		},
 		service: "jobhunt-api-scaffold",
@@ -890,7 +956,13 @@ async function startFakeApiServer() {
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
 			});
-			response.end(JSON.stringify(createTrackerWorkspacePayload(), null, 2));
+			response.end(
+				JSON.stringify(
+					createTrackerWorkspacePayload(request.url ?? "/tracker-workspace"),
+					null,
+					2,
+				),
+			);
 			return;
 		}
 
@@ -898,7 +970,13 @@ async function startFakeApiServer() {
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
 			});
-			response.end(JSON.stringify(createReportViewerPayload(), null, 2));
+			response.end(
+				JSON.stringify(
+					createReportViewerPayload(request.url ?? "/report-viewer"),
+					null,
+					2,
+				),
+			);
 			return;
 		}
 
@@ -1044,6 +1122,30 @@ try {
 			.waitFor();
 		await page.getByText("Tracker handoff report body.").waitFor();
 		assert.match(page.url(), /#artifacts$/);
+		await page.goto(`${webUrl}?trackerReportNumber=020#tracker`, {
+			waitUntil: "networkidle",
+		});
+		await page
+			.getByRole("heading", {
+				name: "Tracker workspace and integrity actions",
+			})
+			.waitFor();
+		await page.getByText("Auto-pipeline closeout focus").waitFor();
+		await page
+			.getByText(
+				"Showing staged tracker addition for report #020. Merge tracker additions to create the canonical row.",
+			)
+			.waitFor();
+		await page.getByText("Pending TSV 20-future-company.tsv").waitFor();
+		await page.getByText("This closeout has not been merged into").waitFor();
+		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page
+			.getByRole("heading", { name: "Artifact review surface" })
+			.waitFor();
+		assert.match(
+			page.url(),
+			/report=reports%2F020-future-company-2026-04-22\.md/,
+		);
 		await page.getByRole("link", { name: /Approvals/ }).click();
 		await page
 			.getByRole("heading", { name: "Approval inbox and human review flow" })
