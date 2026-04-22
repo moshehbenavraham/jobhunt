@@ -142,6 +142,14 @@
     {
       "id": "phase04-session03-report-viewer-and-artifact-browser",
       "package": "apps/web"
+    },
+    {
+      "id": "phase04-session04-pipeline-review-workspace",
+      "package": "apps/web"
+    },
+    {
+      "id": "phase04-session05-tracker-workspace-and-integrity-actions",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
@@ -389,6 +397,12 @@
     {
       "date": "2026-04-22",
       "session": "phase04-session04-pipeline-review-workspace",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session05-tracker-workspace-and-integrity-actions",
       "package": "apps/web",
       "status": "completed"
     }

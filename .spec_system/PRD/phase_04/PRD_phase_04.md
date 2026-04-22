@@ -4,7 +4,7 @@
 **Sessions**: 6
 **Estimated Duration**: 6-9 days
 
-**Progress**: 4/6 sessions (67%)
+**Progress**: 5/6 sessions (83%)
 
 ---
 
@@ -25,14 +25,14 @@ duplicating repo logic in React, or weakening tracker integrity rules.
 
 ## Progress Tracker
 
-| Session | Name | Status | Est. Tasks | Validated |
-|---------|------|--------|------------|-----------|
-| 01 | Evaluation Result Contract | Complete | ~12-25 | Yes |
-| 02 | Evaluation Console and Artifact Handoff | Complete | ~12-25 | Yes |
-| 03 | Report Viewer and Artifact Browser | Complete | ~12-25 | Yes |
-| 04 | Pipeline Review Workspace | Complete | ~12-25 | Yes |
-| 05 | Tracker Workspace and Integrity Actions | Not Started | ~12-25 | - |
-| 06 | Auto-Pipeline Parity and Regression | Not Started | ~12-25 | - |
+| Session | Name                                    | Status      | Est. Tasks | Validated |
+| ------- | --------------------------------------- | ----------- | ---------- | --------- |
+| 01      | Evaluation Result Contract              | Complete    | ~12-25     | Yes       |
+| 02      | Evaluation Console and Artifact Handoff | Complete    | ~12-25     | Yes       |
+| 03      | Report Viewer and Artifact Browser      | Complete    | ~12-25     | Yes       |
+| 04      | Pipeline Review Workspace               | Complete    | ~12-25     | Yes       |
+| 05      | Tracker Workspace and Integrity Actions | Complete    | ~12-25     | Yes       |
+| 06      | Auto-Pipeline Parity and Regression     | Not Started | ~12-25     | -         |
 
 ---
 
@@ -42,12 +42,13 @@ duplicating repo logic in React, or weakening tracker integrity rules.
 - Session 02: Evaluation Console and Artifact Handoff
 - Session 03: Report Viewer and Artifact Browser
 - Session 04: Pipeline Review Workspace
+- Session 05: Tracker Workspace and Integrity Actions
 
 ---
 
 ## Upcoming Sessions
 
-- Session 05: Tracker Workspace and Integrity Actions
+- Session 06: Auto-Pipeline Parity and Regression
 
 ---
 
@@ -123,6 +124,7 @@ logic in React state.
 ## Success Criteria
 
 Phase complete when:
+
 - [ ] All 6 sessions completed
 - [ ] JD text and ATS URL workflows produce report, PDF, and tracker artifacts
       with explicit review state in the app
