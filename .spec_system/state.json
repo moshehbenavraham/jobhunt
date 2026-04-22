@@ -196,6 +196,10 @@
     {
       "id": "phase06-session04-research-and-narrative-specialist-contracts",
       "package": "apps/api"
+    },
+    {
+      "id": "phase06-session05-specialist-review-surfaces",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
@@ -205,12 +209,6 @@
       "session": "phase06-session05-specialist-review-surfaces",
       "package": "apps/web",
       "status": "completed"
-    },
-    {
-      "date": "2026-04-22",
-      "session": "phase06-session05-specialist-review-surfaces",
-      "package": "apps/web",
-      "status": "planned"
     },
     {
       "date": "2026-04-22",
