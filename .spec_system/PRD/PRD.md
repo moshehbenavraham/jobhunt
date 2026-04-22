@@ -769,7 +769,7 @@ Planning assumptions for this PRD:
 
 - Objective: close the remaining parity gaps and make the app the primary
   single-user operator path
-- Sessions: `4-6`
+- Sessions: `6`
 - Key outcomes: parity for deep research, outreach, interview-prep, training,
   project review, follow-up, patterns, dashboard-equivalent views, settings and
   maintenance polish, deprecation decision for the Go dashboard
@@ -789,7 +789,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | 03    | Chat, Onboarding, and Approvals UX                       | 5        | Complete    |
 | 04    | Evaluation, Artifacts, and Tracker Parity                | 6        | Complete    |
 | 05    | Scan, Batch, and Application-Help Parity                 | 6        | Complete    |
-| 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 4-6      | Not Started |
+| 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 6        | In Progress |
 
 ## Phase 00: Foundation and Repo Contract
 
@@ -905,10 +905,17 @@ Progress: 6/6 sessions complete.
 
 Progress: 6/6 sessions complete.
 
-Progress: 4/6 sessions complete.
-
 ### Phase 06: Specialist Workflows, Dashboard Replacement, and Cutover
 
+- Completed Session 01: Specialist Workflow Intake and Result Contracts in
+  `apps/api`
+- Planned Session 02: Specialist Workspace Foundation in `apps/web`
+- Planned Session 03: Offer, Follow-Up, and Pattern Contracts in `apps/api`
+- Planned Session 04: Research and Narrative Specialist Contracts in
+  `apps/api`
+- Planned Session 05: Specialist Review Surfaces in `apps/web`
+- Planned Session 06: Dashboard Replacement, Maintenance, and Cutover in
+  `apps/web` and `apps/api`
 - Implement remaining specialist flows:
   - Compare offers
   - Deep company research
@@ -924,6 +931,18 @@ Progress: 4/6 sessions complete.
   surface
 - Remove Codex CLI from primary onboarding
 - Run final parity validation and close migration gaps
+
+Phase 06 planning artifacts live under `.spec_system/PRD/phase_06/`.
+
+Progress: 1/6 sessions complete.
+
+## Phase 06 Planned Sessions
+
+1. Session 02: Specialist Workspace Foundation
+2. Session 03: Offer, Follow-Up, and Pattern Contracts
+3. Session 04: Research and Narrative Specialist Contracts
+4. Session 05: Specialist Review Surfaces
+5. Session 06: Dashboard Replacement, Maintenance, and Cutover
 
 ## Success Criteria
 

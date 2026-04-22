@@ -18,6 +18,51 @@ export type SpecialistDefinition = {
 	label: string;
 };
 
+export const SPECIALIST_WORKSPACE_FAMILY_VALUES = [
+	"application-history",
+	"research-and-narrative",
+] as const;
+
+export type SpecialistWorkspaceFamily =
+	(typeof SPECIALIST_WORKSPACE_FAMILY_VALUES)[number];
+
+export const SPECIALIST_WORKSPACE_INTAKE_KIND_VALUES = [
+	"company-role",
+	"offer-set",
+	"project-idea",
+	"report-context",
+	"tracker-history",
+	"training-topic",
+] as const;
+
+export type SpecialistWorkspaceIntakeKind =
+	(typeof SPECIALIST_WORKSPACE_INTAKE_KIND_VALUES)[number];
+
+export const SPECIALIST_WORKSPACE_SUMMARY_AVAILABILITY_VALUES = [
+	"dedicated-detail",
+	"pending",
+] as const;
+
+export type SpecialistWorkspaceSummaryAvailability =
+	(typeof SPECIALIST_WORKSPACE_SUMMARY_AVAILABILITY_VALUES)[number];
+
+export type WorkflowSpecialistWorkspaceMetadata = {
+	detailSurface: {
+		label: string;
+		path: string;
+	} | null;
+	enabled: boolean;
+	family: SpecialistWorkspaceFamily | null;
+	intake: {
+		kind: SpecialistWorkspaceIntakeKind;
+		message: string;
+		requiresSavedState: boolean;
+	} | null;
+	summaryAvailability: SpecialistWorkspaceSummaryAvailability | null;
+	workspaceLabel: string | null;
+	workspacePath: string | null;
+};
+
 export type WorkflowSpecialistRoute = {
 	message: string;
 	missingCapabilities: readonly string[];
@@ -28,6 +73,7 @@ export type WorkflowSpecialistRoute = {
 	>;
 	toolPolicy: SpecialistToolPolicy;
 	workflow: WorkflowIntent;
+	workspace: WorkflowSpecialistWorkspaceMetadata;
 };
 
 const EVALUATION_TOOLS = [
@@ -81,6 +127,44 @@ const APPLICATION_HELP_TOOLS = [
 	"summarize-profile-sources",
 ] as const;
 
+const DISABLED_WORKSPACE_METADATA = {
+	detailSurface: null,
+	enabled: false,
+	family: null,
+	intake: null,
+	summaryAvailability: null,
+	workspaceLabel: null,
+	workspacePath: null,
+} as const satisfies WorkflowSpecialistWorkspaceMetadata;
+
+function createWorkspaceMetadata(
+	workflow: WorkflowIntent,
+	input: {
+		detailSurface?: {
+			label: string;
+			path: string;
+		} | null;
+		family: SpecialistWorkspaceFamily;
+		intake: {
+			kind: SpecialistWorkspaceIntakeKind;
+			message: string;
+			requiresSavedState: boolean;
+		};
+		summaryAvailability: SpecialistWorkspaceSummaryAvailability;
+		workspaceLabel: string;
+	},
+): WorkflowSpecialistWorkspaceMetadata {
+	return {
+		detailSurface: input.detailSurface ?? null,
+		enabled: true,
+		family: input.family,
+		intake: input.intake,
+		summaryAvailability: input.summaryAvailability,
+		workspaceLabel: input.workspaceLabel,
+		workspacePath: `/workflows/${workflow}`,
+	};
+}
+
 const specialistDefinitions = [
 	{
 		description:
@@ -125,6 +209,7 @@ const workflowRoutes = [
 			allowedToolNames: ["bootstrap-auto-pipeline", ...EVALUATION_TOOLS],
 		},
 		workflow: "auto-pipeline",
+		workspace: DISABLED_WORKSPACE_METADATA,
 	},
 	{
 		message:
@@ -136,6 +221,7 @@ const workflowRoutes = [
 			allowedToolNames: ["bootstrap-single-evaluation", ...EVALUATION_TOOLS],
 		},
 		workflow: "single-evaluation",
+		workspace: DISABLED_WORKSPACE_METADATA,
 	},
 	{
 		message:
@@ -151,6 +237,7 @@ const workflowRoutes = [
 			],
 		},
 		workflow: "generate-ats-pdf",
+		workspace: DISABLED_WORKSPACE_METADATA,
 	},
 	{
 		message:
@@ -162,6 +249,7 @@ const workflowRoutes = [
 			allowedToolNames: SCAN_TOOLS,
 		},
 		workflow: "scan-portals",
+		workspace: DISABLED_WORKSPACE_METADATA,
 	},
 	{
 		message:
@@ -173,6 +261,7 @@ const workflowRoutes = [
 			allowedToolNames: SCAN_TOOLS,
 		},
 		workflow: "process-pipeline",
+		workspace: DISABLED_WORKSPACE_METADATA,
 	},
 	{
 		message:
@@ -184,6 +273,7 @@ const workflowRoutes = [
 			allowedToolNames: BATCH_TOOLS,
 		},
 		workflow: "batch-evaluation",
+		workspace: DISABLED_WORKSPACE_METADATA,
 	},
 	{
 		message:
@@ -197,6 +287,7 @@ const workflowRoutes = [
 			restrictedToolNames: ["inspect-prompt-contract"],
 		},
 		workflow: "tracker-status",
+		workspace: DISABLED_WORKSPACE_METADATA,
 	},
 	{
 		message:
@@ -209,6 +300,17 @@ const workflowRoutes = [
 			fallbackToolNames: TRACKER_FALLBACK_TOOLS,
 		},
 		workflow: "compare-offers",
+		workspace: createWorkspaceMetadata("compare-offers", {
+			family: "application-history",
+			intake: {
+				kind: "offer-set",
+				message:
+					"Compare-offers expects two or more offer descriptions, saved evaluations, or role references.",
+				requiresSavedState: false,
+			},
+			summaryAvailability: "pending",
+			workspaceLabel: "Compare Offers",
+		}),
 	},
 	{
 		message:
@@ -221,6 +323,17 @@ const workflowRoutes = [
 			fallbackToolNames: TRACKER_FALLBACK_TOOLS,
 		},
 		workflow: "follow-up-cadence",
+		workspace: createWorkspaceMetadata("follow-up-cadence", {
+			family: "application-history",
+			intake: {
+				kind: "tracker-history",
+				message:
+					"Follow-up cadence reads the tracker, follow-up history, and saved reports to stage next-touch guidance.",
+				requiresSavedState: true,
+			},
+			summaryAvailability: "pending",
+			workspaceLabel: "Follow-Up Cadence",
+		}),
 	},
 	{
 		message:
@@ -233,6 +346,17 @@ const workflowRoutes = [
 			fallbackToolNames: TRACKER_FALLBACK_TOOLS,
 		},
 		workflow: "rejection-patterns",
+		workspace: createWorkspaceMetadata("rejection-patterns", {
+			family: "application-history",
+			intake: {
+				kind: "tracker-history",
+				message:
+					"Rejection patterns reads tracker history and saved reports to identify outcome trends.",
+				requiresSavedState: true,
+			},
+			summaryAvailability: "pending",
+			workspaceLabel: "Rejection Patterns",
+		}),
 	},
 	{
 		message:
@@ -245,6 +369,21 @@ const workflowRoutes = [
 			restrictedToolNames: ["inspect-prompt-contract"],
 		},
 		workflow: "application-help",
+		workspace: createWorkspaceMetadata("application-help", {
+			detailSurface: {
+				label: "Application Help",
+				path: "/application-help",
+			},
+			family: "research-and-narrative",
+			intake: {
+				kind: "report-context",
+				message:
+					"Application help launches from saved report context, application questions, or staged draft hints.",
+				requiresSavedState: true,
+			},
+			summaryAvailability: "dedicated-detail",
+			workspaceLabel: "Application Help",
+		}),
 	},
 	{
 		message:
@@ -257,6 +396,17 @@ const workflowRoutes = [
 			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
 		},
 		workflow: "deep-company-research",
+		workspace: createWorkspaceMetadata("deep-company-research", {
+			family: "research-and-narrative",
+			intake: {
+				kind: "company-role",
+				message:
+					"Deep research expects a company and role target, with saved evaluation context when available.",
+				requiresSavedState: false,
+			},
+			summaryAvailability: "pending",
+			workspaceLabel: "Deep Research",
+		}),
 	},
 	{
 		message:
@@ -269,6 +419,17 @@ const workflowRoutes = [
 			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
 		},
 		workflow: "linkedin-outreach",
+		workspace: createWorkspaceMetadata("linkedin-outreach", {
+			family: "research-and-narrative",
+			intake: {
+				kind: "company-role",
+				message:
+					"LinkedIn outreach expects a company, role, or contact target to generate a bounded outreach draft.",
+				requiresSavedState: false,
+			},
+			summaryAvailability: "pending",
+			workspaceLabel: "LinkedIn Outreach",
+		}),
 	},
 	{
 		message:
@@ -281,6 +442,17 @@ const workflowRoutes = [
 			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
 		},
 		workflow: "interview-prep",
+		workspace: createWorkspaceMetadata("interview-prep", {
+			family: "research-and-narrative",
+			intake: {
+				kind: "company-role",
+				message:
+					"Interview prep expects a company and role target, with saved report context when available.",
+				requiresSavedState: false,
+			},
+			summaryAvailability: "pending",
+			workspaceLabel: "Interview Prep",
+		}),
 	},
 	{
 		message:
@@ -293,6 +465,17 @@ const workflowRoutes = [
 			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
 		},
 		workflow: "training-review",
+		workspace: createWorkspaceMetadata("training-review", {
+			family: "research-and-narrative",
+			intake: {
+				kind: "training-topic",
+				message:
+					"Training review expects a course, certification, or skill investment to evaluate.",
+				requiresSavedState: false,
+			},
+			summaryAvailability: "pending",
+			workspaceLabel: "Training Review",
+		}),
 	},
 	{
 		message:
@@ -305,6 +488,17 @@ const workflowRoutes = [
 			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
 		},
 		workflow: "project-review",
+		workspace: createWorkspaceMetadata("project-review", {
+			family: "research-and-narrative",
+			intake: {
+				kind: "project-idea",
+				message:
+					"Project review expects a portfolio project concept, brief, or artifact outline.",
+				requiresSavedState: false,
+			},
+			summaryAvailability: "pending",
+			workspaceLabel: "Project Review",
+		}),
 	},
 ] as const satisfies readonly WorkflowSpecialistRoute[];
 
@@ -422,6 +616,19 @@ export function listWorkflowSpecialistRoutes(): readonly WorkflowSpecialistRoute
 		...route,
 		missingCapabilities: [...route.missingCapabilities],
 		toolPolicy: cloneToolPolicy(route.toolPolicy),
+		workspace: {
+			...route.workspace,
+			detailSurface: route.workspace.detailSurface
+				? {
+						...route.workspace.detailSurface,
+					}
+				: null,
+			intake: route.workspace.intake
+				? {
+						...route.workspace.intake,
+					}
+				: null,
+		},
 	}));
 }
 
@@ -438,5 +645,24 @@ export function getWorkflowSpecialistRoute(
 		...route,
 		missingCapabilities: [...route.missingCapabilities],
 		toolPolicy: cloneToolPolicy(route.toolPolicy),
+		workspace: {
+			...route.workspace,
+			detailSurface: route.workspace.detailSurface
+				? {
+						...route.workspace.detailSurface,
+					}
+				: null,
+			intake: route.workspace.intake
+				? {
+						...route.workspace.intake,
+					}
+				: null,
+		},
 	};
+}
+
+export function listSpecialistWorkspaceRoutes(): readonly WorkflowSpecialistRoute[] {
+	return listWorkflowSpecialistRoutes().filter(
+		(route) => route.workspace.enabled,
+	);
 }

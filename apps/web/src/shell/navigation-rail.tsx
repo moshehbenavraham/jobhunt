@@ -1,4 +1,5 @@
 import type { CSSProperties, MouseEvent } from "react";
+import { SPECIALIST_WORKSPACE_MODE_VALUES } from "../workflows/specialist-workspace-types";
 import {
 	type OperatorShellSummaryPayload,
 	SHELL_SURFACES,
@@ -106,6 +107,28 @@ function getBadge(
 				label: summary.activity.state === "idle" ? "Idle" : "Queue",
 				tone: "neutral",
 			};
+		case "workflows":
+			if (
+				summary.activity.activeSession &&
+				SPECIALIST_WORKSPACE_MODE_VALUES.includes(
+					summary.activity.activeSession
+						.workflow as (typeof SPECIALIST_WORKSPACE_MODE_VALUES)[number],
+				)
+			) {
+				const isApprovalPause =
+					summary.activity.activeSession.activeJob?.waitReason === "approval" ||
+					summary.activity.activeSession.status === "waiting";
+
+				return {
+					label: isApprovalPause ? "Paused" : "Live",
+					tone: isApprovalPause ? "attention" : "info",
+				};
+			}
+
+			return {
+				label: summary.status === "ready" ? "Review" : "Setup",
+				tone: summary.status === "ready" ? "info" : "neutral",
+			};
 		case "scan":
 			if (summary.activity.activeSession?.workflow === "scan-portals") {
 				return {
@@ -212,14 +235,15 @@ export function NavigationRail({
 						textTransform: "uppercase",
 					}}
 				>
-					Phase 05 shell
+					Phase 06 shell
 				</p>
 				<h2 style={{ fontSize: "1.35rem", marginBottom: "0.35rem" }}>
 					Operator navigation
 				</h2>
 				<p style={{ color: "#cbd5e1", marginBottom: 0, marginTop: 0 }}>
-					One stable frame for startup, chat, scan review, batch supervision,
-					application-help review, queue review, tracker closeout, and settings.
+					One stable frame for startup, chat, specialist workflows, scan review,
+					batch supervision, application-help review, queue review, tracker
+					closeout, and settings.
 				</p>
 			</div>
 

@@ -1070,6 +1070,177 @@ function createApplicationHelpPayload(requestUrl = "/application-help") {
 	};
 }
 
+function createSpecialistWorkspacePayload(
+	requestUrl = "/specialist-workspace",
+) {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const requestedMode = url.searchParams.get("mode")?.trim() || null;
+	const requestedSessionId = url.searchParams.get("sessionId")?.trim() || null;
+	const selectedSummary = {
+		approval: null,
+		failure: null,
+		handoff: {
+			detailSurface: {
+				label: "Application Help",
+				path: "/application-help",
+			},
+			family: "research-and-narrative",
+			label: "Application Help",
+			mode: "application-help",
+			modeDescription:
+				"Review staged application-help context and route into the dedicated draft surface.",
+			modeRepoRelativePath: "modes/apply.md",
+			specialistId: "research-specialist",
+			specialistLabel: "Research Specialist",
+			toolPreview: {
+				fallbackApplied: false,
+				hiddenToolCount: 0,
+				items: [
+					{
+						access: "allowed",
+						name: "resolve-application-help-context",
+					},
+					{
+						access: "allowed",
+						name: "stage-application-help-draft",
+					},
+				],
+			},
+			workspacePath: "/workflows/application-help",
+		},
+		job: {
+			attempt: 1,
+			completedAt: "2026-04-22T00:12:00.000Z",
+			currentRunId: "run-app-help-completed-shell",
+			jobId: "job-app-help-completed-shell",
+			jobType: "application-help",
+			startedAt: "2026-04-22T00:10:00.000Z",
+			status: "completed",
+			updatedAt: "2026-04-22T00:12:00.000Z",
+			waitReason: null,
+		},
+		message:
+			"Application-help context is ready and the dedicated review surface owns the next detail step.",
+		nextAction: {
+			action: "open-detail-surface",
+			message:
+				"Open the application-help detail surface to review the staged draft packet.",
+			mode: "application-help",
+			sessionId: "app-help-completed-shell",
+		},
+		result: {
+			detailSurface: {
+				label: "Application Help",
+				path: "/application-help",
+			},
+			message:
+				"Application Help has a dedicated detail surface for draft review and approvals.",
+			state: "dedicated-detail",
+		},
+		run: {
+			message: "Application Help is ready for dedicated review.",
+			resumeAllowed: false,
+			state: "completed",
+		},
+		session: {
+			activeJobId: "job-app-help-completed-shell",
+			lastHeartbeatAt: "2026-04-22T00:12:00.000Z",
+			resumeAllowed: false,
+			sessionId: "app-help-completed-shell",
+			status: "completed",
+			updatedAt: "2026-04-22T00:12:00.000Z",
+			workflow: "application-help",
+		},
+		supportState: "ready",
+		summaryAvailability: "dedicated-detail",
+		warnings: [
+			{
+				code: "dedicated-detail-surface",
+				message:
+					"Application Help already has a dedicated review surface for the next step.",
+			},
+		],
+	};
+
+	return {
+		filters: {
+			mode: requestedMode,
+			sessionId: requestedSessionId,
+		},
+		generatedAt: "2026-04-22T00:12:00.000Z",
+		message: requestedSessionId
+			? `Loaded specialist session ${requestedSessionId}.`
+			: "Loaded the latest application-help specialist session app-help-completed-shell.",
+		ok: true,
+		selected: {
+			message: requestedSessionId
+				? `Loaded specialist session ${requestedSessionId}.`
+				: "Loaded the latest application-help specialist session app-help-completed-shell.",
+			origin: requestedSessionId ? "session-id" : "mode",
+			requestedMode,
+			requestedSessionId,
+			state: "ready",
+			summary: selectedSummary,
+		},
+		service: "jobhunt-api-scaffold",
+		sessionId: STARTUP_SESSION_ID,
+		status: "ready",
+		workflows: [
+			{
+				handoff: selectedSummary.handoff,
+				intake: {
+					kind: "report-context",
+					message:
+						"Application help launches from saved report context, application questions, or staged draft hints.",
+					requiresSavedState: true,
+				},
+				message:
+					"Application help can launch with the research specialist using report-backed context lookup and draft staging while keeping submission manual.",
+				missingCapabilities: [],
+				selected: true,
+				summaryAvailability: "dedicated-detail",
+				supportState: "ready",
+			},
+			{
+				handoff: {
+					detailSurface: null,
+					family: "application-history",
+					label: "Compare Offers",
+					mode: "compare-offers",
+					modeDescription:
+						"Compare saved offers and role references in one bounded summary.",
+					modeRepoRelativePath: "modes/ofertas.md",
+					specialistId: "tracker-specialist",
+					specialistLabel: "Tracker Specialist",
+					toolPreview: {
+						fallbackApplied: true,
+						hiddenToolCount: 0,
+						items: [
+							{
+								access: "restricted",
+								name: "list-evaluation-artifacts",
+							},
+						],
+					},
+					workspacePath: "/workflows/compare-offers",
+				},
+				intake: {
+					kind: "offer-set",
+					message:
+						"Compare-offers expects two or more offer descriptions, saved evaluations, or role references.",
+					requiresSavedState: false,
+				},
+				message:
+					"Offer comparison remains blocked until typed comparison tools are implemented.",
+				missingCapabilities: ["typed-offer-comparison"],
+				selected: false,
+				summaryAvailability: "pending",
+				supportState: "tooling-gap",
+			},
+		],
+	};
+}
+
 function createApprovalInboxPayload(requestUrl = "/approval-inbox") {
 	const url = new URL(requestUrl, "http://127.0.0.1");
 	const approvalId = url.searchParams.get("approvalId")?.trim() || null;
@@ -1998,6 +2169,22 @@ async function startFakeApiServer() {
 			return;
 		}
 
+		if ((request.url ?? "").startsWith("/specialist-workspace")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(
+				JSON.stringify(
+					createSpecialistWorkspacePayload(
+						request.url ?? "/specialist-workspace",
+					),
+					null,
+					2,
+				),
+			);
+			return;
+		}
+
 		if ((request.url ?? "").startsWith("/approval-inbox")) {
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
@@ -2273,7 +2460,10 @@ try {
 			},
 		);
 		await page
-			.getByRole("heading", { name: "Application-help workspace" })
+			.getByRole("heading", {
+				name: "Application-help workspace",
+				exact: true,
+			})
 			.waitFor();
 		await page
 			.getByText("The application-help run completed and the draft is ready")
@@ -2306,7 +2496,10 @@ try {
 			},
 		);
 		await page
-			.getByRole("heading", { name: "Application-help workspace" })
+			.getByRole("heading", {
+				name: "Application-help workspace",
+				exact: true,
+			})
 			.waitFor();
 		await page.getByRole("button", { name: /Open approvals/ }).click();
 		await page
@@ -2318,9 +2511,53 @@ try {
 			.getByRole("button", { name: /Open application-help review/ })
 			.click();
 		await page
-			.getByRole("heading", { name: "Application-help workspace" })
+			.getByRole("heading", {
+				name: "Application-help workspace",
+				exact: true,
+			})
 			.waitFor();
 		assert.match(page.url(), /applicationHelpSessionId=app-help-paused-shell/);
+		assert.match(page.url(), /#application-help$/);
+		await page.getByRole("link", { name: /Workflows/ }).click();
+		await page
+			.getByRole("heading", { name: "Specialist workflows workspace" })
+			.waitFor();
+		await page
+			.getByText("Application Help has a dedicated detail surface")
+			.first()
+			.waitFor();
+		await page.goto(
+			`${webUrl}?workflowsMode=application-help&workflowsSessionId=app-help-completed-shell#workflows`,
+			{
+				waitUntil: "networkidle",
+			},
+		);
+		await page
+			.getByText("Loaded specialist session app-help-completed-shell.")
+			.first()
+			.waitFor();
+		await page.goto(
+			`${webUrl}?workflowsMode=application-help&workflowsSessionId=app-help-completed-shell#workflows`,
+			{
+				waitUntil: "networkidle",
+			},
+		);
+		await page
+			.locator("section")
+			.filter({
+				has: page.getByRole("heading", { name: "Detail and handoffs" }),
+			})
+			.getByRole("button", {
+				name: /Open the dedicated detail surface for the selected specialist workflow/,
+			})
+			.click();
+		await page
+			.getByRole("heading", { name: "Application-help workspace" })
+			.waitFor();
+		assert.match(
+			page.url(),
+			/applicationHelpSessionId=app-help-completed-shell/,
+		);
 		assert.match(page.url(), /#application-help$/);
 		await page.getByRole("link", { name: /Pipeline/ }).click();
 		await page

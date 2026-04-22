@@ -18,6 +18,8 @@ import { createRuntimeDiagnosticsRoute } from "./runtime-diagnostics-route.js";
 import { createScanReviewActionRoute } from "./scan-review-action-route.js";
 import { createScanReviewRoute } from "./scan-review-route.js";
 import { createSettingsRoute } from "./settings-route.js";
+import { createSpecialistWorkspaceActionRoute } from "./specialist-workspace-action-route.js";
+import { createSpecialistWorkspaceRoute } from "./specialist-workspace-route.js";
 import { createStartupRoute } from "./startup-route.js";
 import { createTrackerWorkspaceActionRoute } from "./tracker-workspace-action-route.js";
 import { createTrackerWorkspaceRoute } from "./tracker-workspace-route.js";
@@ -52,6 +54,8 @@ export function createApiRouteRegistry(): ApiRouteDefinition[] {
 		createOnboardingRoute(),
 		createOnboardingRepairRoute(),
 		createOperatorShellRoute(),
+		createSpecialistWorkspaceRoute(),
+		createSpecialistWorkspaceActionRoute(),
 		createBatchSupervisorRoute(),
 		createBatchSupervisorActionRoute(),
 		createPipelineReviewRoute(),

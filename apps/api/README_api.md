@@ -3,9 +3,9 @@
 The API package owns the local app runtime for Job-Hunt. It provides the
 one-shot diagnostics entrypoint, the long-lived boot server, the workspace
 adapter, the prompt-loading contract used by the app shell, onboarding repair
-summary and mutation routes, approval inbox routes, settings routes, and the
-authenticated agent-runtime bootstrap plus the durable job-runner surface used
-by later runner and tool work.
+summary and mutation routes, approval inbox routes, settings routes,
+application-help routes, and the authenticated agent-runtime bootstrap plus
+the durable job-runner surface used by later runner and tool work.
 
 ## Quick Start
 
@@ -38,7 +38,8 @@ npm run validate:tools
 - `src/runtime/` - validated runtime config and the package service container
 - `src/agent-runtime/` - typed auth readiness, provider bridge, and prompt bootstrap service
 - `src/approval-runtime/` - persisted approval creation, resolution, and pending-approval summaries
-- `src/server/` - HTTP routes for startup, onboarding, approvals, settings, and workflow surfaces
+- `src/server/` - HTTP routes for startup, onboarding, approvals, settings,
+  application-help, and workflow surfaces
 - `src/job-runner/` - durable queueing, checkpoint recovery, executor registry, and service tests
 - `src/observability/` - redacted runtime event writes and bounded diagnostics summaries
 - `src/orchestration/` - workflow routing, specialist topology, session reuse, and typed orchestration handoff envelopes
@@ -58,6 +59,8 @@ npm run validate:tools
 - `/approvals` exposes the approval inbox and approve/reject mutations.
 - `/settings` exposes maintenance commands, updater state, and bounded
   workspace previews.
+- `/application-help` exposes the draft review summary, matched-report
+  context, and approval-aware guidance used by the application-help surface.
 - Workflow bootstrap routes expose the app-owned launch and resume helpers for
   the operator shell.
 

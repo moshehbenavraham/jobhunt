@@ -577,9 +577,22 @@ if (appApplicationHelp !== null) {
 	fail("App application-help smoke tests failed");
 }
 
-// -- 3ak. Auto-pipeline parity smoke -----------------------------
+// -- 3ak. App specialist-workspace smoke -------------------------
 
-console.log("\n3ak. Auto-pipeline parity smoke");
+console.log("\n3ak. App specialist-workspace smoke");
+
+const appSpecialistWorkspace = run("node", [
+	"scripts/test-app-specialist-workspace.mjs",
+]);
+if (appSpecialistWorkspace !== null) {
+	pass("App specialist-workspace smoke tests pass");
+} else {
+	fail("App specialist-workspace smoke tests failed");
+}
+
+// -- 3al. Auto-pipeline parity smoke -----------------------------
+
+console.log("\n3al. Auto-pipeline parity smoke");
 
 const appAutoPipelineParity = run("node", [
 	"scripts/test-app-auto-pipeline-parity.mjs",
@@ -590,9 +603,9 @@ if (appAutoPipelineParity !== null) {
 	fail("Auto-pipeline parity smoke tests failed");
 }
 
-// -- 3al. Bootstrap ASCII validation -----------------------------
+// -- 3am. Bootstrap ASCII validation -----------------------------
 
-console.log("\n3al. Bootstrap ASCII validation");
+console.log("\n3am. Bootstrap ASCII validation");
 
 const bootstrapFiles = [
 	"apps/api/src/approval-runtime/approval-runtime-contract.ts",
@@ -662,6 +675,9 @@ const bootstrapFiles = [
 	"apps/api/src/server/scan-review-contract.ts",
 	"apps/api/src/server/scan-review-summary.test.ts",
 	"apps/api/src/server/scan-review-summary.ts",
+	"apps/api/src/server/specialist-workspace-contract.ts",
+	"apps/api/src/server/specialist-workspace-summary.test.ts",
+	"apps/api/src/server/specialist-workspace-summary.ts",
 	"apps/api/src/server/tracker-table.ts",
 	"apps/api/src/server/tracker-workspace-contract.ts",
 	"apps/api/src/server/tracker-workspace-summary.ts",
@@ -681,6 +697,8 @@ const bootstrapFiles = [
 	"apps/api/src/server/routes/report-viewer-route.ts",
 	"apps/api/src/server/routes/scan-review-action-route.ts",
 	"apps/api/src/server/routes/scan-review-route.ts",
+	"apps/api/src/server/routes/specialist-workspace-action-route.ts",
+	"apps/api/src/server/routes/specialist-workspace-route.ts",
 	"apps/api/src/server/routes/settings-route.ts",
 	"apps/api/src/server/routes/approval-inbox-route.ts",
 	"apps/api/src/server/routes/approval-resolution-route.ts",
@@ -825,6 +843,13 @@ const bootstrapFiles = [
 	"apps/web/src/tracker/tracker-workspace-surface.tsx",
 	"apps/web/src/tracker/tracker-workspace-types.ts",
 	"apps/web/src/tracker/use-tracker-workspace.ts",
+	"apps/web/src/workflows/specialist-workspace-client.ts",
+	"apps/web/src/workflows/specialist-workspace-detail-rail.tsx",
+	"apps/web/src/workflows/specialist-workspace-launch-panel.tsx",
+	"apps/web/src/workflows/specialist-workspace-state-panel.tsx",
+	"apps/web/src/workflows/specialist-workspace-surface.tsx",
+	"apps/web/src/workflows/specialist-workspace-types.ts",
+	"apps/web/src/workflows/use-specialist-workspace.ts",
 	"apps/web/vite.config.ts",
 	"scripts/test-app-scaffold.mjs",
 	"scripts/test-app-approval-inbox.mjs",
@@ -839,6 +864,7 @@ const bootstrapFiles = [
 	"scripts/test-app-scan-review.mjs",
 	"scripts/test-app-settings.mjs",
 	"scripts/test-app-shell.mjs",
+	"scripts/test-app-specialist-workspace.mjs",
 	"scripts/test-app-tracker-workspace.mjs",
 ];
 

@@ -57,6 +57,16 @@ function getPlaceholderBody(
 				],
 				title: "Scan workspace lands in Phase 05",
 			};
+		case "workflows":
+			return {
+				body: "Phase 06 adds the shared specialist workflows workspace here. The placeholder keeps the shell registry exhaustive until catalog review, launch or resume controls, and detail handoffs are mounted.",
+				highlights: [
+					"Specialist workflow review stays bounded by the backend-owned workspace summary route.",
+					"Launch and resume continue through the specialist workspace action route instead of browser-owned repo reads.",
+					"Dedicated detail, approvals, and chat handoffs remain explicit so the browser stays fail-closed.",
+				],
+				title: "Workflows workspace lands in Phase 06",
+			};
 		case "batch":
 			return {
 				body: "Phase 05 adds the dedicated batch workspace here. The placeholder keeps the shell registry exhaustive until bounded run supervision and closeout handoffs are mounted.",

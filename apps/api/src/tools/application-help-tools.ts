@@ -186,22 +186,6 @@ function normalizeMatchText(value: string | null): string | null {
 	return normalized && normalized.length > 0 ? normalized : null;
 }
 
-function readString(
-	value: Record<string, JsonValue>,
-	key: string,
-): string | null {
-	const candidate = value[key];
-	return typeof candidate === "string" && candidate.trim().length > 0
-		? candidate.trim()
-		: null;
-}
-
-function isJsonObject(
-	value: JsonValue | null,
-): value is Record<string, JsonValue> {
-	return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 function splitTokens(value: string | null): string[] {
 	return normalizeMatchText(value)?.split(" ") ?? [];
 }
@@ -649,8 +633,8 @@ function buildMatchScore(
 			score += 820;
 			reasons.push("artifact-name");
 		} else if (
-			(reportFileName && reportFileName.includes(artifactName)) ||
-			(pdfFileName && pdfFileName.includes(artifactName))
+			reportFileName?.includes(artifactName) ||
+			pdfFileName?.includes(artifactName)
 		) {
 			score += 260;
 			reasons.push("artifact-name");

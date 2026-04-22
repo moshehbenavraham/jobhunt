@@ -55,8 +55,9 @@
     },
     "6": {
       "name": "Specialist Workflows, Dashboard Replacement, and Cutover",
-      "status": "not_started",
-      "session_count": 0
+      "description": "Close the remaining specialist workflow, dashboard, and cutover gaps so the app can replace Codex for normal single-user operation.",
+      "status": "in_progress",
+      "session_count": 6
     }
   },
   "completed_sessions": [
@@ -179,10 +180,42 @@
     {
       "id": "phase05-session06-application-help-review-and-approvals",
       "package": "apps/web"
+    },
+    {
+      "id": "phase06-session01-specialist-workflow-intake-and-result-contracts",
+      "package": "apps/api"
+    },
+    {
+      "id": "phase06-session02-specialist-workspace-foundation",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session02-specialist-workspace-foundation",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session02-specialist-workspace-foundation",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session01-specialist-workflow-intake-and-result-contracts",
+      "package": "apps/api",
+      "status": "validated"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session01-specialist-workflow-intake-and-result-contracts",
+      "package": "apps/api",
+      "status": "completed"
+    },
     {
       "date": "2026-04-22",
       "session": "phase05-session06-application-help-review-and-approvals",

@@ -5,6 +5,7 @@ import {
 	getSpecialistDefinition,
 	getWorkflowSpecialistRoute,
 	listSpecialists,
+	listSpecialistWorkspaceRoutes,
 	listWorkflowSpecialistRoutes,
 } from "./specialist-catalog.js";
 
@@ -47,4 +48,39 @@ test("ready routes expose specialist-owned tools while tooling-gap routes expose
 		"list-evaluation-artifacts",
 		"summarize-profile-sources",
 	]);
+	assert.equal(
+		applicationHelpRoute?.workspace.summaryAvailability,
+		"dedicated-detail",
+	);
+	assert.equal(
+		applicationHelpRoute?.workspace.detailSurface?.path,
+		"/application-help",
+	);
+});
+
+test("specialist workspace routes expose shared metadata for remaining specialist workflows", () => {
+	const workspaceRoutes = listSpecialistWorkspaceRoutes();
+	const workspaceWorkflows = workspaceRoutes.map((route) => route.workflow);
+	const compareOffersRoute = getWorkflowSpecialistRoute("compare-offers");
+	const interviewPrepRoute = getWorkflowSpecialistRoute("interview-prep");
+
+	assert.deepEqual(workspaceWorkflows, [
+		"compare-offers",
+		"follow-up-cadence",
+		"rejection-patterns",
+		"application-help",
+		"deep-company-research",
+		"linkedin-outreach",
+		"interview-prep",
+		"training-review",
+		"project-review",
+	]);
+	assert.equal(compareOffersRoute?.workspace.family, "application-history");
+	assert.equal(compareOffersRoute?.workspace.intake?.kind, "offer-set");
+	assert.equal(
+		compareOffersRoute?.workspace.workspacePath,
+		"/workflows/compare-offers",
+	);
+	assert.equal(interviewPrepRoute?.workspace.family, "research-and-narrative");
+	assert.equal(interviewPrepRoute?.workspace.summaryAvailability, "pending");
 });

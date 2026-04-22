@@ -1,6 +1,7 @@
 export const SHELL_SURFACE_IDS = [
 	"startup",
 	"chat",
+	"workflows",
 	"scan",
 	"batch",
 	"application-help",
@@ -35,6 +36,13 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "chat",
 		label: "Chat",
 		owner: "Session 02",
+	},
+	{
+		description:
+			"Launch, resume, and inspect specialist workflows from one shared workspace surface.",
+		id: "workflows",
+		label: "Workflows",
+		owner: "Phase 06",
 	},
 	{
 		description:

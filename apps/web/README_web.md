@@ -2,7 +2,7 @@
 
 The web package owns the local operator shell for Job-Hunt. It renders
 startup state from the API boot surface and keeps onboarding, approval,
-settings, and readiness signals visible in the browser.
+settings, application-help, and readiness signals visible in the browser.
 
 ## Quick Start
 
@@ -15,11 +15,12 @@ npm run check
 ## What Lives Here
 
 - `src/App.tsx` - the operator shell that switches between startup, onboarding,
-  approval, settings, and error states
+  approval, settings, application-help, and error states
 - `src/boot/` - client, hook, and view helpers for startup diagnostics
 - `src/onboarding/` - onboarding summary, repair, and checklist views
 - `src/approvals/` - approval inbox views and mutation helpers
 - `src/settings/` - settings, maintenance, and update-check views
+- `src/application-help/` - draft review, context, and approval-aware views
 - `src/main.tsx` - the React entrypoint
 - `vite.config.ts` - local dev server and `/api` proxy wiring
 

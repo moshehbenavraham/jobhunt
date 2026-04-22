@@ -18,6 +18,7 @@ import { ScanReviewSurface } from "../scan/scan-review-surface";
 import { SettingsSurface } from "../settings/settings-surface";
 import { syncTrackerWorkspaceFocus } from "../tracker/tracker-workspace-client";
 import { TrackerWorkspaceSurface } from "../tracker/tracker-workspace-surface";
+import { SpecialistWorkspaceSurface } from "../workflows/specialist-workspace-surface";
 import { NavigationRail } from "./navigation-rail";
 import { getShellSurface } from "./shell-types";
 import { StatusStrip } from "./status-strip";
@@ -331,6 +332,20 @@ export function OperatorShell() {
 		);
 		shell.selectSurface("application-help");
 	};
+	const openSpecialistDetailSurface = (focus: {
+		path: string;
+		sessionId: string | null;
+	}) => {
+		switch (focus.path) {
+			case "/application-help":
+				openApplicationHelp({
+					sessionId: focus.sessionId,
+				});
+				return;
+			default:
+				shell.selectSurface("workflows");
+		}
+	};
 	const openChatConsole = (focus: { sessionId: string | null }) => {
 		syncChatConsoleSessionFocus(
 			{
@@ -383,6 +398,12 @@ export function OperatorShell() {
 									onOpenPipelineReview={openPipeline}
 									onOpenReportViewer={openArtifacts}
 									onOpenTrackerReview={openTracker}
+								/>
+							) : renderedSurface.id === "workflows" ? (
+								<SpecialistWorkspaceSurface
+									onOpenApprovals={openApprovals}
+									onOpenChatConsole={openChatConsole}
+									onOpenDetailSurface={openSpecialistDetailSurface}
 								/>
 							) : renderedSurface.id === "scan" ? (
 								<ScanReviewSurface onOpenChatConsole={openChatConsole} />

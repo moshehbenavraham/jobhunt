@@ -3,13 +3,24 @@ import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import test from "node:test";
-import { createAgentRuntimeService } from "../agent-runtime/index.js";
+import { setTimeout as delay } from "node:timers/promises";
+import {
+	type AgentRuntimeBootstrap,
+	type AgentRuntimeService,
+	createAgentRuntimeService,
+} from "../agent-runtime/index.js";
 import {
 	createAgentRuntimeAuthFixture,
 	getRepoOpenAIAccountModuleImportPath,
 	startFakeCodexBackend,
 } from "../agent-runtime/test-utils.js";
 import { STARTUP_SERVICE_NAME, STARTUP_SESSION_ID } from "../index.js";
+import {
+	getWorkflowModeRoute,
+	type PromptSourceKey,
+	WORKFLOW_INTENTS,
+	type WorkflowIntent,
+} from "../prompt/index.js";
 import {
 	type ApiServiceContainer,
 	createApiServiceContainer,
@@ -50,6 +61,125 @@ async function createReadyFixture() {
 			"profile/cv.md": "# CV\n",
 		},
 	});
+}
+
+function createDelayedReadyAgentRuntime(
+	repoRoot: string,
+	bootstrapDelayMs: number,
+): AgentRuntimeService {
+	return {
+		async bootstrap(workflowInput: unknown): Promise<AgentRuntimeBootstrap> {
+			const workflow: WorkflowIntent =
+				typeof workflowInput === "string" &&
+				(WORKFLOW_INTENTS as readonly string[]).includes(workflowInput)
+					? (workflowInput as WorkflowIntent)
+					: "application-help";
+			const sourceOrder: PromptSourceKey[] = [
+				"agents-guide",
+				"shared-mode",
+				"profile-mode",
+				"workflow-mode",
+				"profile-config",
+				"profile-cv",
+			];
+
+			await delay(bootstrapDelayMs);
+
+			return {
+				auth: {
+					accountId: "acct-specialist-http",
+					authPath: `${repoRoot}/data/openai-account-auth.json`,
+					expiresAt: null,
+					message: "Runtime ready.",
+					nextSteps: [],
+					state: "ready",
+					updatedAt: "2026-04-22T00:00:00.000Z",
+				},
+				config: {
+					authPath: `${repoRoot}/data/openai-account-auth.json`,
+					baseUrl: "https://chatgpt.com/backend-api",
+					model: "gpt-5.4-mini",
+					originator: "specialist-workspace-http-test",
+					overrides: {
+						authPath: false,
+						baseUrl: false,
+						model: false,
+						originator: false,
+					},
+				},
+				model: "gpt-5.4-mini",
+				prompt: {
+					emptySources: [],
+					issues: [],
+					message: `Prompt bundle for workflow ${workflow} is ready.`,
+					missingSources: [],
+					modeRepoRelativePath:
+						getWorkflowModeRoute(workflow).modeRepoRelativePath,
+					requestedWorkflow: workflow,
+					state: "ready",
+					supportedWorkflows: WORKFLOW_INTENTS,
+					workflow,
+				},
+				promptBundle: {
+					cacheMode: "read-through-mtime",
+					composedText: `Prompt bundle for ${workflow}`,
+					loadedAt: "2026-04-22T00:00:00.000Z",
+					sourceOrder,
+					sources: [],
+					workflow: getWorkflowModeRoute(workflow),
+				},
+				provider: {
+					async close() {},
+					getModel() {
+						return {
+							id: "gpt-5.4-mini",
+						};
+					},
+				},
+				startedAt: "2026-04-22T00:00:01.000Z",
+				status: "ready",
+			};
+		},
+		async close() {},
+		async getReadiness() {
+			return {
+				auth: {
+					accountId: "acct-specialist-http",
+					authPath: `${repoRoot}/data/openai-account-auth.json`,
+					expiresAt: null,
+					message: "Runtime ready.",
+					nextSteps: [],
+					state: "ready" as const,
+					updatedAt: "2026-04-22T00:00:00.000Z",
+				},
+				config: {
+					authPath: `${repoRoot}/data/openai-account-auth.json`,
+					baseUrl: "https://chatgpt.com/backend-api",
+					model: "gpt-5.4-mini",
+					originator: "specialist-workspace-http-test",
+					overrides: {
+						authPath: false,
+						baseUrl: false,
+						model: false,
+						originator: false,
+					},
+				},
+				message: "Agent runtime ready.",
+				prompt: {
+					emptySources: [],
+					issues: [],
+					message: "Prompt bundle is ready.",
+					missingSources: [],
+					modeRepoRelativePath: "modes/apply.md",
+					requestedWorkflow: "application-help",
+					state: "ready" as const,
+					supportedWorkflows: WORKFLOW_INTENTS,
+					workflow: "application-help" as const,
+				},
+				status: "ready" as const,
+			};
+		},
+	};
 }
 
 const ONBOARDING_TEMPLATE_FIXTURE_FILES = {
@@ -5821,6 +5951,333 @@ test("application-help route covers draft-ready, approval-paused, rejected, resu
 		await services.dispose();
 		await backend.close();
 		await authFixture.cleanup();
+		await fixture.cleanup();
+	}
+});
+
+test("specialist-workspace routes cover latest-session summaries, stale focus recovery, blocked launch, completed resume, missing-session resume, and duplicate launch guards", async () => {
+	const fixture = await createReadyFixture();
+	const services = createApiServiceContainer({
+		agentRuntime: createDelayedReadyAgentRuntime(fixture.repoRoot, 200),
+		repoRoot: fixture.repoRoot,
+	});
+	const store = await services.operationalStore.getStore();
+
+	await saveEvaluationSession(store, {
+		activeJobId: "job-deep-running-http",
+		sessionId: "deep-running-http",
+		status: "running",
+		updatedAt: "2026-04-22T10:00:00.000Z",
+		workflow: "deep-company-research",
+	});
+	await saveEvaluationJob(store, {
+		jobId: "job-deep-running-http",
+		sessionId: "deep-running-http",
+		status: "running",
+		updatedAt: "2026-04-22T10:00:00.000Z",
+	});
+
+	await saveEvaluationSession(store, {
+		activeJobId: "job-interview-waiting-http",
+		sessionId: "interview-waiting-http",
+		status: "waiting",
+		updatedAt: "2026-04-22T10:10:00.000Z",
+		workflow: "interview-prep",
+	});
+	await saveEvaluationJob(store, {
+		jobId: "job-interview-waiting-http",
+		sessionId: "interview-waiting-http",
+		status: "waiting",
+		updatedAt: "2026-04-22T10:10:00.000Z",
+		waitApprovalId: "approval-interview-http",
+		waitReason: "approval",
+	});
+	await store.approvals.save({
+		approvalId: "approval-interview-http",
+		jobId: "job-interview-waiting-http",
+		request: {
+			action: "specialist-review",
+			title: "Review interview prep scope",
+		},
+		requestedAt: "2026-04-22T10:10:00.000Z",
+		resolvedAt: null,
+		response: null,
+		sessionId: "interview-waiting-http",
+		status: "pending",
+		traceId: "trace-interview-http",
+		updatedAt: "2026-04-22T10:10:00.000Z",
+	});
+
+	await saveEvaluationSession(store, {
+		activeJobId: "job-app-help-completed-http",
+		sessionId: "app-help-completed-http",
+		status: "completed",
+		updatedAt: "2026-04-22T10:05:00.000Z",
+		workflow: "application-help",
+	});
+	await saveEvaluationJob(store, {
+		jobId: "job-app-help-completed-http",
+		sessionId: "app-help-completed-http",
+		status: "completed",
+		updatedAt: "2026-04-22T10:05:00.000Z",
+	});
+
+	const handle = await startStartupHttpServer({
+		host: "127.0.0.1",
+		port: 0,
+		rateLimitMaxRequests: 30,
+		services,
+	});
+
+	try {
+		const { payload: summaryPayload, response: summaryResponse } =
+			await readJsonResponse(`${handle.url}/specialist-workspace`);
+
+		assert.equal(summaryResponse.status, 200);
+		assert.equal(
+			(
+				summaryPayload as {
+					selected: {
+						origin: string;
+						summary: {
+							handoff: { mode: string };
+							run: { state: string };
+						} | null;
+					};
+					workflows: Array<{
+						handoff: { mode: string };
+					}>;
+				}
+			).selected.origin,
+			"latest-session",
+		);
+		assert.equal(
+			(
+				summaryPayload as {
+					selected: {
+						origin: string;
+						summary: {
+							handoff: { mode: string };
+							run: { state: string };
+						} | null;
+					};
+				}
+			).selected.summary?.handoff.mode,
+			"interview-prep",
+		);
+		assert.equal(
+			(
+				summaryPayload as {
+					selected: {
+						origin: string;
+						summary: {
+							handoff: { mode: string };
+							run: { state: string };
+						} | null;
+					};
+				}
+			).selected.summary?.run.state,
+			"waiting",
+		);
+		assert.equal(
+			(
+				summaryPayload as {
+					workflows: Array<{
+						handoff: { detailSurface: { path: string } | null; mode: string };
+					}>;
+				}
+			).workflows.find(
+				(workflow) => workflow.handoff.mode === "application-help",
+			)?.handoff.detailSurface?.path,
+			"/application-help",
+		);
+
+		const { payload: stalePayload, response: staleResponse } =
+			await readJsonResponse(
+				`${handle.url}/specialist-workspace?mode=interview-prep&sessionId=deep-running-http`,
+			);
+
+		assert.equal(staleResponse.status, 200);
+		assert.equal(
+			(
+				stalePayload as {
+					selected: {
+						state: string;
+						summary: {
+							handoff: { mode: string };
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selected.state,
+			"missing",
+		);
+		assert.equal(
+			(
+				stalePayload as {
+					selected: {
+						state: string;
+						summary: {
+							handoff: { mode: string };
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selected.summary?.handoff.mode,
+			"interview-prep",
+		);
+		assert.equal(
+			(
+				stalePayload as {
+					selected: {
+						summary: {
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selected.summary?.warnings.some(
+				(warning) => warning.code === "stale-selection",
+			),
+			true,
+		);
+
+		const { payload: blockedPayload, response: blockedResponse } =
+			await readJsonResponse(`${handle.url}/specialist-workspace/action`, {
+				body: JSON.stringify({
+					action: "launch",
+					mode: "compare-offers",
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			});
+
+		assert.equal(blockedResponse.status, 200);
+		assert.equal(
+			(
+				blockedPayload as {
+					actionResult: { mode: string | null; state: string };
+				}
+			).actionResult.state,
+			"blocked",
+		);
+		assert.equal(
+			(
+				blockedPayload as {
+					actionResult: { mode: string | null; state: string };
+				}
+			).actionResult.mode,
+			"compare-offers",
+		);
+
+		const { payload: missingResumePayload, response: missingResumeResponse } =
+			await readJsonResponse(`${handle.url}/specialist-workspace/action`, {
+				body: JSON.stringify({
+					action: "resume",
+					sessionId: "missing-specialist-http",
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			});
+
+		assert.equal(missingResumeResponse.status, 200);
+		assert.equal(
+			(
+				missingResumePayload as {
+					actionResult: { state: string };
+				}
+			).actionResult.state,
+			"missing-session",
+		);
+
+		const {
+			payload: completedResumePayload,
+			response: completedResumeResponse,
+		} = await readJsonResponse(`${handle.url}/specialist-workspace/action`, {
+			body: JSON.stringify({
+				action: "resume",
+				sessionId: "app-help-completed-http",
+			}),
+			headers: {
+				"content-type": "application/json",
+			},
+			method: "POST",
+		});
+
+		assert.equal(completedResumeResponse.status, 200);
+		assert.equal(
+			(
+				completedResumePayload as {
+					actionResult: { state: string };
+				}
+			).actionResult.state,
+			"completed",
+		);
+
+		const duplicateLaunchRequests = await Promise.all([
+			readJsonResponse(`${handle.url}/specialist-workspace/action`, {
+				body: JSON.stringify({
+					action: "launch",
+					mode: "application-help",
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			}),
+			readJsonResponse(`${handle.url}/specialist-workspace/action`, {
+				body: JSON.stringify({
+					action: "launch",
+					mode: "application-help",
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			}),
+		]);
+
+		assert.equal(
+			duplicateLaunchRequests.some(
+				({ payload, response }) =>
+					response.status === 200 &&
+					(
+						payload as {
+							actionResult: {
+								handoff: { detailSurface: { path: string } | null };
+								state: string;
+							};
+						}
+					).actionResult.state === "ready" &&
+					(
+						payload as {
+							actionResult: {
+								handoff: { detailSurface: { path: string } | null };
+								state: string;
+							};
+						}
+					).actionResult.handoff.detailSurface?.path === "/application-help",
+			),
+			true,
+		);
+		assert.equal(
+			duplicateLaunchRequests.some(
+				({ payload, response }) =>
+					response.status === 409 &&
+					(
+						payload as {
+							error: { code: string };
+						}
+					).error.code === "specialist-workspace-action-in-flight",
+			),
+			true,
+		);
+	} finally {
+		await handle.close();
+		await services.dispose();
 		await fixture.cleanup();
 	}
 });
