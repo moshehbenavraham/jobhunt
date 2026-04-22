@@ -5,6 +5,7 @@ import type {
 	SpecialistWorkspaceSummaryPayload,
 	SpecialistWorkspaceWorkflowDescriptor,
 } from "./specialist-workspace-types";
+import { isSpecialistWorkspaceInlineReviewMode } from "./specialist-workspace-types";
 import type {
 	SpecialistWorkspaceNotice,
 	SpecialistWorkspaceViewStatus,
@@ -148,6 +149,9 @@ function renderWorkflowCard(input: {
 	const isSelected =
 		descriptor.selected || focus.mode === descriptor.handoff.mode;
 	const launchDisabled = isBusy || descriptor.supportState !== "ready";
+	const inlineReview = isSpecialistWorkspaceInlineReviewMode(
+		descriptor.handoff.mode,
+	);
 
 	return (
 		<article
@@ -196,7 +200,10 @@ function renderWorkflowCard(input: {
 			<p style={{ color: "#475569", margin: 0 }}>
 				Saved state:{" "}
 				{descriptor.intake.requiresSavedState ? "required" : "optional"} |
-				Summary: {descriptor.summaryAvailability}
+				Summary:{" "}
+				{inlineReview
+					? "inline review in workflows"
+					: descriptor.summaryAvailability}
 			</p>
 			{descriptor.missingCapabilities.length > 0 ? (
 				<p style={{ color: "#92400e", margin: 0 }}>

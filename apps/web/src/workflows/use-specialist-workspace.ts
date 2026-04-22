@@ -443,10 +443,15 @@ export function useSpecialistWorkspace(): {
 			});
 		},
 		clearSelection: () => {
-			syncSpecialistWorkspaceFocus({
+			const nextFocus = {
 				mode: null,
 				sessionId: null,
+			} as const;
+
+			syncSpecialistWorkspaceFocus(nextFocus, {
+				notify: false,
 			});
+			void loadSummary("focus", nextFocus);
 		},
 		launchMode: (mode) => {
 			const selectedSummary = state.data?.selected.summary ?? null;
@@ -483,10 +488,15 @@ export function useSpecialistWorkspace(): {
 			});
 		},
 		selectMode: (mode) => {
-			syncSpecialistWorkspaceFocus({
+			const nextFocus = {
 				mode,
 				sessionId: null,
+			} as const;
+
+			syncSpecialistWorkspaceFocus(nextFocus, {
+				notify: false,
 			});
+			void loadSummary("focus", nextFocus);
 		},
 		state,
 	};

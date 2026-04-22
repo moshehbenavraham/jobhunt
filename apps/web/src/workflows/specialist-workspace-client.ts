@@ -102,6 +102,7 @@ export function readSpecialistWorkspaceFocusFromUrl(): SpecialistWorkspaceFocus 
 export function syncSpecialistWorkspaceFocus(
 	focus: Partial<SpecialistWorkspaceFocus>,
 	options: {
+		notify?: boolean;
 		openSurface?: boolean;
 		replace?: boolean;
 	} = {},
@@ -139,7 +140,21 @@ export function syncSpecialistWorkspaceFocus(
 		}
 	}
 
-	window.dispatchEvent(new Event(SPECIALIST_WORKSPACE_FOCUS_EVENT));
+	if (options.notify !== false) {
+		window.dispatchEvent(new Event(SPECIALIST_WORKSPACE_FOCUS_EVENT));
+	}
+}
+
+export function openSpecialistWorkspaceSurface(
+	focus: Partial<SpecialistWorkspaceFocus>,
+	options: {
+		replace?: boolean;
+	} = {},
+): void {
+	syncSpecialistWorkspaceFocus(focus, {
+		openSurface: true,
+		...(options.replace !== undefined ? { replace: options.replace } : {}),
+	});
 }
 
 function createSignal(

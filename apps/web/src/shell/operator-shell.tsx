@@ -18,7 +18,9 @@ import { ScanReviewSurface } from "../scan/scan-review-surface";
 import { SettingsSurface } from "../settings/settings-surface";
 import { syncTrackerWorkspaceFocus } from "../tracker/tracker-workspace-client";
 import { TrackerWorkspaceSurface } from "../tracker/tracker-workspace-surface";
+import { openSpecialistWorkspaceSurface } from "../workflows/specialist-workspace-client";
 import { SpecialistWorkspaceSurface } from "../workflows/specialist-workspace-surface";
+import type { SpecialistWorkspaceMode } from "../workflows/specialist-workspace-types";
 import { NavigationRail } from "./navigation-rail";
 import { getShellSurface } from "./shell-types";
 import { StatusStrip } from "./status-strip";
@@ -308,10 +310,13 @@ export function OperatorShell() {
 		);
 		shell.selectSurface("pipeline");
 	};
-	const openTracker = (focus: { reportNumber: string | null }) => {
+	const openTracker = (focus: {
+		entryNumber: number | null;
+		reportNumber: string | null;
+	}) => {
 		syncTrackerWorkspaceFocus(
 			{
-				entryNumber: null,
+				entryNumber: focus.entryNumber,
 				offset: 0,
 				reportNumber: focus.reportNumber,
 			},
@@ -333,6 +338,7 @@ export function OperatorShell() {
 		shell.selectSurface("application-help");
 	};
 	const openSpecialistDetailSurface = (focus: {
+		mode: SpecialistWorkspaceMode;
 		path: string;
 		sessionId: string | null;
 	}) => {
@@ -341,6 +347,14 @@ export function OperatorShell() {
 				openApplicationHelp({
 					sessionId: focus.sessionId,
 				});
+				return;
+			case "/research-specialist":
+			case "/tracker-specialist":
+				openSpecialistWorkspaceSurface({
+					mode: focus.mode,
+					sessionId: focus.sessionId,
+				});
+				shell.selectSurface("workflows");
 				return;
 			default:
 				shell.selectSurface("workflows");
@@ -397,13 +411,21 @@ export function OperatorShell() {
 									onOpenApprovals={openApprovals}
 									onOpenPipelineReview={openPipeline}
 									onOpenReportViewer={openArtifacts}
-									onOpenTrackerReview={openTracker}
+									onOpenTrackerReview={(focus) =>
+										openTracker({
+											entryNumber: null,
+											reportNumber: focus.reportNumber,
+										})
+									}
 								/>
 							) : renderedSurface.id === "workflows" ? (
 								<SpecialistWorkspaceSurface
 									onOpenApprovals={openApprovals}
 									onOpenChatConsole={openChatConsole}
+									onOpenPipelineReview={openPipeline}
+									onOpenReportViewer={openArtifacts}
 									onOpenDetailSurface={openSpecialistDetailSurface}
+									onOpenTrackerWorkspace={openTracker}
 								/>
 							) : renderedSurface.id === "scan" ? (
 								<ScanReviewSurface onOpenChatConsole={openChatConsole} />
@@ -412,7 +434,12 @@ export function OperatorShell() {
 									onOpenApprovals={openApprovals}
 									onOpenChatConsole={openChatConsole}
 									onOpenReportViewer={openArtifacts}
-									onOpenTrackerWorkspace={openTracker}
+									onOpenTrackerWorkspace={(focus) =>
+										openTracker({
+											entryNumber: null,
+											reportNumber: focus.reportNumber,
+										})
+									}
 								/>
 							) : renderedSurface.id === "application-help" ? (
 								<ApplicationHelpSurface

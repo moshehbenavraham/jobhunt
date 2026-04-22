@@ -1,7 +1,12 @@
 import type { CSSProperties } from "react";
+import { ResearchSpecialistReviewPanel } from "./research-specialist-review-panel";
 import { SpecialistWorkspaceDetailRail } from "./specialist-workspace-detail-rail";
 import { SpecialistWorkspaceLaunchPanel } from "./specialist-workspace-launch-panel";
+import { SpecialistWorkspaceReviewRail } from "./specialist-workspace-review-rail";
 import { SpecialistWorkspaceStatePanel } from "./specialist-workspace-state-panel";
+import type { SpecialistWorkspaceMode } from "./specialist-workspace-types";
+import { TrackerSpecialistReviewPanel } from "./tracker-specialist-review-panel";
+import { useSpecialistReview } from "./use-specialist-review";
 import { useSpecialistWorkspace } from "./use-specialist-workspace";
 
 type SpecialistWorkspaceSurfaceProps = {
@@ -10,9 +15,20 @@ type SpecialistWorkspaceSurfaceProps = {
 		sessionId: string | null;
 	}) => void;
 	onOpenChatConsole: (focus: { sessionId: string | null }) => void;
+	onOpenPipelineReview: (focus: {
+		reportNumber: string | null;
+		section: "all" | "processed";
+		url: string | null;
+	}) => void;
+	onOpenReportViewer: (focus: { reportPath: string | null }) => void;
 	onOpenDetailSurface: (input: {
+		mode: SpecialistWorkspaceMode;
 		path: string;
 		sessionId: string | null;
+	}) => void;
+	onOpenTrackerWorkspace: (focus: {
+		entryNumber: number | null;
+		reportNumber: string | null;
 	}) => void;
 };
 
@@ -25,7 +41,7 @@ const detailGridStyle: CSSProperties = {
 	alignItems: "start",
 	display: "grid",
 	gap: "1rem",
-	gridTemplateColumns: "repeat(auto-fit, minmax(20rem, 1fr))",
+	gridTemplateColumns: "minmax(0, 1.7fr) minmax(20rem, 1fr)",
 };
 
 const noticeStyle: CSSProperties = {
@@ -36,12 +52,29 @@ const noticeStyle: CSSProperties = {
 export function SpecialistWorkspaceSurface({
 	onOpenApprovals,
 	onOpenChatConsole,
+	onOpenPipelineReview,
+	onOpenReportViewer,
 	onOpenDetailSurface,
+	onOpenTrackerWorkspace,
 }: SpecialistWorkspaceSurfaceProps) {
 	const specialistWorkspace = useSpecialistWorkspace();
+	const specialistReview = useSpecialistReview({
+		focus: specialistWorkspace.state.focus,
+		lastUpdatedAt: specialistWorkspace.state.lastUpdatedAt,
+		summary: specialistWorkspace.state.data,
+	});
 	const isBusy =
 		specialistWorkspace.state.isRefreshing ||
 		specialistWorkspace.state.pendingAction !== null;
+	const trackerSummary =
+		specialistReview.payload?.family === "tracker-specialist"
+			? specialistReview.payload.payload
+			: null;
+	const researchSummary =
+		specialistReview.payload?.family === "research-specialist"
+			? specialistReview.payload.payload
+			: null;
+	const showInlineReview = specialistReview.selection.family !== null;
 
 	return (
 		<section aria-labelledby="specialist-workspace-title" style={surfaceStyle}>
@@ -120,21 +153,51 @@ export function SpecialistWorkspaceSurface({
 			/>
 
 			<div style={detailGridStyle}>
-				<SpecialistWorkspaceStatePanel
-					isBusy={isBusy}
-					onClearSelection={specialistWorkspace.clearSelection}
-					onResumeSelected={specialistWorkspace.resumeSelected}
-					status={specialistWorkspace.state.status}
-					summary={specialistWorkspace.state.data}
-				/>
-				<SpecialistWorkspaceDetailRail
-					onClearSelection={specialistWorkspace.clearSelection}
-					onOpenApprovals={onOpenApprovals}
-					onOpenChatConsole={onOpenChatConsole}
-					onOpenDetailSurface={onOpenDetailSurface}
-					status={specialistWorkspace.state.status}
-					summary={specialistWorkspace.state.data}
-				/>
+				<div
+					style={{
+						display: "grid",
+						gap: "1rem",
+					}}
+				>
+					<SpecialistWorkspaceStatePanel
+						isBusy={isBusy}
+						onClearSelection={specialistWorkspace.clearSelection}
+						onResumeSelected={specialistWorkspace.resumeSelected}
+						status={specialistWorkspace.state.status}
+						summary={specialistWorkspace.state.data}
+					/>
+					{specialistReview.selection.family === "tracker-specialist" ? (
+						<TrackerSpecialistReviewPanel
+							status={specialistReview.status}
+							summary={trackerSummary}
+						/>
+					) : null}
+					{specialistReview.selection.family === "research-specialist" ? (
+						<ResearchSpecialistReviewPanel
+							status={specialistReview.status}
+							summary={researchSummary}
+						/>
+					) : null}
+				</div>
+				{showInlineReview ? (
+					<SpecialistWorkspaceReviewRail
+						onOpenApprovals={onOpenApprovals}
+						onOpenChatConsole={onOpenChatConsole}
+						onOpenPipelineReview={onOpenPipelineReview}
+						onOpenReportViewer={onOpenReportViewer}
+						onOpenTrackerWorkspace={onOpenTrackerWorkspace}
+						review={specialistReview.payload}
+					/>
+				) : (
+					<SpecialistWorkspaceDetailRail
+						onClearSelection={specialistWorkspace.clearSelection}
+						onOpenApprovals={onOpenApprovals}
+						onOpenChatConsole={onOpenChatConsole}
+						onOpenDetailSurface={onOpenDetailSurface}
+						status={specialistWorkspace.state.status}
+						summary={specialistWorkspace.state.data}
+					/>
+				)}
 			</div>
 		</section>
 	);

@@ -192,10 +192,26 @@
     {
       "id": "phase06-session03-offer-follow-up-and-pattern-contracts",
       "package": "apps/api"
+    },
+    {
+      "id": "phase06-session04-research-and-narrative-specialist-contracts",
+      "package": "apps/api"
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session05-specialist-review-surfaces",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session05-specialist-review-surfaces",
+      "package": "apps/web",
+      "status": "planned"
+    },
     {
       "date": "2026-04-22",
       "session": "phase06-session04-research-and-narrative-specialist-contracts",

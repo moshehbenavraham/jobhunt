@@ -1076,7 +1076,7 @@ function createSpecialistWorkspacePayload(
 	const url = new URL(requestUrl, "http://127.0.0.1");
 	const requestedMode = url.searchParams.get("mode")?.trim() || null;
 	const requestedSessionId = url.searchParams.get("sessionId")?.trim() || null;
-	const selectedSummary = {
+	const applicationHelpSummary = {
 		approval: null,
 		failure: null,
 		handoff: {
@@ -1161,6 +1161,94 @@ function createSpecialistWorkspacePayload(
 			},
 		],
 	};
+	const compareOffersSummary = {
+		approval: null,
+		failure: null,
+		handoff: {
+			detailSurface: {
+				label: "Compare Offers",
+				path: "/tracker-specialist",
+			},
+			family: "application-history",
+			label: "Compare Offers",
+			mode: "compare-offers",
+			modeDescription:
+				"Compare saved offers and role references in one bounded summary.",
+			modeRepoRelativePath: "modes/ofertas.md",
+			specialistId: "tracker-specialist",
+			specialistLabel: "Tracker Specialist",
+			toolPreview: {
+				fallbackApplied: false,
+				hiddenToolCount: 0,
+				items: [
+					{
+						access: "allowed",
+						name: "resolve-compare-offers-context",
+					},
+					{
+						access: "allowed",
+						name: "load-tracker-specialist-packet",
+					},
+				],
+			},
+			workspacePath: "/workflows/compare-offers",
+		},
+		job: {
+			attempt: 1,
+			completedAt: "2026-04-22T00:13:00.000Z",
+			currentRunId: "run-compare-review-shell",
+			jobId: "job-compare-review-shell",
+			jobType: "compare-offers",
+			startedAt: "2026-04-22T00:11:00.000Z",
+			status: "completed",
+			updatedAt: "2026-04-22T00:13:00.000Z",
+			waitReason: null,
+		},
+		message: "Compare-offers review is ready in the workflows surface.",
+		nextAction: {
+			action: "wait",
+			message:
+				"Review the typed comparison packet in the workflows surface and use explicit tracker or report handoffs as needed.",
+			mode: "compare-offers",
+			sessionId: "compare-review-shell",
+		},
+		result: {
+			detailSurface: {
+				label: "Compare Offers",
+				path: "/tracker-specialist",
+			},
+			message: "Compare Offers review is available in the workflows surface.",
+			state: "dedicated-detail",
+		},
+		run: {
+			message: "Compare offers is ready for review.",
+			resumeAllowed: false,
+			state: "completed",
+		},
+		session: {
+			activeJobId: "job-compare-review-shell",
+			lastHeartbeatAt: "2026-04-22T00:13:00.000Z",
+			resumeAllowed: false,
+			sessionId: "compare-review-shell",
+			status: "completed",
+			updatedAt: "2026-04-22T00:13:00.000Z",
+			workflow: "compare-offers",
+		},
+		supportState: "ready",
+		summaryAvailability: "dedicated-detail",
+		warnings: [
+			{
+				code: "dedicated-detail-surface",
+				message:
+					"Compare Offers review is now rendered inside the workflows surface.",
+			},
+		],
+	};
+	const selectedSummary =
+		requestedMode === "compare-offers" ||
+		requestedSessionId === "compare-review-shell"
+			? compareOffersSummary
+			: applicationHelpSummary;
 
 	return {
 		filters: {
@@ -1170,13 +1258,21 @@ function createSpecialistWorkspacePayload(
 		generatedAt: "2026-04-22T00:12:00.000Z",
 		message: requestedSessionId
 			? `Loaded specialist session ${requestedSessionId}.`
-			: "Loaded the latest application-help specialist session app-help-completed-shell.",
+			: selectedSummary.handoff.mode === "compare-offers"
+				? "Loaded the latest compare-offers specialist session compare-review-shell."
+				: "Loaded the latest application-help specialist session app-help-completed-shell.",
 		ok: true,
 		selected: {
 			message: requestedSessionId
 				? `Loaded specialist session ${requestedSessionId}.`
-				: "Loaded the latest application-help specialist session app-help-completed-shell.",
-			origin: requestedSessionId ? "session-id" : "mode",
+				: selectedSummary.handoff.mode === "compare-offers"
+					? "Loaded the latest compare-offers specialist session compare-review-shell."
+					: "Loaded the latest application-help specialist session app-help-completed-shell.",
+			origin: requestedSessionId
+				? "session-id"
+				: requestedMode
+					? "mode"
+					: "latest-session",
 			requestedMode,
 			requestedSessionId,
 			state: "ready",
@@ -1187,7 +1283,7 @@ function createSpecialistWorkspacePayload(
 		status: "ready",
 		workflows: [
 			{
-				handoff: selectedSummary.handoff,
+				handoff: applicationHelpSummary.handoff,
 				intake: {
 					kind: "report-context",
 					message:
@@ -1197,33 +1293,12 @@ function createSpecialistWorkspacePayload(
 				message:
 					"Application help can launch with the research specialist using report-backed context lookup and draft staging while keeping submission manual.",
 				missingCapabilities: [],
-				selected: true,
+				selected: selectedSummary.handoff.mode === "application-help",
 				summaryAvailability: "dedicated-detail",
 				supportState: "ready",
 			},
 			{
-				handoff: {
-					detailSurface: null,
-					family: "application-history",
-					label: "Compare Offers",
-					mode: "compare-offers",
-					modeDescription:
-						"Compare saved offers and role references in one bounded summary.",
-					modeRepoRelativePath: "modes/ofertas.md",
-					specialistId: "tracker-specialist",
-					specialistLabel: "Tracker Specialist",
-					toolPreview: {
-						fallbackApplied: true,
-						hiddenToolCount: 0,
-						items: [
-							{
-								access: "restricted",
-								name: "list-evaluation-artifacts",
-							},
-						],
-					},
-					workspacePath: "/workflows/compare-offers",
-				},
+				handoff: compareOffersSummary.handoff,
 				intake: {
 					kind: "offer-set",
 					message:
@@ -1231,11 +1306,143 @@ function createSpecialistWorkspacePayload(
 					requiresSavedState: false,
 				},
 				message:
-					"Offer comparison remains blocked until typed comparison tools are implemented.",
-				missingCapabilities: ["typed-offer-comparison"],
-				selected: false,
-				summaryAvailability: "pending",
-				supportState: "tooling-gap",
+					"Compare offers can launch with the tracker specialist using typed offer matching and inline planning review.",
+				missingCapabilities: [],
+				selected: selectedSummary.handoff.mode === "compare-offers",
+				summaryAvailability: "dedicated-detail",
+				supportState: "ready",
+			},
+		],
+	};
+}
+
+function _createTrackerSpecialistPayload(requestUrl = "/tracker-specialist") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const requestedMode = url.searchParams.get("mode")?.trim() || null;
+	const requestedSessionId = url.searchParams.get("sessionId")?.trim() || null;
+
+	return {
+		filters: {
+			mode: requestedMode,
+			sessionId: requestedSessionId,
+		},
+		generatedAt: "2026-04-22T00:13:00.000Z",
+		message: "Loaded tracker-specialist compare-offers review.",
+		ok: true,
+		selected: {
+			message: "Loaded tracker-specialist compare-offers review.",
+			origin: requestedSessionId ? "session-id" : "mode",
+			requestedMode,
+			requestedSessionId,
+			state: "ready",
+			summary: {
+				approval: null,
+				failure: null,
+				job: {
+					attempt: 1,
+					completedAt: "2026-04-22T00:13:00.000Z",
+					currentRunId: "run-compare-review-shell",
+					jobId: "job-compare-review-shell",
+					jobType: "compare-offers",
+					startedAt: "2026-04-22T00:11:00.000Z",
+					status: "completed",
+					updatedAt: "2026-04-22T00:13:00.000Z",
+					waitReason: null,
+				},
+				message: "The compare-offers packet is ready for planning review.",
+				nextAction: {
+					action: "review-result",
+					message:
+						"Review the bounded comparison packet, then use explicit tracker or report handoffs if you want to inspect linked artifacts.",
+					resumeAllowed: false,
+					sessionId: "compare-review-shell",
+				},
+				packet: {
+					fingerprint: "compare-review-shell:fingerprint",
+					generatedAt: "2026-04-22T00:13:00.000Z",
+					message:
+						"Compared the top two saved offers with explicit report links.",
+					mode: "compare-offers",
+					offers: [
+						{
+							company: "Context Co",
+							fileName:
+								"019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+							label: "Context Co offer",
+							legitimacy: "High Confidence",
+							matchReasons: ["Matched report 019 by company and role."],
+							matchState: "exact",
+							pdf: {
+								exists: true,
+								repoRelativePath:
+									"output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf",
+							},
+							reportNumber: "019",
+							reportRepoRelativePath:
+								"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+							role: "Applied AI Engineer - Agentic Workflows",
+							score: 4.4,
+							title:
+								"Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
+							trackerEntryNumber: 19,
+							url: "https://example.com/jobs/cohere-agentic",
+						},
+					],
+					references: [
+						{
+							company: "Context Co",
+							entryNumber: 19,
+							label: "Context Co offer",
+							reportNumber: "019",
+							reportPath:
+								"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+							role: "Applied AI Engineer - Agentic Workflows",
+						},
+					],
+					resultStatus: "ready",
+					revision: 2,
+					sessionId: "compare-review-shell",
+					unmatchedReferences: [],
+					updatedAt: "2026-04-22T00:13:00.000Z",
+					warnings: [],
+				},
+				run: {
+					message: "Compare-offers review is ready.",
+					resumeAllowed: false,
+					state: "completed",
+				},
+				session: {
+					activeJobId: "job-compare-review-shell",
+					lastHeartbeatAt: "2026-04-22T00:13:00.000Z",
+					resumeAllowed: false,
+					sessionId: "compare-review-shell",
+					status: "completed",
+					updatedAt: "2026-04-22T00:13:00.000Z",
+					workflow: "compare-offers",
+				},
+				state: "completed",
+				warnings: [],
+				workflow: {
+					detailPath: "/tracker-specialist",
+					label: "Compare Offers",
+					message:
+						"Compare offers can launch with the tracker specialist using typed offer matching and inline planning review.",
+					mode: "compare-offers",
+					selected: true,
+				},
+			},
+		},
+		service: "jobhunt-api-scaffold",
+		sessionId: STARTUP_SESSION_ID,
+		status: "ready",
+		workflows: [
+			{
+				detailPath: "/tracker-specialist",
+				label: "Compare Offers",
+				message:
+					"Compare offers can launch with the tracker specialist using typed offer matching and inline planning review.",
+				mode: "compare-offers",
+				selected: true,
 			},
 		],
 	};

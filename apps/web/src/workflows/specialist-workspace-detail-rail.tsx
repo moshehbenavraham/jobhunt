@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type {
 	SpecialistWorkspaceDetailSurface,
+	SpecialistWorkspaceMode,
 	SpecialistWorkspaceSummaryPayload,
 } from "./specialist-workspace-types";
 import type { SpecialistWorkspaceViewStatus } from "./use-specialist-workspace";
@@ -13,6 +14,7 @@ type SpecialistWorkspaceDetailRailProps = {
 	}) => void;
 	onOpenChatConsole: (focus: { sessionId: string | null }) => void;
 	onOpenDetailSurface: (input: {
+		mode: SpecialistWorkspaceMode;
 		path: SpecialistWorkspaceDetailSurface["path"];
 		sessionId: string | null;
 	}) => void;
@@ -84,7 +86,7 @@ function describeEmptyState(status: SpecialistWorkspaceViewStatus): {
 			};
 		default:
 			return {
-				body: "Select a specialist workflow to inspect detail-surface, approval, chat, and tooling guidance.",
+				body: "Select a workflow with a dedicated detail surface to inspect explicit handoff routes. Inline tracker and research review now stay in the workflows surface.",
 				title: "No handoff selected",
 			};
 	}
@@ -155,7 +157,9 @@ export function SpecialistWorkspaceDetailRail({
 					Detail and handoffs
 				</h2>
 				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-					{selectedSummary.result.message}
+					{selectedSummary.handoff.mode === "application-help"
+						? "Application-help keeps detailed review in its own surface, while the workflows shell keeps the handoff explicit."
+						: selectedSummary.result.message}
 				</p>
 			</header>
 
@@ -174,7 +178,8 @@ export function SpecialistWorkspaceDetailRail({
 						</h3>
 						<p style={{ color: "#475569", margin: 0 }}>
 							Route from the shared workflows surface into dedicated review
-							areas without guessing from repo artifacts.
+							areas without guessing from repo artifacts or duplicating the
+							review UI in the browser shell.
 						</p>
 					</div>
 					<button
@@ -197,6 +202,7 @@ export function SpecialistWorkspaceDetailRail({
 							}
 
 							onOpenDetailSurface({
+								mode: selectedSummary.handoff.mode,
 								path: detailSurface.path,
 								sessionId: selectedSummary.session?.sessionId ?? null,
 							});

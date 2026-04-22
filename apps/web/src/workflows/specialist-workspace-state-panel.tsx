@@ -1,5 +1,8 @@
 import type { CSSProperties } from "react";
-import type { SpecialistWorkspaceSummaryPayload } from "./specialist-workspace-types";
+import {
+	isSpecialistWorkspaceInlineReviewMode,
+	type SpecialistWorkspaceSummaryPayload,
+} from "./specialist-workspace-types";
 import type { SpecialistWorkspaceViewStatus } from "./use-specialist-workspace";
 
 type SpecialistWorkspaceStatePanelProps = {
@@ -104,12 +107,17 @@ function formatTimestamp(value: string | null): string {
 	return date.toLocaleString();
 }
 
-function formatStateLabel(value: string): string {
+function formatStateLabel(
+	value: string,
+	input: {
+		inlineReview: boolean;
+	},
+): string {
 	switch (value) {
 		case "active-session":
 			return "Active session";
 		case "dedicated-detail":
-			return "Dedicated detail";
+			return input.inlineReview ? "Inline review" : "Dedicated detail";
 		case "pending-session":
 			return "Pending session";
 		case "summary-pending":
@@ -169,6 +177,9 @@ export function SpecialistWorkspaceStatePanel({
 	const canResume =
 		selectedSummary.nextAction.action === "resume" &&
 		selectedSummary.nextAction.sessionId !== null;
+	const inlineReview = isSpecialistWorkspaceInlineReviewMode(
+		selectedSummary.handoff.mode,
+	);
 
 	return (
 		<section
@@ -217,11 +228,19 @@ export function SpecialistWorkspaceStatePanel({
 
 				<p style={{ color: "#475569", margin: 0 }}>{selectedSummary.message}</p>
 				<p style={{ color: "#475569", margin: 0 }}>
-					Result: {formatStateLabel(selectedSummary.result.state)} | Next
-					action: {formatStateLabel(selectedSummary.nextAction.action)}
+					Result:{" "}
+					{formatStateLabel(selectedSummary.result.state, {
+						inlineReview,
+					})}{" "}
+					| Next action:{" "}
+					{formatStateLabel(selectedSummary.nextAction.action, {
+						inlineReview,
+					})}
 				</p>
 				<p style={{ color: "#475569", margin: 0 }}>
-					{selectedSummary.nextAction.message}
+					{inlineReview
+						? "Planner and narrative review now stay in the workflows surface while approvals, chat, tracker, pipeline, and report routes remain explicit."
+						: selectedSummary.nextAction.message}
 				</p>
 
 				<div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
@@ -246,7 +265,11 @@ export function SpecialistWorkspaceStatePanel({
 			<section style={cardStyle}>
 				<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>Run summary</h3>
 				<p style={{ margin: 0 }}>
-					<strong>{formatStateLabel(selectedSummary.run.state)}</strong>
+					<strong>
+						{formatStateLabel(selectedSummary.run.state, {
+							inlineReview,
+						})}
+					</strong>
 				</p>
 				<p style={{ color: "#475569", margin: 0 }}>
 					{selectedSummary.run.message}
@@ -282,7 +305,9 @@ export function SpecialistWorkspaceStatePanel({
 					<div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem" }}>
 						{selectedSummary.warnings.map((warning) => (
 							<span key={warning.code} style={warningChipStyle}>
-								{formatStateLabel(warning.code)}
+								{formatStateLabel(warning.code, {
+									inlineReview,
+								})}
 							</span>
 						))}
 					</div>

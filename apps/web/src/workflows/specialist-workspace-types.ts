@@ -26,6 +26,14 @@ export const SPECIALIST_WORKSPACE_FAMILY_VALUES = [
 export type SpecialistWorkspaceFamily =
 	(typeof SPECIALIST_WORKSPACE_FAMILY_VALUES)[number];
 
+export const SPECIALIST_WORKSPACE_INLINE_REVIEW_FAMILY_VALUES = [
+	"research-specialist",
+	"tracker-specialist",
+] as const;
+
+export type SpecialistWorkspaceInlineReviewFamily =
+	(typeof SPECIALIST_WORKSPACE_INLINE_REVIEW_FAMILY_VALUES)[number];
+
 export const SPECIALIST_WORKSPACE_INTAKE_KIND_VALUES = [
 	"company-role",
 	"offer-set",
@@ -328,6 +336,54 @@ export type SpecialistWorkspaceSummaryPayload = {
 	status: StartupStatus;
 	workflows: SpecialistWorkspaceWorkflowDescriptor[];
 };
+
+export function resolveSpecialistWorkspaceInlineReviewFamily(
+	mode: SpecialistWorkspaceMode | null,
+): SpecialistWorkspaceInlineReviewFamily | null {
+	switch (mode) {
+		case "application-help":
+			return null;
+		case "compare-offers":
+		case "follow-up-cadence":
+		case "rejection-patterns":
+			return "tracker-specialist";
+		case "deep-company-research":
+		case "interview-prep":
+		case "linkedin-outreach":
+		case "project-review":
+		case "training-review":
+			return "research-specialist";
+		case null:
+			return null;
+	}
+}
+
+export function isSpecialistWorkspaceInlineReviewMode(
+	mode: SpecialistWorkspaceMode | null,
+): boolean {
+	return resolveSpecialistWorkspaceInlineReviewFamily(mode) !== null;
+}
+
+export function resolveSpecialistWorkspaceDetailRoute(
+	mode: SpecialistWorkspaceMode | null,
+): string | null {
+	switch (mode) {
+		case "application-help":
+			return "/application-help";
+		case "compare-offers":
+		case "follow-up-cadence":
+		case "rejection-patterns":
+			return "/tracker-specialist";
+		case "deep-company-research":
+		case "interview-prep":
+		case "linkedin-outreach":
+		case "project-review":
+		case "training-review":
+			return "/research-specialist";
+		case null:
+			return null;
+	}
+}
 
 export type SpecialistWorkspaceActionRequest =
 	| {
