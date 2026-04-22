@@ -11,6 +11,7 @@ import { chromium } from "playwright";
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "..");
+const STARTUP_SESSION_ID = "phase01-session03-agent-runtime-bootstrap";
 
 function createReadyStartupPayload() {
 	return {
@@ -838,6 +839,381 @@ function createBatchWorkspacePayload(requestUrl = "/batch-supervisor") {
 	};
 }
 
+function createApplicationHelpPayload(requestUrl = "/application-help") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const requestedSessionId = url.searchParams.get("sessionId")?.trim() || null;
+	const sessions = {
+		"app-help-completed-shell": {
+			approval: null,
+			draftPacket: {
+				company: "Cohere",
+				createdAt: "2026-04-22T00:10:00.000Z",
+				fingerprint: "fingerprint-app-help-completed-shell",
+				itemCount: 1,
+				items: [
+					{
+						answer:
+							"I build operator-facing AI workflows and durable review paths.",
+						question: "Why this role?",
+					},
+				],
+				matchedContext: null,
+				packetId: "packet-app-help-completed-shell",
+				repoRelativePath:
+					".jobhunt-app/application-help/app-help-completed-shell/packet.json",
+				reviewNotes: "Completed application-help review.",
+				reviewRequired: true,
+				revision: 1,
+				role: "Applied AI Engineer - Agentic Workflows",
+				sessionId: "app-help-completed-shell",
+				updatedAt: "2026-04-22T00:12:00.000Z",
+				warnings: [],
+			},
+			failure: null,
+			job: {
+				attempt: 1,
+				completedAt: "2026-04-22T00:12:00.000Z",
+				currentRunId: "run-app-help-completed-shell",
+				jobId: "job-app-help-completed-shell",
+				jobType: "application-help",
+				startedAt: "2026-04-22T00:08:00.000Z",
+				status: "completed",
+				updatedAt: "2026-04-22T00:12:00.000Z",
+				waitReason: null,
+			},
+			message:
+				"The application-help run completed and the draft is ready for manual review.",
+			nextReview: {
+				action: "review-draft",
+				message:
+					"Review the completed draft packet, personalize the answers, and keep submission manual.",
+				resumeAllowed: false,
+				sessionId: "app-help-completed-shell",
+			},
+			reportContext: {
+				company: "Cohere",
+				coverLetter: {
+					message:
+						"No cover-letter field was detected on the application page.",
+					state: "manual-follow-up",
+				},
+				existingDraft: {
+					itemCount: 1,
+					items: [
+						{
+							answer:
+								"I build operator-facing AI workflows and durable review paths.",
+							question: "Why this role?",
+						},
+					],
+					sectionPresent: true,
+					sectionText:
+						"I build operator-facing AI workflows and durable review paths.",
+				},
+				fileName:
+					"019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+				legitimacy: "High Confidence",
+				matchReasons: [
+					"Matched the selected report artifact from the saved evaluation set.",
+				],
+				matchState: "exact",
+				pdf: {
+					exists: true,
+					repoRelativePath:
+						"output/cv-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.pdf",
+				},
+				reportNumber: "019",
+				reportRepoRelativePath:
+					"reports/019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22.md",
+				role: "Applied AI Engineer - Agentic Workflows",
+				score: 4.4,
+				title: "Evaluation: Cohere -- Applied AI Engineer - Agentic Workflows",
+				url: "https://example.com/jobs/cohere-agentic",
+			},
+			reviewBoundary: {
+				message:
+					"Review is required and submission stays manual outside the browser workspace.",
+				reviewRequired: true,
+				submissionAllowed: false,
+			},
+			session: {
+				activeJobId: "job-app-help-completed-shell",
+				lastHeartbeatAt: "2026-04-22T00:12:00.000Z",
+				resumeAllowed: false,
+				sessionId: "app-help-completed-shell",
+				status: "completed",
+				updatedAt: "2026-04-22T00:12:00.000Z",
+				workflow: "application-help",
+			},
+			state: "completed",
+			warnings: [],
+		},
+		"app-help-paused-shell": {
+			approval: {
+				action: "review-application-help-draft",
+				approvalId: "approval-app-help-shell-01",
+				jobId: "job-app-help-paused-shell",
+				requestedAt: "2026-04-22T00:11:00.000Z",
+				resolvedAt: null,
+				status: "pending",
+				title: "Review application-help draft",
+				traceId: "trace-app-help-shell-01",
+			},
+			draftPacket: {
+				company: "Cohere",
+				createdAt: "2026-04-22T00:10:00.000Z",
+				fingerprint: "fingerprint-app-help-paused-shell",
+				itemCount: 1,
+				items: [
+					{
+						answer:
+							"I build operator-facing AI workflows and durable review paths.",
+						question: "Why this role?",
+					},
+				],
+				matchedContext: null,
+				packetId: "packet-app-help-paused-shell",
+				repoRelativePath:
+					".jobhunt-app/application-help/app-help-paused-shell/packet.json",
+				reviewNotes: "Waiting on approval.",
+				reviewRequired: true,
+				revision: 1,
+				role: "Applied AI Engineer - Agentic Workflows",
+				sessionId: "app-help-paused-shell",
+				updatedAt: "2026-04-22T00:11:00.000Z",
+				warnings: [],
+			},
+			failure: null,
+			job: {
+				attempt: 1,
+				completedAt: null,
+				currentRunId: "run-app-help-paused-shell",
+				jobId: "job-app-help-paused-shell",
+				jobType: "application-help",
+				startedAt: "2026-04-22T00:09:00.000Z",
+				status: "waiting",
+				updatedAt: "2026-04-22T00:11:00.000Z",
+				waitReason: "approval",
+			},
+			message:
+				"This application-help session is waiting on human approval before it can continue.",
+			nextReview: {
+				action: "resolve-approval",
+				message:
+					"Resolve the pending approval, then resume the application-help run with the current draft packet.",
+				resumeAllowed: true,
+				sessionId: "app-help-paused-shell",
+			},
+			reportContext: null,
+			reviewBoundary: {
+				message:
+					"Review is required and submission stays manual outside the browser workspace.",
+				reviewRequired: true,
+				submissionAllowed: false,
+			},
+			session: {
+				activeJobId: "job-app-help-paused-shell",
+				lastHeartbeatAt: "2026-04-22T00:11:00.000Z",
+				resumeAllowed: true,
+				sessionId: "app-help-paused-shell",
+				status: "waiting",
+				updatedAt: "2026-04-22T00:11:00.000Z",
+				workflow: "application-help",
+			},
+			state: "approval-paused",
+			warnings: [
+				{
+					code: "approval-paused",
+					message:
+						"This application-help session is waiting on human approval before it can continue.",
+				},
+			],
+		},
+	};
+	sessions["app-help-paused-shell"].reportContext =
+		sessions["app-help-completed-shell"].reportContext;
+
+	const selectedSessionId = requestedSessionId || "app-help-completed-shell";
+	const selectedSummary = sessions[selectedSessionId] ?? null;
+
+	return {
+		filters: {
+			sessionId: requestedSessionId,
+		},
+		generatedAt: "2026-04-22T00:12:00.000Z",
+		message: selectedSummary
+			? requestedSessionId
+				? `Loaded application-help session ${selectedSessionId}.`
+				: `Loaded the latest application-help session ${selectedSessionId}.`
+			: `Application-help session ${selectedSessionId} was not found.`,
+		ok: true,
+		selected: selectedSummary
+			? {
+					message: requestedSessionId
+						? `Loaded application-help session ${selectedSessionId}.`
+						: `Loaded the latest application-help session ${selectedSessionId}.`,
+					origin: requestedSessionId ? "session-id" : "latest",
+					requestedSessionId,
+					state: "ready",
+					summary: selectedSummary,
+				}
+			: {
+					message: `Application-help session ${selectedSessionId} was not found.`,
+					origin: "session-id",
+					requestedSessionId,
+					state: "missing",
+					summary: null,
+				},
+		service: "jobhunt-api-scaffold",
+		sessionId: STARTUP_SESSION_ID,
+		status: "ready",
+	};
+}
+
+function createApprovalInboxPayload(requestUrl = "/approval-inbox") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const approvalId = url.searchParams.get("approvalId")?.trim() || null;
+	const sessionId = url.searchParams.get("sessionId")?.trim() || null;
+	const useApplicationHelpSelection =
+		approvalId === "approval-app-help-shell-01" ||
+		sessionId === "app-help-paused-shell";
+	const selectedApproval = useApplicationHelpSelection
+		? {
+				action: "review-application-help-draft",
+				approvalId: "approval-app-help-shell-01",
+				details: {
+					sessionId: "app-help-paused-shell",
+					workflow: "application-help",
+				},
+				jobId: "job-app-help-paused-shell",
+				requestedAt: "2026-04-22T00:11:00.000Z",
+				resolvedAt: null,
+				response: null,
+				sessionId: "app-help-paused-shell",
+				status: "pending",
+				title: "Review application-help draft",
+				traceId: "trace-app-help-shell-01",
+			}
+		: {
+				action: "review-batch-closeout",
+				approvalId: "approval-batch-shell-01",
+				details: null,
+				jobId: "job-batch-shell-01",
+				requestedAt: "2026-04-22T00:08:00.000Z",
+				resolvedAt: null,
+				response: null,
+				sessionId: "session-batch-shell-01",
+				status: "pending",
+				title: "Review batch follow-up",
+				traceId: "trace-batch-shell-01",
+			};
+	const selectedSession = useApplicationHelpSelection
+		? {
+				activeJobId: "job-app-help-paused-shell",
+				lastHeartbeatAt: "2026-04-22T00:11:00.000Z",
+				pendingApprovalCount: 1,
+				sessionId: "app-help-paused-shell",
+				status: "waiting",
+				updatedAt: "2026-04-22T00:11:00.000Z",
+				workflow: "application-help",
+			}
+		: {
+				activeJobId: "job-batch-shell-01",
+				lastHeartbeatAt: "2026-04-22T00:08:00.000Z",
+				pendingApprovalCount: 1,
+				sessionId: "session-batch-shell-01",
+				status: "waiting",
+				updatedAt: "2026-04-22T00:08:00.000Z",
+				workflow: "batch-evaluation",
+			};
+	const interruptedRun = useApplicationHelpSelection
+		? {
+				message:
+					"Resolve the pending approval before attempting a resume handoff.",
+				resumeAllowed: false,
+				sessionId: "app-help-paused-shell",
+				state: "waiting-for-approval",
+			}
+		: {
+				message:
+					"This session can be handed back to the shared orchestration resume path.",
+				resumeAllowed: true,
+				sessionId: "session-batch-shell-01",
+				state: "resume-ready",
+			};
+
+	return {
+		filters: {
+			approvalId,
+			limit: 8,
+			sessionId,
+		},
+		generatedAt: "2026-04-22T00:12:00.000Z",
+		message: "Approval inbox summary is ready.",
+		ok: true,
+		pendingApprovalCount: 2,
+		queue: [
+			{
+				action: "review-batch-closeout",
+				approvalId: "approval-batch-shell-01",
+				jobId: "job-batch-shell-01",
+				requestedAt: "2026-04-22T00:08:00.000Z",
+				sessionId: "session-batch-shell-01",
+				sessionStatus: "waiting",
+				title: "Review batch follow-up",
+				traceId: "trace-batch-shell-01",
+				workflow: "batch-evaluation",
+			},
+			{
+				action: "review-application-help-draft",
+				approvalId: "approval-app-help-shell-01",
+				jobId: "job-app-help-paused-shell",
+				requestedAt: "2026-04-22T00:11:00.000Z",
+				sessionId: "app-help-paused-shell",
+				sessionStatus: "waiting",
+				title: "Review application-help draft",
+				traceId: "trace-app-help-shell-01",
+				workflow: "application-help",
+			},
+		],
+		selected: {
+			approval: selectedApproval,
+			failure: null,
+			interruptedRun,
+			job: {
+				attempt: 1,
+				completedAt: null,
+				currentRunId: useApplicationHelpSelection
+					? "run-app-help-paused-shell"
+					: "run-batch-shell-01",
+				jobId: selectedApproval.jobId,
+				jobType: useApplicationHelpSelection
+					? "application-help"
+					: "batch-evaluation",
+				startedAt: "2026-04-22T00:08:00.000Z",
+				status: "waiting",
+				updatedAt: "2026-04-22T00:12:00.000Z",
+				waitReason: "approval",
+			},
+			route: {
+				message: "Shared orchestration resume path is available.",
+				missingCapabilities: [],
+				specialistId: useApplicationHelpSelection
+					? "research-specialist"
+					: "batch-specialist",
+				status: "ready",
+			},
+			selectionMessage: `${selectedApproval.title} is ready for review.`,
+			selectionState: "active",
+			session: selectedSession,
+			timeline: [],
+		},
+		service: "jobhunt-api-scaffold",
+		sessionId: STARTUP_SESSION_ID,
+		status: "ready",
+	};
+}
+
 function createPipelineReviewPayload() {
 	return {
 		filters: {
@@ -1534,6 +1910,25 @@ async function startFakeApiServer() {
 				);
 			}
 
+			if (
+				(requestedSessionId === "app-help-completed-shell" ||
+					requestedSessionId === "app-help-paused-shell") &&
+				!state.sessionDetails.has(requestedSessionId)
+			) {
+				const applicationHelpSessionSummary = createSessionSummary({
+					sessionId: requestedSessionId,
+					workflow: "application-help",
+				});
+				const applicationHelpSessionDetail = createSessionDetail(
+					applicationHelpSessionSummary,
+					"Application-help review opened from the workspace.",
+				);
+				state.sessionDetails.set(
+					applicationHelpSessionSummary.sessionId,
+					applicationHelpSessionDetail,
+				);
+			}
+
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
 			});
@@ -1582,6 +1977,34 @@ async function startFakeApiServer() {
 			response.end(
 				JSON.stringify(
 					createBatchWorkspacePayload(request.url ?? "/batch-supervisor"),
+					null,
+					2,
+				),
+			);
+			return;
+		}
+
+		if ((request.url ?? "").startsWith("/application-help")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(
+				JSON.stringify(
+					createApplicationHelpPayload(request.url ?? "/application-help"),
+					null,
+					2,
+				),
+			);
+			return;
+		}
+
+		if ((request.url ?? "").startsWith("/approval-inbox")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(
+				JSON.stringify(
+					createApprovalInboxPayload(request.url ?? "/approval-inbox"),
 					null,
 					2,
 				),
@@ -1771,6 +2194,7 @@ try {
 			.getByRole("heading", { name: "Job-Hunt control surface" })
 			.waitFor();
 		await page.getByRole("link", { name: /Startup/ }).waitFor();
+		await page.getByRole("link", { name: /Apply/ }).waitFor();
 		await page.getByRole("link", { name: /Approvals/ }).waitFor();
 		await page.getByRole("link", { name: /Tracker/ }).waitFor();
 		await page.getByText("Review application email").waitFor();
@@ -1842,6 +2266,62 @@ try {
 		assert.match(page.url(), /approval=approval-batch-shell-01/);
 		assert.match(page.url(), /reviewSession=session-batch-shell-01/);
 		assert.match(page.url(), /#approvals$/);
+		await page.goto(
+			`${webUrl}?applicationHelpSessionId=app-help-completed-shell#application-help`,
+			{
+				waitUntil: "networkidle",
+			},
+		);
+		await page
+			.getByRole("heading", { name: "Application-help workspace" })
+			.waitFor();
+		await page
+			.getByText("The application-help run completed and the draft is ready")
+			.first()
+			.waitFor();
+		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page
+			.getByRole("heading", { name: "Artifact review surface" })
+			.waitFor();
+		assert.match(
+			page.url(),
+			/report=reports%2F019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22\.md/,
+		);
+		await page.goto(
+			`${webUrl}?applicationHelpSessionId=app-help-completed-shell#application-help`,
+			{
+				waitUntil: "networkidle",
+			},
+		);
+		await page.getByRole("button", { name: /Open chat/ }).click();
+		await page
+			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
+			.waitFor();
+		assert.match(page.url(), /session=app-help-completed-shell/);
+		assert.match(page.url(), /#chat$/);
+		await page.goto(
+			`${webUrl}?applicationHelpSessionId=app-help-paused-shell#application-help`,
+			{
+				waitUntil: "networkidle",
+			},
+		);
+		await page
+			.getByRole("heading", { name: "Application-help workspace" })
+			.waitFor();
+		await page.getByRole("button", { name: /Open approvals/ }).click();
+		await page
+			.getByRole("heading", { name: "Approval inbox and human review flow" })
+			.waitFor();
+		assert.match(page.url(), /approval=approval-app-help-shell-01/);
+		assert.match(page.url(), /reviewSession=app-help-paused-shell/);
+		await page
+			.getByRole("button", { name: /Open application-help review/ })
+			.click();
+		await page
+			.getByRole("heading", { name: "Application-help workspace" })
+			.waitFor();
+		assert.match(page.url(), /applicationHelpSessionId=app-help-paused-shell/);
+		assert.match(page.url(), /#application-help$/);
 		await page.getByRole("link", { name: /Pipeline/ }).click();
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })

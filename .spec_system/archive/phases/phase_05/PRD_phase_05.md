@@ -1,10 +1,10 @@
 # PRD Phase 05: Scan, Batch, and Application-Help Parity
 
-**Status**: In Progress
+**Status**: Complete
 **Sessions**: 6
 **Estimated Duration**: 7-10 days
 
-**Progress**: 5/6 sessions (83%)
+**Progress**: 6/6 sessions (100%)
 
 ---
 
@@ -34,7 +34,7 @@ must remain server-owned and fail closed.
 | 03      | Batch Supervisor Contract             | Completed   | ~12-25     | 2026-04-22 |
 | 04      | Batch Jobs Workspace and Run Detail   | Completed   | ~12-25     | 2026-04-22 |
 | 05      | Application-Help Draft Contract       | Completed   | ~12-25     | 2026-04-22 |
-| 06      | Application-Help Review and Approvals | Not Started | ~12-25     | -          |
+| 06      | Application-Help Review and Approvals | Completed   | ~12-25     | 2026-04-22 |
 
 ---
 
@@ -44,12 +44,16 @@ must remain server-owned and fail closed.
 2. Session 02: Scan Review Workspace
 3. Session 03: Batch Supervisor Contract
 4. Session 04: Batch Jobs Workspace and Run Detail
+5. Session 05: Application-Help Draft Contract
+6. Session 06: Application-Help Review and Approvals
 
 ---
 
 ## Upcoming Sessions
 
-- Session 06: Application-Help Review and Approvals
+- None. Phase 05 is complete.
+
+Phase 05 complete; archived under `.spec_system/archive/phases/phase_05/`.
 
 ---
 
@@ -129,15 +133,15 @@ explicit operator actions.
 
 Phase complete when:
 
-- [ ] All 6 sessions completed
-- [ ] Operators can run portal scans, review shortlist candidates, and send
+- [x] All 6 sessions completed
+- [x] Operators can run portal scans, review shortlist candidates, and send
       selected roles into evaluation or batch follow-through from the app
-- [ ] Operators can create or resume batch jobs, inspect warnings, retry
+- [x] Operators can create or resume batch jobs, inspect warnings, retry
       failed items, and complete merge-plus-verify without the legacy batch
       runner UX
-- [ ] Operators can complete application-help flows with explicit draft outputs
+- [x] Operators can complete application-help flows with explicit draft outputs
       and approval checkpoints while preserving the no-submit rule
-- [ ] The new scan, batch, and application-help paths stay covered by smoke
+- [x] The new scan, batch, and application-help paths stay covered by smoke
       tests and the quick regression gate
 
 ---

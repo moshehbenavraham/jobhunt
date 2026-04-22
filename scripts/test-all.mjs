@@ -564,9 +564,22 @@ if (appScanReview !== null) {
 	fail("App scan-review smoke tests failed");
 }
 
-// -- 3aj. Auto-pipeline parity smoke -----------------------------
+// -- 3aj. App application-help smoke -----------------------------
 
-console.log("\n3aj. Auto-pipeline parity smoke");
+console.log("\n3aj. App application-help smoke");
+
+const appApplicationHelp = run("node", [
+	"scripts/test-app-application-help.mjs",
+]);
+if (appApplicationHelp !== null) {
+	pass("App application-help smoke tests pass");
+} else {
+	fail("App application-help smoke tests failed");
+}
+
+// -- 3ak. Auto-pipeline parity smoke -----------------------------
+
+console.log("\n3ak. Auto-pipeline parity smoke");
 
 const appAutoPipelineParity = run("node", [
 	"scripts/test-app-auto-pipeline-parity.mjs",
@@ -577,9 +590,9 @@ if (appAutoPipelineParity !== null) {
 	fail("Auto-pipeline parity smoke tests failed");
 }
 
-// -- 3ak. Bootstrap ASCII validation -----------------------------
+// -- 3al. Bootstrap ASCII validation -----------------------------
 
-console.log("\n3ak. Bootstrap ASCII validation");
+console.log("\n3al. Bootstrap ASCII validation");
 
 const bootstrapFiles = [
 	"apps/api/src/approval-runtime/approval-runtime-contract.ts",
@@ -731,6 +744,13 @@ const bootstrapFiles = [
 	"apps/api/src/tools/workspace-mutation-adapter.test.ts",
 	"apps/api/src/tools/workspace-mutation-adapter.ts",
 	"apps/web/src/App.tsx",
+	"apps/web/src/application-help/application-help-client.ts",
+	"apps/web/src/application-help/application-help-context-rail.tsx",
+	"apps/web/src/application-help/application-help-draft-panel.tsx",
+	"apps/web/src/application-help/application-help-launch-panel.tsx",
+	"apps/web/src/application-help/application-help-surface.tsx",
+	"apps/web/src/application-help/application-help-types.ts",
+	"apps/web/src/application-help/use-application-help.ts",
 	"apps/web/src/approvals/approval-context-panel.tsx",
 	"apps/web/src/approvals/approval-decision-bar.tsx",
 	"apps/web/src/approvals/approval-inbox-client.ts",
@@ -812,6 +832,7 @@ const bootstrapFiles = [
 	"scripts/test-app-bootstrap.mjs",
 	"scripts/test-app-batch-workspace.mjs",
 	"scripts/test-app-chat-console.mjs",
+	"scripts/test-app-application-help.mjs",
 	"scripts/test-app-onboarding.mjs",
 	"scripts/test-app-pipeline-review.mjs",
 	"scripts/test-app-report-viewer.mjs",

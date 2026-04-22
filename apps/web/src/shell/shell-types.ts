@@ -3,6 +3,7 @@ export const SHELL_SURFACE_IDS = [
 	"chat",
 	"scan",
 	"batch",
+	"application-help",
 	"pipeline",
 	"tracker",
 	"artifacts",
@@ -47,6 +48,13 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 			"Supervise batch draft state, run progress, retry paths, and closeout handoffs from one bounded workspace.",
 		id: "batch",
 		label: "Batch",
+		owner: "Phase 05",
+	},
+	{
+		description:
+			"Review staged application-help drafts, approval pauses, and artifact handoffs without opening a second browser workflow path.",
+		id: "application-help",
+		label: "Apply",
 		owner: "Phase 05",
 	},
 	{

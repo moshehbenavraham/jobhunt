@@ -67,6 +67,16 @@ function getPlaceholderBody(
 				],
 				title: "Batch workspace lands in Phase 05",
 			};
+		case "application-help":
+			return {
+				body: "Phase 05 adds the dedicated application-help workspace here. The placeholder keeps the shell registry exhaustive until draft review, approval handoffs, and resumable launch controls are mounted.",
+				highlights: [
+					"Application-help review stays bounded by the backend-owned summary route instead of raw draft files.",
+					"Launch and resume continue through the existing chat orchestration path instead of a second browser-owned runner.",
+					"Approval, artifact, and chat handoffs stay explicit so the no-submit boundary remains visible in the shell.",
+				],
+				title: "Application-help workspace lands in Phase 05",
+			};
 		case "tracker":
 			return {
 				body: "Phase 04 adds the dedicated tracker workspace here. The placeholder keeps the shell registry exhaustive until the tracker review and integrity controls are mounted.",

@@ -137,6 +137,22 @@ function getBadge(
 				label: summary.status === "ready" ? "Review" : "Setup",
 				tone: summary.status === "ready" ? "info" : "neutral",
 			};
+		case "application-help":
+			if (summary.activity.activeSession?.workflow === "application-help") {
+				const isApprovalPause =
+					summary.activity.activeSession.activeJob?.waitReason === "approval" ||
+					summary.activity.activeSession.status === "waiting";
+
+				return {
+					label: isApprovalPause ? "Paused" : "Live",
+					tone: isApprovalPause ? "attention" : "info",
+				};
+			}
+
+			return {
+				label: summary.status === "ready" ? "Drafts" : "Setup",
+				tone: summary.status === "ready" ? "info" : "neutral",
+			};
 		case "artifacts":
 			return {
 				label: summary.status === "ready" ? "Review" : "Read-only",
@@ -203,7 +219,7 @@ export function NavigationRail({
 				</h2>
 				<p style={{ color: "#cbd5e1", marginBottom: 0, marginTop: 0 }}>
 					One stable frame for startup, chat, scan review, batch supervision,
-					queue review, tracker closeout, and settings.
+					application-help review, queue review, tracker closeout, and settings.
 				</p>
 			</div>
 

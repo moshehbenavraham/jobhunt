@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 import { useDeferredValue } from "react";
+import { syncApplicationHelpFocus } from "../application-help/application-help-client";
+import { ApplicationHelpSurface } from "../application-help/application-help-surface";
 import { syncApprovalInboxFocus } from "../approvals/approval-inbox-client";
 import { ApprovalInboxSurface } from "../approvals/approval-inbox-surface";
 import { BatchWorkspaceSurface } from "../batch/batch-workspace-surface";
@@ -318,6 +320,17 @@ export function OperatorShell() {
 		);
 		shell.selectSurface("tracker");
 	};
+	const openApplicationHelp = (focus: { sessionId: string | null }) => {
+		syncApplicationHelpFocus(
+			{
+				sessionId: focus.sessionId,
+			},
+			{
+				openSurface: true,
+			},
+		);
+		shell.selectSurface("application-help");
+	};
 	const openChatConsole = (focus: { sessionId: string | null }) => {
 		syncChatConsoleSessionFocus(
 			{
@@ -380,6 +393,12 @@ export function OperatorShell() {
 									onOpenReportViewer={openArtifacts}
 									onOpenTrackerWorkspace={openTracker}
 								/>
+							) : renderedSurface.id === "application-help" ? (
+								<ApplicationHelpSurface
+									onOpenApprovals={openApprovals}
+									onOpenChatConsole={openChatConsole}
+									onOpenReportViewer={openArtifacts}
+								/>
 							) : renderedSurface.id === "pipeline" ? (
 								<PipelineReviewSurface onOpenReportViewer={openArtifacts} />
 							) : renderedSurface.id === "tracker" ? (
@@ -396,7 +415,9 @@ export function OperatorShell() {
 									}}
 								/>
 							) : renderedSurface.id === "approvals" ? (
-								<ApprovalInboxSurface />
+								<ApprovalInboxSurface
+									onOpenApplicationHelp={openApplicationHelp}
+								/>
 							) : renderedSurface.id === "settings" ? (
 								<SettingsSurface
 									onOpenOnboarding={() => shell.selectSurface("onboarding")}

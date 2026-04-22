@@ -2,7 +2,7 @@
   "version": "2.0",
   "project_name": "Job-Hunt",
   "description": "Local-first single-user app parity effort for jobhunt",
-  "current_phase": 5,
+  "current_phase": 6,
   "monorepo": true,
   "packages": [
     {
@@ -50,7 +50,7 @@
     "5": {
       "name": "Scan, Batch, and Application-Help Parity",
       "description": "Bring portal scan, batch supervision, and application-help flows into the app with bounded summaries, explicit retries, and approval-aware review surfaces.",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 6
     },
     "6": {
@@ -175,10 +175,26 @@
     {
       "id": "phase05-session05-application-help-draft-contract",
       "package": "apps/api"
+    },
+    {
+      "id": "phase05-session06-application-help-review-and-approvals",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session06-application-help-review-and-approvals",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session06-application-help-review-and-approvals",
+      "package": "apps/web",
+      "status": "completed"
+    },
     {
       "date": "2026-04-22",
       "session": "phase05-session05-application-help-draft-contract",
