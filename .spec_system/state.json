@@ -49,8 +49,9 @@
     },
     "5": {
       "name": "Scan, Batch, and Application-Help Parity",
-      "status": "not_started",
-      "session_count": 0
+      "description": "Bring portal scan, batch supervision, and application-help flows into the app with bounded summaries, explicit retries, and approval-aware review surfaces.",
+      "status": "in_progress",
+      "session_count": 6
     },
     "6": {
       "name": "Specialist Workflows, Dashboard Replacement, and Cutover",
@@ -150,10 +151,34 @@
     {
       "id": "phase04-session05-tracker-workspace-and-integrity-actions",
       "package": "apps/web"
+    },
+    {
+      "id": "phase04-session06-auto-pipeline-parity-and-regression",
+      "package": "apps/api"
+    },
+    {
+      "id": "phase05-session01-scan-shortlist-contract",
+      "package": "apps/api"
+    },
+    {
+      "id": "phase05-session02-scan-review-workspace",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session02-scan-review-workspace",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session02-scan-review-workspace",
+      "package": "apps/web",
+      "status": "completed"
+    },
     {
       "date": "2026-04-22",
       "session": "phase04-session03-report-viewer-and-artifact-browser",
@@ -409,6 +434,18 @@
     {
       "date": "2026-04-22",
       "session": "phase04-session06-auto-pipeline-parity-and-regression",
+      "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session01-scan-shortlist-contract",
+      "package": "apps/api",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session01-scan-shortlist-contract",
       "package": "apps/api",
       "status": "completed"
     }

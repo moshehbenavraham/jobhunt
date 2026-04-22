@@ -176,21 +176,21 @@ browser can read local artifacts directly when it cannot.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/chat/evaluation-result-types.ts` | Define strict parser helpers and typed evaluation-result payloads for the web console | ~220 |
-| `apps/web/src/chat/evaluation-result-client.ts` | Fetch the bounded evaluation-result summary with timeout, retry, and explicit offline handling | ~140 |
-| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Render the artifact packet, warning preview, closeout summary, and handoff affordances | ~260 |
+| File                                             | Purpose                                                                                        | Est. Lines |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/chat/evaluation-result-types.ts`   | Define strict parser helpers and typed evaluation-result payloads for the web console          | ~220       |
+| `apps/web/src/chat/evaluation-result-client.ts`  | Fetch the bounded evaluation-result summary with timeout, retry, and explicit offline handling | ~140       |
+| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Render the artifact packet, warning preview, closeout summary, and handoff affordances         | ~260       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/chat/use-chat-console.ts` | Add selected-session evaluation-result loading, polling coordination, and revalidation behavior | ~170 |
-| `apps/web/src/chat/run-status-panel.tsx` | Map evaluation-result states into explicit evaluation-first status copy and approvals handoff actions | ~120 |
-| `apps/web/src/chat/chat-console-surface.tsx` | Dock the artifact rail into the chat layout and shift copy toward the evaluation-first console | ~140 |
-| `scripts/test-app-chat-console.mjs` | Extend the fake API and browser smoke checks for evaluation-result states and handoff affordances | ~240 |
-| `scripts/test-all.mjs` | Keep quick regression and ASCII coverage aligned with the new chat files and smoke script | ~40 |
+| File                                         | Changes                                                                                               | Est. Lines |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/chat/use-chat-console.ts`      | Add selected-session evaluation-result loading, polling coordination, and revalidation behavior       | ~170       |
+| `apps/web/src/chat/run-status-panel.tsx`     | Map evaluation-result states into explicit evaluation-first status copy and approvals handoff actions | ~120       |
+| `apps/web/src/chat/chat-console-surface.tsx` | Dock the artifact rail into the chat layout and shift copy toward the evaluation-first console        | ~140       |
+| `scripts/test-app-chat-console.mjs`          | Extend the fake API and browser smoke checks for evaluation-result states and handoff affordances     | ~240       |
+| `scripts/test-all.mjs`                       | Keep quick regression and ASCII coverage aligned with the new chat files and smoke script             | ~40        |
 
 ---
 
@@ -279,6 +279,7 @@ browser can read local artifacts directly when it cannot.
 
 Checklist active: Yes
 Top behavioral risks for this session:
+
 - Selection changes could show stale artifact state if refresh cleanup is not
   correct.
 - Approval and handoff buttons could double-fire if synchronous interaction

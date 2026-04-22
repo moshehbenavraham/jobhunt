@@ -176,17 +176,17 @@ be present only when supported by stored job or checkpoint data.
 
 ### Files to Create
 
-| File                                                  | Purpose                                                                       | Est. Lines |
-| ----------------------------------------------------- | ----------------------------------------------------------------------------- | ---------- |
-| `apps/api/src/server/evaluation-result-contract.ts`   | Define typed evaluation-result states, artifact packet shapes, and route payload enums | ~220       |
-| `apps/api/src/server/evaluation-result-summary.ts`    | Build the bounded evaluation summary from sessions, jobs, checkpoints, approvals, and failures | ~340       |
-| `apps/api/src/server/routes/evaluation-result-route.ts` | Expose the GET-only evaluation-result endpoint with query validation          | ~120       |
+| File                                                    | Purpose                                                                                        | Est. Lines |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/server/evaluation-result-contract.ts`     | Define typed evaluation-result states, artifact packet shapes, and route payload enums         | ~220       |
+| `apps/api/src/server/evaluation-result-summary.ts`      | Build the bounded evaluation summary from sessions, jobs, checkpoints, approvals, and failures | ~340       |
+| `apps/api/src/server/routes/evaluation-result-route.ts` | Expose the GET-only evaluation-result endpoint with query validation                           | ~120       |
 
 ### Files to Modify
 
-| File                                      | Changes                                                                 | Est. Lines |
-| ----------------------------------------- | ----------------------------------------------------------------------- | ---------- |
-| `apps/api/src/server/routes/index.ts`     | Register the evaluation-result route in deterministic order             | ~20        |
+| File                                      | Changes                                                                                                | Est. Lines |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------- |
+| `apps/api/src/server/routes/index.ts`     | Register the evaluation-result route in deterministic order                                            | ~20        |
 | `apps/api/src/server/http-server.test.ts` | Add contract coverage for pending, running, waiting, failed, completed, degraded, and validation paths | ~320       |
 
 ---
@@ -272,6 +272,7 @@ be present only when supported by stored job or checkpoint data.
 
 Checklist active: Yes
 Top behavioral risks for this session:
+
 - Artifact-ready payloads claim success even when one artifact path is missing
   on disk.
 - Approval-paused runs collapse into generic failures and lose review context.

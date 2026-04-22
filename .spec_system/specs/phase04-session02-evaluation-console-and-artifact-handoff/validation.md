@@ -9,17 +9,17 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Tasks Complete | PASS | 17/17 tasks complete |
-| Files Exist | PASS | 8/8 spec deliverables found |
-| ASCII Encoding | PASS | 8/8 deliverables verified ASCII with LF endings; 2 in-session support files also verified ASCII/LF |
-| Tests Passing | PASS | `npm run app:web:check`, `npm run app:web:build`, `npm run app:api:test:runtime`, `node scripts/test-app-shell.mjs`, and `node scripts/test-all.mjs --quick` all passed |
-| Database/Schema Alignment | N/A | No DB-layer changes in this session |
-| Quality Gates | PASS | Required web, API, shell smoke, and quick regression gates passed |
-| Conventions | PASS | Touched files follow repo conventions on naming, structure, and error handling |
-| Security & GDPR | PASS | Security review passed; GDPR review is N/A because no new personal-data flow was added |
-| Behavioral Quality | PASS | Shell and evaluation-console behavior is covered by runtime, smoke, and quick regression tests |
+| Check                     | Status | Notes                                                                                                                                                                   |
+| ------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tasks Complete            | PASS   | 17/17 tasks complete                                                                                                                                                    |
+| Files Exist               | PASS   | 8/8 spec deliverables found                                                                                                                                             |
+| ASCII Encoding            | PASS   | 8/8 deliverables verified ASCII with LF endings; 2 in-session support files also verified ASCII/LF                                                                      |
+| Tests Passing             | PASS   | `npm run app:web:check`, `npm run app:web:build`, `npm run app:api:test:runtime`, `node scripts/test-app-shell.mjs`, and `node scripts/test-all.mjs --quick` all passed |
+| Database/Schema Alignment | N/A    | No DB-layer changes in this session                                                                                                                                     |
+| Quality Gates             | PASS   | Required web, API, shell smoke, and quick regression gates passed                                                                                                       |
+| Conventions               | PASS   | Touched files follow repo conventions on naming, structure, and error handling                                                                                          |
+| Security & GDPR           | PASS   | Security review passed; GDPR review is N/A because no new personal-data flow was added                                                                                  |
+| Behavioral Quality        | PASS   | Shell and evaluation-console behavior is covered by runtime, smoke, and quick regression tests                                                                          |
 
 **Overall**: PASS
 
@@ -29,12 +29,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-|----------|----------|-----------|--------|
-| Setup | 3 | 3 | PASS |
-| Foundation | 4 | 4 | PASS |
-| Implementation | 6 | 6 | PASS |
-| Testing | 4 | 4 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 3        | 3         | PASS   |
+| Foundation     | 4        | 4         | PASS   |
+| Implementation | 6        | 6         | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -47,16 +47,17 @@ None
 ### Status: PASS
 
 #### Files Created
-| File | Found | Status |
-|------|-------|--------|
-| `apps/web/src/chat/evaluation-result-types.ts` | Yes | PASS |
-| `apps/web/src/chat/evaluation-result-client.ts` | Yes | PASS |
-| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Yes | PASS |
-| `apps/web/src/chat/use-chat-console.ts` | Yes | PASS |
-| `apps/web/src/chat/run-status-panel.tsx` | Yes | PASS |
-| `apps/web/src/chat/chat-console-surface.tsx` | Yes | PASS |
-| `scripts/test-app-chat-console.mjs` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
+
+| File                                             | Found | Status |
+| ------------------------------------------------ | ----- | ------ |
+| `apps/web/src/chat/evaluation-result-types.ts`   | Yes   | PASS   |
+| `apps/web/src/chat/evaluation-result-client.ts`  | Yes   | PASS   |
+| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Yes   | PASS   |
+| `apps/web/src/chat/use-chat-console.ts`          | Yes   | PASS   |
+| `apps/web/src/chat/run-status-panel.tsx`         | Yes   | PASS   |
+| `apps/web/src/chat/chat-console-surface.tsx`     | Yes   | PASS   |
+| `scripts/test-app-chat-console.mjs`              | Yes   | PASS   |
+| `scripts/test-all.mjs`                           | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -68,16 +69,16 @@ None
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-|------|----------|--------------|--------|
-| `apps/web/src/chat/evaluation-result-types.ts` | ASCII | LF | PASS |
-| `apps/web/src/chat/evaluation-result-client.ts` | ASCII | LF | PASS |
-| `apps/web/src/chat/evaluation-artifact-rail.tsx` | ASCII | LF | PASS |
-| `apps/web/src/chat/use-chat-console.ts` | ASCII | LF | PASS |
-| `apps/web/src/chat/run-status-panel.tsx` | ASCII | LF | PASS |
-| `apps/web/src/chat/chat-console-surface.tsx` | ASCII | LF | PASS |
-| `scripts/test-app-chat-console.mjs` | ASCII | LF | PASS |
-| `scripts/test-all.mjs` | ASCII | LF | PASS |
+| File                                             | Encoding | Line Endings | Status |
+| ------------------------------------------------ | -------- | ------------ | ------ |
+| `apps/web/src/chat/evaluation-result-types.ts`   | ASCII    | LF           | PASS   |
+| `apps/web/src/chat/evaluation-result-client.ts`  | ASCII    | LF           | PASS   |
+| `apps/web/src/chat/evaluation-artifact-rail.tsx` | ASCII    | LF           | PASS   |
+| `apps/web/src/chat/use-chat-console.ts`          | ASCII    | LF           | PASS   |
+| `apps/web/src/chat/run-status-panel.tsx`         | ASCII    | LF           | PASS   |
+| `apps/web/src/chat/chat-console-surface.tsx`     | ASCII    | LF           | PASS   |
+| `scripts/test-app-chat-console.mjs`              | ASCII    | LF           | PASS   |
+| `scripts/test-all.mjs`                           | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -89,12 +90,12 @@ None
 
 ### Status: PASS
 
-| Metric | Value |
-|--------|-------|
-| Total Tests | 430 |
-| Passed | 430 |
-| Failed | 0 |
-| Coverage | Not reported |
+| Metric      | Value        |
+| ----------- | ------------ |
+| Total Tests | 430          |
+| Passed      | 430          |
+| Failed      | 0            |
+| Coverage    | Not reported |
 
 ### Failed Tests
 

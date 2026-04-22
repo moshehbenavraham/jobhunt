@@ -11,7 +11,8 @@ Use this checklist for a new checkout:
 7. If you plan to use the repo-owned OpenAI runtime flow, run `npm run auth:openai -- login`.
 8. Run `npm run app:validate` to check the app surface and live boot path.
 9. Start `npm run app:web:dev` and `npm run app:api:serve` from the repo root.
-10. Use the app shell first for missing-file repair, approvals, and settings.
+10. Use the app shell first for missing-file repair, approvals, settings,
+    report viewing, pipeline review, and tracker workspace.
 11. Use `codex` only for the legacy CLI workflow if you need it.
 
 If the app reports missing onboarding files, use the onboarding surface to

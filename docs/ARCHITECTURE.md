@@ -19,9 +19,9 @@ Repo instructions and scripts
 
 Job-Hunt is a local-first repo that keeps its durable business data in checked-
 in files and its operational app state in `.jobhunt-app/`. The app surface now
-covers startup diagnostics, onboarding repair, approval review, settings, and
-workflow bootstrapping through explicit packages, diagnostics, and boot
-surfaces.
+covers startup diagnostics, onboarding repair, approval review, settings,
+report viewing, pipeline review, tracker workspace, and workflow
+bootstrapping through explicit packages, diagnostics, and boot surfaces.
 
 ## Main Components
 
@@ -34,15 +34,20 @@ surfaces.
 ### App surface
 
 - `apps/api` owns the diagnostics entrypoint, onboarding summary and repair
-  routes, approval inbox routes, settings routes, workflow bootstrap helpers,
-  and the long-lived boot server.
+  routes, approval inbox routes, settings routes, report-viewer routes,
+  pipeline-review routes, tracker-workspace routes, workflow bootstrap
+  helpers, and the long-lived boot server.
 - `apps/web` owns the React shell that renders startup, onboarding, approval,
-  settings, and maintenance surfaces.
+  settings, report viewer, pipeline review, tracker workspace, and maintenance
+  surfaces.
 - Package-level docs live in `apps/api/README_api.md` and
   `apps/web/README_web.md`.
 - `scripts/test-app-bootstrap.mjs` verifies the live app boot contract from the
   repo root.
-- `scripts/test-app-scaffold.mjs` keeps the surface and diagnostics contract
+- `scripts/test-app-chat-console.mjs`, `scripts/test-app-report-viewer.mjs`,
+  `scripts/test-app-pipeline-review.mjs`,
+  `scripts/test-app-tracker-workspace.mjs`, and
+  `scripts/test-app-auto-pipeline-parity.mjs` keep the phase 04 shell surfaces
   aligned with the repo gate.
 
 ### Job evaluation pipeline
@@ -88,10 +93,11 @@ The app contract keeps the runtime read-first:
 
 1. `apps/api/src/index.ts` emits one-shot diagnostics for repo readiness.
 2. `apps/api/src/server/index.ts` serves `/health`, `/startup`, onboarding,
-   approval inbox, settings, and workflow routes for the live boot surface.
+   approval inbox, settings, report-viewer, pipeline-review, tracker-workspace,
+   and workflow routes for the live boot surface.
 3. `apps/web/src/App.tsx` renders loading, ready, missing-prerequisites,
-   offline, onboarding, approval, settings, and runtime-error states from the
-   API payloads.
+   offline, onboarding, approval, settings, report viewer, pipeline review,
+   tracker workspace, and runtime-error states from the API payloads.
 
 The server and web shell inspect the existing repo contract, but they do not
 create or mutate user-layer files outside explicit repair actions.
@@ -108,10 +114,10 @@ config/portals.yml
   -> repo-root contract checks
   -> web shell startup state
 scripts/
-  -> reports/
-  -> output/
-  -> batch/tracker-additions/
-  -> data/applications.md
+  -> reports/ review artifacts
+  -> output/ PDFs
+  -> batch/tracker-additions/ TSV additions
+  -> data/applications.md tracker
 ```
 
 In batch mode, the runner persists `processing`, `completed`, `partial`,
@@ -122,17 +128,22 @@ exhausted.
 
 ## Integrity Scripts
 
-| Script                           | Purpose                                   |
-| -------------------------------- | ----------------------------------------- |
-| `scripts/test-all.mjs`           | Quick repo validation gate                |
-| `scripts/test-app-bootstrap.mjs` | Live app boot smoke test                  |
-| `scripts/test-app-scaffold.mjs`  | Scaffold and diagnostics regression check |
-| `scripts/verify-pipeline.mjs`    | Check tracker integrity                   |
-| `scripts/merge-tracker.mjs`      | Merge batch TSV additions                 |
-| `scripts/dedup-tracker.mjs`      | Remove duplicate tracker rows             |
-| `scripts/normalize-statuses.mjs` | Normalize status aliases                  |
-| `scripts/cv-sync-check.mjs`      | Validate setup consistency                |
-| `scripts/update-system.mjs`      | Check and apply repo updates              |
+| Script                                      | Purpose                                   |
+| ------------------------------------------- | ----------------------------------------- |
+| `scripts/test-all.mjs`                      | Quick repo validation gate                |
+| `scripts/test-app-bootstrap.mjs`            | Live app boot smoke test                  |
+| `scripts/test-app-chat-console.mjs`         | Chat console and evaluation handoff smoke |
+| `scripts/test-app-report-viewer.mjs`        | Report viewer smoke test                  |
+| `scripts/test-app-pipeline-review.mjs`      | Pipeline review smoke test                |
+| `scripts/test-app-tracker-workspace.mjs`    | Tracker workspace smoke test              |
+| `scripts/test-app-auto-pipeline-parity.mjs` | Auto-pipeline parity smoke test           |
+| `node scripts/test-all.mjs --quick`         | Baseline quick regression gate            |
+| `scripts/verify-pipeline.mjs`               | Check tracker integrity                   |
+| `scripts/merge-tracker.mjs`                 | Merge batch TSV additions                 |
+| `scripts/dedup-tracker.mjs`                 | Remove duplicate tracker rows             |
+| `scripts/normalize-statuses.mjs`            | Normalize status aliases                  |
+| `scripts/cv-sync-check.mjs`                 | Validate setup consistency                |
+| `scripts/update-system.mjs`                 | Check and apply repo updates              |
 
 ## Key Decisions
 

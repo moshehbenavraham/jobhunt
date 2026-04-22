@@ -390,6 +390,63 @@ async function saveEvaluationJob(
 	});
 }
 
+async function saveScanJob(
+	store: Awaited<ReturnType<typeof createOperationalStore>>,
+	input: {
+		completedAt?: string | null;
+		createdAt?: string;
+		error?: JsonValue | null;
+		jobId: string;
+		payload?: JsonValue;
+		result?: JsonValue | null;
+		sessionId: string;
+		startedAt?: string | null;
+		status: RuntimeJobStatus;
+		updatedAt: string;
+		waitApprovalId?: string | null;
+		waitReason?: RuntimeJobWaitReason | null;
+	},
+): Promise<void> {
+	const isActive = input.status === "running" || input.status === "waiting";
+
+	await store.jobs.save({
+		attempt: 1,
+		claimOwnerId: isActive ? "runner-scan-http" : null,
+		claimToken: isActive ? `claim-${input.jobId}` : null,
+		completedAt:
+			input.completedAt ??
+			(input.status === "completed" || input.status === "failed"
+				? input.updatedAt
+				: null),
+		createdAt: input.createdAt ?? input.updatedAt,
+		currentRunId: `${input.jobId}-run`,
+		error: input.error ?? null,
+		jobId: input.jobId,
+		jobType: "scan-portals",
+		lastHeartbeatAt: isActive ? input.updatedAt : null,
+		leaseExpiresAt: input.status === "running" ? input.updatedAt : null,
+		maxAttempts: 2,
+		nextAttemptAt: null,
+		payload: input.payload ?? {
+			company: null,
+			compareClean: false,
+			dryRun: false,
+		},
+		result: input.result ?? null,
+		retryBackoffMs: 1_000,
+		sessionId: input.sessionId,
+		startedAt:
+			input.startedAt ??
+			(input.status === "pending" || input.status === "queued"
+				? null
+				: (input.createdAt ?? input.updatedAt)),
+		status: input.status,
+		updatedAt: input.updatedAt,
+		waitApprovalId: input.waitApprovalId ?? null,
+		waitReason: input.waitReason ?? null,
+	});
+}
+
 async function saveEvaluationCheckpoint(
 	store: Awaited<ReturnType<typeof createOperationalStore>>,
 	input: {
@@ -3400,6 +3457,604 @@ test("pipeline-review route reports missing pipeline data, parsed queue rows, wa
 				}
 			).error.code,
 			"invalid-pipeline-review-query",
+		);
+	} finally {
+		await handle.close();
+		await services.dispose();
+		await backend.close();
+		await authFixture.cleanup();
+		await fixture.cleanup();
+	}
+});
+
+test("scan-review routes cover empty summaries, ignore or restore actions, approval-paused runs, degraded runs, and invalid input handling", async () => {
+	const fixture = await createReadyFixture();
+	const authFixture = await createAgentRuntimeAuthFixture();
+	const backend = await startFakeCodexBackend();
+	const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+	await store.close();
+	await authFixture.setReady({ accountId: "acct-http-scan-review" });
+	const services = createApiServiceContainer({
+		agentRuntime: createAgentRuntimeService({
+			authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+			env: {
+				JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+				JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+				JOBHUNT_API_OPENAI_ORIGINATOR: "jobhunt-http-scan-review-test",
+			},
+			repoRoot: fixture.repoRoot,
+		}),
+		repoRoot: fixture.repoRoot,
+	});
+	const runtimeStore = await services.operationalStore.getStore();
+	const handle = await startStartupHttpServer({
+		host: "127.0.0.1",
+		port: 0,
+		rateLimitMaxRequests: 20,
+		services,
+	});
+
+	try {
+		const { payload: emptyPayload, response: emptyResponse } =
+			await readJsonResponse(`${handle.url}/scan-review`);
+
+		assert.equal(emptyResponse.status, 200);
+		assert.equal((emptyPayload as { status: string }).status, "ready");
+		assert.equal(
+			(
+				emptyPayload as {
+					run: { state: string };
+					shortlist: { totalCount: number };
+					selectedDetail: { state: string };
+				}
+			).run.state,
+			"idle",
+		);
+		assert.equal(
+			(
+				emptyPayload as {
+					run: { state: string };
+					shortlist: { totalCount: number };
+					selectedDetail: { state: string };
+				}
+			).shortlist.totalCount,
+			0,
+		);
+		assert.equal(
+			(
+				emptyPayload as {
+					run: { state: string };
+					shortlist: { totalCount: number };
+					selectedDetail: { state: string };
+				}
+			).selectedDetail.state,
+			"empty",
+		);
+
+		await writeRepoArtifact(
+			fixture.repoRoot,
+			"data/pipeline.md",
+			[
+				"# Pipeline",
+				"",
+				"## Shortlist",
+				"",
+				"Last refreshed: 2026-04-22 by npm run scan.",
+				"",
+				"Campaign guidance: Focus the forward deployed lane first.",
+				"",
+				"Bucket counts:",
+				"- Strongest fit: 2",
+				"- Possible fit: 1",
+				"- Adjacent or noisy: 0",
+				"",
+				"Top 10 to evaluate first:",
+				"1. Strongest fit | https://example.com/jobs/acme-fde | Acme | Forward Deployed Engineer | direct title match",
+				"2. Strongest fit | https://example.com/jobs/acme-platform | Acme | Forward Deployed Platform Engineer | adjacent deployment lane",
+				"3. Possible fit | https://example.com/jobs/beta-sa | Beta | Solutions Architect | geo aligned",
+				"",
+				"## Pending",
+				"",
+				"- [ ] https://example.com/jobs/acme-fde | Acme | Forward Deployed Engineer",
+				"",
+			].join("\n"),
+		);
+		await writeRepoArtifact(
+			fixture.repoRoot,
+			"data/scan-history.tsv",
+			[
+				"url\tfirst_seen\tportal\ttitle\tcompany\tstatus",
+				"https://example.com/jobs/acme-fde\t2026-04-20\tgreenhouse\tForward Deployed Engineer\tAcme\tadded",
+				"https://example.com/jobs/acme-platform\t2026-04-19\tgreenhouse\tForward Deployed Platform Engineer\tAcme\tadded",
+				"https://example.com/jobs/acme-third\t2026-04-18\tgreenhouse\tDeployment Engineer\tAcme\tadded",
+				"https://example.com/jobs/beta-sa\t2026-04-22\tashby\tSolutions Architect\tBeta\tadded",
+				"",
+			].join("\n"),
+		);
+		await saveEvaluationSession(runtimeStore, {
+			activeJobId: "scan-job-ready",
+			context: {
+				scanReview: {
+					ignoredUrls: ["https://example.com/jobs/beta-sa"],
+				},
+				workflow: "scan-portals",
+			},
+			sessionId: "scan-session-ready",
+			status: "completed",
+			updatedAt: "2026-04-22T09:00:00.000Z",
+			workflow: "scan-portals",
+		});
+		await saveScanJob(runtimeStore, {
+			jobId: "scan-job-ready",
+			result: {
+				company: null,
+				dryRun: false,
+				summary: {
+					companiesConfigured: 5,
+					companiesScanned: 5,
+					companiesSkipped: 0,
+					duplicatesSkipped: 2,
+					filteredByLocation: 1,
+					filteredByTitle: 3,
+					newOffersAdded: 4,
+					totalJobsFound: 11,
+				},
+				warnings: [
+					{
+						code: "scan-warning",
+						detail: null,
+						message: "One portal required manual review.",
+					},
+				],
+				workflow: "scan-portals",
+			},
+			sessionId: "scan-session-ready",
+			status: "completed",
+			updatedAt: "2026-04-22T09:00:00.000Z",
+		});
+
+		const { payload: selectedPayload, response: selectedResponse } =
+			await readJsonResponse(
+				`${handle.url}/scan-review?sessionId=scan-session-ready&url=https://example.com/jobs/beta-sa`,
+			);
+
+		assert.equal(selectedResponse.status, 200);
+		assert.equal(
+			(
+				selectedPayload as {
+					run: {
+						state: string;
+						summary: { newOffersAdded: number | null };
+						warnings: Array<{ code: string }>;
+					};
+					shortlist: {
+						campaignGuidance: string | null;
+						filteredCount: number;
+						counts: {
+							ignored: number;
+							pendingOverlap: number;
+							duplicateHeavy: number;
+						};
+						items: Array<{ warnings: Array<{ code: string }> }>;
+						lastRefreshed: string | null;
+					};
+					selectedDetail: {
+						message: string;
+						row: {
+							ignored: boolean;
+							ignoreAction: { action: string };
+							warnings: Array<{ code: string }>;
+						} | null;
+						state: string;
+					};
+				}
+			).run.state,
+			"completed",
+		);
+		assert.equal(
+			(
+				selectedPayload as {
+					run: {
+						state: string;
+						summary: { newOffersAdded: number | null };
+						warnings: Array<{ code: string }>;
+					};
+				}
+			).run.summary.newOffersAdded,
+			4,
+		);
+		assert.equal(
+			(
+				selectedPayload as {
+					run: {
+						warnings: Array<{ code: string }>;
+					};
+				}
+			).run.warnings[0]?.code,
+			"scan-warning",
+		);
+		assert.equal(
+			(
+				selectedPayload as {
+					shortlist: {
+						campaignGuidance: string | null;
+						filteredCount: number;
+						counts: {
+							ignored: number;
+							pendingOverlap: number;
+							duplicateHeavy: number;
+						};
+						items: Array<{ warnings: Array<{ code: string }> }>;
+						lastRefreshed: string | null;
+					};
+				}
+			).shortlist.campaignGuidance,
+			"Focus the forward deployed lane first.",
+		);
+		assert.equal(
+			(
+				selectedPayload as {
+					shortlist: {
+						campaignGuidance: string | null;
+						filteredCount: number;
+						counts: {
+							ignored: number;
+							pendingOverlap: number;
+							duplicateHeavy: number;
+						};
+						items: Array<{ warnings: Array<{ code: string }> }>;
+						lastRefreshed: string | null;
+					};
+				}
+			).shortlist.lastRefreshed,
+			"2026-04-22 by npm run scan.",
+		);
+		assert.equal(
+			(
+				selectedPayload as {
+					shortlist: {
+						filteredCount: number;
+						counts: {
+							ignored: number;
+							pendingOverlap: number;
+							duplicateHeavy: number;
+						};
+					};
+				}
+			).shortlist.filteredCount,
+			2,
+		);
+		assert.deepEqual(
+			(
+				selectedPayload as {
+					shortlist: {
+						counts: {
+							ignored: number;
+							pendingOverlap: number;
+							duplicateHeavy: number;
+						};
+					};
+				}
+			).shortlist.counts,
+			{
+				adjacentOrNoisy: 0,
+				duplicateHeavy: 2,
+				ignored: 1,
+				pendingOverlap: 1,
+				possibleFit: 1,
+				strongestFit: 2,
+				total: 3,
+			},
+		);
+		assert.ok(
+			(
+				selectedPayload as {
+					shortlist: {
+						items: Array<{ warnings: Array<{ code: string }> }>;
+					};
+				}
+			).shortlist.items[0]?.warnings.some(
+				(warning) => warning.code === "duplicate-heavy",
+			),
+		);
+		assert.ok(
+			(
+				selectedPayload as {
+					shortlist: {
+						items: Array<{ warnings: Array<{ code: string }> }>;
+					};
+				}
+			).shortlist.items[0]?.warnings.some(
+				(warning) => warning.code === "already-pending",
+			),
+		);
+		assert.equal(
+			(
+				selectedPayload as {
+					selectedDetail: {
+						message: string;
+						row: {
+							ignored: boolean;
+							ignoreAction: { action: string };
+							warnings: Array<{ code: string }>;
+						} | null;
+						state: string;
+					};
+				}
+			).selectedDetail.state,
+			"ready",
+		);
+		assert.match(
+			(
+				selectedPayload as {
+					selectedDetail: { message: string };
+				}
+			).selectedDetail.message,
+			/active filters/i,
+		);
+		assert.equal(
+			(
+				selectedPayload as {
+					selectedDetail: {
+						row: {
+							ignored: boolean;
+							ignoreAction: { action: string };
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selectedDetail.row?.ignored,
+			true,
+		);
+		assert.equal(
+			(
+				selectedPayload as {
+					selectedDetail: {
+						row: {
+							ignored: boolean;
+							ignoreAction: { action: string };
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selectedDetail.row?.ignoreAction.action,
+			"restore",
+		);
+		assert.ok(
+			(
+				selectedPayload as {
+					selectedDetail: {
+						row: {
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selectedDetail.row?.warnings.some(
+				(warning) => warning.code === "already-ignored",
+			),
+		);
+		assert.ok(
+			(
+				selectedPayload as {
+					selectedDetail: {
+						row: {
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selectedDetail.row?.warnings.some(
+				(warning) => warning.code === "stale-selection",
+			),
+		);
+
+		const { payload: restorePayload, response: restoreResponse } =
+			await readJsonResponse(`${handle.url}/scan-review/action`, {
+				body: JSON.stringify({
+					action: "restore",
+					sessionId: "scan-session-ready",
+					url: "https://example.com/jobs/beta-sa",
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			});
+
+		assert.equal(restoreResponse.status, 200);
+		assert.equal(
+			(
+				restorePayload as {
+					actionResult: { action: string; visibility: string };
+				}
+			).actionResult.action,
+			"restore",
+		);
+		assert.equal(
+			(
+				restorePayload as {
+					actionResult: { action: string; visibility: string };
+				}
+			).actionResult.visibility,
+			"visible",
+		);
+
+		const { payload: restoredSummary } = await readJsonResponse(
+			`${handle.url}/scan-review?sessionId=scan-session-ready&url=https://example.com/jobs/beta-sa`,
+		);
+
+		assert.equal(
+			(
+				restoredSummary as {
+					shortlist: { filteredCount: number };
+					selectedDetail: { row: { ignored: boolean } | null };
+				}
+			).shortlist.filteredCount,
+			3,
+		);
+		assert.equal(
+			(
+				restoredSummary as {
+					shortlist: { filteredCount: number };
+					selectedDetail: { row: { ignored: boolean } | null };
+				}
+			).selectedDetail.row?.ignored,
+			false,
+		);
+
+		const { payload: ignorePayload, response: ignoreResponse } =
+			await readJsonResponse(`${handle.url}/scan-review/action`, {
+				body: JSON.stringify({
+					action: "ignore",
+					sessionId: "scan-session-ready",
+					url: "https://example.com/jobs/beta-sa",
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			});
+
+		assert.equal(ignoreResponse.status, 200);
+		assert.equal(
+			(
+				ignorePayload as {
+					actionResult: { action: string; visibility: string };
+				}
+			).actionResult.action,
+			"ignore",
+		);
+		assert.equal(
+			(
+				ignorePayload as {
+					actionResult: { action: string; visibility: string };
+				}
+			).actionResult.visibility,
+			"hidden",
+		);
+
+		await saveEvaluationSession(runtimeStore, {
+			activeJobId: "scan-job-paused",
+			context: {
+				workflow: "scan-portals",
+			},
+			sessionId: "scan-session-paused",
+			status: "waiting",
+			updatedAt: "2026-04-22T10:00:00.000Z",
+			workflow: "scan-portals",
+		});
+		await saveScanJob(runtimeStore, {
+			jobId: "scan-job-paused",
+			sessionId: "scan-session-paused",
+			status: "waiting",
+			updatedAt: "2026-04-22T10:00:00.000Z",
+			waitApprovalId: "approval-scan-1",
+			waitReason: "approval",
+		});
+		await saveEvaluationSession(runtimeStore, {
+			activeJobId: "scan-job-degraded",
+			context: {
+				workflow: "scan-portals",
+			},
+			sessionId: "scan-session-degraded",
+			status: "completed",
+			updatedAt: "2026-04-22T08:30:00.000Z",
+			workflow: "scan-portals",
+		});
+		await saveScanJob(runtimeStore, {
+			jobId: "scan-job-degraded",
+			result: {
+				invalid: true,
+			},
+			sessionId: "scan-session-degraded",
+			status: "completed",
+			updatedAt: "2026-04-22T08:30:00.000Z",
+		});
+
+		const { payload: pausedPayload } = await readJsonResponse(
+			`${handle.url}/scan-review`,
+		);
+		const { payload: degradedPayload } = await readJsonResponse(
+			`${handle.url}/scan-review?sessionId=scan-session-degraded`,
+		);
+
+		assert.equal(
+			(
+				pausedPayload as {
+					launcher: { canStart: boolean };
+					run: { approvalId: string | null; state: string };
+				}
+			).run.state,
+			"approval-paused",
+		);
+		assert.equal(
+			(
+				pausedPayload as {
+					launcher: { canStart: boolean };
+					run: { approvalId: string | null; state: string };
+				}
+			).run.approvalId,
+			"approval-scan-1",
+		);
+		assert.equal(
+			(
+				pausedPayload as {
+					launcher: { canStart: boolean };
+					run: { approvalId: string | null; state: string };
+				}
+			).launcher.canStart,
+			false,
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					run: { state: string; warnings: Array<{ code: string }> };
+				}
+			).run.state,
+			"degraded",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					run: { state: string; warnings: Array<{ code: string }> };
+				}
+			).run.warnings[0]?.code,
+			"degraded-result",
+		);
+
+		const { payload: invalidQueryPayload, response: invalidQueryResponse } =
+			await readJsonResponse(`${handle.url}/scan-review?limit=0`);
+
+		assert.equal(invalidQueryResponse.status, 400);
+		assert.equal(
+			(
+				invalidQueryPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-scan-review-query",
+		);
+
+		const { payload: invalidActionPayload, response: invalidActionResponse } =
+			await readJsonResponse(`${handle.url}/scan-review/action`, {
+				body: JSON.stringify({
+					action: "ignore",
+					sessionId: "missing-scan-session",
+					url: "https://example.com/jobs/beta-sa",
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			});
+
+		assert.equal(invalidActionResponse.status, 400);
+		assert.equal(
+			(
+				invalidActionPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-scan-review-action",
 		);
 	} finally {
 		await handle.close();

@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/server/pipeline-review-summary.ts` - bounded markdown parser, artifact reconciliation, and warning classification
 - `apps/api/src/server/routes/pipeline-review-route.ts` - GET-only route validation and summary dispatch
 - `apps/web/src/pipeline/pipeline-review-client.ts` - client fetch, URL-backed focus handling, and retry/abort management
@@ -24,14 +25,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No raw shell execution or string-built query path in the reviewed pipeline-review surface. API input is schema-validated before summary generation. |
-| Hardcoded Secrets | PASS | -- | No secrets, tokens, or credentials introduced in the reviewed files. |
-| Sensitive Data Exposure | PASS | -- | The surface reads bounded queue data and report metadata only; no obvious PII logging or broad data disclosure path was added. |
-| Insecure Dependencies | PASS | -- | No new dependencies were introduced in this session. |
-| Misconfiguration | PASS | -- | Route behavior is explicit and read-only; no debug or permissive access settings were added. |
-| Database Security | N/A | -- | This session does not add DB writes, migrations, or schema changes. |
+| Category                      | Status | Severity | Details                                                                                                                                             |
+| ----------------------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No raw shell execution or string-built query path in the reviewed pipeline-review surface. API input is schema-validated before summary generation. |
+| Hardcoded Secrets             | PASS   | --       | No secrets, tokens, or credentials introduced in the reviewed files.                                                                                |
+| Sensitive Data Exposure       | PASS   | --       | The surface reads bounded queue data and report metadata only; no obvious PII logging or broad data disclosure path was added.                      |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were introduced in this session.                                                                                                |
+| Misconfiguration              | PASS   | --       | Route behavior is explicit and read-only; no debug or permissive access settings were added.                                                        |
+| Database Security             | N/A    | --       | This session does not add DB writes, migrations, or schema changes.                                                                                 |
 
 ---
 
@@ -48,6 +49,7 @@ This session does not add new personal-data collection, storage, sharing, or del
 **Overall: PASS**
 
 Reviewed for the most likely behavior-sensitive files:
+
 - `apps/api/src/server/pipeline-review-summary.ts`
 - `apps/api/src/server/routes/pipeline-review-route.ts`
 - `apps/web/src/pipeline/pipeline-review-client.ts`
@@ -55,6 +57,7 @@ Reviewed for the most likely behavior-sensitive files:
 - `apps/web/src/pipeline/pipeline-review-surface.tsx`
 
 Findings:
+
 - Query input is bounded and validated before it reaches the summary builder.
 - URL-backed focus is normalized to one selection axis at a time, which avoids ambiguous state.
 - Abort and request-id handling prevent stale fetches from overwriting newer state.

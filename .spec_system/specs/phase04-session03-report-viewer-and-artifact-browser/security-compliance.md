@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/api/src/server/report-viewer-contract.ts`
 - `apps/api/src/server/report-viewer-summary.ts`
 - `apps/api/src/server/routes/report-viewer-route.ts`
@@ -34,14 +35,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | Report paths are normalized and validated before file access; browser input is parsed into bounded query values. |
-| Hardcoded Secrets | PASS | -- | No secrets, tokens, or credentials were introduced. |
-| Sensitive Data Exposure | PASS | -- | The surface is read-only and returns report content only through the API boundary; no new logging of personal data was added. |
-| Insecure Dependencies | PASS | -- | No new dependencies were introduced. |
-| Misconfiguration | PASS | -- | The route is GET-only/HEAD-safe, uses bounded query validation, and keeps the browser thin. |
-| Database Security | N/A | -- | This session does not change the database layer. |
+| Category                      | Status | Severity | Details                                                                                                                       |
+| ----------------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | Report paths are normalized and validated before file access; browser input is parsed into bounded query values.              |
+| Hardcoded Secrets             | PASS   | --       | No secrets, tokens, or credentials were introduced.                                                                           |
+| Sensitive Data Exposure       | PASS   | --       | The surface is read-only and returns report content only through the API boundary; no new logging of personal data was added. |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were introduced.                                                                                          |
+| Misconfiguration              | PASS   | --       | The route is GET-only/HEAD-safe, uses bounded query validation, and keeps the browser thin.                                   |
+| Database Security             | N/A    | --       | This session does not change the database layer.                                                                              |
 
 ---
 
@@ -71,4 +72,3 @@ Reviewed the report-viewer API, route boundary, browser client, and shell handof
 - Report-viewer smoke: pass
 - Quick regression suite: pass
 - ASCII/LF spot-check on session deliverables: pass
-

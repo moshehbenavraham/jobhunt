@@ -443,7 +443,9 @@ if (appToolsContract !== null) {
 
 console.log("\n3y. App bootstrap smoke");
 
-const appBootstrap = run("node", ["scripts/test-app-bootstrap.mjs"]);
+const appBootstrap = run("node", ["scripts/test-app-bootstrap.mjs"], {
+	timeout: 60000,
+});
 if (appBootstrap !== null) {
 	pass("App bootstrap smoke tests pass");
 } else {
@@ -540,9 +542,20 @@ if (appTrackerWorkspace !== null) {
 	fail("App tracker-workspace smoke tests failed");
 }
 
-// -- 3ah. Auto-pipeline parity smoke -----------------------------
+// -- 3ah. App scan-review smoke ----------------------------------
 
-console.log("\n3ah. Auto-pipeline parity smoke");
+console.log("\n3ah. App scan-review smoke");
+
+const appScanReview = run("node", ["scripts/test-app-scan-review.mjs"]);
+if (appScanReview !== null) {
+	pass("App scan-review smoke tests pass");
+} else {
+	fail("App scan-review smoke tests failed");
+}
+
+// -- 3ai. Auto-pipeline parity smoke -----------------------------
+
+console.log("\n3ai. Auto-pipeline parity smoke");
 
 const appAutoPipelineParity = run("node", [
 	"scripts/test-app-auto-pipeline-parity.mjs",
@@ -553,9 +566,9 @@ if (appAutoPipelineParity !== null) {
 	fail("Auto-pipeline parity smoke tests failed");
 }
 
-// -- 3ai. Bootstrap ASCII validation -----------------------------
+// -- 3aj. Bootstrap ASCII validation -----------------------------
 
-console.log("\n3ai. Bootstrap ASCII validation");
+console.log("\n3aj. Bootstrap ASCII validation");
 
 const bootstrapFiles = [
 	"apps/api/src/approval-runtime/approval-runtime-contract.ts",
@@ -616,6 +629,9 @@ const bootstrapFiles = [
 	"apps/api/src/server/pipeline-review-summary.ts",
 	"apps/api/src/server/report-viewer-contract.ts",
 	"apps/api/src/server/report-viewer-summary.ts",
+	"apps/api/src/server/scan-review-contract.ts",
+	"apps/api/src/server/scan-review-summary.test.ts",
+	"apps/api/src/server/scan-review-summary.ts",
 	"apps/api/src/server/tracker-table.ts",
 	"apps/api/src/server/tracker-workspace-contract.ts",
 	"apps/api/src/server/tracker-workspace-summary.ts",
@@ -633,6 +649,8 @@ const bootstrapFiles = [
 	"apps/api/src/server/routes/operator-shell-route.ts",
 	"apps/api/src/server/routes/pipeline-review-route.ts",
 	"apps/api/src/server/routes/report-viewer-route.ts",
+	"apps/api/src/server/routes/scan-review-action-route.ts",
+	"apps/api/src/server/routes/scan-review-route.ts",
 	"apps/api/src/server/routes/settings-route.ts",
 	"apps/api/src/server/routes/approval-inbox-route.ts",
 	"apps/api/src/server/routes/approval-resolution-route.ts",
@@ -731,6 +749,13 @@ const bootstrapFiles = [
 	"apps/web/src/reports/report-viewer-surface.tsx",
 	"apps/web/src/reports/report-viewer-types.ts",
 	"apps/web/src/reports/use-report-viewer.ts",
+	"apps/web/src/scan/scan-review-action-shelf.tsx",
+	"apps/web/src/scan/scan-review-client.ts",
+	"apps/web/src/scan/scan-review-launch-panel.tsx",
+	"apps/web/src/scan/scan-review-shortlist.tsx",
+	"apps/web/src/scan/scan-review-surface.tsx",
+	"apps/web/src/scan/scan-review-types.ts",
+	"apps/web/src/scan/use-scan-review.ts",
 	"apps/web/src/settings/settings-auth-card.tsx",
 	"apps/web/src/settings/settings-client.ts",
 	"apps/web/src/settings/settings-maintenance-card.tsx",
@@ -760,6 +785,7 @@ const bootstrapFiles = [
 	"scripts/test-app-onboarding.mjs",
 	"scripts/test-app-pipeline-review.mjs",
 	"scripts/test-app-report-viewer.mjs",
+	"scripts/test-app-scan-review.mjs",
 	"scripts/test-app-settings.mjs",
 	"scripts/test-app-shell.mjs",
 	"scripts/test-app-tracker-workspace.mjs",

@@ -6,32 +6,36 @@ exposed via `npm run <name>`. Repo-local shell helpers such as
 
 ## Quick Reference
 
-| Command                      | Script                                  | Purpose                                     |
-| ---------------------------- | --------------------------------------- | ------------------------------------------- |
-| `npm run cron:install`       | `scripts/install-scan-cron.mjs`         | Install repo-managed daily scan cron        |
-| `npm run backup:install-cron` | `scripts/install-backup-cron.mjs`      | Install repo-managed daily backup cron      |
-| `npm run doctor`             | `scripts/doctor.mjs`                    | Validate setup prerequisites                |
-| `npm run auth:openai`        | `scripts/openai-account-auth.mjs`       | Manage stored OpenAI account auth           |
-| `npm run lint:shell`         | `shellcheck`                            | Lint repo shell scripts                     |
-| `npm run verify`             | `scripts/verify-pipeline.mjs`           | Check pipeline data integrity               |
-| `npm run format:shell`       | `shfmt`                                 | Format repo shell scripts                   |
-| `npm run normalize`          | `scripts/normalize-statuses.mjs`        | Fix non-canonical statuses                  |
-| `npm run dedup`              | `scripts/dedup-tracker.mjs`             | Remove duplicate tracker entries            |
-| `npm run merge`              | `scripts/merge-tracker.mjs`             | Merge batch TSVs into applications.md       |
-| `npm run pdf`                | `scripts/generate-pdf.mjs`              | Convert HTML to ATS-optimized PDF           |
-| `npm run latex`              | `scripts/generate-latex.mjs`            | Validate and compile an optional LaTeX CV   |
-| `npm run dashboard`          | `scripts/ux.sh`                         | Build and launch the Go dashboard           |
-| `npm run sync-check`         | `scripts/cv-sync-check.mjs`             | Validate CV/profile consistency             |
-| `npm run coverage`           | `c8` + `go test -cover`                 | Measure Node script and dashboard coverage  |
-| `npm run update:check`       | `scripts/update-system.mjs check`       | Check for upstream updates                  |
-| `npm run update`             | `scripts/update-system.mjs apply`       | Apply upstream update                       |
-| `npm run rollback`           | `scripts/update-system.mjs rollback`    | Rollback last update                        |
-| `npm run liveness`           | `scripts/check-liveness.mjs`            | Test if job URLs are still active           |
-| `npm run extract-job`        | `scripts/extract-job.mjs`               | Extract one ATS-backed job as JSON          |
-| `npm run scan`               | `scripts/scan.mjs`                      | Zero-token portal scanner                   |
-| `npm run codex:smoke`        | `scripts/openai-codex-smoke.mjs`        | Test the account-authenticated Codex path   |
-| `npm run agents:codex:smoke` | `scripts/openai-agents-codex-smoke.mjs` | Test the `@openai/agents` account-auth path |
-| `./scripts/ux.sh`            | `scripts/ux.sh`                         | Direct shell entry point for the dashboard  |
+| Command                       | Script                                                                                                                                                                                                                                                             | Purpose                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| `npm run cron:install`        | `scripts/install-scan-cron.mjs`                                                                                                                                                                                                                                    | Install repo-managed daily scan cron        |
+| `npm run backup:install-cron` | `scripts/install-backup-cron.mjs`                                                                                                                                                                                                                                  | Install repo-managed daily backup cron      |
+| `npm run doctor`              | `scripts/doctor.mjs`                                                                                                                                                                                                                                               | Validate setup prerequisites                |
+| `npm run app:check`           | `npm run app:web:check && npm run app:api:check`                                                                                                                                                                                                                   | Validate the web and API app packages       |
+| `npm run app:boot:test`       | `scripts/test-app-bootstrap.mjs`                                                                                                                                                                                                                                   | Verify the live app boot surface            |
+| `npm run app:validate`        | `npm run app:check && npm run app:api:test:runtime && npm run app:api:test:agent-runtime && npm run app:api:test:approval-runtime && npm run app:api:test:observability && npm run app:api:test:job-runner && npm run app:api:test:store && npm run app:boot:test` | Run the full app validation stack           |
+| `npm run test:quick`          | `node scripts/test-all.mjs --quick`                                                                                                                                                                                                                                | Run the repo quick regression gate          |
+| `npm run auth:openai`         | `scripts/openai-account-auth.mjs`                                                                                                                                                                                                                                  | Manage stored OpenAI account auth           |
+| `npm run lint:shell`          | `shellcheck`                                                                                                                                                                                                                                                       | Lint repo shell scripts                     |
+| `npm run verify`              | `scripts/verify-pipeline.mjs`                                                                                                                                                                                                                                      | Check pipeline data integrity               |
+| `npm run format:shell`        | `shfmt`                                                                                                                                                                                                                                                            | Format repo shell scripts                   |
+| `npm run normalize`           | `scripts/normalize-statuses.mjs`                                                                                                                                                                                                                                   | Fix non-canonical statuses                  |
+| `npm run dedup`               | `scripts/dedup-tracker.mjs`                                                                                                                                                                                                                                        | Remove duplicate tracker entries            |
+| `npm run merge`               | `scripts/merge-tracker.mjs`                                                                                                                                                                                                                                        | Merge batch TSVs into applications.md       |
+| `npm run pdf`                 | `scripts/generate-pdf.mjs`                                                                                                                                                                                                                                         | Convert HTML to ATS-optimized PDF           |
+| `npm run latex`               | `scripts/generate-latex.mjs`                                                                                                                                                                                                                                       | Validate and compile an optional LaTeX CV   |
+| `npm run dashboard`           | `scripts/ux.sh`                                                                                                                                                                                                                                                    | Build and launch the Go dashboard           |
+| `npm run sync-check`          | `scripts/cv-sync-check.mjs`                                                                                                                                                                                                                                        | Validate CV/profile consistency             |
+| `npm run coverage`            | `c8` + `go test -cover`                                                                                                                                                                                                                                            | Measure Node script and dashboard coverage  |
+| `npm run update:check`        | `scripts/update-system.mjs check`                                                                                                                                                                                                                                  | Check for upstream updates                  |
+| `npm run update`              | `scripts/update-system.mjs apply`                                                                                                                                                                                                                                  | Apply upstream update                       |
+| `npm run rollback`            | `scripts/update-system.mjs rollback`                                                                                                                                                                                                                               | Rollback last update                        |
+| `npm run liveness`            | `scripts/check-liveness.mjs`                                                                                                                                                                                                                                       | Test if job URLs are still active           |
+| `npm run extract-job`         | `scripts/extract-job.mjs`                                                                                                                                                                                                                                          | Extract one ATS-backed job as JSON          |
+| `npm run scan`                | `scripts/scan.mjs`                                                                                                                                                                                                                                                 | Zero-token portal scanner                   |
+| `npm run codex:smoke`         | `scripts/openai-codex-smoke.mjs`                                                                                                                                                                                                                                   | Test the account-authenticated Codex path   |
+| `npm run agents:codex:smoke`  | `scripts/openai-agents-codex-smoke.mjs`                                                                                                                                                                                                                            | Test the `@openai/agents` account-auth path |
+| `./scripts/ux.sh`             | `scripts/ux.sh`                                                                                                                                                                                                                                                    | Direct shell entry point for the dashboard  |
 
 ---
 
@@ -307,6 +311,24 @@ compile failure.
 
 The LaTeX validation regression is covered by `scripts/test-generate-latex.mjs`
 and runs as part of `node scripts/test-all.mjs --quick`.
+
+---
+
+## App Validation
+
+The app surface is validated through the repo app stack and the quick
+regression gate:
+
+```bash
+npm run app:check
+npm run app:validate
+npm run app:boot:test
+npm run test:quick
+```
+
+The quick gate exercises the shell, chat console, report viewer, pipeline
+review, tracker workspace, and auto-pipeline parity smoke scripts in addition
+to the broader repo checks.
 
 ---
 

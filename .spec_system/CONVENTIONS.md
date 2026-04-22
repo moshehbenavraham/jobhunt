@@ -113,14 +113,15 @@
 
 ## Infrastructure
 
-| Surface   | Command                                               | Details                                                                                                     |
-| --------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Health    | `npm run doctor && node scripts/test-all.mjs --quick` | Repo health gate; validates setup, version consistency, and dashboard build                                 |
-| Coverage  | `npm run coverage`                                    | Measures Node script coverage via `c8` and dashboard package coverage via `go test -cover`                  |
-| Security  | `npm run app:boot:test`                               | API startup server rate limits burst traffic per client and returns HTTP 429 after the configured window    |
-| Backup    | `npm run backup:run`                                  | Timestamped SQLite backups in `.jobhunt-app/backups/` with 7-day retention; use `--verify` to restore-check |
-| Backup Schedule | `npm run backup:install-cron`                   | Installs the repo-managed daily backup cron entry at `05:15` local time and writes logs to `tmp/cron/backup.log` |
-| Local Dev | `npm run dashboard`                                   | Preferred launcher for the Go TUI dashboard; builds in `dashboard/` and defaults `--path` to the repo root  |
+| Surface         | Command                        | Details                                                                                                                                                                     |
+| --------------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Health          | `npm run app:boot:test`        | Starts the local API, probes `GET`/`HEAD` `/health`, and verifies the readiness payload contract                                                                            |
+| Coverage        | `npm run coverage`             | Measures Node script coverage via `c8` and dashboard package coverage via `go test -cover`                                                                                  |
+| Security        | `npm run app:boot:test`        | API startup server rate limits burst traffic per client and returns HTTP 429 after the configured window                                                                    |
+| Backup          | `npm run backup:run`           | Timestamped SQLite backups in `.jobhunt-app/backups/` with 7-day retention; use `--verify` to restore-check                                                                 |
+| Backup Schedule | `npm run backup:install-cron`  | Installs the repo-managed daily backup cron entry at `05:15` local time and writes logs to `tmp/cron/backup.log`                                                            |
+| Deploy          | `.github/workflows/deploy.yml` | GitHub Actions webhook deploy placeholder; set `DEPLOY_WEBHOOK_URL` and `DEPLOY_HEALTHCHECK_URL` secrets to enable main-branch deploys and production `/health` smoke tests |
+| Local Dev       | `npm run dashboard`            | Preferred launcher for the Go TUI dashboard; builds in `dashboard/` and defaults `--path` to the repo root                                                                  |
 
 ## CI/CD
 

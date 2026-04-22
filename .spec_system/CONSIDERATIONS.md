@@ -1,7 +1,7 @@
 # Considerations
 
 > Institutional memory for AI assistants. Updated between phases via carryforward.
-> **Line budget**: 600 max | **Last updated**: Phase 03 (2026-04-22)
+> **Line budget**: 600 max | **Last updated**: Phase 04 (2026-04-22)
 
 ---
 
@@ -13,39 +13,31 @@ Items requiring attention in upcoming phases. Review before each session.
 
 <!-- Max 5 items -->
 
-- [P00] **Prompt and boot contract drift**: Keep `scripts/test-app-scaffold.mjs`, `scripts/test-all.mjs`, and the API startup payload in sync when prompt or boot metadata changes.
-- [P00-apps/api] **Workspace registry coupling**: Boundary, read, and write helpers all depend on the checked-in surface registry; edits should flow through the registry instead of ad hoc path checks.
-- [P02-apps/api] **Tool catalog drift**: Keep default suite registration, scoped visibility, and router maps aligned as new tools and workflows are added.
-- [P02-apps/api] **Durable workflow fan-out**: Preserve the single enqueue/executor contract as scan, pipeline, and batch surfaces expand.
-- [P03-apps/web] **Frontend parser and fixture drift**: Strict payload parsers now gate shell, chat, onboarding, approvals, and settings; update fake API fixtures and backend summaries together.
+- [P04] **Review-focus contract drift**: Evaluation-result, report-viewer, pipeline-review, and tracker-workspace now share provenance and review-focus fields; keep API payloads and browser parsers aligned when extending handoff paths.
+- [P04-apps/api] **Markdown parser fragility**: Report, pipeline, and tracker summaries parse repo markdown directly; file format changes must be coordinated with parser tests and fixture updates.
+- [P04-apps/web] **URL-backed focus sync**: Shell surfaces depend on query state and custom focus events; preserve cleanup, refresh, and re-entry handling when adding more views.
+- [P04] **Bounded parity payloads**: Keep summary payloads and preview windows capped so polling surfaces stay fast and do not grow into raw artifact readers.
 
 ### External Dependencies
 
 <!-- Max 5 items -->
 
-- [P00] **Repo-bound startup freshness**: Startup remains sensitive to missing or stale checked-in files. Keep required-file checks and onboarding messages aligned with the live contract.
-- [P02-apps/api] **Allowlisted script coverage**: Workflow scripts remain the execution boundary, so new script-backed tools need explicit registration and validation.
-- [P03-apps/api] **Updater JSON contract drift**: Settings relies on normalized results from `node scripts/update-system.mjs check`; keep the route helper aligned if updater output changes.
+- [P04] **Smoke suite coverage**: The dedicated smoke scripts and quick regression gate now protect parity; keep them updated whenever a new surface or handoff path lands.
+- [P04-apps/api] **Repo file contract stability**: The API summaries depend on canonical report, pipeline, and tracker paths staying stable in the repo-owned file contract.
 
 ### Performance / Security
 
 <!-- Max 5 items -->
 
-- [P00] **Read-first boot surface**: Startup and diagnostics must stay read-only and metadata-only. Do not reintroduce hidden writes or stdout scraping.
-- [P00] **Live contract payload size**: Keep the boot response narrow so startup stays fast and the web UI does not depend on large derived payloads.
-- [P02-apps/api] **Mutation guardrails**: Workspace writes and report outputs must stay repo-relative and approval-aware; do not widen the target surface.
-- [P03-apps/web] **Bounded polling payloads**: Shell, chat, approval, and settings surfaces now poll backend summaries; keep queue/detail splits and preview caps intact as parity surfaces expand.
-- [P03-apps/web+apps/api] **Interaction race guards**: Onboarding repair and approval actions need browser-side duplicate-submit guards plus backend idempotence; do not rely on async UI state alone.
+- [P04] **Read-only browser boundary**: Keep repo-file access and tracker mutations backend-owned; browser surfaces should remain fail-closed parsers over bounded summaries.
+- [P04] **Payload growth control**: The new review-focus fields are useful, but they should not expand polling responses beyond the current bounded pattern.
 
 ### Architecture
 
 <!-- Max 5 items -->
 
-- [P00] **Canonical live surface**: `AGENTS.md`, `.codex/skills/`, `modes/`, `docs/`, and the user-layer files remain the source of truth.
-- [P00] **Registry-first contracts**: Prompt routing, workspace ownership, and startup summaries should derive from checked-in registries, not duplicated path logic.
-- [P02-apps/api] **Catalog-driven routing**: Specialist routing and tool visibility should stay deterministic and checked-in; avoid implicit privilege expansion.
-- [P03-apps/web] **Thin browser surfaces**: New UX surfaces should stay parser-driven and backend-owned; avoid recreating routing, tool logic, or filesystem rules in React state.
-- [P03-apps/web+apps/api] **Single mutation paths**: Chat resume, onboarding repair, and approval decisions must reuse canonical runtime services instead of adding parallel UI-only command paths.
+- [P04] **Thin browser surfaces**: Continue keeping workflow inference in API contracts instead of React state or ad hoc client parsing.
+- [P04] **Canonical handoff routing**: Chat, report, pipeline, and tracker surfaces should continue to share the same backend-owned review-focus model.
 
 ---
 
@@ -57,46 +49,32 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 <!-- Max 15 items -->
 
-- [P00] **Registry-first surface mapping**: One checked-in registry made workspace and prompt behavior easy to audit.
-- [P00] **Read-first startup**: Reporting missing prerequisites without mutating user files kept boot deterministic.
-- [P00] **Explicit startup summaries**: Exposing workspace, prompt, and boot metadata in diagnostics gave later phases a stable inspection surface.
-- [P00] **Freshness-aware caches**: Re-statting prompt sources and evicting missing files prevented stale re-entry behavior.
-- [P00] **Contract reuse over parallel bootstrap logic**: Serializing boot data from existing diagnostics avoided a second source of truth.
-- [P00] **Validator-first closeout**: Wiring scaffold and boot smoke checks into the repo gate caught drift immediately.
-- [P02-apps/api] **Registry-backed execution**: Duplicate-safe catalogs and typed envelopes made tool expansion reviewable.
-- [P02-apps/api] **Read-first inspection**: Deterministic summaries and prompt checks kept onboarding safe and testable.
-- [P02-apps/api] **Reservation before write**: Reserving report artifacts before writing prevented duplicate allocation.
-- [P02-apps/api] **Enqueue then run**: Durable workflow boundaries were cleaner than exposing direct long-running execution.
-- [P02-apps/api] **Resume-first orchestration**: Reusing live sessions preserved approvals and runtime state.
-- [P02-apps/api] **Template-backed repair**: Bounded repairs from checked-in templates kept onboarding fixes predictable.
-- [P03-apps/web] **Bounded read models**: Queue-plus-selected-detail and summary-plus-preview contracts kept polling predictable and browser code small.
-- [P03-apps/web] **Strict payload parsing**: Browser-edge parsers surfaced contract drift explicitly instead of silently rendering partial state.
-- [P03-apps/web+apps/api] **Shell-wide refresh reuse**: Shared refresh callbacks let onboarding, approvals, and settings revalidate backend state without duplicating client wiring.
+- [P04] **Backend-owned review focus**: Explicit next-target data made handoff routing deterministic across chat, report, pipeline, and tracker surfaces.
+- [P04] **Bounded read models**: One typed summary per surface kept the browser simple and reduced parser drift.
+- [P04] **Strict browser parsing**: Fail-closed payload parsers surfaced contract drift early instead of rendering partial state.
+- [P04] **URL-backed focus state**: Query-string focus survived refresh and re-entry without hidden client state.
+- [P04] **Read-only summary routes**: Keeping repo reads behind API routes preserved the browser trust boundary.
+- [P04] **Line-preserving tracker updates**: Editing only the status cell reduced tracker drift risk.
+- [P04] **Reusable shell handoff paths**: Reusing the same handoff pattern across surfaces kept navigation consistent.
 
-### What to Avoid
+### What To Avoid
 
 <!-- Max 10 items -->
 
-- [P00] **Legacy path fallbacks**: Do not re-add alias paths once the registry has a canonical surface.
-- [P00] **Split closeout state**: Do not update implementation code without the matching validation and tracker state.
-- [P00] **Stdout scraping**: Prefer structured payloads and summary objects over log parsing.
-- [P00] **Bundling prompt cleanup with runtime work**: Keep wording and metadata cleanup separate from runtime contract changes.
-- [P00] **Hidden writes during diagnostics**: Boot and validation paths should not create app state or user-layer files.
-- [P02-apps/api] **Silent fallthrough**: Blocked workflows should fail explicitly instead of guessing a route.
-- [P02-apps/api] **Split tool registration**: Avoid a second startup tool path or parallel catalog source.
-- [P03-apps/web] **Unbounded polling summaries**: Do not return full approval, session, or preview detail when a bounded queue plus selected item or small preview will do.
-- [P03-apps/web] **UI-only mutation logic**: Do not let React surfaces invent repair, approval, or orchestration rules outside backend routes and runtime services.
-- [P03-apps/web] **Async-only submit locks**: React state alone is too slow to stop rapid double submits; use synchronous interaction guards where explicit mutations can race.
+- [P04] **Browser guessing from files**: Do not let React infer artifact readiness by reading repo files directly.
+- [P04] **Unbounded polling summaries**: Do not return raw artifact detail when a bounded summary is enough.
+- [P04] **UI-only mutation logic**: Keep tracker edits and maintenance actions behind backend routes and tools.
+- [P04] **Parallel selection state**: Avoid separate client-owned focus models for chat, report, pipeline, and tracker views.
 
 ### Tool/Library Notes
 
 <!-- Max 5 items -->
 
-- [P00] **`scripts/test-app-scaffold.mjs`**: Use it for repo-boundary and startup-contract drift.
-- [P00] **`scripts/test-app-bootstrap.mjs`**: Use it for live boot-surface checks and no-mutation validation.
-- [P02-apps/api] **`scripts/test-all.mjs --quick`**: It remains the fastest repo-wide regression gate and now covers shell, chat, onboarding, approvals, and settings smoke paths.
-- [P02-apps/api] **Lazy service resolution**: Tool and job-executor wiring must stay acyclic when they cross-reference each other.
-- [P03-apps/web] **Fake API smoke fixtures**: Keep fixture payloads aligned with strict frontend parsers or the surfaces should fail closed by design.
+- [P04] **`scripts/test-app-auto-pipeline-parity.mjs`**: Use for raw-JD and live-URL parity smoke coverage.
+- [P04] **`scripts/test-app-report-viewer.mjs`**: Use when report browsing or artifact handoff changes.
+- [P04] **`scripts/test-app-pipeline-review.mjs`**: Use when queue parsing or pipeline handoff changes.
+- [P04] **`scripts/test-app-tracker-workspace.mjs`**: Use when tracker status editing or maintenance actions change.
+- [P04] **`node scripts/test-all.mjs --quick`**: Keep this as the fast regression gate after surface changes.
 
 ---
 
@@ -104,6 +82,10 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 Recently closed items (buffer - rotates out after 2 phases).
 
-None. Older Phase 00 resolved items rotated out after the two-phase buffer.
+| Phase | Item                     | Resolution                                                                                                                              |
+| ----- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| P03   | Bounded polling payloads | Phase 04 added bounded evaluation, report, pipeline, and tracker summaries so browser polling no longer depends on raw artifact detail. |
+| P03   | Interaction race guards  | Phase 04 added duplicate-submit and in-flight action guards, plus backend-owned mutation paths where needed.                            |
+| P03   | UI-only mutation logic   | Phase 04 moved tracker edits and maintenance actions behind API routes and tools instead of browser-owned command logic.                |
 
 _Auto-generated by carryforward. Manual edits allowed but may be overwritten._

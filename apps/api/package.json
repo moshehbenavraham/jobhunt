@@ -1,6 +1,6 @@
 {
   "name": "@jobhunt/api",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,7 +16,7 @@
     "test:agent-runtime": "npm run build && node --test dist/agent-runtime/*.test.js",
     "test:boot-contract": "npm run test:runtime-contract",
     "test:job-runner": "npm run build && node --test dist/job-runner/*.test.js",
-    "test:runtime-contract": "npm run build && node --test dist/orchestration/*.test.js dist/runtime/*.test.js dist/server/http-server.test.js",
+    "test:runtime-contract": "npm run build && node --test dist/orchestration/*.test.js dist/runtime/*.test.js dist/server/*.test.js",
     "test:prompt-contract": "npm run build && node --test dist/prompt/prompt-loader.test.js",
     "test:store": "npm run test:store-contract",
     "test:store-contract": "npm run build && node --test dist/store/*.test.js",

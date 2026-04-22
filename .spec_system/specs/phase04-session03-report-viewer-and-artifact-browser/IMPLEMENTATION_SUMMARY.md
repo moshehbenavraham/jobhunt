@@ -16,27 +16,29 @@ Implemented the report viewer and artifact browser end to end. The session added
 ## Deliverables
 
 ### Files Created
-| File | Purpose | Lines |
-|------|---------|-------|
-| `apps/api/src/server/report-viewer-contract.ts` | Typed report-viewer payload and artifact item contract | ~220 |
-| `apps/api/src/server/report-viewer-summary.ts` | Bounded read model for selected reports and recent artifacts | ~320 |
-| `apps/api/src/server/routes/report-viewer-route.ts` | GET-only route with schema validation and error mapping | ~120 |
-| `apps/web/src/reports/report-viewer-types.ts` | Browser payload types and strict parsers | ~220 |
-| `apps/web/src/reports/report-viewer-client.ts` | Fetch client and URL-backed focus helpers | ~180 |
-| `apps/web/src/reports/use-report-viewer.ts` | Viewer state, refresh, fallback, and cleanup coordination | ~220 |
-| `apps/web/src/reports/report-viewer-surface.tsx` | Artifact browser and report review UI | ~340 |
-| `scripts/test-app-report-viewer.mjs` | Browser smoke coverage for report handoff and artifact browsing | ~220 |
+
+| File                                                | Purpose                                                         | Lines |
+| --------------------------------------------------- | --------------------------------------------------------------- | ----- |
+| `apps/api/src/server/report-viewer-contract.ts`     | Typed report-viewer payload and artifact item contract          | ~220  |
+| `apps/api/src/server/report-viewer-summary.ts`      | Bounded read model for selected reports and recent artifacts    | ~320  |
+| `apps/api/src/server/routes/report-viewer-route.ts` | GET-only route with schema validation and error mapping         | ~120  |
+| `apps/web/src/reports/report-viewer-types.ts`       | Browser payload types and strict parsers                        | ~220  |
+| `apps/web/src/reports/report-viewer-client.ts`      | Fetch client and URL-backed focus helpers                       | ~180  |
+| `apps/web/src/reports/use-report-viewer.ts`         | Viewer state, refresh, fallback, and cleanup coordination       | ~220  |
+| `apps/web/src/reports/report-viewer-surface.tsx`    | Artifact browser and report review UI                           | ~340  |
+| `scripts/test-app-report-viewer.mjs`                | Browser smoke coverage for report handoff and artifact browsing | ~220  |
 
 ### Files Modified
-| File | Changes |
-|------|---------|
-| `apps/api/src/server/routes/index.ts` | Registered the report-viewer route |
-| `apps/api/src/server/http-server.test.ts` | Added runtime-contract coverage for report viewer states |
-| `apps/web/src/shell/shell-types.ts` | Added the artifact-review shell surface |
-| `apps/web/src/shell/navigation-rail.tsx` | Added navigation affordance and badge copy |
-| `apps/web/src/shell/operator-shell.tsx` | Mounted the new surface and shell-owned handoff flow |
-| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Routed report-ready handoff into artifact review |
-| `scripts/test-all.mjs` | Added report-viewer smoke coverage to the quick gate |
+
+| File                                             | Changes                                                  |
+| ------------------------------------------------ | -------------------------------------------------------- |
+| `apps/api/src/server/routes/index.ts`            | Registered the report-viewer route                       |
+| `apps/api/src/server/http-server.test.ts`        | Added runtime-contract coverage for report viewer states |
+| `apps/web/src/shell/shell-types.ts`              | Added the artifact-review shell surface                  |
+| `apps/web/src/shell/navigation-rail.tsx`         | Added navigation affordance and badge copy               |
+| `apps/web/src/shell/operator-shell.tsx`          | Mounted the new surface and shell-owned handoff flow     |
+| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Routed report-ready handoff into artifact review         |
+| `scripts/test-all.mjs`                           | Added report-viewer smoke coverage to the quick gate     |
 
 ---
 
@@ -50,11 +52,11 @@ Implemented the report viewer and artifact browser end to end. The session added
 
 ## Test Results
 
-| Metric | Value |
-|--------|-------|
-| Tests | 7 commands |
-| Passed | 7 commands |
-| Coverage | N/A |
+| Metric   | Value      |
+| -------- | ---------- |
+| Tests    | 7 commands |
+| Passed   | 7 commands |
+| Coverage | N/A        |
 
 ---
 
@@ -68,6 +70,7 @@ Implemented the report viewer and artifact browser end to end. The session added
 ## Future Considerations
 
 Items for future sessions:
+
 1. Reuse the artifact browser contract for pipeline-review and tracker-review surfaces.
 2. Keep browser parsers and API payloads updated together when later sessions extend the artifact model.
 

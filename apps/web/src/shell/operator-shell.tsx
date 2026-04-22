@@ -4,12 +4,14 @@ import { syncApprovalInboxFocus } from "../approvals/approval-inbox-client";
 import { ApprovalInboxSurface } from "../approvals/approval-inbox-surface";
 import { StartupStatusPanel } from "../boot/startup-status-panel";
 import { useStartupDiagnostics } from "../boot/use-startup-diagnostics";
+import { syncChatConsoleSessionFocus } from "../chat/chat-console-client";
 import { ChatConsoleSurface } from "../chat/chat-console-surface";
 import { OnboardingWizardSurface } from "../onboarding/onboarding-wizard-surface";
 import { syncPipelineReviewFocus } from "../pipeline/pipeline-review-client";
 import { PipelineReviewSurface } from "../pipeline/pipeline-review-surface";
 import { syncReportViewerFocus } from "../reports/report-viewer-client";
 import { ReportViewerSurface } from "../reports/report-viewer-surface";
+import { ScanReviewSurface } from "../scan/scan-review-surface";
 import { SettingsSurface } from "../settings/settings-surface";
 import { syncTrackerWorkspaceFocus } from "../tracker/tracker-workspace-client";
 import { TrackerWorkspaceSurface } from "../tracker/tracker-workspace-surface";
@@ -315,6 +317,17 @@ export function OperatorShell() {
 		);
 		shell.selectSurface("tracker");
 	};
+	const openChatConsole = (focus: { sessionId: string | null }) => {
+		syncChatConsoleSessionFocus(
+			{
+				sessionId: focus.sessionId,
+			},
+			{
+				replace: false,
+			},
+		);
+		shell.selectSurface("chat");
+	};
 
 	return (
 		<main style={pageStyle}>
@@ -357,6 +370,8 @@ export function OperatorShell() {
 									onOpenReportViewer={openArtifacts}
 									onOpenTrackerReview={openTracker}
 								/>
+							) : renderedSurface.id === "scan" ? (
+								<ScanReviewSurface onOpenChatConsole={openChatConsole} />
 							) : renderedSurface.id === "pipeline" ? (
 								<PipelineReviewSurface onOpenReportViewer={openArtifacts} />
 							) : renderedSurface.id === "tracker" ? (

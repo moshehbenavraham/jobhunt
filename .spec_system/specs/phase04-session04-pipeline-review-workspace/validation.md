@@ -9,17 +9,17 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Tasks Complete | PASS | 18/18 tasks complete |
-| Files Exist | PASS | 20/20 deliverables present and non-empty |
-| ASCII Encoding | PASS | Session deliverables and smoke scripts remain ASCII with LF line endings |
-| Tests Passing | PASS | `npm run app:api:check`, `npm run app:api:build`, `npm run app:api:test:runtime`, `npm run app:web:check`, `npm run app:web:build`, `node scripts/test-app-pipeline-review.mjs`, and `node scripts/test-all.mjs --quick` passed |
-| Database/Schema Alignment | N/A | No DB-layer changes in this session |
-| Quality Gates | PASS | Required API, web, smoke, and quick regression gates passed |
-| Conventions | PASS | Touched files follow repo conventions on naming, structure, and error handling |
-| Security & GDPR | PASS | Read-only queue review preserved the no-new-write-path posture |
-| Behavioral Quality | PASS | Pipeline routing, stale-selection handling, report handoff, and warning states are covered by runtime and smoke tests |
+| Check                     | Status | Notes                                                                                                                                                                                                                           |
+| ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tasks Complete            | PASS   | 18/18 tasks complete                                                                                                                                                                                                            |
+| Files Exist               | PASS   | 20/20 deliverables present and non-empty                                                                                                                                                                                        |
+| ASCII Encoding            | PASS   | Session deliverables and smoke scripts remain ASCII with LF line endings                                                                                                                                                        |
+| Tests Passing             | PASS   | `npm run app:api:check`, `npm run app:api:build`, `npm run app:api:test:runtime`, `npm run app:web:check`, `npm run app:web:build`, `node scripts/test-app-pipeline-review.mjs`, and `node scripts/test-all.mjs --quick` passed |
+| Database/Schema Alignment | N/A    | No DB-layer changes in this session                                                                                                                                                                                             |
+| Quality Gates             | PASS   | Required API, web, smoke, and quick regression gates passed                                                                                                                                                                     |
+| Conventions               | PASS   | Touched files follow repo conventions on naming, structure, and error handling                                                                                                                                                  |
+| Security & GDPR           | PASS   | Read-only queue review preserved the no-new-write-path posture                                                                                                                                                                  |
+| Behavioral Quality        | PASS   | Pipeline routing, stale-selection handling, report handoff, and warning states are covered by runtime and smoke tests                                                                                                           |
 
 **Overall**: PASS
 
@@ -29,12 +29,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-|----------|----------|-----------|--------|
-| Setup | 3 | 3 | PASS |
-| Foundation | 5 | 5 | PASS |
-| Implementation | 6 | 6 | PASS |
-| Testing | 4 | 4 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 3        | 3         | PASS   |
+| Foundation     | 5        | 5         | PASS   |
+| Implementation | 6        | 6         | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -48,33 +48,33 @@ None
 
 #### Files Created
 
-| File | Found | Status |
-|------|-------|--------|
-| `apps/api/src/server/pipeline-review-contract.ts` | Yes | PASS |
-| `apps/api/src/server/pipeline-review-summary.ts` | Yes | PASS |
-| `apps/api/src/server/routes/pipeline-review-route.ts` | Yes | PASS |
-| `apps/web/src/pipeline/pipeline-review-types.ts` | Yes | PASS |
-| `apps/web/src/pipeline/pipeline-review-client.ts` | Yes | PASS |
-| `apps/web/src/pipeline/use-pipeline-review.ts` | Yes | PASS |
-| `apps/web/src/pipeline/pipeline-review-surface.tsx` | Yes | PASS |
-| `scripts/test-app-pipeline-review.mjs` | Yes | PASS |
+| File                                                  | Found | Status |
+| ----------------------------------------------------- | ----- | ------ |
+| `apps/api/src/server/pipeline-review-contract.ts`     | Yes   | PASS   |
+| `apps/api/src/server/pipeline-review-summary.ts`      | Yes   | PASS   |
+| `apps/api/src/server/routes/pipeline-review-route.ts` | Yes   | PASS   |
+| `apps/web/src/pipeline/pipeline-review-types.ts`      | Yes   | PASS   |
+| `apps/web/src/pipeline/pipeline-review-client.ts`     | Yes   | PASS   |
+| `apps/web/src/pipeline/use-pipeline-review.ts`        | Yes   | PASS   |
+| `apps/web/src/pipeline/pipeline-review-surface.tsx`   | Yes   | PASS   |
+| `scripts/test-app-pipeline-review.mjs`                | Yes   | PASS   |
 
 #### Files Modified
 
-| File | Found | Status |
-|------|-------|--------|
-| `apps/api/src/server/routes/index.ts` | Yes | PASS |
-| `apps/api/src/server/http-server.test.ts` | Yes | PASS |
-| `apps/web/src/shell/shell-types.ts` | Yes | PASS |
-| `apps/web/src/shell/navigation-rail.tsx` | Yes | PASS |
-| `apps/web/src/shell/surface-placeholder.tsx` | Yes | PASS |
-| `apps/web/src/shell/operator-shell.tsx` | Yes | PASS |
-| `apps/web/src/chat/chat-console-surface.tsx` | Yes | PASS |
-| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Yes | PASS |
-| `apps/web/src/chat/evaluation-result-types.ts` | Yes | PASS |
-| `scripts/test-app-chat-console.mjs` | Yes | PASS |
-| `scripts/test-app-shell.mjs` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
+| File                                             | Found | Status |
+| ------------------------------------------------ | ----- | ------ |
+| `apps/api/src/server/routes/index.ts`            | Yes   | PASS   |
+| `apps/api/src/server/http-server.test.ts`        | Yes   | PASS   |
+| `apps/web/src/shell/shell-types.ts`              | Yes   | PASS   |
+| `apps/web/src/shell/navigation-rail.tsx`         | Yes   | PASS   |
+| `apps/web/src/shell/surface-placeholder.tsx`     | Yes   | PASS   |
+| `apps/web/src/shell/operator-shell.tsx`          | Yes   | PASS   |
+| `apps/web/src/chat/chat-console-surface.tsx`     | Yes   | PASS   |
+| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Yes   | PASS   |
+| `apps/web/src/chat/evaluation-result-types.ts`   | Yes   | PASS   |
+| `scripts/test-app-chat-console.mjs`              | Yes   | PASS   |
+| `scripts/test-app-shell.mjs`                     | Yes   | PASS   |
+| `scripts/test-all.mjs`                           | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -86,9 +86,9 @@ None
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-|------|----------|--------------|--------|
-| Session deliverables | ASCII | LF | PASS |
+| File                 | Encoding | Line Endings | Status |
+| -------------------- | -------- | ------------ | ------ |
+| Session deliverables | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -100,13 +100,13 @@ None
 
 ### Status: PASS
 
-| Metric | Value |
-|--------|-------|
-| API and web checks/builds | Passed |
-| API runtime contract tests | Passed |
-| Pipeline-review smoke | Passed |
-| Quick regression suite | Passed with 391 checks, 0 failed, 0 warnings |
-| Coverage | N/A |
+| Metric                     | Value                                        |
+| -------------------------- | -------------------------------------------- |
+| API and web checks/builds  | Passed                                       |
+| API runtime contract tests | Passed                                       |
+| Pipeline-review smoke      | Passed                                       |
+| Quick regression suite     | Passed with 391 checks, 0 failed, 0 warnings |
+| Coverage                   | N/A                                          |
 
 ### Failed Tests
 
@@ -163,13 +163,13 @@ From `spec.md`:
 
 ### Status: PASS
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| Naming | PASS | File and symbol names follow repo conventions |
-| File Structure | PASS | Session files live under the expected `.spec_system` and `apps/*` paths |
-| Error Handling | PASS | Failure paths remain explicit and bounded |
-| Comments | PASS | Comments are sparse and only clarify non-obvious behavior |
-| Testing | PASS | Runtime-contract coverage and browser smoke coverage exercise the new route and surface |
+| Category       | Status | Notes                                                                                   |
+| -------------- | ------ | --------------------------------------------------------------------------------------- |
+| Naming         | PASS   | File and symbol names follow repo conventions                                           |
+| File Structure | PASS   | Session files live under the expected `.spec_system` and `apps/*` paths                 |
+| Error Handling | PASS   | Failure paths remain explicit and bounded                                               |
+| Comments       | PASS   | Comments are sparse and only clarify non-obvious behavior                               |
+| Testing        | PASS   | Runtime-contract coverage and browser smoke coverage exercise the new route and surface |
 
 ### Convention Violations
 
@@ -189,13 +189,13 @@ See `security-compliance.md` in this session directory.
 
 ### Status: PASS
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Trust boundaries | PASS | Query input is schema-validated and artifact paths are normalized before exposure. |
-| Resource cleanup | PASS | The route introduces no new timers, subscriptions, or long-lived resources. |
-| Mutation safety | PASS | The pipeline-review surface is read-only and does not trigger workflow mutation. |
-| Failure paths | PASS | Invalid input, missing rows, stale focus, and missing artifacts stay explicit. |
-| Contract alignment | PASS | Shared enums and runtime tests keep the route and summary builder aligned. |
+| Category           | Status | Details                                                                            |
+| ------------------ | ------ | ---------------------------------------------------------------------------------- |
+| Trust boundaries   | PASS   | Query input is schema-validated and artifact paths are normalized before exposure. |
+| Resource cleanup   | PASS   | The route introduces no new timers, subscriptions, or long-lived resources.        |
+| Mutation safety    | PASS   | The pipeline-review surface is read-only and does not trigger workflow mutation.   |
+| Failure paths      | PASS   | Invalid input, missing rows, stale focus, and missing artifacts stay explicit.     |
+| Contract alignment | PASS   | Shared enums and runtime tests keep the route and summary builder aligned.         |
 
 ---
 

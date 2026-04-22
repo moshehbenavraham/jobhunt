@@ -9,17 +9,17 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Tasks Complete | PASS | 18/18 tasks complete |
-| Files Exist | PASS | 15/15 deliverables present and non-empty |
-| ASCII Encoding | PASS | 15/15 deliverables verified ASCII with LF line endings; support files also remained ASCII/LF |
-| Tests Passing | PASS | `npm run app:api:check`, `npm run app:api:build`, `npm run app:api:test:runtime`, `npm run app:web:check`, `npm run app:web:build`, `node scripts/test-app-report-viewer.mjs`, and `node scripts/test-all.mjs --quick` all passed |
-| Database/Schema Alignment | N/A | No DB-layer changes in this session |
-| Quality Gates | PASS | Required API, web, smoke, and quick regression gates passed |
-| Conventions | PASS | Touched files follow repo conventions on naming, structure, and error handling |
-| Security & GDPR | PASS | Security review passed; GDPR review is N/A because no new personal-data flow was added |
-| Behavioral Quality | PASS | Report-viewer routing, shell handoff, and explicit failure states are covered by runtime, smoke, and quick regression tests |
+| Check                     | Status | Notes                                                                                                                                                                                                                             |
+| ------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tasks Complete            | PASS   | 18/18 tasks complete                                                                                                                                                                                                              |
+| Files Exist               | PASS   | 15/15 deliverables present and non-empty                                                                                                                                                                                          |
+| ASCII Encoding            | PASS   | 15/15 deliverables verified ASCII with LF line endings; support files also remained ASCII/LF                                                                                                                                      |
+| Tests Passing             | PASS   | `npm run app:api:check`, `npm run app:api:build`, `npm run app:api:test:runtime`, `npm run app:web:check`, `npm run app:web:build`, `node scripts/test-app-report-viewer.mjs`, and `node scripts/test-all.mjs --quick` all passed |
+| Database/Schema Alignment | N/A    | No DB-layer changes in this session                                                                                                                                                                                               |
+| Quality Gates             | PASS   | Required API, web, smoke, and quick regression gates passed                                                                                                                                                                       |
+| Conventions               | PASS   | Touched files follow repo conventions on naming, structure, and error handling                                                                                                                                                    |
+| Security & GDPR           | PASS   | Security review passed; GDPR review is N/A because no new personal-data flow was added                                                                                                                                            |
+| Behavioral Quality        | PASS   | Report-viewer routing, shell handoff, and explicit failure states are covered by runtime, smoke, and quick regression tests                                                                                                       |
 
 **Overall**: PASS
 
@@ -29,12 +29,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-|----------|----------|-----------|--------|
-| Setup | 3 | 3 | PASS |
-| Foundation | 5 | 5 | PASS |
-| Implementation | 6 | 6 | PASS |
-| Testing | 4 | 4 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 3        | 3         | PASS   |
+| Foundation     | 5        | 5         | PASS   |
+| Implementation | 6        | 6         | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -47,27 +47,29 @@ None
 ### Status: PASS
 
 #### Files Created
-| File | Found | Status |
-|------|-------|--------|
-| `apps/api/src/server/report-viewer-contract.ts` | Yes | PASS |
-| `apps/api/src/server/report-viewer-summary.ts` | Yes | PASS |
-| `apps/api/src/server/routes/report-viewer-route.ts` | Yes | PASS |
-| `apps/web/src/reports/report-viewer-types.ts` | Yes | PASS |
-| `apps/web/src/reports/report-viewer-client.ts` | Yes | PASS |
-| `apps/web/src/reports/use-report-viewer.ts` | Yes | PASS |
-| `apps/web/src/reports/report-viewer-surface.tsx` | Yes | PASS |
-| `scripts/test-app-report-viewer.mjs` | Yes | PASS |
+
+| File                                                | Found | Status |
+| --------------------------------------------------- | ----- | ------ |
+| `apps/api/src/server/report-viewer-contract.ts`     | Yes   | PASS   |
+| `apps/api/src/server/report-viewer-summary.ts`      | Yes   | PASS   |
+| `apps/api/src/server/routes/report-viewer-route.ts` | Yes   | PASS   |
+| `apps/web/src/reports/report-viewer-types.ts`       | Yes   | PASS   |
+| `apps/web/src/reports/report-viewer-client.ts`      | Yes   | PASS   |
+| `apps/web/src/reports/use-report-viewer.ts`         | Yes   | PASS   |
+| `apps/web/src/reports/report-viewer-surface.tsx`    | Yes   | PASS   |
+| `scripts/test-app-report-viewer.mjs`                | Yes   | PASS   |
 
 #### Files Modified
-| File | Found | Status |
-|------|-------|--------|
-| `apps/api/src/server/routes/index.ts` | Yes | PASS |
-| `apps/api/src/server/http-server.test.ts` | Yes | PASS |
-| `apps/web/src/shell/shell-types.ts` | Yes | PASS |
-| `apps/web/src/shell/navigation-rail.tsx` | Yes | PASS |
-| `apps/web/src/shell/operator-shell.tsx` | Yes | PASS |
-| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
+
+| File                                             | Found | Status |
+| ------------------------------------------------ | ----- | ------ |
+| `apps/api/src/server/routes/index.ts`            | Yes   | PASS   |
+| `apps/api/src/server/http-server.test.ts`        | Yes   | PASS   |
+| `apps/web/src/shell/shell-types.ts`              | Yes   | PASS   |
+| `apps/web/src/shell/navigation-rail.tsx`         | Yes   | PASS   |
+| `apps/web/src/shell/operator-shell.tsx`          | Yes   | PASS   |
+| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Yes   | PASS   |
+| `scripts/test-all.mjs`                           | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -79,9 +81,9 @@ None
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-|------|----------|--------------|--------|
-| Session deliverables | ASCII | LF | PASS |
+| File                 | Encoding | Line Endings | Status |
+| -------------------- | -------- | ------------ | ------ |
+| Session deliverables | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -93,12 +95,12 @@ None
 
 ### Status: PASS
 
-| Metric | Value |
-|--------|-------|
+| Metric      | Value        |
+| ----------- | ------------ |
 | Total Tests | Not reported |
-| Passed | Not reported |
-| Failed | 0 |
-| Coverage | Not reported |
+| Passed      | Not reported |
+| Failed      | 0            |
+| Coverage    | Not reported |
 
 ### Failed Tests
 

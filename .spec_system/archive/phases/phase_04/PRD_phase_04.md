@@ -43,6 +43,7 @@ duplicating repo logic in React, or weakening tracker integrity rules.
 - Session 03: Report Viewer and Artifact Browser
 - Session 04: Pipeline Review Workspace
 - Session 05: Tracker Workspace and Integrity Actions
+- Session 06: Auto-Pipeline Parity and Regression
 
 ---
 

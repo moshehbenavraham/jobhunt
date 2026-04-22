@@ -106,6 +106,21 @@ function getBadge(
 				label: summary.activity.state === "idle" ? "Idle" : "Queue",
 				tone: "neutral",
 			};
+		case "scan":
+			if (summary.activity.activeSession?.workflow === "scan-portals") {
+				return {
+					label: "Live",
+					tone:
+						summary.activity.state === "attention-required"
+							? "attention"
+							: "info",
+				};
+			}
+
+			return {
+				label: summary.status === "ready" ? "Ready" : "Setup",
+				tone: summary.status === "ready" ? "info" : "neutral",
+			};
 		case "artifacts":
 			return {
 				label: summary.status === "ready" ? "Review" : "Read-only",
@@ -165,13 +180,13 @@ export function NavigationRail({
 						textTransform: "uppercase",
 					}}
 				>
-					Phase 04 shell
+					Phase 05 shell
 				</p>
 				<h2 style={{ fontSize: "1.35rem", marginBottom: "0.35rem" }}>
 					Operator navigation
 				</h2>
 				<p style={{ color: "#cbd5e1", marginBottom: 0, marginTop: 0 }}>
-					One stable frame for startup, active work, queue review, tracker
+					One stable frame for startup, chat, scan review, queue review, tracker
 					closeout, and settings.
 				</p>
 			</div>

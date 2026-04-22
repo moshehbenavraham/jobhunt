@@ -1,7 +1,8 @@
 # Job-Hunt
 
 AI-powered job search pipeline driven by `AGENTS.md`, checked-in Codex skills,
-repo-owned scripts, and the app surface under `apps/`.
+repo-owned scripts, and the app surface under `apps/`, including the review
+surfaces for evaluation, reports, pipeline, and tracker workflows.
 
 It also includes a Go-based terminal dashboard for browsing and updating the
 job-search pipeline.
@@ -77,8 +78,9 @@ file to Overleaf.
 ## App Surface
 
 The app surface under `apps/` is the preferred local runtime path. It now
-covers startup diagnostics, onboarding repair, approval review, settings, and
-the long-lived API boot server instead of only the initial scaffold.
+covers startup diagnostics, onboarding repair, approval review, settings,
+report viewing, pipeline review, tracker workspace, and the long-lived API
+boot server instead of only the initial scaffold.
 
 - `npm run app:web:dev` - start the React shell with Vite
 - `npm run app:web:build` - build the web scaffold into `apps/web/dist`
@@ -94,9 +96,10 @@ The surface owns only `apps/web`, `apps/api`, and the repo-root
 user-layer files under `profile/`, `config/`, `data/`, `reports/`, `output/`,
 `interview-prep/`, or `jds/`.
 
-The API package exposes the startup, onboarding, approval inbox, settings, and
-workflow bootstrap routes used by the web shell. The web package renders those
-operator surfaces and keeps them read-first against the repo-owned contract.
+The API package exposes the startup, onboarding, approval inbox, settings,
+report-viewer, pipeline-review, tracker-workspace, and workflow bootstrap
+routes used by the web shell. The web package renders those operator surfaces
+and keeps them read-first against the repo-owned contract.
 
 `npm run scan` is currently an API-first scanner. It uses
 `tracked_companies`, `title_filter.positive`, and `title_filter.negative` from

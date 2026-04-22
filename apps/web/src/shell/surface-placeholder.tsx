@@ -47,6 +47,16 @@ function getPlaceholderBody(
 				],
 				title: "Artifact review lands in Phase 04",
 			};
+		case "scan":
+			return {
+				body: "Phase 05 adds the dedicated scan workspace here. The placeholder keeps the shell registry exhaustive until shortlist review and launch handoffs are mounted.",
+				highlights: [
+					"Scan review stays bounded by the backend-owned shortlist summary route.",
+					"Ignore, restore, evaluate, and batch-seed actions continue to flow through backend routes instead of browser-owned file writes.",
+					"Selected scan candidates will hand off into chat rather than inventing a separate browser workflow launcher.",
+				],
+				title: "Scan workspace lands in Phase 05",
+			};
 		case "tracker":
 			return {
 				body: "Phase 04 adds the dedicated tracker workspace here. The placeholder keeps the shell registry exhaustive until the tracker review and integrity controls are mounted.",

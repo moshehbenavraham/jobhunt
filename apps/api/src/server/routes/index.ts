@@ -12,6 +12,8 @@ import { createPipelineReviewRoute } from "./pipeline-review-route.js";
 import { createReportViewerRoute } from "./report-viewer-route.js";
 import { createRuntimeApprovalsRoute } from "./runtime-approvals-route.js";
 import { createRuntimeDiagnosticsRoute } from "./runtime-diagnostics-route.js";
+import { createScanReviewActionRoute } from "./scan-review-action-route.js";
+import { createScanReviewRoute } from "./scan-review-route.js";
 import { createSettingsRoute } from "./settings-route.js";
 import { createStartupRoute } from "./startup-route.js";
 import { createTrackerWorkspaceActionRoute } from "./tracker-workspace-action-route.js";
@@ -47,6 +49,8 @@ export function createApiRouteRegistry(): ApiRouteDefinition[] {
 		createOnboardingRepairRoute(),
 		createOperatorShellRoute(),
 		createPipelineReviewRoute(),
+		createScanReviewRoute(),
+		createScanReviewActionRoute(),
 		createReportViewerRoute(),
 		createTrackerWorkspaceRoute(),
 		createTrackerWorkspaceActionRoute(),

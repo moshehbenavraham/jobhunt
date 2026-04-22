@@ -1,6 +1,7 @@
 export const SHELL_SURFACE_IDS = [
 	"startup",
 	"chat",
+	"scan",
 	"pipeline",
 	"tracker",
 	"artifacts",
@@ -32,6 +33,13 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "chat",
 		label: "Chat",
 		owner: "Session 02",
+	},
+	{
+		description:
+			"Launch scan runs, review shortlist candidates, and hand selected roles into evaluation or batch flow.",
+		id: "scan",
+		label: "Scan",
+		owner: "Phase 05",
 	},
 	{
 		description:

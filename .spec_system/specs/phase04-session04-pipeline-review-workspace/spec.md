@@ -194,33 +194,33 @@ launch paths, or tracker mutations should be added in this session.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/server/pipeline-review-contract.ts` | Define queue filters, row-preview and selected-detail payloads, artifact states, and warning shapes | ~240 |
-| `apps/api/src/server/pipeline-review-summary.ts` | Parse pipeline markdown, reconcile processed rows to artifacts, and build the bounded queue summary | ~420 |
-| `apps/api/src/server/routes/pipeline-review-route.ts` | Expose the GET-only pipeline-review endpoint with query validation | ~120 |
-| `apps/web/src/pipeline/pipeline-review-types.ts` | Define strict parser helpers and typed pipeline-review payloads for the browser | ~240 |
-| `apps/web/src/pipeline/pipeline-review-client.ts` | Fetch pipeline summaries and manage URL-backed pipeline focus | ~200 |
-| `apps/web/src/pipeline/use-pipeline-review.ts` | Coordinate queue refresh, selection, filter, sort, and focus cleanup | ~240 |
-| `apps/web/src/pipeline/pipeline-review-surface.tsx` | Render shortlist context, queue rows, selected detail, and explicit state handling | ~360 |
-| `scripts/test-app-pipeline-review.mjs` | Browser smoke coverage for pipeline navigation, selection, filtering, and report-viewer handoff | ~260 |
+| File                                                  | Purpose                                                                                             | Est. Lines |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/server/pipeline-review-contract.ts`     | Define queue filters, row-preview and selected-detail payloads, artifact states, and warning shapes | ~240       |
+| `apps/api/src/server/pipeline-review-summary.ts`      | Parse pipeline markdown, reconcile processed rows to artifacts, and build the bounded queue summary | ~420       |
+| `apps/api/src/server/routes/pipeline-review-route.ts` | Expose the GET-only pipeline-review endpoint with query validation                                  | ~120       |
+| `apps/web/src/pipeline/pipeline-review-types.ts`      | Define strict parser helpers and typed pipeline-review payloads for the browser                     | ~240       |
+| `apps/web/src/pipeline/pipeline-review-client.ts`     | Fetch pipeline summaries and manage URL-backed pipeline focus                                       | ~200       |
+| `apps/web/src/pipeline/use-pipeline-review.ts`        | Coordinate queue refresh, selection, filter, sort, and focus cleanup                                | ~240       |
+| `apps/web/src/pipeline/pipeline-review-surface.tsx`   | Render shortlist context, queue rows, selected detail, and explicit state handling                  | ~360       |
+| `scripts/test-app-pipeline-review.mjs`                | Browser smoke coverage for pipeline navigation, selection, filtering, and report-viewer handoff     | ~260       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/server/routes/index.ts` | Register the pipeline-review route in deterministic order | ~20 |
-| `apps/api/src/server/http-server.test.ts` | Add runtime-contract coverage for parsed queue states, invalid queries, and artifact or warning enrichment | ~280 |
-| `apps/web/src/shell/shell-types.ts` | Register the new pipeline surface and keep shell parsing deterministic | ~80 |
-| `apps/web/src/shell/navigation-rail.tsx` | Add navigation copy and badge handling for the pipeline surface | ~90 |
-| `apps/web/src/shell/surface-placeholder.tsx` | Keep shell placeholder handling exhaustive after the new surface is added | ~40 |
-| `apps/web/src/shell/operator-shell.tsx` | Render the pipeline workspace and expose shared open-pipeline or open-report callbacks | ~140 |
-| `apps/web/src/chat/chat-console-surface.tsx` | Thread the pipeline handoff callback into the evaluation artifact rail | ~50 |
-| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Turn pipeline review from deferred copy into a real in-app handoff | ~110 |
-| `apps/web/src/chat/evaluation-result-types.ts` | Extend handoff intent typing with pipeline-focus metadata | ~50 |
-| `scripts/test-app-chat-console.mjs` | Update chat-console smoke expectations for live pipeline handoff | ~80 |
-| `scripts/test-app-shell.mjs` | Update shell smoke coverage for the new pipeline surface | ~60 |
-| `scripts/test-all.mjs` | Add the new pipeline-review smoke script and ASCII coverage to quick regressions | ~40 |
+| File                                             | Changes                                                                                                    | Est. Lines |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/server/routes/index.ts`            | Register the pipeline-review route in deterministic order                                                  | ~20        |
+| `apps/api/src/server/http-server.test.ts`        | Add runtime-contract coverage for parsed queue states, invalid queries, and artifact or warning enrichment | ~280       |
+| `apps/web/src/shell/shell-types.ts`              | Register the new pipeline surface and keep shell parsing deterministic                                     | ~80        |
+| `apps/web/src/shell/navigation-rail.tsx`         | Add navigation copy and badge handling for the pipeline surface                                            | ~90        |
+| `apps/web/src/shell/surface-placeholder.tsx`     | Keep shell placeholder handling exhaustive after the new surface is added                                  | ~40        |
+| `apps/web/src/shell/operator-shell.tsx`          | Render the pipeline workspace and expose shared open-pipeline or open-report callbacks                     | ~140       |
+| `apps/web/src/chat/chat-console-surface.tsx`     | Thread the pipeline handoff callback into the evaluation artifact rail                                     | ~50        |
+| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Turn pipeline review from deferred copy into a real in-app handoff                                         | ~110       |
+| `apps/web/src/chat/evaluation-result-types.ts`   | Extend handoff intent typing with pipeline-focus metadata                                                  | ~50        |
+| `scripts/test-app-chat-console.mjs`              | Update chat-console smoke expectations for live pipeline handoff                                           | ~80        |
+| `scripts/test-app-shell.mjs`                     | Update shell smoke coverage for the new pipeline surface                                                   | ~60        |
+| `scripts/test-all.mjs`                           | Add the new pipeline-review smoke script and ASCII coverage to quick regressions                           | ~40        |
 
 ---
 
@@ -311,6 +311,7 @@ launch paths, or tracker mutations should be added in this session.
 Checklist active: Yes
 
 Top behavioral risks for this session:
+
 - Selection drift after filter, sort, or refresh causes the operator to review
   the wrong row.
 - Processed rows show false-ready artifact state because report-number matching

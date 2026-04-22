@@ -9,11 +9,11 @@
 
 ## Session Progress
 
-| Metric | Value |
-|--------|-------|
-| Tasks Completed | 18 / 18 |
+| Metric              | Value   |
+| ------------------- | ------- |
+| Tasks Completed     | 18 / 18 |
 | Estimated Remaining | 0 hours |
-| Blockers | 0 |
+| Blockers            | 0       |
 
 ---
 
@@ -22,6 +22,7 @@
 ### [2026-04-22] - Session Start
 
 **Environment verified**:
+
 - [x] Prerequisites confirmed
 - [x] Tools available
 - [x] Directory structure ready
@@ -35,13 +36,16 @@
 **Duration**: 6 minutes
 
 **Notes**:
+
 - Added the API-side report-viewer contract, bounded list filters, and explicit selection-state enums.
 - Kept the payload shape close to existing app summary contracts so route and browser parsing can mirror it directly.
 
 **Files Changed**:
+
 - `apps/api/src/server/report-viewer-contract.ts` - Added the typed report-viewer payload, recent-artifact item, and selected-report metadata contract.
 
 **Out-of-Scope Files** (files outside declared package):
+
 - `apps/api/src/server/report-viewer-contract.ts` - Required backend contract addition to keep report reads inside the API boundary.
 
 ### Task T002 - Create browser report-viewer payload types and parsers
@@ -51,10 +55,12 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Added strict browser-side parser helpers for every report-viewer enum and nested object.
 - Kept the browser contract structurally identical to the API payload so drift fails closed at the client boundary.
 
 **Files Changed**:
+
 - `apps/web/src/reports/report-viewer-types.ts` - Added browser types, enum guards, and payload parsers for the report-viewer surface.
 
 ### Task T003 - Create the report-viewer client and URL-backed focus helpers
@@ -64,10 +70,12 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Added a dedicated report-viewer client with request timeout handling, retry backoff, and explicit client error states.
 - Bound report selection, artifact group, and list offset to URL search params through a dedicated focus helper and event channel.
 
 **Files Changed**:
+
 - `apps/web/src/reports/report-viewer-client.ts` - Added endpoint resolution, URL focus sync, and bounded summary fetching for the report-viewer surface.
 
 ### Task T004 - Create the report-viewer summary scaffolding
@@ -77,17 +85,21 @@
 **Duration**: 3 minutes
 
 **Notes**:
+
 - Added the summary builder with bounded filters, explicit empty states, and deterministic artifact ordering.
 - Kept report selection and recent artifact listing in one read-only payload so the browser does not derive file state on its own.
 
 **Files Changed**:
+
 - `apps/api/src/server/report-viewer-summary.ts` - Added the list-plus-detail read model for the report-viewer surface.
 
 **BQC Fixes**:
+
 - Trust boundary enforcement: Reject non-canonical or out-of-scope report paths before any filesystem read (`apps/api/src/server/report-viewer-summary.ts`)
 - Failure path completeness: Return explicit empty or missing selection states instead of silent latest-report fallback (`apps/api/src/server/report-viewer-summary.ts`)
 
 **Out-of-Scope Files** (files outside declared package):
+
 - `apps/api/src/server/report-viewer-summary.ts` - Required backend read model to keep repo file access out of the browser.
 
 ### Task T005 - Create and register the GET-only report-viewer route
@@ -97,18 +109,22 @@
 **Duration**: 1 minute
 
 **Notes**:
+
 - Added a GET and HEAD report-viewer route with zod-validated query parsing and explicit bad-request mapping for invalid report paths.
 - Registered the route in the shared API registry without changing existing route ordering guarantees.
 
 **Files Changed**:
+
 - `apps/api/src/server/routes/report-viewer-route.ts` - Added the report-viewer endpoint and query validation.
 - `apps/api/src/server/routes/index.ts` - Registered the new route in the API route registry.
 
 **BQC Fixes**:
+
 - Trust boundary enforcement: Mapped invalid report-path selections to a bounded request-validation error at the route boundary (`apps/api/src/server/routes/report-viewer-route.ts`)
 - Failure path completeness: Added explicit bad-request responses for invalid query or selection input (`apps/api/src/server/routes/report-viewer-route.ts`)
 
 **Out-of-Scope Files** (files outside declared package):
+
 - `apps/api/src/server/routes/report-viewer-route.ts` - Required backend route addition for the new read-only surface.
 - `apps/api/src/server/routes/index.ts` - Required route registry update for the report-viewer endpoint.
 
@@ -119,18 +135,22 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Restricted selected-report reads to canonical numbered `reports/` markdown paths and blocked traversal or non-report files.
 - Added stale-selection handling so missing selected reports stay explicit instead of silently switching to another artifact.
 
 **Files Changed**:
+
 - `apps/api/src/server/report-viewer-summary.ts` - Added allowlisted report validation and stale-report selection mapping.
 - `apps/api/src/server/routes/report-viewer-route.ts` - Added bad-request mapping for invalid report selections.
 
 **BQC Fixes**:
+
 - Trust boundary enforcement: Validated repo-relative report selections before the file read boundary (`apps/api/src/server/report-viewer-summary.ts`)
 - Failure path completeness: Preserved explicit missing selection state for deleted or stale report targets (`apps/api/src/server/report-viewer-summary.ts`)
 
 **Out-of-Scope Files** (files outside declared package):
+
 - `apps/api/src/server/report-viewer-summary.ts` - Required backend validation for report reads.
 - `apps/api/src/server/routes/report-viewer-route.ts` - Required route-level error mapping for invalid selections.
 
@@ -141,10 +161,12 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added bounded recent artifact listing for report and PDF directories with deterministic ordering by artifact date, report number, and path.
 - Preserved group filtering and offset-based pagination in the summary payload.
 
 **Files Changed**:
+
 - `apps/api/src/server/report-viewer-summary.ts` - Added recent artifact collection, grouping, and bounded pagination.
 
 ### Task T011 - Implement report header extraction and markdown normalization
@@ -154,10 +176,12 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Added markdown normalization to LF plus BOM cleanup before parsing or returning report content.
 - Extracted report title, date, URL, archetype, score, legitimacy, verification, and linked PDF metadata from the report header block.
 
 **Files Changed**:
+
 - `apps/api/src/server/report-viewer-summary.ts` - Added markdown normalization and header parsing for selected reports.
 
 ### Task T006 - Create the report-viewer hook
@@ -167,13 +191,16 @@
 **Duration**: 7 minutes
 
 **Notes**:
+
 - Added the report-viewer hook with abort-driven request cleanup, URL re-entry handling, refresh, and paginated artifact browsing state.
 - Reused the shell event pattern so report selection stays deterministic across custom focus events, hash changes, and browser navigation.
 
 **Files Changed**:
+
 - `apps/web/src/reports/use-report-viewer.ts` - Added report-viewer state loading, re-entry handling, and cleanup behavior.
 
 **BQC Fixes**:
+
 - Resource cleanup: Abort in-flight requests and remove event listeners when the surface unmounts (`apps/web/src/reports/use-report-viewer.ts`)
 - State freshness on re-entry: Re-read URL-backed report focus on focus events, hash changes, and browser history navigation (`apps/web/src/reports/use-report-viewer.ts`)
 - Failure path completeness: Preserve explicit client error and offline states instead of hiding fetch failures (`apps/web/src/reports/use-report-viewer.ts`)
@@ -185,13 +212,16 @@
 **Duration**: 5 minutes
 
 **Notes**:
+
 - Added the read-only artifact review UI with recent artifact browsing, stale-selection handling, report metadata review, and raw markdown display.
 - Kept PDF artifacts explicit in the browser without pretending the shell can render local files directly.
 
 **Files Changed**:
+
 - `apps/web/src/reports/report-viewer-surface.tsx` - Added the artifact browser, selected report metadata panel, and markdown review pane.
 
 **BQC Fixes**:
+
 - State freshness on re-entry: Surface rendering follows the latest hook state and URL-backed focus instead of cached local guesses (`apps/web/src/reports/report-viewer-surface.tsx`)
 - Failure path completeness: Rendered explicit loading, offline, invalid, empty, and stale-report states (`apps/web/src/reports/report-viewer-surface.tsx`)
 - Accessibility and platform compliance: Added labeled buttons and readable section headings for artifact navigation and report selection (`apps/web/src/reports/report-viewer-surface.tsx`)
@@ -203,10 +233,12 @@
 **Duration**: 3 minutes
 
 **Notes**:
+
 - Registered the artifact-review surface in the shell surface registry and navigation rail.
 - Added a stable artifact-review badge so the rail advertises the new surface without relying on browser-derived file counts.
 
 **Files Changed**:
+
 - `apps/web/src/shell/shell-types.ts` - Added the artifact surface id and definition.
 - `apps/web/src/shell/navigation-rail.tsx` - Added the artifact surface badge copy and navigation affordance.
 
@@ -217,10 +249,12 @@
 **Duration**: 3 minutes
 
 **Notes**:
+
 - Mounted the new report-viewer surface inside the existing operator shell frame.
 - Added shell-owned artifact opening logic so report handoff reuses the same hash-based navigation contract as other surfaces.
 
 **Files Changed**:
+
 - `apps/web/src/shell/operator-shell.tsx` - Added artifact surface rendering and shell-owned report focus handoff.
 
 ### Task T013 - Wire selected-report state to URL-backed focus and artifact selection
@@ -230,14 +264,17 @@
 **Duration**: 7 minutes
 
 **Notes**:
+
 - Bound selected report, artifact group, and list offset to URL-backed focus state.
 - Preserved latest-report fallback when no explicit report path is selected while keeping stale explicit selections from silently changing.
 
 **Files Changed**:
+
 - `apps/web/src/reports/use-report-viewer.ts` - Added state loading from URL-backed focus and recent artifact selection flows.
 - `apps/web/src/reports/report-viewer-client.ts` - Added focus parsing and URL synchronization helpers for report selection and artifact browsing.
 
 **BQC Fixes**:
+
 - State freshness on re-entry: Explicitly reload focus state from the URL and shell hash transitions (`apps/web/src/reports/use-report-viewer.ts`)
 - Failure path completeness: Treat invalid report-viewer payloads and bad requests as explicit client errors (`apps/web/src/reports/report-viewer-client.ts`)
 
@@ -248,15 +285,18 @@
 **Duration**: 2 minutes
 
 **Notes**:
+
 - Converted the report handoff action from a deferred placeholder into a live shell transition to the artifact-review surface.
 - Kept PDF and pipeline actions explicit and deferred while report-unavailable states remain disabled.
 
 **Files Changed**:
+
 - `apps/web/src/chat/evaluation-artifact-rail.tsx` - Updated report handoff behavior and button routing.
 - `apps/web/src/chat/chat-console-surface.tsx` - Passed the artifact-review handoff callback into the evaluation rail.
 - `apps/web/src/shell/operator-shell.tsx` - Routed report-ready handoff into the artifact-review shell surface.
 
 **BQC Fixes**:
+
 - Duplicate action prevention: Reused the shared busy gate for handoff buttons so rapid clicks do not stack shell transitions (`apps/web/src/chat/evaluation-artifact-rail.tsx`)
 
 ---

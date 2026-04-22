@@ -758,7 +758,7 @@ Planning assumptions for this PRD:
 ### Phase 05: Scan, Batch, and Application-Help Parity
 
 - Objective: cover the highest-value async and review-heavy workflows
-- Sessions: `4-6`
+- Sessions: `6`
 - Key outcomes: portal scan flows, shortlist review, batch orchestration and
   state visibility, failure and retry handling, application-help flows,
   approval checkpoints
@@ -788,7 +788,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | 02    | Typed Tools and Agent Orchestration                      | 5        | Complete    |
 | 03    | Chat, Onboarding, and Approvals UX                       | 5        | Complete    |
 | 04    | Evaluation, Artifacts, and Tracker Parity                | 6        | Complete    |
-| 05    | Scan, Batch, and Application-Help Parity                 | 4-6      | Not Started |
+| 05    | Scan, Batch, and Application-Help Parity                 | 6        | Not Started |
 | 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 4-6      | Not Started |
 
 ## Phase 00: Foundation and Repo Contract
@@ -895,6 +895,7 @@ Progress: 6/6 sessions complete.
 - Replace batch runner UI and orchestration
 - Support application-help flows and approval checkpoints
 - Add job-level failure, warning, retry, and resume visibility
+- Planned phase artifacts live under `.spec_system/PRD/phase_05/`.
 
 ### Phase 06: Specialist Workflows, Dashboard Replacement, and Cutover
 

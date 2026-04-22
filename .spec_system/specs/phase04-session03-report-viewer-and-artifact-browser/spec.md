@@ -183,28 +183,28 @@ instead of silently falling back to an unrelated file.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/server/report-viewer-contract.ts` | Define the typed report-viewer payload, selected-report metadata, and recent-artifact item shapes | ~220 |
-| `apps/api/src/server/report-viewer-summary.ts` | Build the bounded report-viewer summary from allowed report reads and artifact listing helpers | ~320 |
-| `apps/api/src/server/routes/report-viewer-route.ts` | Expose the GET-only report-viewer endpoint with query validation | ~120 |
-| `apps/web/src/reports/report-viewer-types.ts` | Define strict parser helpers and typed report-viewer payloads for the browser | ~220 |
-| `apps/web/src/reports/report-viewer-client.ts` | Fetch report-viewer summaries and manage URL-backed report focus | ~180 |
-| `apps/web/src/reports/use-report-viewer.ts` | Coordinate selected-report state, refresh, fallback, and request cleanup | ~220 |
-| `apps/web/src/reports/report-viewer-surface.tsx` | Render recent artifact browsing, selected report metadata, and markdown review states | ~340 |
-| `scripts/test-app-report-viewer.mjs` | Browser smoke coverage for artifact browsing and report handoff behavior | ~220 |
+| File                                                | Purpose                                                                                           | Est. Lines |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/server/report-viewer-contract.ts`     | Define the typed report-viewer payload, selected-report metadata, and recent-artifact item shapes | ~220       |
+| `apps/api/src/server/report-viewer-summary.ts`      | Build the bounded report-viewer summary from allowed report reads and artifact listing helpers    | ~320       |
+| `apps/api/src/server/routes/report-viewer-route.ts` | Expose the GET-only report-viewer endpoint with query validation                                  | ~120       |
+| `apps/web/src/reports/report-viewer-types.ts`       | Define strict parser helpers and typed report-viewer payloads for the browser                     | ~220       |
+| `apps/web/src/reports/report-viewer-client.ts`      | Fetch report-viewer summaries and manage URL-backed report focus                                  | ~180       |
+| `apps/web/src/reports/use-report-viewer.ts`         | Coordinate selected-report state, refresh, fallback, and request cleanup                          | ~220       |
+| `apps/web/src/reports/report-viewer-surface.tsx`    | Render recent artifact browsing, selected report metadata, and markdown review states             | ~340       |
+| `scripts/test-app-report-viewer.mjs`                | Browser smoke coverage for artifact browsing and report handoff behavior                          | ~220       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/api/src/server/routes/index.ts` | Register the report-viewer route in deterministic order | ~20 |
-| `apps/api/src/server/http-server.test.ts` | Add runtime-contract coverage for selected report, invalid path, missing artifact, and bounded listing behavior | ~260 |
-| `apps/web/src/shell/shell-types.ts` | Register the artifact-review surface and keep shell surface parsing deterministic | ~60 |
-| `apps/web/src/shell/navigation-rail.tsx` | Add navigation affordance and badge copy for the artifact-review surface | ~70 |
-| `apps/web/src/shell/operator-shell.tsx` | Render the new report-viewer surface inside the existing shell frame | ~120 |
-| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Turn report-ready handoff from deferred copy into a real artifact-surface launch path | ~90 |
-| `scripts/test-all.mjs` | Add the new report-viewer smoke script and ASCII coverage to the quick regression gate | ~40 |
+| File                                             | Changes                                                                                                         | Est. Lines |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ---------- |
+| `apps/api/src/server/routes/index.ts`            | Register the report-viewer route in deterministic order                                                         | ~20        |
+| `apps/api/src/server/http-server.test.ts`        | Add runtime-contract coverage for selected report, invalid path, missing artifact, and bounded listing behavior | ~260       |
+| `apps/web/src/shell/shell-types.ts`              | Register the artifact-review surface and keep shell surface parsing deterministic                               | ~60        |
+| `apps/web/src/shell/navigation-rail.tsx`         | Add navigation affordance and badge copy for the artifact-review surface                                        | ~70        |
+| `apps/web/src/shell/operator-shell.tsx`          | Render the new report-viewer surface inside the existing shell frame                                            | ~120       |
+| `apps/web/src/chat/evaluation-artifact-rail.tsx` | Turn report-ready handoff from deferred copy into a real artifact-surface launch path                           | ~90        |
+| `scripts/test-all.mjs`                           | Add the new report-viewer smoke script and ASCII coverage to the quick regression gate                          | ~40        |
 
 ---
 
@@ -286,6 +286,7 @@ instead of silently falling back to an unrelated file.
 
 Checklist active: Yes
 Top behavioral risks for this session:
+
 - A ready report handoff opens the wrong artifact after refresh or hash
   navigation.
 - The route accepts an out-of-scope repo path or hides an invalid selection

@@ -234,34 +234,325 @@ function createRuntimeErrorShellSummary() {
 	};
 }
 
-function createReadyChatConsoleSummary() {
+function createWorkflowOptions() {
+	return [
+		{
+			description: "Single evaluation route",
+			intent: "single-evaluation",
+			label: "Single Evaluation",
+			message:
+				"Single evaluation can launch with the evaluation specialist and the current typed evaluation toolset.",
+			missingCapabilities: [],
+			modeRepoRelativePath: "modes/oferta.md",
+			specialist: {
+				description:
+					"Owns job-description intake and evaluation follow-through.",
+				id: "evaluation-specialist",
+				label: "Evaluation Specialist",
+			},
+			status: "ready",
+		},
+	];
+}
+
+function createSessionSummary(overrides = {}) {
+	return {
+		activeJobId: `${overrides.sessionId}-job`,
+		job: {
+			attempt: 1,
+			completedAt: null,
+			currentRunId: `${overrides.sessionId}-run`,
+			jobId: `${overrides.sessionId}-job`,
+			jobType: overrides.workflow,
+			startedAt: "2026-04-21T22:56:30.000Z",
+			status: "running",
+			updatedAt: "2026-04-21T22:56:30.000Z",
+			waitReason: null,
+		},
+		latestFailure: null,
+		lastHeartbeatAt: "2026-04-21T22:56:30.000Z",
+		pendingApproval: null,
+		pendingApprovalCount: 0,
+		resumeAllowed: true,
+		sessionId: overrides.sessionId,
+		state: "running",
+		status: "running",
+		updatedAt: "2026-04-21T22:56:30.000Z",
+		workflow: overrides.workflow,
+	};
+}
+
+function createSessionDetail(summary, message) {
+	return {
+		approvals: [],
+		failure: null,
+		jobs: [summary.job],
+		route: {
+			message,
+			missingCapabilities: [],
+			specialistId: "evaluation-specialist",
+			status: "ready",
+		},
+		session: summary,
+		timeline: [
+			{
+				approvalId: null,
+				eventId: `${summary.sessionId}-event`,
+				eventType: "job-execution-started",
+				jobId: summary.job.jobId,
+				level: "info",
+				occurredAt: summary.updatedAt,
+				requestId: `${summary.sessionId}-request`,
+				sessionId: summary.sessionId,
+				summary: message,
+				traceId: `${summary.sessionId}-trace`,
+			},
+		],
+	};
+}
+
+function createChatConsoleSummaryPayload(state, selectedSessionId = null) {
+	const sessions = [...state.sessionDetails.values()].map(
+		(detail) => detail.session,
+	);
+	const selectedDetail =
+		(selectedSessionId && state.sessionDetails.get(selectedSessionId)) ||
+		(state.lastChatSessionId &&
+			state.sessionDetails.get(state.lastChatSessionId)) ||
+		null;
+
 	return {
 		generatedAt: "2026-04-21T22:56:00.000Z",
 		message: "Chat console summary is ready.",
 		ok: true,
-		recentSessions: [],
-		selectedSession: null,
+		recentSessions: sessions,
+		selectedSession: selectedDetail,
 		service: "jobhunt-api-scaffold",
 		sessionId: "phase01-session03-agent-runtime-bootstrap",
 		status: "ready",
-		workflows: [
-			{
-				description: "Single evaluation route",
-				intent: "single-evaluation",
-				label: "Single Evaluation",
-				message:
-					"Single evaluation can launch with the evaluation specialist and the current typed evaluation toolset.",
+		workflows: createWorkflowOptions(),
+	};
+}
+
+function createEvaluationResultPayload(requestUrl = "/evaluation-result") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+
+	return {
+		filters: {
+			previewLimit: 4,
+			sessionId: url.searchParams.get("sessionId"),
+			workflow: null,
+		},
+		generatedAt: "2026-04-21T22:56:00.000Z",
+		message: "Evaluation result summary is ready.",
+		ok: true,
+		recentSessions: [],
+		service: "jobhunt-api-scaffold",
+		sessionId: "phase01-session03-agent-runtime-bootstrap",
+		status: "ready",
+		summary: null,
+	};
+}
+
+function createCommandPayload(input) {
+	return {
+		generatedAt: "2026-04-21T22:56:30.000Z",
+		handoff: {
+			job: input.detail.session.job,
+			message: input.message,
+			pendingApproval: null,
+			requestedAt: "2026-04-21T22:56:30.000Z",
+			route: {
+				message: input.message,
 				missingCapabilities: [],
-				modeRepoRelativePath: "modes/oferta.md",
-				specialist: {
-					description:
-						"Owns job-description intake and evaluation follow-through.",
-					id: "evaluation-specialist",
-					label: "Evaluation Specialist",
-				},
+				requestKind: "launch",
+				sessionId: input.detail.session.sessionId,
+				specialistId: "evaluation-specialist",
 				status: "ready",
+				workflow: "single-evaluation",
+			},
+			runtime: {
+				message: "Agent runtime ready.",
+				model: "gpt-5.4-mini",
+				modeRepoRelativePath: "modes/oferta.md",
+				startedAt: "2026-04-21T22:56:30.000Z",
+				status: "ready",
+				workflow: "single-evaluation",
+			},
+			selectedSession: input.detail,
+			session: input.detail.session,
+			specialist: {
+				description:
+					"Owns job-description intake and evaluation follow-through.",
+				id: "evaluation-specialist",
+				label: "Evaluation Specialist",
+			},
+			state: "running",
+			toolingGap: null,
+		},
+		ok: true,
+		service: "jobhunt-api-scaffold",
+		sessionId: "phase01-session03-agent-runtime-bootstrap",
+		status: "ready",
+	};
+}
+
+function createScanReviewPayload(requestUrl = "/scan-review") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const requestedUrl = url.searchParams.get("url");
+	const row = {
+		batchSeed: {
+			item: {
+				bucket: "strongest-fit",
+				company: "Cohere",
+				reasonSummary: "Strongest current agentic-workflows fit.",
+				role: "Applied AI Engineer",
+				url: "https://example.com/jobs/cohere-applied-ai",
+			},
+			message:
+				"Seed batch review with https://example.com/jobs/cohere-applied-ai.",
+			selection: {
+				limit: 1,
+				mode: "selected-urls",
+				urls: ["https://example.com/jobs/cohere-applied-ai"],
+			},
+			target: "batch-composer",
+		},
+		bucket: "strongest-fit",
+		company: "Cohere",
+		duplicateHint: {
+			firstSeen: "2026-04-20",
+			freshness: "recent",
+			historyCount: 2,
+			otherShortlistCount: 1,
+			pendingOverlap: true,
+			portal: "Greenhouse",
+			status: "queued",
+			title: "Applied AI Engineer",
+		},
+		evaluate: {
+			context: {
+				promptText: "https://example.com/jobs/cohere-applied-ai",
+			},
+			message:
+				"Launch a single evaluation for https://example.com/jobs/cohere-applied-ai.",
+			workflow: "single-evaluation",
+		},
+		ignoreAction: {
+			action: "ignore",
+			message: "Hide this role from the current scan review session.",
+			sessionId: "scan-session-01",
+			url: "https://example.com/jobs/cohere-applied-ai",
+		},
+		ignored: false,
+		rank: 1,
+		reasonSummary: "Strongest current agentic-workflows fit.",
+		role: "Applied AI Engineer",
+		selected: requestedUrl === "https://example.com/jobs/cohere-applied-ai",
+		url: "https://example.com/jobs/cohere-applied-ai",
+		warningCount: 2,
+		warnings: [
+			{
+				code: "duplicate-heavy",
+				message:
+					"Similar shortlist candidates already exist for this company, so this item needs duplicate review.",
+			},
+			{
+				code: "already-pending",
+				message: "This role already exists in the pending pipeline queue.",
 			},
 		],
+	};
+
+	return {
+		filters: {
+			bucket: "all",
+			includeIgnored: false,
+			limit: 12,
+			offset: 0,
+			sessionId: null,
+			url: requestedUrl,
+		},
+		generatedAt: "2026-04-22T00:00:00.000Z",
+		launcher: {
+			available: true,
+			canStart: true,
+			message: "Scan launcher is ready.",
+			workflow: "scan-portals",
+		},
+		message: "Showing 1 shortlist candidate.",
+		ok: true,
+		run: {
+			activeJobId: "job-scan-live",
+			approvalId: null,
+			completedAt: "2026-04-22T00:00:00.000Z",
+			filter: {
+				company: null,
+				compareClean: false,
+				dryRun: false,
+			},
+			message: "The latest scan run completed with 1 new offer added.",
+			runId: "run-scan-live",
+			sessionId: "scan-session-01",
+			startedAt: "2026-04-22T00:00:00.000Z",
+			state: "completed",
+			summary: {
+				companiesConfigured: 4,
+				companiesScanned: 4,
+				companiesSkipped: 0,
+				duplicatesSkipped: 1,
+				filteredByLocation: 0,
+				filteredByTitle: 0,
+				newOffersAdded: 1,
+				totalJobsFound: 5,
+			},
+			updatedAt: "2026-04-22T00:00:00.000Z",
+			warnings: [],
+		},
+		selectedDetail: requestedUrl
+			? {
+					message: `Showing shortlist candidate ${requestedUrl}.`,
+					origin: "url",
+					requestedUrl,
+					row: {
+						...row,
+						sourceLine:
+							"1. Strongest fit | https://example.com/jobs/cohere-applied-ai | Cohere | Applied AI Engineer",
+					},
+					state: "ready",
+				}
+			: {
+					message:
+						"Select a shortlist candidate to inspect dedup context and follow-through metadata.",
+					origin: "none",
+					requestedUrl: null,
+					row: null,
+					state: "empty",
+				},
+		service: "jobhunt-api-scaffold",
+		sessionId: "phase01-session03-agent-runtime-bootstrap",
+		shortlist: {
+			available: true,
+			campaignGuidance: "Current strongest lane: Applied AI.",
+			counts: {
+				adjacentOrNoisy: 0,
+				duplicateHeavy: 1,
+				ignored: 0,
+				pendingOverlap: 1,
+				possibleFit: 0,
+				strongestFit: 1,
+				total: 1,
+			},
+			filteredCount: 1,
+			hasMore: false,
+			items: [row],
+			lastRefreshed: "2026-04-22",
+			limit: 12,
+			message: "Shortlist candidates are ready for review.",
+			offset: 0,
+			totalCount: 1,
+		},
+		status: "ready",
 	};
 }
 
@@ -905,15 +1196,16 @@ async function waitForHttpOk(url, child, stderrLog) {
 
 async function startFakeApiServer() {
 	const state = {
+		lastChatSessionId: null,
+		sessionDetails: new Map(),
 		shellMode: "ready",
 		settingsUpdateState: "update-available",
 	};
 	const readyStartupPayload = createReadyStartupPayload();
-	const readyChatConsoleSummary = createReadyChatConsoleSummary();
 	const readyShellSummary = createReadyShellSummary();
 	const runtimeErrorSummary = createRuntimeErrorShellSummary();
 
-	const server = createHttpServer((request, response) => {
+	const server = createHttpServer(async (request, response) => {
 		if (request.url === "/startup") {
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
@@ -936,11 +1228,88 @@ async function startFakeApiServer() {
 			return;
 		}
 
-		if (request.url === "/chat-console") {
+		if ((request.url ?? "").startsWith("/chat-console")) {
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
 			});
-			response.end(JSON.stringify(readyChatConsoleSummary, null, 2));
+			response.end(
+				JSON.stringify(
+					createChatConsoleSummaryPayload(
+						state,
+						new URL(request.url, "http://127.0.0.1").searchParams.get(
+							"sessionId",
+						),
+					),
+					null,
+					2,
+				),
+			);
+			return;
+		}
+
+		if ((request.url ?? "").startsWith("/evaluation-result")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(
+				JSON.stringify(
+					createEvaluationResultPayload(request.url ?? "/evaluation-result"),
+					null,
+					2,
+				),
+			);
+			return;
+		}
+
+		if ((request.url ?? "").startsWith("/scan-review")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(
+				JSON.stringify(
+					createScanReviewPayload(request.url ?? "/scan-review"),
+					null,
+					2,
+				),
+			);
+			return;
+		}
+
+		if (request.url === "/orchestration" && request.method === "POST") {
+			const rawBody = await new Promise((resolveBody) => {
+				const chunks = [];
+				request.on("data", (chunk) => {
+					chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+				});
+				request.on("end", () => {
+					resolveBody(Buffer.concat(chunks).toString("utf8"));
+				});
+			});
+			const body = rawBody ? JSON.parse(rawBody) : {};
+			const summary = createSessionSummary({
+				sessionId: "session-scan-eval-01",
+				workflow: body.workflow ?? "single-evaluation",
+			});
+			const detail = createSessionDetail(
+				summary,
+				"Single evaluation launched from scan review.",
+			);
+			state.lastChatSessionId = summary.sessionId;
+			state.sessionDetails.set(summary.sessionId, detail);
+
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(
+				JSON.stringify(
+					createCommandPayload({
+						detail,
+						message: "Single evaluation launched from scan review.",
+					}),
+					null,
+					2,
+				),
+			);
 			return;
 		}
 
@@ -1100,6 +1469,20 @@ try {
 		await page
 			.getByRole("heading", { name: "No recent sessions yet" })
 			.waitFor();
+		await page.getByRole("link", { name: /Scan/ }).click();
+		await page
+			.getByRole("heading", { name: "Scan review workspace" })
+			.waitFor();
+		await page.getByText("Applied AI Engineer").waitFor();
+		await page.getByRole("button", { name: /Applied AI Engineer/ }).click();
+		await page
+			.getByRole("button", { name: "Launch single evaluation" })
+			.click();
+		await page
+			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
+			.waitFor();
+		assert.match(page.url(), /session=session-scan-eval-01/);
+		assert.match(page.url(), /#chat$/);
 		await page.getByRole("link", { name: /Pipeline/ }).click();
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })

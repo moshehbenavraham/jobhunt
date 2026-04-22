@@ -9,17 +9,17 @@
 
 ## Validation Summary
 
-| Check                     | Status | Notes |
-| ------------------------- | ------ | ----- |
-| Tasks Complete            | PASS   | 15/15 tasks complete |
-| Files Exist               | PASS   | 5/5 deliverables present and non-empty |
-| ASCII Encoding            | PASS   | Deliverables are ASCII text with LF line endings |
+| Check                     | Status | Notes                                                                                                                            |
+| ------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Tasks Complete            | PASS   | 15/15 tasks complete                                                                                                             |
+| Files Exist               | PASS   | 5/5 deliverables present and non-empty                                                                                           |
+| ASCII Encoding            | PASS   | Deliverables are ASCII text with LF line endings                                                                                 |
 | Tests Passing             | PASS   | `npm run app:api:check`, `npm run app:api:build`, `npm run app:api:test:runtime`, and `node scripts/test-all.mjs --quick` passed |
-| Database/Schema Alignment | N/A    | No DB-layer changes in this session |
-| Quality Gates             | PASS   | Package and repo quick gates passed |
-| Conventions               | PASS   | Spot-check aligns with `.spec_system/CONVENTIONS.md` |
-| Security & GDPR           | PASS   | See `security-compliance.md` |
-| Behavioral Quality        | PASS   | Read-only route behavior, bounded payloads, and explicit failure states are covered |
+| Database/Schema Alignment | N/A    | No DB-layer changes in this session                                                                                              |
+| Quality Gates             | PASS   | Package and repo quick gates passed                                                                                              |
+| Conventions               | PASS   | Spot-check aligns with `.spec_system/CONVENTIONS.md`                                                                             |
+| Security & GDPR           | PASS   | See `security-compliance.md`                                                                                                     |
+| Behavioral Quality        | PASS   | Read-only route behavior, bounded payloads, and explicit failure states are covered                                              |
 
 **Overall**: PASS
 
@@ -48,11 +48,11 @@ None
 
 #### Files Created
 
-| File                                                | Found | Status |
-| --------------------------------------------------- | ----- | ------ |
-| `apps/api/src/server/evaluation-result-contract.ts` | Yes   | PASS   |
-| `apps/api/src/server/evaluation-result-summary.ts`  | Yes   | PASS   |
-| `apps/api/src/server/routes/evaluation-result-route.ts` | Yes | PASS   |
+| File                                                    | Found | Status |
+| ------------------------------------------------------- | ----- | ------ |
+| `apps/api/src/server/evaluation-result-contract.ts`     | Yes   | PASS   |
+| `apps/api/src/server/evaluation-result-summary.ts`      | Yes   | PASS   |
+| `apps/api/src/server/routes/evaluation-result-route.ts` | Yes   | PASS   |
 
 #### Files Modified
 
@@ -85,13 +85,13 @@ None
 
 ### Status: PASS
 
-| Metric                          | Value                                   |
-| ------------------------------- | --------------------------------------- |
-| `npm run app:api:check`         | Passed                                  |
-| `npm run app:api:build`         | Passed                                  |
-| `npm run app:api:test:runtime`  | Passed with 59 tests, 0 failed          |
+| Metric                              | Value                                        |
+| ----------------------------------- | -------------------------------------------- |
+| `npm run app:api:check`             | Passed                                       |
+| `npm run app:api:build`             | Passed                                       |
+| `npm run app:api:test:runtime`      | Passed with 59 tests, 0 failed               |
 | `node scripts/test-all.mjs --quick` | Passed with 368 checks, 0 failed, 0 warnings |
-| Coverage                        | N/A                                     |
+| Coverage                            | N/A                                          |
 
 ### Failed Tests
 
@@ -174,13 +174,13 @@ See `security-compliance.md` in this session directory.
 
 ### Status: PASS
 
-| Category           | Status | Details                                                                                  |
-| ------------------ | ------ | ---------------------------------------------------------------------------------------- |
-| Trust boundaries   | PASS   | Query input is schema-validated and artifact paths are normalized before exposure.       |
-| Resource cleanup   | PASS   | The route introduces no new timers, subscriptions, or long-lived resources.              |
-| Mutation safety    | PASS   | The evaluation-result surface is GET/HEAD only and does not trigger workflow mutation.   |
+| Category           | Status | Details                                                                                       |
+| ------------------ | ------ | --------------------------------------------------------------------------------------------- |
+| Trust boundaries   | PASS   | Query input is schema-validated and artifact paths are normalized before exposure.            |
+| Resource cleanup   | PASS   | The route introduces no new timers, subscriptions, or long-lived resources.                   |
+| Mutation safety    | PASS   | The evaluation-result surface is GET/HEAD only and does not trigger workflow mutation.        |
 | Failure paths      | PASS   | Invalid input, missing sessions, unsupported workflows, and degraded artifacts stay explicit. |
-| Contract alignment | PASS   | Shared enums and runtime tests keep the route and summary builder aligned.               |
+| Contract alignment | PASS   | Shared enums and runtime tests keep the route and summary builder aligned.                    |
 
 ---
 

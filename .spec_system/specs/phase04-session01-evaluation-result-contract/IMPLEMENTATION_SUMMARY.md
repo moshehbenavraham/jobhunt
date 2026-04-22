@@ -9,8 +9,7 @@
 
 ## Overview
 
-Session 01 established the backend-owned evaluation result contract for Phase
-04. The API now exposes one bounded summary for `single-evaluation` and
+Session 01 established the backend-owned evaluation result contract for Phase 04. The API now exposes one bounded summary for `single-evaluation` and
 `auto-pipeline` sessions, normalizing pending, running, approval-paused,
 failed, completed, and degraded outcomes without relying on browser-side log
 or file parsing.
@@ -21,24 +20,24 @@ or file parsing.
 
 ### Files Created
 
-| File                                                | Purpose                                                           | Lines |
-| --------------------------------------------------- | ----------------------------------------------------------------- | ----- |
-| `apps/api/src/server/evaluation-result-contract.ts` | Define evaluation result enums, artifact state, and payload types | ~228  |
-| `apps/api/src/server/evaluation-result-summary.ts`  | Build the bounded evaluation result read model                    | ~1096 |
-| `apps/api/src/server/routes/evaluation-result-route.ts` | Expose the GET-only evaluation result endpoint                 | ~64   |
+| File                                                    | Purpose                                                           | Lines |
+| ------------------------------------------------------- | ----------------------------------------------------------------- | ----- |
+| `apps/api/src/server/evaluation-result-contract.ts`     | Define evaluation result enums, artifact state, and payload types | ~228  |
+| `apps/api/src/server/evaluation-result-summary.ts`      | Build the bounded evaluation result read model                    | ~1096 |
+| `apps/api/src/server/routes/evaluation-result-route.ts` | Expose the GET-only evaluation result endpoint                    | ~64   |
 
 ### Files Modified
 
-| File                                                      | Changes                                                             |
-| --------------------------------------------------------- | ------------------------------------------------------------------- |
-| `apps/api/src/server/routes/index.ts`                     | Registered the evaluation-result route in deterministic order        |
-| `apps/api/src/server/http-server.test.ts`                 | Added runtime-contract coverage for result states, selection, and validation |
-| `.spec_system/state.json`                                 | Marked Session 01 complete, cleared `current_session`, and moved Phase 04 to in-progress |
-| `.spec_system/PRD/phase_04/PRD_phase_04.md`               | Updated progress to 1/6 and marked Session 01 complete              |
-| `.spec_system/PRD/phase_04/session_01_evaluation_result_contract.md` | Marked the session stub complete                         |
-| `.spec_system/PRD/PRD.md`                                 | Updated the master Phase 04 progress and status                     |
-| `apps/api/package.json`                                   | Bumped version from `0.0.11` to `0.0.12`                            |
-| `package-lock.json`                                       | Synced the `apps/api` workspace version to `0.0.12`                 |
+| File                                                                 | Changes                                                                                  |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `apps/api/src/server/routes/index.ts`                                | Registered the evaluation-result route in deterministic order                            |
+| `apps/api/src/server/http-server.test.ts`                            | Added runtime-contract coverage for result states, selection, and validation             |
+| `.spec_system/state.json`                                            | Marked Session 01 complete, cleared `current_session`, and moved Phase 04 to in-progress |
+| `.spec_system/PRD/phase_04/PRD_phase_04.md`                          | Updated progress to 1/6 and marked Session 01 complete                                   |
+| `.spec_system/PRD/phase_04/session_01_evaluation_result_contract.md` | Marked the session stub complete                                                         |
+| `.spec_system/PRD/PRD.md`                                            | Updated the master Phase 04 progress and status                                          |
+| `apps/api/package.json`                                              | Bumped version from `0.0.11` to `0.0.12`                                                 |
+| `package-lock.json`                                                  | Synced the `apps/api` workspace version to `0.0.12`                                      |
 
 ---
 
@@ -52,14 +51,14 @@ or file parsing.
 
 ## Test Results
 
-| Metric                          | Value                                   |
-| ------------------------------- | --------------------------------------- |
-| Typecheck                       | `npm run app:api:check` passed          |
-| Build                           | `npm run app:api:build` passed          |
-| Runtime contract                | `npm run app:api:test:runtime` passed   |
-| Repo quick suite                | `node scripts/test-all.mjs --quick` passed |
-| Reported checks                 | 427 across validation gates             |
-| Coverage                        | N/A                                     |
+| Metric           | Value                                      |
+| ---------------- | ------------------------------------------ |
+| Typecheck        | `npm run app:api:check` passed             |
+| Build            | `npm run app:api:build` passed             |
+| Runtime contract | `npm run app:api:test:runtime` passed      |
+| Repo quick suite | `node scripts/test-all.mjs --quick` passed |
+| Reported checks  | 427 across validation gates                |
+| Coverage         | N/A                                        |
 
 ---
 
