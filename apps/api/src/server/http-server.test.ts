@@ -5955,7 +5955,431 @@ test("application-help route covers draft-ready, approval-paused, rejected, resu
 	}
 });
 
-test("specialist-workspace routes cover latest-session summaries, stale focus recovery, blocked launch, completed resume, missing-session resume, and duplicate launch guards", async () => {
+test("tracker-specialist route covers missing-input, degraded, resumed, completed, latest fallback, and invalid query states", async () => {
+	const fixture = await createReadyFixture();
+	const services = createApiServiceContainer({
+		agentRuntime: createDelayedReadyAgentRuntime(fixture.repoRoot, 0),
+		repoRoot: fixture.repoRoot,
+	});
+	const runtimeStore = await services.operationalStore.getStore();
+
+	const saveTrackerSpecialistSession = async (input: {
+		activeJobId?: string | null;
+		sessionId: string;
+		status: RuntimeSessionStatus;
+		timestamp: string;
+		workflow: "compare-offers" | "follow-up-cadence" | "rejection-patterns";
+	}) => {
+		await runtimeStore.sessions.save({
+			activeJobId: input.activeJobId ?? null,
+			context: {
+				workflow: input.workflow,
+			},
+			createdAt: input.timestamp,
+			lastHeartbeatAt: input.timestamp,
+			runnerId:
+				input.status === "pending" || input.activeJobId === null
+					? null
+					: "runner-http-tracker-specialist",
+			sessionId: input.sessionId,
+			status: input.status,
+			updatedAt: input.timestamp,
+			workflow: input.workflow,
+		});
+	};
+
+	const saveTrackerSpecialistJob = async (input: {
+		error?: JsonValue | null;
+		jobId: string;
+		sessionId: string;
+		status: RuntimeJobStatus;
+		timestamp: string;
+		waitReason?: RuntimeJobWaitReason | null;
+		workflow: "compare-offers" | "follow-up-cadence" | "rejection-patterns";
+	}) => {
+		const isActive = input.status === "running" || input.status === "waiting";
+
+		await runtimeStore.jobs.save({
+			attempt: 1,
+			claimOwnerId: isActive ? "runner-http-tracker-specialist" : null,
+			claimToken: isActive ? `claim-${input.jobId}` : null,
+			completedAt:
+				input.status === "completed" ||
+				input.status === "failed" ||
+				input.status === "cancelled"
+					? input.timestamp
+					: null,
+			createdAt: input.timestamp,
+			currentRunId: `${input.jobId}-run`,
+			error: input.error ?? null,
+			jobId: input.jobId,
+			jobType: input.workflow,
+			lastHeartbeatAt: isActive ? input.timestamp : null,
+			leaseExpiresAt: input.status === "running" ? input.timestamp : null,
+			maxAttempts: 3,
+			nextAttemptAt: null,
+			payload: {
+				workflow: input.workflow,
+			},
+			result: null,
+			retryBackoffMs: 1_000,
+			sessionId: input.sessionId,
+			startedAt:
+				input.status === "pending" || input.status === "queued"
+					? null
+					: input.timestamp,
+			status: input.status,
+			updatedAt: input.timestamp,
+			waitApprovalId: null,
+			waitReason: input.waitReason ?? null,
+		});
+	};
+
+	const stageCompareOffersPacket = async (sessionId: string) => {
+		const toolService = await services.tools.getService();
+
+		await toolService.execute({
+			correlation: {
+				jobId: `tool-job-${sessionId}`,
+				requestId: `tool-request-${sessionId}`,
+				sessionId,
+				traceId: `tool-trace-${sessionId}`,
+			},
+			input: {
+				limit: 4,
+				offers: [
+					{
+						company: null,
+						entryNumber: 1,
+						label: "North",
+						reportNumber: null,
+						reportPath: null,
+						role: null,
+					},
+					{
+						company: null,
+						entryNumber: 2,
+						label: "South",
+						reportNumber: null,
+						reportPath: null,
+						role: null,
+					},
+				],
+			},
+			toolName: "resolve-compare-offers-context",
+		});
+	};
+
+	const stageFollowUpPacket = async (sessionId: string) => {
+		const toolService = await services.tools.getService();
+
+		await toolService.execute({
+			correlation: {
+				jobId: `tool-job-${sessionId}`,
+				requestId: `tool-request-${sessionId}`,
+				sessionId,
+				traceId: `tool-trace-${sessionId}`,
+			},
+			input: {
+				appliedDays: 7,
+				overdueOnly: false,
+			},
+			toolName: "analyze-follow-up-cadence",
+		});
+	};
+
+	const stagePatternPacket = async (sessionId: string) => {
+		const toolService = await services.tools.getService();
+
+		await toolService.execute({
+			correlation: {
+				jobId: `tool-job-${sessionId}`,
+				requestId: `tool-request-${sessionId}`,
+				sessionId,
+				traceId: `tool-trace-${sessionId}`,
+			},
+			input: {
+				minThreshold: 5,
+			},
+			toolName: "analyze-rejection-patterns",
+		});
+	};
+
+	await writeRepoArtifact(
+		fixture.repoRoot,
+		"data/applications.md",
+		[
+			"# Applications Tracker",
+			"",
+			"| # | Date | Company | Role | Score | Status | PDF | Report | Notes |",
+			"| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+			"| 1 | 2026-04-20 | North Co | Staff AI Engineer | 4.7/5 | Offer | output/north.pdf | [051](reports/051-north-co-2026-04-20.md) | notes |",
+			"| 2 | 2026-04-21 | South Co | Principal Platform Engineer | 4.5/5 | Offer | output/south.pdf | [052](reports/052-south-co-2026-04-21.md) | notes |",
+			"",
+		].join("\n"),
+	);
+	await writeRepoArtifact(fixture.repoRoot, "output/north.pdf", "pdf\n");
+	await writeRepoArtifact(fixture.repoRoot, "output/south.pdf", "pdf\n");
+	await writeRepoArtifact(
+		fixture.repoRoot,
+		"reports/051-north-co-2026-04-20.md",
+		[
+			"# Evaluation: North Co -- Staff AI Engineer",
+			"",
+			"**Date:** 2026-04-20",
+			"**URL:** https://example.com/north",
+			"**Score:** 4.7/5",
+			"**Legitimacy:** High Confidence",
+			"**PDF:** output/north.pdf",
+			"",
+			"---",
+			"",
+		].join("\n"),
+	);
+	await writeRepoArtifact(
+		fixture.repoRoot,
+		"reports/052-south-co-2026-04-21.md",
+		[
+			"# Evaluation: South Co -- Principal Platform Engineer",
+			"",
+			"**Date:** 2026-04-21",
+			"**URL:** https://example.com/south",
+			"**Score:** 4.5/5",
+			"**Legitimacy:** Proceed with Caution",
+			"**PDF:** output/south.pdf",
+			"",
+			"---",
+			"",
+		].join("\n"),
+	);
+	await writeRepoArtifact(
+		fixture.repoRoot,
+		"scripts/followup-cadence.mjs",
+		[
+			"process.stdout.write(JSON.stringify({",
+			"  metadata: { analysisDate: '2026-04-22', totalTracked: 4, actionable: 1, overdue: 1, urgent: 0, cold: 0, waiting: 0 },",
+			"  entries: [",
+			"    {",
+			"      num: 5,",
+			"      date: '2026-04-11',",
+			"      company: 'Resume Co',",
+			"      role: 'Applied Engineer',",
+			"      status: 'applied',",
+			"      score: '4.0/5',",
+			"      reportPath: null,",
+			"      contacts: [],",
+			"      daysSinceApplication: 11,",
+			"      daysSinceLastFollowup: null,",
+			"      followupCount: 0,",
+			"      urgency: 'overdue',",
+			"      nextFollowupDate: '2026-04-18',",
+			"      daysUntilNext: -4",
+			"    }",
+			"  ],",
+			"  cadenceConfig: { applied_first: 7, applied_subsequent: 7, applied_max_followups: 2, responded_initial: 1, responded_subsequent: 3, interview_thankyou: 1 }",
+			"}, null, 2));",
+		].join("\n"),
+	);
+	await writeRepoArtifact(
+		fixture.repoRoot,
+		"scripts/analyze-patterns.mjs",
+		"process.stdout.write('not-json\\n');\n",
+	);
+
+	await saveTrackerSpecialistSession({
+		sessionId: "compare-missing-http",
+		status: "completed",
+		timestamp: "2026-04-22T09:55:00.000Z",
+		workflow: "compare-offers",
+	});
+
+	await saveTrackerSpecialistSession({
+		activeJobId: "job-compare-completed-http",
+		sessionId: "compare-completed-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:00:00.000Z",
+		workflow: "compare-offers",
+	});
+	await saveTrackerSpecialistJob({
+		jobId: "job-compare-completed-http",
+		sessionId: "compare-completed-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:00:00.000Z",
+		workflow: "compare-offers",
+	});
+	await stageCompareOffersPacket("compare-completed-http");
+
+	await saveTrackerSpecialistSession({
+		activeJobId: "job-patterns-degraded-http",
+		sessionId: "patterns-degraded-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:05:00.000Z",
+		workflow: "rejection-patterns",
+	});
+	await saveTrackerSpecialistJob({
+		jobId: "job-patterns-degraded-http",
+		sessionId: "patterns-degraded-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:05:00.000Z",
+		workflow: "rejection-patterns",
+	});
+	await stagePatternPacket("patterns-degraded-http");
+
+	await saveTrackerSpecialistSession({
+		activeJobId: "job-follow-up-resumed-http",
+		sessionId: "follow-up-resumed-http",
+		status: "running",
+		timestamp: "2026-04-22T10:10:00.000Z",
+		workflow: "follow-up-cadence",
+	});
+	await saveTrackerSpecialistJob({
+		jobId: "job-follow-up-resumed-http",
+		sessionId: "follow-up-resumed-http",
+		status: "running",
+		timestamp: "2026-04-22T10:10:00.000Z",
+		workflow: "follow-up-cadence",
+	});
+	await stageFollowUpPacket("follow-up-resumed-http");
+
+	const handle = await startStartupHttpServer({
+		host: "127.0.0.1",
+		port: 0,
+		rateLimitMaxRequests: 20,
+		services,
+	});
+
+	try {
+		const { payload: missingPayload, response: missingResponse } =
+			await readJsonResponse(
+				`${handle.url}/tracker-specialist?sessionId=compare-missing-http`,
+			);
+		assert.equal(missingResponse.status, 200);
+		assert.equal(
+			(
+				missingPayload as {
+					selected: { summary: { state: string } | null };
+				}
+			).selected.summary?.state,
+			"missing-input",
+		);
+
+		const { payload: completedPayload } = await readJsonResponse(
+			`${handle.url}/tracker-specialist?sessionId=compare-completed-http`,
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					selected: { summary: { state: string } | null };
+				}
+			).selected.summary?.state,
+			"completed",
+		);
+
+		const { payload: degradedPayload } = await readJsonResponse(
+			`${handle.url}/tracker-specialist?sessionId=patterns-degraded-http`,
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					selected: {
+						summary: {
+							packet: { resultStatus: string };
+							state: string;
+						} | null;
+					};
+				}
+			).selected.summary?.state,
+			"degraded",
+		);
+		assert.equal(
+			(
+				degradedPayload as {
+					selected: {
+						summary: {
+							packet: { resultStatus: string };
+							state: string;
+						} | null;
+					};
+				}
+			).selected.summary?.packet.resultStatus,
+			"degraded",
+		);
+
+		const { payload: resumedPayload } = await readJsonResponse(
+			`${handle.url}/tracker-specialist?sessionId=follow-up-resumed-http`,
+		);
+		assert.equal(
+			(
+				resumedPayload as {
+					selected: {
+						summary: {
+							run: { state: string };
+							state: string;
+						} | null;
+					};
+				}
+			).selected.summary?.state,
+			"resumed",
+		);
+		assert.equal(
+			(
+				resumedPayload as {
+					selected: {
+						summary: {
+							run: { state: string };
+							state: string;
+						} | null;
+					};
+				}
+			).selected.summary?.run.state,
+			"running",
+		);
+
+		const { payload: latestPayload } = await readJsonResponse(
+			`${handle.url}/tracker-specialist`,
+		);
+		assert.equal(
+			(
+				latestPayload as {
+					selected: {
+						origin: string;
+						summary: { session: { sessionId: string } | null } | null;
+					};
+				}
+			).selected.origin,
+			"latest-session",
+		);
+		assert.equal(
+			(
+				latestPayload as {
+					selected: {
+						origin: string;
+						summary: { session: { sessionId: string } | null } | null;
+					};
+				}
+			).selected.summary?.session?.sessionId,
+			"follow-up-resumed-http",
+		);
+
+		const { payload: invalidPayload, response: invalidResponse } =
+			await readJsonResponse(`${handle.url}/tracker-specialist?mode=bad`);
+		assert.equal(invalidResponse.status, 400);
+		assert.equal(
+			(
+				invalidPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-tracker-specialist-query",
+		);
+	} finally {
+		await handle.close();
+		await services.dispose();
+		await fixture.cleanup();
+	}
+});
+
+test("specialist-workspace routes cover latest-session summaries, stale focus recovery, ready tracker launch, completed resume, missing-session resume, and duplicate launch guards", async () => {
 	const fixture = await createReadyFixture();
 	const services = createApiServiceContainer({
 		agentRuntime: createDelayedReadyAgentRuntime(fixture.repoRoot, 200),
@@ -6141,7 +6565,7 @@ test("specialist-workspace routes cover latest-session summaries, stale focus re
 			true,
 		);
 
-		const { payload: blockedPayload, response: blockedResponse } =
+		const { payload: readyComparePayload, response: readyCompareResponse } =
 			await readJsonResponse(`${handle.url}/specialist-workspace/action`, {
 				body: JSON.stringify({
 					action: "launch",
@@ -6153,22 +6577,42 @@ test("specialist-workspace routes cover latest-session summaries, stale focus re
 				method: "POST",
 			});
 
-		assert.equal(blockedResponse.status, 200);
+		assert.equal(readyCompareResponse.status, 200);
 		assert.equal(
 			(
-				blockedPayload as {
-					actionResult: { mode: string | null; state: string };
+				readyComparePayload as {
+					actionResult: {
+						handoff: { detailSurface: { path: string } | null };
+						mode: string | null;
+						state: string;
+					};
 				}
 			).actionResult.state,
-			"blocked",
+			"ready",
 		);
 		assert.equal(
 			(
-				blockedPayload as {
-					actionResult: { mode: string | null; state: string };
+				readyComparePayload as {
+					actionResult: {
+						handoff: { detailSurface: { path: string } | null };
+						mode: string | null;
+						state: string;
+					};
 				}
 			).actionResult.mode,
 			"compare-offers",
+		);
+		assert.equal(
+			(
+				readyComparePayload as {
+					actionResult: {
+						handoff: { detailSurface: { path: string } | null };
+						mode: string | null;
+						state: string;
+					};
+				}
+			).actionResult.handoff.detailSurface?.path,
+			"/tracker-specialist",
 		);
 
 		const { payload: missingResumePayload, response: missingResumeResponse } =

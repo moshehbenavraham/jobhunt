@@ -28,6 +28,9 @@ test("ready routes expose specialist-owned tools while tooling-gap routes expose
 	const readyRoute = getWorkflowSpecialistRoute("single-evaluation");
 	const blockedRoute = getWorkflowSpecialistRoute("tracker-status");
 	const applicationHelpRoute = getWorkflowSpecialistRoute("application-help");
+	const compareOffersRoute = getWorkflowSpecialistRoute("compare-offers");
+	const followUpRoute = getWorkflowSpecialistRoute("follow-up-cadence");
+	const patternsRoute = getWorkflowSpecialistRoute("rejection-patterns");
 
 	assert.equal(readyRoute?.status, "ready");
 	assert.equal(readyRoute?.specialistId, "evaluation-specialist");
@@ -56,6 +59,31 @@ test("ready routes expose specialist-owned tools while tooling-gap routes expose
 		applicationHelpRoute?.workspace.detailSurface?.path,
 		"/application-help",
 	);
+	assert.equal(compareOffersRoute?.status, "ready");
+	assert.deepEqual(compareOffersRoute?.missingCapabilities, []);
+	assert.deepEqual(compareOffersRoute?.toolPolicy.allowedToolNames, [
+		"resolve-compare-offers-context",
+		"list-evaluation-artifacts",
+		"summarize-profile-sources",
+	]);
+	assert.equal(
+		compareOffersRoute?.workspace.detailSurface?.path,
+		"/tracker-specialist",
+	);
+	assert.equal(
+		compareOffersRoute?.workspace.summaryAvailability,
+		"dedicated-detail",
+	);
+	assert.deepEqual(followUpRoute?.toolPolicy.allowedToolNames, [
+		"analyze-follow-up-cadence",
+		"list-evaluation-artifacts",
+		"summarize-profile-sources",
+	]);
+	assert.deepEqual(patternsRoute?.toolPolicy.allowedToolNames, [
+		"analyze-rejection-patterns",
+		"list-evaluation-artifacts",
+		"summarize-profile-sources",
+	]);
 });
 
 test("specialist workspace routes expose shared metadata for remaining specialist workflows", () => {
@@ -80,6 +108,14 @@ test("specialist workspace routes expose shared metadata for remaining specialis
 	assert.equal(
 		compareOffersRoute?.workspace.workspacePath,
 		"/workflows/compare-offers",
+	);
+	assert.equal(
+		compareOffersRoute?.workspace.summaryAvailability,
+		"dedicated-detail",
+	);
+	assert.equal(
+		compareOffersRoute?.workspace.detailSurface?.path,
+		"/tracker-specialist",
 	);
 	assert.equal(interviewPrepRoute?.workspace.family, "research-and-narrative");
 	assert.equal(interviewPrepRoute?.workspace.summaryAvailability, "pending");

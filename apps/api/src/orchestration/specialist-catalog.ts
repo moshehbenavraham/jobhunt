@@ -114,6 +114,24 @@ const TRACKER_FALLBACK_TOOLS = [
 	"summarize-workflow-support",
 ] as const;
 
+const COMPARE_OFFERS_TOOLS = [
+	"resolve-compare-offers-context",
+	"list-evaluation-artifacts",
+	"summarize-profile-sources",
+] as const;
+
+const FOLLOW_UP_CADENCE_TOOLS = [
+	"analyze-follow-up-cadence",
+	"list-evaluation-artifacts",
+	"summarize-profile-sources",
+] as const;
+
+const REJECTION_PATTERN_TOOLS = [
+	"analyze-rejection-patterns",
+	"list-evaluation-artifacts",
+	"summarize-profile-sources",
+] as const;
+
 const RESEARCH_FALLBACK_TOOLS = [
 	"inspect-prompt-contract",
 	"list-workspace-artifacts",
@@ -291,16 +309,19 @@ const workflowRoutes = [
 	},
 	{
 		message:
-			"Offer comparison remains blocked until typed comparison tools are implemented.",
-		missingCapabilities: ["typed-offer-comparison"],
+			"Offer comparison can launch with the tracker specialist using saved report matching and bounded comparison packets.",
+		missingCapabilities: [],
 		specialistId: "tracker-specialist",
-		status: "tooling-gap",
+		status: "ready",
 		toolPolicy: {
-			allowedToolNames: [],
-			fallbackToolNames: TRACKER_FALLBACK_TOOLS,
+			allowedToolNames: COMPARE_OFFERS_TOOLS,
 		},
 		workflow: "compare-offers",
 		workspace: createWorkspaceMetadata("compare-offers", {
+			detailSurface: {
+				label: "Compare Offers",
+				path: "/tracker-specialist",
+			},
 			family: "application-history",
 			intake: {
 				kind: "offer-set",
@@ -308,22 +329,25 @@ const workflowRoutes = [
 					"Compare-offers expects two or more offer descriptions, saved evaluations, or role references.",
 				requiresSavedState: false,
 			},
-			summaryAvailability: "pending",
+			summaryAvailability: "dedicated-detail",
 			workspaceLabel: "Compare Offers",
 		}),
 	},
 	{
 		message:
-			"Follow-up cadence remains blocked until typed follow-up analysis tools are implemented.",
-		missingCapabilities: ["typed-follow-up-analysis"],
+			"Follow-up cadence can launch with the tracker specialist using the bounded cadence-analysis script adapter.",
+		missingCapabilities: [],
 		specialistId: "tracker-specialist",
-		status: "tooling-gap",
+		status: "ready",
 		toolPolicy: {
-			allowedToolNames: [],
-			fallbackToolNames: TRACKER_FALLBACK_TOOLS,
+			allowedToolNames: FOLLOW_UP_CADENCE_TOOLS,
 		},
 		workflow: "follow-up-cadence",
 		workspace: createWorkspaceMetadata("follow-up-cadence", {
+			detailSurface: {
+				label: "Follow-Up Cadence",
+				path: "/tracker-specialist",
+			},
 			family: "application-history",
 			intake: {
 				kind: "tracker-history",
@@ -331,22 +355,25 @@ const workflowRoutes = [
 					"Follow-up cadence reads the tracker, follow-up history, and saved reports to stage next-touch guidance.",
 				requiresSavedState: true,
 			},
-			summaryAvailability: "pending",
+			summaryAvailability: "dedicated-detail",
 			workspaceLabel: "Follow-Up Cadence",
 		}),
 	},
 	{
 		message:
-			"Rejection pattern analysis remains blocked until typed tracker-analysis tools are implemented.",
-		missingCapabilities: ["typed-rejection-analysis"],
+			"Rejection-pattern analysis can launch with the tracker specialist using the bounded tracker-analysis script adapter.",
+		missingCapabilities: [],
 		specialistId: "tracker-specialist",
-		status: "tooling-gap",
+		status: "ready",
 		toolPolicy: {
-			allowedToolNames: [],
-			fallbackToolNames: TRACKER_FALLBACK_TOOLS,
+			allowedToolNames: REJECTION_PATTERN_TOOLS,
 		},
 		workflow: "rejection-patterns",
 		workspace: createWorkspaceMetadata("rejection-patterns", {
+			detailSurface: {
+				label: "Rejection Patterns",
+				path: "/tracker-specialist",
+			},
 			family: "application-history",
 			intake: {
 				kind: "tracker-history",
@@ -354,7 +381,7 @@ const workflowRoutes = [
 					"Rejection patterns reads tracker history and saved reports to identify outcome trends.",
 				requiresSavedState: true,
 			},
-			summaryAvailability: "pending",
+			summaryAvailability: "dedicated-detail",
 			workspaceLabel: "Rejection Patterns",
 		}),
 	},

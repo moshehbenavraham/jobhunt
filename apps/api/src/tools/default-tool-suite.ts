@@ -14,6 +14,7 @@ import { createScanWorkflowTools } from "./scan-workflow-tools.js";
 import { createStartupInspectionTools } from "./startup-inspection-tools.js";
 import type { ToolRegistryInput } from "./tool-contract.js";
 import { createTrackerIntegrityTools } from "./tracker-integrity-tools.js";
+import { createTrackerSpecialistTools } from "./tracker-specialist-tools.js";
 import { createWorkspaceDiscoveryTools } from "./workspace-discovery-tools.js";
 
 export function createDefaultToolSuite(options: {
@@ -44,6 +45,7 @@ export function createDefaultToolSuite(options: {
 		...createEvaluationArtifactTools(),
 		...createApplicationHelpTools(),
 		...createPdfGenerationTools(),
+		...createTrackerSpecialistTools(),
 		...createTrackerIntegrityTools(),
 	];
 }

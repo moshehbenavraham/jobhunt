@@ -19,6 +19,7 @@ export * from "./tool-errors.js";
 export * from "./tool-execution-service.js";
 export * from "./tool-registry.js";
 export * from "./tracker-integrity-tools.js";
+export * from "./tracker-specialist-tools.js";
 export * from "./workflow-enqueue.js";
 export * from "./workspace-discovery-tools.js";
 export * from "./workspace-mutation-adapter.js";

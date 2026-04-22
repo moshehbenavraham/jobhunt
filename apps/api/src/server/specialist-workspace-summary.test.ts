@@ -245,7 +245,7 @@ test("specialist workspace summary returns the inventory and falls back to the f
 			],
 		);
 		assert.equal(payload.selected.origin, "catalog");
-		assert.equal(payload.selected.summary?.handoff.mode, "application-help");
+		assert.equal(payload.selected.summary?.handoff.mode, "compare-offers");
 		assert.equal(payload.selected.summary?.run.state, "idle");
 		assert.equal(payload.selected.summary?.result.state, "dedicated-detail");
 		assert.equal(
@@ -253,10 +253,14 @@ test("specialist workspace summary returns the inventory and falls back to the f
 			"open-detail-surface",
 		);
 		assert.equal(
+			payload.selected.summary?.handoff.detailSurface?.path,
+			"/tracker-specialist",
+		);
+		assert.equal(
 			payload.workflows.find(
 				(workflow) => workflow.handoff.mode === "compare-offers",
 			)?.supportState,
-			"tooling-gap",
+			"ready",
 		);
 	} finally {
 		await services.dispose();
