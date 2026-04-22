@@ -93,227 +93,13 @@ function createReadyStartupPayload() {
 function createReadyShellSummary() {
   return {
     activity: {
-      activeSession: {
-        activeJob: {
-          jobId: 'job-live',
-          status: 'running',
-          updatedAt: '2026-04-21T22:50:00.000Z',
-          waitReason: null,
-        },
-        activeJobId: 'job-live',
-        lastHeartbeatAt: '2026-04-21T22:50:00.000Z',
-        pendingApprovalCount: 2,
-        sessionId: 'session-live',
-        status: 'running',
-        updatedAt: '2026-04-21T22:50:00.000Z',
-        workflow: 'single-evaluation',
-      },
-      activeSessionCount: 1,
-      latestPendingApprovals: [
-        {
-          action: 'approve-email',
-          approvalId: 'approval-1',
-          jobId: 'job-live',
-          requestedAt: '2026-04-21T22:49:00.000Z',
-          sessionId: 'session-live',
-          title: 'Review application email',
-          traceId: 'trace-approval-1',
-        },
-        {
-          action: 'approve-pdf',
-          approvalId: 'approval-2',
-          jobId: 'job-live',
-          requestedAt: '2026-04-21T22:49:30.000Z',
-          sessionId: 'session-live',
-          title: 'Publish tailored PDF',
-          traceId: 'trace-approval-2',
-        },
-      ],
-      pendingApprovalCount: 2,
-      recentFailureCount: 1,
-      recentFailures: [
-        {
-          failedAt: '2026-04-21T22:48:00.000Z',
-          jobId: 'job-failed',
-          message: 'Recent shell failure',
-          runId: 'run-failed',
-          sessionId: 'session-failed',
-          traceId: 'trace-failed',
-        },
-      ],
-      state: 'attention-required',
-    },
-    currentSession: {
-      id: 'phase03-session01-operator-shell-and-navigation-foundation',
-      monorepo: true,
-      packagePath: 'apps/web',
-      phase: 3,
-      source: 'state-file',
-      stateFilePath: `${ROOT}/.spec_system/state.json`,
-    },
-    generatedAt: '2026-04-21T22:50:00.000Z',
-    health: {
-      agentRuntime: {
-        authPath: `${ROOT}/data/openai-account-auth.json`,
-        message: 'Agent runtime ready.',
-        promptState: 'ready',
-        status: 'ready',
-      },
-      message: 'Bootstrap diagnostics are ready.',
-      missing: {
-        onboarding: 0,
-        optional: 0,
-        runtime: 0,
-      },
-      ok: true,
-      operationalStore: {
-        message: 'Operational store ready.',
-        status: 'ready',
-      },
-      service: 'jobhunt-api-scaffold',
-      sessionId: 'phase01-session03-agent-runtime-bootstrap',
-      startupStatus: 'ready',
-      status: 'ok',
-    },
-    message: 'Bootstrap diagnostics are ready.',
-    ok: true,
-    service: 'jobhunt-api-scaffold',
-    sessionId: 'phase01-session03-agent-runtime-bootstrap',
-    status: 'ready',
-  };
-}
-
-function createRuntimeErrorShellSummary() {
-  return {
-    activity: {
       activeSession: null,
       activeSessionCount: 0,
       latestPendingApprovals: [],
       pendingApprovalCount: 0,
       recentFailureCount: 0,
       recentFailures: [],
-      state: 'unavailable',
-    },
-    currentSession: {
-      id: 'phase03-session01-operator-shell-and-navigation-foundation',
-      monorepo: true,
-      packagePath: 'apps/web',
-      phase: 3,
-      source: 'state-file',
-      stateFilePath: `${ROOT}/.spec_system/state.json`,
-    },
-    generatedAt: '2026-04-21T22:55:00.000Z',
-    health: {
-      agentRuntime: {
-        authPath: `${ROOT}/data/openai-account-auth.json`,
-        message: 'Agent runtime ready.',
-        promptState: 'ready',
-        status: 'ready',
-      },
-      message: 'Bootstrap is live, but required system files are missing.',
-      missing: {
-        onboarding: 0,
-        optional: 0,
-        runtime: 1,
-      },
-      ok: false,
-      operationalStore: {
-        message: 'Operational store is corrupt.',
-        status: 'corrupt',
-      },
-      service: 'jobhunt-api-scaffold',
-      sessionId: 'phase01-session03-agent-runtime-bootstrap',
-      startupStatus: 'runtime-error',
-      status: 'error',
-    },
-    message: 'Bootstrap is live, but required system files are missing.',
-    ok: true,
-    service: 'jobhunt-api-scaffold',
-    sessionId: 'phase01-session03-agent-runtime-bootstrap',
-    status: 'runtime-error',
-  };
-}
-
-function createReadyChatConsoleSummary() {
-  return {
-    generatedAt: '2026-04-21T22:56:00.000Z',
-    message: 'Chat console summary is ready.',
-    ok: true,
-    recentSessions: [],
-    selectedSession: null,
-    service: 'jobhunt-api-scaffold',
-    sessionId: 'phase01-session03-agent-runtime-bootstrap',
-    status: 'ready',
-    workflows: [
-      {
-        description: 'Single evaluation route',
-        intent: 'single-evaluation',
-        label: 'Single Evaluation',
-        message:
-          'Single evaluation can launch with the evaluation specialist and the current typed evaluation toolset.',
-        missingCapabilities: [],
-        modeRepoRelativePath: 'modes/oferta.md',
-        specialist: {
-          description: 'Owns job-description intake and evaluation follow-through.',
-          id: 'evaluation-specialist',
-          label: 'Evaluation Specialist',
-        },
-        status: 'ready',
-      },
-    ],
-  };
-}
-
-function createUpdateCheck(updateState) {
-  if (updateState === 'update-available') {
-    return {
-      changelogExcerpt: 'New settings surface shipped.',
-      checkedAt: '2026-04-22T00:00:00.000Z',
-      command: 'node scripts/update-system.mjs check',
-      localVersion: '1.5.38',
-      message: 'Job-Hunt update available (1.5.38 -> 1.6.0).',
-      remoteVersion: '1.6.0',
-      state: 'update-available',
-    };
-  }
-
-  return {
-    changelogExcerpt: null,
-    checkedAt: '2026-04-22T00:00:00.000Z',
-    command: 'node scripts/update-system.mjs check',
-    localVersion: '1.5.38',
-    message: 'Job-Hunt is up to date (1.5.38).',
-    remoteVersion: '1.5.38',
-    state: 'up-to-date',
-  };
-}
-
-function createSettingsSummary(updateState) {
-  return {
-    auth: {
-      auth: {
-        accountId: 'acct-settings-ready',
-        authPath: `${ROOT}/data/openai-account-auth.json`,
-        expiresAt: 1778777777000,
-        message: 'OpenAI account auth is ready.',
-        nextSteps: ['Run `npm run doctor` after auth changes.'],
-        state: 'ready',
-        updatedAt: '2026-04-22T00:00:00.000Z',
-      },
-      config: {
-        authPath: `${ROOT}/data/openai-account-auth.json`,
-        baseUrl: 'https://chatgpt.com/backend-api',
-        model: 'gpt-5.4-mini',
-        originator: 'jobhunt-web-shell-smoke',
-        overrides: {
-          authPath: false,
-          baseUrl: false,
-          model: false,
-          originator: true,
-        },
-      },
-      message: 'Agent runtime ready.',
-      status: 'ready',
+      state: 'idle',
     },
     currentSession: {
       id: 'phase03-session05-settings-and-maintenance-surface',
@@ -347,6 +133,148 @@ function createSettingsSummary(updateState) {
       startupStatus: 'ready',
       status: 'ok',
     },
+    message: 'Bootstrap diagnostics are ready.',
+    ok: true,
+    service: 'jobhunt-api-scaffold',
+    sessionId: 'phase01-session03-agent-runtime-bootstrap',
+    status: 'ready',
+  };
+}
+
+function createSettingsHealth(settingsStatus) {
+  const ready = settingsStatus === 'ready';
+  const authRequired = settingsStatus === 'auth-required';
+
+  return {
+    agentRuntime: {
+      authPath: `${ROOT}/data/openai-account-auth.json`,
+      message: ready
+        ? 'Agent runtime ready.'
+        : 'Authentication is still required.',
+      promptState: ready ? 'ready' : null,
+      status: ready ? 'ready' : 'auth-required',
+    },
+    message: ready
+      ? 'Bootstrap diagnostics are ready.'
+      : 'Authentication is still required.',
+    missing: {
+      onboarding: 0,
+      optional: 0,
+      runtime: 0,
+    },
+    ok: !authRequired,
+    operationalStore: {
+      message: 'Operational store ready.',
+      status: 'ready',
+    },
+    service: 'jobhunt-api-scaffold',
+    sessionId: 'phase01-session03-agent-runtime-bootstrap',
+    startupStatus: settingsStatus,
+    status: ready ? 'ok' : 'degraded',
+  };
+}
+
+function createAuthSummary(settingsStatus) {
+  const ready = settingsStatus === 'ready';
+
+  return {
+    auth: {
+      accountId: ready ? 'acct-settings-ready' : null,
+      authPath: `${ROOT}/data/openai-account-auth.json`,
+      expiresAt: ready ? 1_778_777_777_000 : null,
+      message: ready
+        ? 'OpenAI account auth is ready.'
+        : 'Run `npm run auth:openai -- login` to authenticate.',
+      nextSteps: ready
+        ? ['Run `npm run doctor` after any auth or updater change.']
+        : [
+            'Run `npm run auth:openai -- login` to authenticate.',
+            'Return to Startup after auth succeeds.',
+          ],
+      state: ready ? 'ready' : 'auth-required',
+      updatedAt: ready ? '2026-04-22T00:00:00.000Z' : null,
+    },
+    config: {
+      authPath: `${ROOT}/data/openai-account-auth.json`,
+      baseUrl: 'https://chatgpt.com/backend-api',
+      model: 'gpt-5.4-mini',
+      originator: 'jobhunt-web-settings-smoke',
+      overrides: {
+        authPath: false,
+        baseUrl: false,
+        model: false,
+        originator: true,
+      },
+    },
+    message: ready
+      ? 'Agent runtime ready.'
+      : 'Authentication is still required.',
+    status: ready ? 'ready' : 'auth-required',
+  };
+}
+
+function createUpdateCheck(updateState) {
+  switch (updateState) {
+    case 'update-available':
+      return {
+        changelogExcerpt: 'New settings surface shipped.',
+        checkedAt: '2026-04-22T00:00:00.000Z',
+        command: 'node scripts/update-system.mjs check',
+        localVersion: '1.5.38',
+        message: 'Job-Hunt update available (1.5.38 -> 1.6.0).',
+        remoteVersion: '1.6.0',
+        state: 'update-available',
+      };
+    case 'up-to-date':
+      return {
+        changelogExcerpt: null,
+        checkedAt: '2026-04-22T00:00:00.000Z',
+        command: 'node scripts/update-system.mjs check',
+        localVersion: '1.5.38',
+        message: 'Job-Hunt is up to date (1.5.38).',
+        remoteVersion: '1.5.38',
+        state: 'up-to-date',
+      };
+    case 'dismissed':
+      return {
+        changelogExcerpt: null,
+        checkedAt: '2026-04-22T00:00:00.000Z',
+        command: 'node scripts/update-system.mjs check',
+        localVersion: null,
+        message: 'Update checks are currently dismissed.',
+        remoteVersion: null,
+        state: 'dismissed',
+      };
+    case 'offline':
+      return {
+        changelogExcerpt: null,
+        checkedAt: '2026-04-22T00:00:00.000Z',
+        command: 'node scripts/update-system.mjs check',
+        localVersion: '1.5.38',
+        message: 'Update check could not reach the upstream release source.',
+        remoteVersion: null,
+        state: 'offline',
+      };
+    default:
+      throw new Error(`Unsupported update state ${updateState}.`);
+  }
+}
+
+function createSettingsSummary(input) {
+  const health = createSettingsHealth(input.settingsStatus);
+
+  return {
+    auth: createAuthSummary(input.settingsStatus),
+    currentSession: {
+      id: 'phase03-session05-settings-and-maintenance-surface',
+      monorepo: true,
+      packagePath: 'apps/web',
+      phase: 3,
+      source: 'state-file',
+      stateFilePath: `${ROOT}/.spec_system/state.json`,
+    },
+    generatedAt: '2026-04-22T00:00:00.000Z',
+    health,
     maintenance: {
       commands: [
         {
@@ -356,10 +284,41 @@ function createSettingsSummary(updateState) {
           id: 'doctor',
           label: 'Run doctor',
         },
+        {
+          category: 'auth',
+          command: 'npm run auth:openai -- login',
+          description: 'Create the first stored OpenAI account auth state.',
+          id: 'auth-login',
+          label: 'Auth login',
+        },
+        {
+          category: 'updates',
+          command: 'node scripts/update-system.mjs check',
+          description: 'Check for upstream updates.',
+          id: 'update-check',
+          label: 'Check updates',
+        },
+        {
+          category: 'updates',
+          command: 'node scripts/update-system.mjs apply',
+          description: 'Apply the latest repo-managed update.',
+          id: 'update-apply',
+          label: 'Apply update',
+        },
+        {
+          category: 'updates',
+          command: 'node scripts/update-system.mjs rollback',
+          description: 'Rollback the latest repo-managed update.',
+          id: 'update-rollback',
+          label: 'Rollback update',
+        },
       ],
-      updateCheck: createUpdateCheck(updateState),
+      updateCheck: createUpdateCheck(input.updateState),
     },
-    message: 'Settings summary is ready.',
+    message:
+      input.settingsStatus === 'ready'
+        ? 'Settings summary is ready.'
+        : 'Authentication is still required.',
     ok: true,
     operationalStore: {
       databasePath: `${ROOT}/.jobhunt-app/app.db`,
@@ -371,11 +330,11 @@ function createSettingsSummary(updateState) {
     },
     service: 'jobhunt-api-scaffold',
     sessionId: 'phase01-session03-agent-runtime-bootstrap',
-    status: 'ready',
+    status: input.settingsStatus,
     support: {
       prompt: {
         cacheMode: 'read-through-mtime',
-        sourceOrder: ['agents-guide', 'shared-mode'],
+        sourceOrder: ['agents-guide', 'shared-mode', 'profile-mode'],
         sources: [
           {
             key: 'agents-guide',
@@ -384,11 +343,18 @@ function createSettingsSummary(updateState) {
             precedence: 1,
             role: 'system',
           },
+          {
+            key: 'shared-mode',
+            label: 'Shared mode',
+            optional: false,
+            precedence: 2,
+            role: 'system',
+          },
         ],
         supportedWorkflowCount: 2,
       },
       tools: {
-        hasMore: false,
+        hasMore: true,
         previewLimit: 2,
         tools: [
           {
@@ -399,13 +365,21 @@ function createSettingsSummary(updateState) {
             requiresApproval: false,
             scripts: [],
           },
+          {
+            description: 'Inspect required workspace files.',
+            jobTypes: [],
+            mutationTargets: [],
+            name: 'inspect-required-workspace-files',
+            requiresApproval: false,
+            scripts: [],
+          },
         ],
-        totalCount: 1,
+        totalCount: 5,
       },
       workflows: {
-        hasMore: false,
+        hasMore: true,
         previewLimit: 2,
-        totalCount: 1,
+        totalCount: 3,
         workflows: [
           {
             description: 'Single evaluation route',
@@ -420,7 +394,22 @@ function createSettingsSummary(updateState) {
               label: 'Evaluation Specialist',
             },
             status: 'ready',
-            toolPreview: ['bootstrap-single-evaluation'],
+            toolPreview: ['bootstrap-single-evaluation', 'generate-ats-pdf'],
+          },
+          {
+            description: 'Tracker status route',
+            intent: 'tracker-status',
+            message: 'Tracker status remains blocked until typed tracker summary exists.',
+            missingCapabilities: ['typed-tracker-summary'],
+            modeExists: true,
+            modeRepoRelativePath: 'modes/tracker.md',
+            specialist: {
+              description: 'Owns tracker workflows.',
+              id: 'tracker-specialist',
+              label: 'Tracker Specialist',
+            },
+            status: 'tooling-gap',
+            toolPreview: ['summarize-workflow-support'],
           },
         ],
       },
@@ -446,6 +435,19 @@ function createSettingsSummary(updateState) {
       webPackagePath: `${ROOT}/apps/web`,
       writableRoots: ['config', 'data', 'output', 'profile', 'reports'],
     },
+  };
+}
+
+function createSettingsErrorPayload() {
+  return {
+    error: {
+      code: 'settings-summary-failed',
+      message: 'Settings summary failed upstream.',
+    },
+    ok: false,
+    service: 'jobhunt-api-scaffold',
+    sessionId: 'phase01-session03-agent-runtime-bootstrap',
+    status: 'error',
   };
 }
 
@@ -518,78 +520,60 @@ async function waitForHttpOk(url, child, stderrLog) {
 
 async function startFakeApiServer() {
   const state = {
-    shellMode: 'ready',
-    settingsUpdateState: 'update-available',
+    delayMs: 350,
+    failMode: 'none',
+    settingsStatus: 'ready',
+    updateState: 'update-available',
   };
   const readyStartupPayload = createReadyStartupPayload();
-  const readyChatConsoleSummary = createReadyChatConsoleSummary();
   const readyShellSummary = createReadyShellSummary();
-  const runtimeErrorSummary = createRuntimeErrorShellSummary();
 
   const server = createHttpServer((request, response) => {
-    if (request.url === '/startup') {
-      response.writeHead(200, {
-        'content-type': 'application/json; charset=utf-8',
-      });
-      response.end(JSON.stringify(readyStartupPayload, null, 2));
-      return;
-    }
-
-    if (request.url === '/operator-shell') {
-      const payload =
-        state.shellMode === 'runtime-error'
-          ? runtimeErrorSummary
-          : readyShellSummary;
-      const statusCode = state.shellMode === 'runtime-error' ? 503 : 200;
-
+    const writeJson = (statusCode, payload) => {
       response.writeHead(statusCode, {
         'content-type': 'application/json; charset=utf-8',
       });
       response.end(JSON.stringify(payload, null, 2));
+    };
+
+    if (request.url === '/startup') {
+      writeJson(200, readyStartupPayload);
       return;
     }
 
-    if (request.url === '/chat-console') {
-      response.writeHead(200, {
-        'content-type': 'application/json; charset=utf-8',
-      });
-      response.end(JSON.stringify(readyChatConsoleSummary, null, 2));
+    if (request.url === '/operator-shell') {
+      writeJson(200, readyShellSummary);
       return;
     }
 
     if ((request.url ?? '').startsWith('/settings')) {
-      response.writeHead(200, {
-        'content-type': 'application/json; charset=utf-8',
-      });
-      response.end(
-        JSON.stringify(
-          createSettingsSummary(state.settingsUpdateState),
-          null,
-          2,
-        ),
-      );
+      if (state.failMode === 'server-error') {
+        writeJson(503, createSettingsErrorPayload());
+        return;
+      }
+
+      setTimeout(() => {
+        writeJson(
+          200,
+          createSettingsSummary({
+            settingsStatus: state.settingsStatus,
+            updateState: state.updateState,
+          }),
+        );
+      }, state.delayMs);
       return;
     }
 
-    response.writeHead(404, {
-      'content-type': 'application/json; charset=utf-8',
+    writeJson(404, {
+      error: {
+        code: 'route-not-found',
+        message: `Unknown route ${request.url ?? '/'}.`,
+      },
+      ok: false,
+      service: 'jobhunt-api-scaffold',
+      sessionId: 'phase01-session03-agent-runtime-bootstrap',
+      status: 'not-found',
     });
-    response.end(
-      JSON.stringify(
-        {
-          error: {
-            code: 'route-not-found',
-            message: `Unknown route ${request.url ?? '/'}.`,
-          },
-          ok: false,
-          service: 'jobhunt-api-scaffold',
-          sessionId: 'phase01-session03-agent-runtime-bootstrap',
-          status: 'not-found',
-        },
-        null,
-        2,
-      ),
-    );
   });
 
   await new Promise((resolvePromise) => {
@@ -599,7 +583,7 @@ async function startFakeApiServer() {
   const address = server.address();
 
   if (typeof address !== 'object' || address === null) {
-    throw new Error('Failed to start the fake app-shell API.');
+    throw new Error('Failed to start the fake app-settings API.');
   }
 
   return {
@@ -614,11 +598,17 @@ async function startFakeApiServer() {
           resolvePromise();
         });
       }),
-    setShellMode(mode) {
-      state.shellMode = mode;
+    setDelayMs(delayMs) {
+      state.delayMs = delayMs;
     },
-    setSettingsUpdateState(mode) {
-      state.settingsUpdateState = mode;
+    setFailMode(failMode) {
+      state.failMode = failMode;
+    },
+    setSettingsStatus(settingsStatus) {
+      state.settingsStatus = settingsStatus;
+    },
+    setUpdateState(updateState) {
+      state.updateState = updateState;
     },
     url: `http://127.0.0.1:${address.port}`,
   };
@@ -659,80 +649,71 @@ try {
 
   try {
     const page = await browser.newPage();
-    await page.goto(webUrl, { waitUntil: 'networkidle' });
+    await page.goto(`${webUrl}#settings`, { waitUntil: 'domcontentloaded' });
 
-    await page.getByRole('heading', { name: 'Job-Hunt control surface' }).waitFor();
-    await page.getByRole('link', { name: /Startup/ }).waitFor();
-    await page.getByRole('link', { name: /Approvals/ }).waitFor();
-    await page.getByText('Review application email').waitFor();
-    await page.getByText('Job-Hunt startup diagnostics').waitFor();
-
-    await page.getByRole('link', { name: /Chat/ }).click();
-    await page.getByRole('heading', { name: 'Launch a supported workflow' }).waitFor();
-    await page.getByRole('heading', { name: 'No recent sessions yet' }).waitFor();
-    await page.getByRole('link', { name: /Approvals/ }).click();
     await page
-      .getByRole('heading', { name: 'Approval inbox and human review flow' })
+      .getByText('Reading startup, operational-store, and closeout readiness from the API.')
       .waitFor();
-    assert.match(page.url(), /#approvals$/);
-
-    await page.reload({ waitUntil: 'networkidle' });
+    fakeApi.setDelayMs(0);
     await page
-      .getByRole('heading', { name: 'Approval inbox and human review flow' })
+      .getByRole('heading', { name: 'Settings and maintenance surface' })
       .waitFor();
+    await page.getByText('Update available', { exact: true }).waitFor();
+    await page.getByText('Run doctor', { exact: true }).waitFor();
+    await page.getByText('Check updates', { exact: true }).waitFor();
 
-    fakeApi.setShellMode('runtime-error');
+    fakeApi.setUpdateState('up-to-date');
     await page
-      .getByRole('button', { name: /Refresh operator shell summary/ })
+      .getByRole('button', { name: /Refresh settings summary/ })
       .click();
+    await page.getByText('Updater is current', { exact: true }).waitFor();
+    assert.equal(
+      await page.evaluate(() => document.activeElement?.id ?? ''),
+      'settings-maintenance-title',
+    );
+
+    fakeApi.setUpdateState('dismissed');
     await page
-      .getByRole('heading', { name: 'Runtime blocked' })
-      .waitFor();
+      .getByRole('button', { name: /Refresh settings summary/ })
+      .click();
+    await page.getByText('Update checks dismissed', { exact: true }).waitFor();
+
+    fakeApi.setSettingsStatus('auth-required');
+    fakeApi.setUpdateState('offline');
     await page
-      .getByText('Bootstrap is live, but required system files are missing.', {
+      .getByRole('button', { name: /Refresh settings summary/ })
+      .click();
+    await page.getByText('First-run login required', { exact: true }).waitFor();
+    await page.getByText('Update source offline', { exact: true }).waitFor();
+    await page
+      .getByText('Run `npm run auth:openai -- login` to authenticate.', {
         exact: true,
       })
       .first()
       .waitFor();
 
-    fakeApi.setShellMode('ready');
-    await page
-      .getByRole('button', { name: /Refresh operator shell summary/ })
-      .click();
-    await page
-      .getByText('Bootstrap diagnostics are ready.', { exact: true })
-      .first()
-      .waitFor();
-
-    await page.getByRole('link', { name: /Settings/ }).click();
-    await page
-      .getByRole('heading', { name: 'Settings and maintenance surface' })
-      .waitFor();
-    await page.getByText('Run doctor', { exact: true }).waitFor();
-    assert.match(page.url(), /#settings$/);
-
-    fakeApi.setSettingsUpdateState('up-to-date');
+    fakeApi.setFailMode('server-error');
     await page
       .getByRole('button', { name: /Refresh settings summary/ })
       .click();
-    await page.getByText('Updater is current').waitFor();
+    await page.getByText('Settings summary error', { exact: true }).waitFor();
 
-    await page.getByRole('link', { name: /Startup/ }).click();
-    await page.getByText('Job-Hunt startup diagnostics').waitFor();
-    await page.getByRole('link', { name: /Settings/ }).click();
+    fakeApi.setFailMode('none');
+    fakeApi.setSettingsStatus('ready');
+    fakeApi.setUpdateState('up-to-date');
     await page
-      .getByRole('heading', { name: 'Settings and maintenance surface' })
-      .waitFor();
-    await page.getByText('Updater is current').waitFor();
+      .getByRole('button', { name: /Refresh settings summary/ })
+      .click();
+    await page.getByText('Updater is current', { exact: true }).waitFor();
 
-    await page.route('**/api/operator-shell', async (route) => {
+    await page.route('**/api/settings**', async (route) => {
       await route.abort('failed');
     });
     await page
-      .getByRole('button', { name: /Refresh operator shell summary/ })
+      .getByRole('button', { name: /Refresh settings summary/ })
       .click();
     await page
-      .getByText('Offline after the last good summary')
+      .getByText('Offline after the last good settings summary')
       .waitFor();
   } finally {
     await browser.close();
@@ -742,4 +723,4 @@ try {
   await fakeApi.close();
 }
 
-console.log('App shell smoke checks passed.');
+console.log('App settings smoke checks passed.');

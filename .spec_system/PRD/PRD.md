@@ -786,7 +786,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | 00    | Foundation and Repo Contract                             | 4        | Complete    |
 | 01    | Backend Runtime and Job Infrastructure                   | 5        | Complete    |
 | 02    | Typed Tools and Agent Orchestration                      | 5        | Complete    |
-| 03    | Chat, Onboarding, and Approvals UX                       | 5        | In Progress |
+| 03    | Chat, Onboarding, and Approvals UX                       | 5        | Complete    |
 | 04    | Evaluation, Artifacts, and Tracker Parity                | 4-6      | Not Started |
 | 05    | Scan, Batch, and Application-Help Parity                 | 4-6      | Not Started |
 | 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 4-6      | Not Started |
@@ -867,8 +867,9 @@ Archived phase artifacts live under `.spec_system/archive/phases/phase_02/`.
 - Implement startup checklist and onboarding wizard
 - Implement resumable conversations and approval prompts
 - Add settings basics for prerequisite visibility and maintenance actions
+- Phase 03 complete; archived under `.spec_system/archive/phases/phase_03/`.
 
-Progress: 3/5 sessions complete.
+Progress: 5/5 sessions complete.
 
 ### Phase 04: Evaluation, Artifacts, and Tracker Parity
 

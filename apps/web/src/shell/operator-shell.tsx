@@ -6,6 +6,7 @@ import { StartupStatusPanel } from '../boot/startup-status-panel';
 import { useStartupDiagnostics } from '../boot/use-startup-diagnostics';
 import { ChatConsoleSurface } from '../chat/chat-console-surface';
 import { OnboardingWizardSurface } from '../onboarding/onboarding-wizard-surface';
+import { SettingsSurface } from '../settings/settings-surface';
 import { NavigationRail } from './navigation-rail';
 import { StatusStrip } from './status-strip';
 import { SurfacePlaceholder } from './surface-placeholder';
@@ -311,13 +312,24 @@ export function OperatorShell() {
                       )
                   : renderedSurface.id === 'approvals'
                     ? <ApprovalInboxSurface />
+                  : renderedSurface.id === 'settings'
+                    ? (
+                        <SettingsSurface
+                          onOpenOnboarding={() => shell.selectSurface('onboarding')}
+                          onOpenStartup={() => shell.selectSurface('startup')}
+                          onSummaryRefresh={() => {
+                            startup.refresh();
+                            shell.refresh();
+                          }}
+                        />
+                      )
                   : (
                       <SurfacePlaceholder
                         key={`${renderedSurface.id}:${shell.state.data?.generatedAt ?? 'empty'}`}
                         summary={shell.state.data}
-                    surface={renderedSurface}
-                  />
-                )}
+                        surface={renderedSurface}
+                      />
+                    )}
             </div>
           </section>
         </div>

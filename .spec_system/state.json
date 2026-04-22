@@ -2,7 +2,7 @@
   "version": "2.0",
   "project_name": "Job-Hunt",
   "description": "Local-first single-user app parity effort for jobhunt",
-  "current_phase": 3,
+  "current_phase": 4,
   "monorepo": true,
   "packages": [
     {
@@ -38,7 +38,7 @@
     "3": {
       "name": "Chat, Onboarding, and Approvals UX",
       "description": "Build the first operator-facing app experience for chat, startup repair, approval handling, and settings on top of the Phase 02 orchestration surface.",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 5
     },
     "4": {
@@ -120,6 +120,14 @@
     },
     {
       "id": "phase03-session03-startup-checklist-and-onboarding-wizard",
+      "package": "apps/web"
+    },
+    {
+      "id": "phase03-session04-approval-inbox-and-human-review-flow",
+      "package": "apps/web"
+    },
+    {
+      "id": "phase03-session05-settings-and-maintenance-surface",
       "package": "apps/web"
     }
   ],
@@ -308,6 +316,18 @@
     {
       "date": "2026-04-22",
       "session": "phase03-session04-approval-inbox-and-human-review-flow",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase03-session05-settings-and-maintenance-surface",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase03-session05-settings-and-maintenance-surface",
       "package": "apps/web",
       "status": "completed"
     }

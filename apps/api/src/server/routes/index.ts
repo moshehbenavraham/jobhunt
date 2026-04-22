@@ -9,6 +9,7 @@ import { createOrchestrationRoute } from './orchestration-route.js';
 import { createOperatorShellRoute } from './operator-shell-route.js';
 import { createRuntimeApprovalsRoute } from './runtime-approvals-route.js';
 import { createRuntimeDiagnosticsRoute } from './runtime-diagnostics-route.js';
+import { createSettingsRoute } from './settings-route.js';
 import { createStartupRoute } from './startup-route.js';
 
 function assertUniqueRouteSignatures(
@@ -39,6 +40,7 @@ export function createApiRouteRegistry(): ApiRouteDefinition[] {
     createOnboardingRoute(),
     createOnboardingRepairRoute(),
     createOperatorShellRoute(),
+    createSettingsRoute(),
     createStartupRoute(),
     createRuntimeApprovalsRoute(),
     createRuntimeDiagnosticsRoute(),

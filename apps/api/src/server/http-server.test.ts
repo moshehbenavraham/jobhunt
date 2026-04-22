@@ -14,6 +14,7 @@ import {
   createApiServiceContainer,
   type ApiServiceContainer,
 } from '../runtime/service-container.js';
+import { createSettingsRoute } from './routes/settings-route.js';
 import { createOperationalStore } from '../store/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { startStartupHttpServer } from './http-server.js';
@@ -70,6 +71,53 @@ async function createOnboardingFixture(
       ...files,
     },
   });
+}
+
+function createSettingsUpdateCheckFixture(
+  state: 'dismissed' | 'offline' | 'up-to-date' | 'update-available',
+) {
+  switch (state) {
+    case 'dismissed':
+      return {
+        changelogExcerpt: null,
+        checkedAt: '2026-04-22T00:00:00.000Z',
+        command: 'node scripts/update-system.mjs check',
+        localVersion: null,
+        message: 'Update checks are currently dismissed.',
+        remoteVersion: null,
+        state,
+      } as const;
+    case 'offline':
+      return {
+        changelogExcerpt: null,
+        checkedAt: '2026-04-22T00:00:00.000Z',
+        command: 'node scripts/update-system.mjs check',
+        localVersion: '1.5.38',
+        message: 'Update check could not reach the upstream release source.',
+        remoteVersion: null,
+        state,
+      } as const;
+    case 'up-to-date':
+      return {
+        changelogExcerpt: null,
+        checkedAt: '2026-04-22T00:00:00.000Z',
+        command: 'node scripts/update-system.mjs check',
+        localVersion: '1.5.38',
+        message: 'Job-Hunt is up to date (1.5.38).',
+        remoteVersion: '1.5.38',
+        state,
+      } as const;
+    case 'update-available':
+      return {
+        changelogExcerpt: 'New settings surface shipped.',
+        checkedAt: '2026-04-22T00:00:00.000Z',
+        command: 'node scripts/update-system.mjs check',
+        localVersion: '1.5.38',
+        message: 'Job-Hunt update available (1.5.38 -> 1.6.0).',
+        remoteVersion: '1.6.0',
+        state,
+      } as const;
+  }
 }
 
 async function seedRuntimeContext(
@@ -834,6 +882,274 @@ test('operator-shell route exposes active-work badges and validates bounded quer
   } finally {
     await handle.close();
     await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('settings route reports missing prerequisites without mutating workspace state', async () => {
+  const fixture = await createWorkspaceFixture({
+    files: {
+      'config/portals.yml': 'title_filter:\n  positive: []\n',
+      'modes/_profile.md': '# Profile\n',
+    },
+  });
+  const beforeSnapshot = await fixture.snapshotUserLayer();
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    routes: [
+      createSettingsRoute({
+        readUpdateCheck: async () =>
+          createSettingsUpdateCheckFixture('offline'),
+      }),
+    ],
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(`${handle.url}/settings`);
+    const afterSnapshot = await fixture.snapshotUserLayer();
+
+    assert.equal(response.status, 200);
+    assert.equal((payload as { status: string }).status, 'missing-prerequisites');
+    assert.equal(
+      (
+        payload as {
+          health: { missing: { onboarding: number } };
+        }
+      ).health.missing.onboarding,
+      2,
+    );
+    assert.equal(
+      (
+        payload as {
+          maintenance: { updateCheck: { state: string } };
+        }
+      ).maintenance.updateCheck.state,
+      'offline',
+    );
+    assert.deepEqual(afterSnapshot, beforeSnapshot);
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await fixture.cleanup();
+  }
+});
+
+test('settings route exposes bounded preview data, updater states, and query validation', async () => {
+  const fixture = await createReadyFixture();
+  const beforeSnapshot = await fixture.snapshotUserLayer();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-settings' });
+  let updateState: 'dismissed' | 'offline' | 'up-to-date' | 'update-available' =
+    'update-available';
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-http-settings-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    routes: [
+      createSettingsRoute({
+        readUpdateCheck: async () => createSettingsUpdateCheckFixture(updateState),
+      }),
+    ],
+    services,
+  });
+
+  try {
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/settings?toolLimit=1&workflowLimit=2`,
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal((payload as { status: string }).status, 'ready');
+    assert.equal(
+      (
+        payload as {
+          currentSession: { id: string };
+        }
+      ).currentSession.id,
+      STARTUP_SESSION_ID,
+    );
+    assert.equal(
+      (
+        payload as {
+          support: {
+            tools: {
+              hasMore: boolean;
+              previewLimit: number;
+              tools: unknown[];
+              totalCount: number;
+            };
+          };
+        }
+      ).support.tools.previewLimit,
+      1,
+    );
+    assert.equal(
+      (
+        payload as {
+          support: {
+            tools: {
+              hasMore: boolean;
+              previewLimit: number;
+              tools: unknown[];
+              totalCount: number;
+            };
+          };
+        }
+      ).support.tools.tools.length,
+      1,
+    );
+    assert.equal(
+      (
+        payload as {
+          support: {
+            tools: {
+              hasMore: boolean;
+              previewLimit: number;
+              tools: unknown[];
+              totalCount: number;
+            };
+          };
+        }
+      ).support.tools.hasMore,
+      true,
+    );
+    assert.equal(
+      (
+        payload as {
+          support: {
+            workflows: {
+              hasMore: boolean;
+              previewLimit: number;
+              workflows: unknown[];
+            };
+          };
+        }
+      ).support.workflows.previewLimit,
+      2,
+    );
+    assert.equal(
+      (
+        payload as {
+          support: {
+            workflows: {
+              hasMore: boolean;
+              previewLimit: number;
+              workflows: unknown[];
+            };
+          };
+        }
+      ).support.workflows.workflows.length,
+      2,
+    );
+    assert.equal(
+      (
+        payload as {
+          support: {
+            workflows: {
+              hasMore: boolean;
+            };
+          };
+        }
+      ).support.workflows.hasMore,
+      true,
+    );
+    assert.equal(
+      (
+        payload as {
+          maintenance: { updateCheck: { state: string; remoteVersion: string } };
+        }
+      ).maintenance.updateCheck.state,
+      'update-available',
+    );
+    assert.equal(
+      (
+        payload as {
+          maintenance: { updateCheck: { state: string; remoteVersion: string } };
+        }
+      ).maintenance.updateCheck.remoteVersion,
+      '1.6.0',
+    );
+
+    updateState = 'up-to-date';
+    const { payload: upToDatePayload } = await readJsonResponse(
+      `${handle.url}/settings`,
+    );
+    assert.equal(
+      (
+        upToDatePayload as {
+          maintenance: { updateCheck: { state: string } };
+        }
+      ).maintenance.updateCheck.state,
+      'up-to-date',
+    );
+
+    updateState = 'dismissed';
+    const { payload: dismissedPayload } = await readJsonResponse(
+      `${handle.url}/settings`,
+    );
+    assert.equal(
+      (
+        dismissedPayload as {
+          maintenance: { updateCheck: { state: string } };
+        }
+      ).maintenance.updateCheck.state,
+      'dismissed',
+    );
+
+    updateState = 'offline';
+    const { payload: offlinePayload } = await readJsonResponse(
+      `${handle.url}/settings`,
+    );
+    assert.equal(
+      (
+        offlinePayload as {
+          maintenance: { updateCheck: { state: string } };
+        }
+      ).maintenance.updateCheck.state,
+      'offline',
+    );
+
+    const { payload: invalidPayload, response: invalidResponse } =
+      await readJsonResponse(`${handle.url}/settings?toolLimit=0`);
+
+    assert.equal(invalidResponse.status, 400);
+    assert.equal(
+      (
+        invalidPayload as {
+          error: { code: string };
+        }
+      ).error.code,
+      'invalid-settings-query',
+    );
+    assert.deepEqual(await fixture.snapshotUserLayer(), beforeSnapshot);
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
     await fixture.cleanup();
   }
 });
