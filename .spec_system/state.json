@@ -167,10 +167,20 @@
     {
       "id": "phase05-session03-batch-supervisor-contract",
       "package": "apps/api"
+    },
+    {
+      "id": "phase05-session04-batch-jobs-workspace-and-run-detail",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session04-batch-jobs-workspace-and-run-detail",
+      "package": "apps/web",
+      "status": "completed"
+    },
     {
       "date": "2026-04-22",
       "session": "phase05-session03-batch-supervisor-contract",

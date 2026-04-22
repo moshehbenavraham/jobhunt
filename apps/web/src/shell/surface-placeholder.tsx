@@ -57,6 +57,16 @@ function getPlaceholderBody(
 				],
 				title: "Scan workspace lands in Phase 05",
 			};
+		case "batch":
+			return {
+				body: "Phase 05 adds the dedicated batch workspace here. The placeholder keeps the shell registry exhaustive until bounded run supervision and closeout handoffs are mounted.",
+				highlights: [
+					"Batch review stays bounded by the backend-owned batch-supervisor summary route.",
+					"Resume, retry, merge, and verify controls continue to flow through backend routes instead of browser-owned repo mutations.",
+					"Selected batch items will hand off into report, tracker, approvals, and chat surfaces instead of creating parallel review paths.",
+				],
+				title: "Batch workspace lands in Phase 05",
+			};
 		case "tracker":
 			return {
 				body: "Phase 04 adds the dedicated tracker workspace here. The placeholder keeps the shell registry exhaustive until the tracker review and integrity controls are mounted.",

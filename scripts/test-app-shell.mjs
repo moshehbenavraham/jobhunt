@@ -556,6 +556,288 @@ function createScanReviewPayload(requestUrl = "/scan-review") {
 	};
 }
 
+function createBatchWorkspacePayload(requestUrl = "/batch-supervisor") {
+	const url = new URL(requestUrl, "http://127.0.0.1");
+	const requestedItemId = Number.parseInt(
+		url.searchParams.get("itemId") ?? "",
+		10,
+	);
+	const selectedItemId = Number.isInteger(requestedItemId)
+		? requestedItemId
+		: null;
+	const rows = [
+		{
+			artifacts: {
+				pdf: {
+					exists: false,
+					message: "No PDF artifact is linked to batch item #1 yet.",
+					repoRelativePath: null,
+				},
+				report: {
+					exists: false,
+					message: "No report artifact is linked to batch item #1 yet.",
+					repoRelativePath: null,
+				},
+				tracker: {
+					exists: false,
+					message: "No tracker artifact is linked to batch item #1 yet.",
+					repoRelativePath: null,
+				},
+			},
+			company: "Acme",
+			completedAt: "2026-04-22T00:04:00.000Z",
+			error: "worker timeout",
+			id: 1,
+			legitimacy: null,
+			notes: "Retryable failure from the last batch run.",
+			rawStateError: null,
+			reportNumber: null,
+			resultWarnings: [],
+			retries: 1,
+			role: "Platform Engineer",
+			score: null,
+			source: "scan",
+			startedAt: "2026-04-22T00:01:00.000Z",
+			status: "retryable-failed",
+			url: "https://example.com/jobs/acme-platform",
+			warnings: [
+				{
+					code: "retryable-failed",
+					message:
+						"Item #1 failed with a retryable error and can be re-queued.",
+				},
+			],
+		},
+		{
+			artifacts: {
+				pdf: {
+					exists: false,
+					message: "No PDF artifact is linked to batch item #2 yet.",
+					repoRelativePath: null,
+				},
+				report: {
+					exists: true,
+					message:
+						"Report artifact reports/002-beta-solutions-architect.md is available.",
+					repoRelativePath: "reports/002-beta-solutions-architect.md",
+				},
+				tracker: {
+					exists: false,
+					message: "Tracker artifact is still pending for batch item #2.",
+					repoRelativePath: null,
+				},
+			},
+			company: "Beta",
+			completedAt: "2026-04-22T00:06:00.000Z",
+			error: null,
+			id: 2,
+			legitimacy: "Proceed with Caution",
+			notes: "Partial result waiting on tracker closeout.",
+			rawStateError: null,
+			reportNumber: "002",
+			resultWarnings: ["tracker-not-written"],
+			retries: 0,
+			role: "Solutions Architect",
+			score: 4.1,
+			source: "scan",
+			startedAt: "2026-04-22T00:03:00.000Z",
+			status: "partial",
+			url: "https://example.com/jobs/beta-solutions",
+			warnings: [
+				{
+					code: "partial-result",
+					message:
+						"Batch item #2 produced a partial result and still needs tracker closeout.",
+				},
+				{
+					code: "missing-tracker-artifact",
+					message: "Tracker artifact is still pending for batch item #2.",
+				},
+			],
+		},
+	];
+	const visibleRows = rows.map((row) => ({
+		artifacts: row.artifacts,
+		company: row.company,
+		completedAt: row.completedAt,
+		error: row.error,
+		id: row.id,
+		legitimacy: row.legitimacy,
+		reportNumber: row.reportNumber,
+		retries: row.retries,
+		role: row.role,
+		score: row.score,
+		selected: row.id === selectedItemId,
+		startedAt: row.startedAt,
+		status: row.status,
+		url: row.url,
+		warningCount: row.warnings.length,
+		warnings: row.warnings,
+	}));
+	const selectedRow =
+		selectedItemId === null
+			? null
+			: (rows.find((row) => row.id === selectedItemId) ?? null);
+
+	return {
+		actions: [
+			{
+				action: "resume-run-pending",
+				available: true,
+				message: "Resume a batch run for pending rows.",
+			},
+			{
+				action: "retry-failed",
+				available: true,
+				message: "Retry batch items that failed with retryable errors.",
+			},
+			{
+				action: "merge-tracker-additions",
+				available: true,
+				message: "Merge pending tracker additions into the canonical tracker.",
+			},
+			{
+				action: "verify-tracker-pipeline",
+				available: true,
+				message: "Run tracker verification against the current closeout state.",
+			},
+		],
+		closeout: {
+			mergeBlocked: false,
+			message: "Tracker closeout is ready for review.",
+			pendingTrackerAdditionCount: 1,
+			warnings: [],
+		},
+		draft: {
+			available: true,
+			counts: {
+				completed: 0,
+				failed: 0,
+				partial: 1,
+				pending: 0,
+				processing: 0,
+				retryableFailed: 1,
+				skipped: 0,
+				total: 2,
+			},
+			firstRunnableItemId: 1,
+			message: "Batch draft is ready for supervision.",
+			pendingTrackerAdditionCount: 1,
+			totalCount: 2,
+		},
+		filters: {
+			itemId: selectedItemId,
+			limit: 12,
+			offset: 0,
+			status: "all",
+		},
+		generatedAt: "2026-04-22T00:00:00.000Z",
+		items: {
+			filteredCount: 2,
+			hasMore: false,
+			items: visibleRows,
+			limit: 12,
+			offset: 0,
+			totalCount: 2,
+		},
+		message: "Showing 2 of 2 batch rows.",
+		ok: true,
+		run: {
+			approvalId: "approval-batch-shell-01",
+			checkpoint: {
+				completedItemCount: 1,
+				cursor: 1,
+				lastProcessedItemId: 1,
+				updatedAt: "2026-04-22T00:06:00.000Z",
+			},
+			completedAt: null,
+			counts: {
+				completed: 0,
+				failed: 0,
+				partial: 1,
+				pending: 0,
+				processing: 0,
+				retryableFailed: 1,
+				skipped: 0,
+				total: 2,
+			},
+			dryRun: false,
+			jobId: "job-batch-shell-01",
+			message: "Batch run is waiting on approval before it can continue.",
+			mode: "retry-failed",
+			runId: "run-batch-shell-01",
+			sessionId: "session-batch-shell-01",
+			startedAt: "2026-04-22T00:00:00.000Z",
+			state: "approval-paused",
+			updatedAt: "2026-04-22T00:08:00.000Z",
+			warnings: [
+				{
+					code: "approval-paused",
+					message: "Batch run paused because approval is required to continue.",
+				},
+			],
+		},
+		selectedDetail:
+			selectedRow === null
+				? {
+						message:
+							"Select a batch row to inspect warnings, artifacts, and next actions.",
+						origin: "none",
+						requestedItemId: null,
+						row: null,
+						state: "empty",
+					}
+				: {
+						message: `Showing batch item #${selectedRow.id}.`,
+						origin: "item-id",
+						requestedItemId: selectedRow.id,
+						row: {
+							artifacts: selectedRow.artifacts,
+							company: selectedRow.company,
+							completedAt: selectedRow.completedAt,
+							error: selectedRow.error,
+							id: selectedRow.id,
+							legitimacy: selectedRow.legitimacy,
+							notes: selectedRow.notes,
+							rawStateError: selectedRow.rawStateError,
+							reportNumber: selectedRow.reportNumber,
+							resultWarnings: selectedRow.resultWarnings,
+							retries: selectedRow.retries,
+							role: selectedRow.role,
+							score: selectedRow.score,
+							selected: true,
+							source: selectedRow.source,
+							startedAt: selectedRow.startedAt,
+							status: selectedRow.status,
+							url: selectedRow.url,
+							warningCount: selectedRow.warnings.length,
+							warnings: selectedRow.warnings,
+						},
+						state: "ready",
+					},
+		service: "jobhunt-api-scaffold",
+		sessionId: "phase01-session03-agent-runtime-bootstrap",
+		status: "ready",
+		statusOptions: [
+			{
+				count: 2,
+				id: "all",
+				label: "All",
+			},
+			{
+				count: 1,
+				id: "retryable-failed",
+				label: "Retryable failed",
+			},
+			{
+				count: 1,
+				id: "partial",
+				label: "Partial",
+			},
+		],
+	};
+}
+
 function createPipelineReviewPayload() {
 	return {
 		filters: {
@@ -1229,17 +1511,35 @@ async function startFakeApiServer() {
 		}
 
 		if ((request.url ?? "").startsWith("/chat-console")) {
+			const requestedSessionId = new URL(
+				request.url,
+				"http://127.0.0.1",
+			).searchParams.get("sessionId");
+
+			if (
+				requestedSessionId === "session-batch-shell-01" &&
+				!state.sessionDetails.has("session-batch-shell-01")
+			) {
+				const batchSessionSummary = createSessionSummary({
+					sessionId: "session-batch-shell-01",
+					workflow: "batch-evaluation",
+				});
+				const batchSessionDetail = createSessionDetail(
+					batchSessionSummary,
+					"Batch review resumed from the batch workspace.",
+				);
+				state.sessionDetails.set(
+					batchSessionSummary.sessionId,
+					batchSessionDetail,
+				);
+			}
+
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
 			});
 			response.end(
 				JSON.stringify(
-					createChatConsoleSummaryPayload(
-						state,
-						new URL(request.url, "http://127.0.0.1").searchParams.get(
-							"sessionId",
-						),
-					),
+					createChatConsoleSummaryPayload(state, requestedSessionId),
 					null,
 					2,
 				),
@@ -1268,6 +1568,20 @@ async function startFakeApiServer() {
 			response.end(
 				JSON.stringify(
 					createScanReviewPayload(request.url ?? "/scan-review"),
+					null,
+					2,
+				),
+			);
+			return;
+		}
+
+		if ((request.url ?? "").startsWith("/batch-supervisor")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(
+				JSON.stringify(
+					createBatchWorkspacePayload(request.url ?? "/batch-supervisor"),
 					null,
 					2,
 				),
@@ -1483,6 +1797,51 @@ try {
 			.waitFor();
 		assert.match(page.url(), /session=session-scan-eval-01/);
 		assert.match(page.url(), /#chat$/);
+		await page.getByRole("link", { name: /Batch/ }).click();
+		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
+		await page.getByRole("button", { name: /Select batch item 2/ }).click();
+		await page.getByText("Showing batch item #2.").waitFor();
+		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page
+			.getByRole("heading", { name: "Artifact review surface" })
+			.waitFor();
+		await page.getByText("Tracker handoff report body.").waitFor();
+		assert.match(
+			page.url(),
+			/report=reports%2F002-beta-solutions-architect\.md/,
+		);
+		await page.goto(`${webUrl}?batchItemId=2#batch`, {
+			waitUntil: "networkidle",
+		});
+		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
+		await page.getByRole("button", { name: /Open tracker workspace/ }).click();
+		await page
+			.getByRole("heading", {
+				name: "Tracker workspace and integrity actions",
+			})
+			.waitFor();
+		assert.match(page.url(), /trackerReportNumber=002/);
+		await page.goto(`${webUrl}?batchItemId=2#batch`, {
+			waitUntil: "networkidle",
+		});
+		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
+		await page.getByRole("button", { name: /^Open chat$/ }).click();
+		await page
+			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
+			.waitFor();
+		assert.match(page.url(), /session=session-batch-shell-01/);
+		assert.match(page.url(), /#chat$/);
+		await page.goto(`${webUrl}?batchItemId=2#batch`, {
+			waitUntil: "networkidle",
+		});
+		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
+		await page.getByRole("button", { name: /^Open approvals$/ }).click();
+		await page
+			.getByRole("heading", { name: "Approval inbox and human review flow" })
+			.waitFor();
+		assert.match(page.url(), /approval=approval-batch-shell-01/);
+		assert.match(page.url(), /reviewSession=session-batch-shell-01/);
+		assert.match(page.url(), /#approvals$/);
 		await page.getByRole("link", { name: /Pipeline/ }).click();
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })

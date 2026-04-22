@@ -894,13 +894,14 @@ Progress: 6/6 sessions complete.
 - Completed Session 01: scan shortlist contract in `apps/api`
 - Completed Session 02: scan review workspace in `apps/web`
 - Completed Session 03: batch supervisor contract in `apps/api`
+- Completed Session 04: batch jobs workspace and run detail in `apps/web`
 - Implement scan flows and shortlist review
 - Replace batch runner UI and orchestration
 - Support application-help flows and approval checkpoints
 - Add job-level failure, warning, retry, and resume visibility
 - Planned phase artifacts live under `.spec_system/PRD/phase_05/`.
 
-Progress: 3/6 sessions complete.
+Progress: 4/6 sessions complete.
 
 ### Phase 06: Specialist Workflows, Dashboard Replacement, and Cutover
 

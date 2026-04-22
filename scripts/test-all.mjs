@@ -542,9 +542,20 @@ if (appTrackerWorkspace !== null) {
 	fail("App tracker-workspace smoke tests failed");
 }
 
-// -- 3ah. App scan-review smoke ----------------------------------
+// -- 3ah. App batch-workspace smoke -------------------------------
 
-console.log("\n3ah. App scan-review smoke");
+console.log("\n3ah. App batch-workspace smoke");
+
+const appBatchWorkspace = run("node", ["scripts/test-app-batch-workspace.mjs"]);
+if (appBatchWorkspace !== null) {
+	pass("App batch-workspace smoke tests pass");
+} else {
+	fail("App batch-workspace smoke tests failed");
+}
+
+// -- 3ai. App scan-review smoke ----------------------------------
+
+console.log("\n3ai. App scan-review smoke");
 
 const appScanReview = run("node", ["scripts/test-app-scan-review.mjs"]);
 if (appScanReview !== null) {
@@ -553,9 +564,9 @@ if (appScanReview !== null) {
 	fail("App scan-review smoke tests failed");
 }
 
-// -- 3ai. Auto-pipeline parity smoke -----------------------------
+// -- 3aj. Auto-pipeline parity smoke -----------------------------
 
-console.log("\n3ai. Auto-pipeline parity smoke");
+console.log("\n3aj. Auto-pipeline parity smoke");
 
 const appAutoPipelineParity = run("node", [
 	"scripts/test-app-auto-pipeline-parity.mjs",
@@ -566,9 +577,9 @@ if (appAutoPipelineParity !== null) {
 	fail("Auto-pipeline parity smoke tests failed");
 }
 
-// -- 3aj. Bootstrap ASCII validation -----------------------------
+// -- 3ak. Bootstrap ASCII validation -----------------------------
 
-console.log("\n3aj. Bootstrap ASCII validation");
+console.log("\n3ak. Bootstrap ASCII validation");
 
 const bootstrapFiles = [
 	"apps/api/src/approval-runtime/approval-runtime-contract.ts",
@@ -722,6 +733,13 @@ const bootstrapFiles = [
 	"apps/web/src/approvals/approval-queue-list.tsx",
 	"apps/web/src/approvals/interrupted-run-panel.tsx",
 	"apps/web/src/approvals/use-approval-inbox.ts",
+	"apps/web/src/batch/batch-workspace-client.ts",
+	"apps/web/src/batch/batch-workspace-detail-rail.tsx",
+	"apps/web/src/batch/batch-workspace-item-matrix.tsx",
+	"apps/web/src/batch/batch-workspace-run-panel.tsx",
+	"apps/web/src/batch/batch-workspace-surface.tsx",
+	"apps/web/src/batch/batch-workspace-types.ts",
+	"apps/web/src/batch/use-batch-workspace.ts",
 	"apps/web/src/boot/missing-files-list.tsx",
 	"apps/web/src/boot/startup-client.ts",
 	"apps/web/src/boot/startup-status-panel.tsx",
@@ -786,6 +804,7 @@ const bootstrapFiles = [
 	"scripts/test-app-approval-inbox.mjs",
 	"scripts/test-app-auto-pipeline-parity.mjs",
 	"scripts/test-app-bootstrap.mjs",
+	"scripts/test-app-batch-workspace.mjs",
 	"scripts/test-app-chat-console.mjs",
 	"scripts/test-app-onboarding.mjs",
 	"scripts/test-app-pipeline-review.mjs",

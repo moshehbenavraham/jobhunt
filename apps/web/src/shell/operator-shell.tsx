@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { useDeferredValue } from "react";
 import { syncApprovalInboxFocus } from "../approvals/approval-inbox-client";
 import { ApprovalInboxSurface } from "../approvals/approval-inbox-surface";
+import { BatchWorkspaceSurface } from "../batch/batch-workspace-surface";
 import { StartupStatusPanel } from "../boot/startup-status-panel";
 import { useStartupDiagnostics } from "../boot/use-startup-diagnostics";
 import { syncChatConsoleSessionFocus } from "../chat/chat-console-client";
@@ -372,6 +373,13 @@ export function OperatorShell() {
 								/>
 							) : renderedSurface.id === "scan" ? (
 								<ScanReviewSurface onOpenChatConsole={openChatConsole} />
+							) : renderedSurface.id === "batch" ? (
+								<BatchWorkspaceSurface
+									onOpenApprovals={openApprovals}
+									onOpenChatConsole={openChatConsole}
+									onOpenReportViewer={openArtifacts}
+									onOpenTrackerWorkspace={openTracker}
+								/>
 							) : renderedSurface.id === "pipeline" ? (
 								<PipelineReviewSurface onOpenReportViewer={openArtifacts} />
 							) : renderedSurface.id === "tracker" ? (

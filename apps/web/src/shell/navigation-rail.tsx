@@ -121,6 +121,22 @@ function getBadge(
 				label: summary.status === "ready" ? "Ready" : "Setup",
 				tone: summary.status === "ready" ? "info" : "neutral",
 			};
+		case "batch":
+			if (summary.activity.activeSession?.workflow === "batch-evaluation") {
+				const isApprovalPause =
+					summary.activity.activeSession.activeJob?.waitReason === "approval" ||
+					summary.activity.activeSession.status === "waiting";
+
+				return {
+					label: isApprovalPause ? "Paused" : "Live",
+					tone: isApprovalPause ? "attention" : "info",
+				};
+			}
+
+			return {
+				label: summary.status === "ready" ? "Review" : "Setup",
+				tone: summary.status === "ready" ? "info" : "neutral",
+			};
 		case "artifacts":
 			return {
 				label: summary.status === "ready" ? "Review" : "Read-only",
@@ -186,8 +202,8 @@ export function NavigationRail({
 					Operator navigation
 				</h2>
 				<p style={{ color: "#cbd5e1", marginBottom: 0, marginTop: 0 }}>
-					One stable frame for startup, chat, scan review, queue review, tracker
-					closeout, and settings.
+					One stable frame for startup, chat, scan review, batch supervision,
+					queue review, tracker closeout, and settings.
 				</p>
 			</div>
 

@@ -2,6 +2,7 @@ export const SHELL_SURFACE_IDS = [
 	"startup",
 	"chat",
 	"scan",
+	"batch",
 	"pipeline",
 	"tracker",
 	"artifacts",
@@ -39,6 +40,13 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 			"Launch scan runs, review shortlist candidates, and hand selected roles into evaluation or batch flow.",
 		id: "scan",
 		label: "Scan",
+		owner: "Phase 05",
+	},
+	{
+		description:
+			"Supervise batch draft state, run progress, retry paths, and closeout handoffs from one bounded workspace.",
+		id: "batch",
+		label: "Batch",
 		owner: "Phase 05",
 	},
 	{
