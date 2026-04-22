@@ -13,6 +13,7 @@ import { createOperatorShellRoute } from "./operator-shell-route.js";
 import { createOrchestrationRoute } from "./orchestration-route.js";
 import { createPipelineReviewRoute } from "./pipeline-review-route.js";
 import { createReportViewerRoute } from "./report-viewer-route.js";
+import { createResearchSpecialistRoute } from "./research-specialist-route.js";
 import { createRuntimeApprovalsRoute } from "./runtime-approvals-route.js";
 import { createRuntimeDiagnosticsRoute } from "./runtime-diagnostics-route.js";
 import { createScanReviewActionRoute } from "./scan-review-action-route.js";
@@ -55,6 +56,7 @@ export function createApiRouteRegistry(): ApiRouteDefinition[] {
 		createOnboardingRoute(),
 		createOnboardingRepairRoute(),
 		createOperatorShellRoute(),
+		createResearchSpecialistRoute(),
 		createSpecialistWorkspaceRoute(),
 		createSpecialistWorkspaceActionRoute(),
 		createBatchSupervisorRoute(),

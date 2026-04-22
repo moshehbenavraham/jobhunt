@@ -912,7 +912,7 @@ Progress: 6/6 sessions complete.
 - Completed Session 02: Specialist Workspace Foundation in `apps/web`
 - Completed Session 03: Offer, Follow-Up, and Pattern Contracts in
   `apps/api`
-- Planned Session 04: Research and Narrative Specialist Contracts in
+- Completed Session 04: Research and Narrative Specialist Contracts in
   `apps/api`
 - Planned Session 05: Specialist Review Surfaces in `apps/web`
 - Planned Session 06: Dashboard Replacement, Maintenance, and Cutover in
@@ -935,13 +935,12 @@ Progress: 6/6 sessions complete.
 
 Phase 06 planning artifacts live under `.spec_system/PRD/phase_06/`.
 
-Progress: 3/6 sessions complete.
+Progress: 4/6 sessions complete.
 
 ## Phase 06 Planned Sessions
 
-1. Session 04: Research and Narrative Specialist Contracts
-2. Session 05: Specialist Review Surfaces
-3. Session 06: Dashboard Replacement, Maintenance, and Cutover
+1. Session 05: Specialist Review Surfaces
+2. Session 06: Dashboard Replacement, Maintenance, and Cutover
 
 ## Success Criteria
 

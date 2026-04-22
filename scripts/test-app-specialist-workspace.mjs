@@ -464,6 +464,10 @@ function createInterviewWaitingSummary() {
 		},
 		failure: null,
 		handoff: createWorkflowDescriptor({
+			detailSurface: {
+				label: "Interview Prep",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "company-role",
@@ -473,19 +477,20 @@ function createInterviewWaitingSummary() {
 			},
 			label: "Interview Prep",
 			message:
-				"Interview prep remains blocked until typed interview-prep tooling is implemented.",
-			missingCapabilities: ["typed-interview-prep"],
+				"Interview prep can launch with the research specialist using typed context resolution, story-bank awareness, packet staging, and dedicated-detail review.",
 			mode: "interview-prep",
 			modeDescription:
 				"Prepare a bounded interview brief with saved company and role context.",
 			modeRepoRelativePath: "modes/interview-prep.md",
 			specialistId: "research-specialist",
 			specialistLabel: "Research Specialist",
-			summaryAvailability: "pending",
-			supportState: "tooling-gap",
+			summaryAvailability: "dedicated-detail",
+			supportState: "ready",
 			toolItems: [
-				{ access: "restricted", name: "inspect-prompt-contract" },
-				{ access: "restricted", name: "summarize-profile-sources" },
+				{ access: "allowed", name: "resolve-research-specialist-context" },
+				{ access: "allowed", name: "stage-research-specialist-packet" },
+				{ access: "allowed", name: "load-research-specialist-packet" },
+				{ access: "allowed", name: "list-workspace-artifacts" },
 			],
 		}).handoff,
 		job: {
@@ -508,10 +513,12 @@ function createInterviewWaitingSummary() {
 			sessionId: "interview-waiting-01",
 		},
 		result: {
-			detailSurface: null,
-			message:
-				"Interview prep still uses the shared workflows frame until a dedicated review surface lands.",
-			state: "pending-session",
+			detailSurface: {
+				label: "Interview Prep",
+				path: "/research-specialist",
+			},
+			message: "Open Interview Prep for detailed specialist review.",
+			state: "dedicated-detail",
 		},
 		run: {
 			message: "Interview prep is paused for approval.",
@@ -527,8 +534,8 @@ function createInterviewWaitingSummary() {
 			updatedAt: "2026-04-22T02:00:00.000Z",
 			workflow: "interview-prep",
 		},
-		supportState: "tooling-gap",
-		summaryAvailability: "pending",
+		supportState: "ready",
+		summaryAvailability: "dedicated-detail",
 		warnings: [
 			{
 				code: "approval-paused",
@@ -536,9 +543,9 @@ function createInterviewWaitingSummary() {
 					"Interview prep is waiting on human approval before it can continue.",
 			},
 			{
-				code: "tooling-gap",
+				code: "dedicated-detail-surface",
 				message:
-					"Interview prep still depends on typed tooling that has not shipped yet.",
+					"Interview Prep uses Interview Prep as its dedicated detail surface.",
 			},
 		],
 	};
@@ -549,6 +556,10 @@ function createDeepRunningSummary() {
 		approval: null,
 		failure: null,
 		handoff: createWorkflowDescriptor({
+			detailSurface: {
+				label: "Deep Research",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "company-role",
@@ -558,19 +569,20 @@ function createDeepRunningSummary() {
 			},
 			label: "Deep Research",
 			message:
-				"Deep company research remains blocked until typed research tooling is implemented.",
-			missingCapabilities: ["typed-company-research"],
+				"Deep company research can launch with the research specialist using typed context resolution, packet staging, and dedicated-detail review state.",
 			mode: "deep-company-research",
 			modeDescription:
 				"Build a bounded company research brief from saved role context.",
 			modeRepoRelativePath: "modes/deep.md",
 			specialistId: "research-specialist",
 			specialistLabel: "Research Specialist",
-			summaryAvailability: "pending",
-			supportState: "tooling-gap",
+			summaryAvailability: "dedicated-detail",
+			supportState: "ready",
 			toolItems: [
-				{ access: "restricted", name: "inspect-prompt-contract" },
-				{ access: "restricted", name: "list-workspace-artifacts" },
+				{ access: "allowed", name: "resolve-research-specialist-context" },
+				{ access: "allowed", name: "stage-research-specialist-packet" },
+				{ access: "allowed", name: "load-research-specialist-packet" },
+				{ access: "allowed", name: "list-workspace-artifacts" },
 			],
 		}).handoff,
 		job: {
@@ -593,10 +605,12 @@ function createDeepRunningSummary() {
 			sessionId: "deep-running-01",
 		},
 		result: {
-			detailSurface: null,
-			message:
-				"Deep research detail stays in the shared workflows frame for now.",
-			state: "active-session",
+			detailSurface: {
+				label: "Deep Research",
+				path: "/research-specialist",
+			},
+			message: "Open Deep Research for detailed specialist review.",
+			state: "dedicated-detail",
 		},
 		run: {
 			message: "Deep research is currently running.",
@@ -612,13 +626,13 @@ function createDeepRunningSummary() {
 			updatedAt: "2026-04-22T02:03:00.000Z",
 			workflow: "deep-company-research",
 		},
-		supportState: "tooling-gap",
-		summaryAvailability: "pending",
+		supportState: "ready",
+		summaryAvailability: "dedicated-detail",
 		warnings: [
 			{
-				code: "tooling-gap",
+				code: "dedicated-detail-surface",
 				message:
-					"Deep research still uses fallback tooling while the typed specialist route is incomplete.",
+					"Deep Research uses Deep Research as its dedicated detail surface.",
 			},
 		],
 	};
@@ -764,6 +778,10 @@ function createWorkflowDescriptors(selectedMode) {
 			toolItems: [{ access: "restricted", name: "list-evaluation-artifacts" }],
 		}),
 		createWorkflowDescriptor({
+			detailSurface: {
+				label: "Interview Prep",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "company-role",
@@ -773,19 +791,27 @@ function createWorkflowDescriptors(selectedMode) {
 			},
 			label: "Interview Prep",
 			message:
-				"Interview prep remains blocked until typed interview-prep tooling is implemented.",
-			missingCapabilities: ["typed-interview-prep"],
+				"Interview prep can launch with the research specialist using typed context resolution, story-bank awareness, packet staging, and dedicated-detail review.",
 			mode: "interview-prep",
 			modeDescription:
 				"Prepare a bounded interview brief with saved company and role context.",
 			modeRepoRelativePath: "modes/interview-prep.md",
 			specialistId: "research-specialist",
 			specialistLabel: "Research Specialist",
-			summaryAvailability: "pending",
-			supportState: "tooling-gap",
-			toolItems: [{ access: "restricted", name: "inspect-prompt-contract" }],
+			summaryAvailability: "dedicated-detail",
+			supportState: "ready",
+			toolItems: [
+				{ access: "allowed", name: "resolve-research-specialist-context" },
+				{ access: "allowed", name: "stage-research-specialist-packet" },
+				{ access: "allowed", name: "load-research-specialist-packet" },
+				{ access: "allowed", name: "list-workspace-artifacts" },
+			],
 		}),
 		createWorkflowDescriptor({
+			detailSurface: {
+				label: "Deep Research",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "company-role",
@@ -795,17 +821,21 @@ function createWorkflowDescriptors(selectedMode) {
 			},
 			label: "Deep Research",
 			message:
-				"Deep company research remains blocked until typed research tooling is implemented.",
-			missingCapabilities: ["typed-company-research"],
+				"Deep company research can launch with the research specialist using typed context resolution, packet staging, and dedicated-detail review state.",
 			mode: "deep-company-research",
 			modeDescription:
 				"Build a bounded company research brief from saved role context.",
 			modeRepoRelativePath: "modes/deep.md",
 			specialistId: "research-specialist",
 			specialistLabel: "Research Specialist",
-			summaryAvailability: "pending",
-			supportState: "tooling-gap",
-			toolItems: [{ access: "restricted", name: "list-workspace-artifacts" }],
+			summaryAvailability: "dedicated-detail",
+			supportState: "ready",
+			toolItems: [
+				{ access: "allowed", name: "resolve-research-specialist-context" },
+				{ access: "allowed", name: "stage-research-specialist-packet" },
+				{ access: "allowed", name: "load-research-specialist-packet" },
+				{ access: "allowed", name: "list-workspace-artifacts" },
+			],
 		}),
 	];
 

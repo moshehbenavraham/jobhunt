@@ -188,10 +188,26 @@
     {
       "id": "phase06-session02-specialist-workspace-foundation",
       "package": "apps/web"
+    },
+    {
+      "id": "phase06-session03-offer-follow-up-and-pattern-contracts",
+      "package": "apps/api"
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session04-research-and-narrative-specialist-contracts",
+      "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session04-research-and-narrative-specialist-contracts",
+      "package": "apps/api",
+      "status": "validated"
+    },
     {
       "date": "2026-04-22",
       "session": "phase06-session03-offer-follow-up-and-pattern-contracts",

@@ -10,6 +10,7 @@ export * from "./onboarding-repair-tools.js";
 export * from "./pdf-generation-tools.js";
 export * from "./pipeline-processing-tools.js";
 export * from "./profile-summary.js";
+export * from "./research-specialist-tools.js";
 export * from "./scan-workflow-tools.js";
 export * from "./script-execution-adapter.js";
 export * from "./startup-inspection-tools.js";

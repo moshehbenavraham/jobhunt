@@ -323,6 +323,10 @@ test("specialist workspace summary applies latest-session selection, stale-sessi
 			latestPayload.selected.summary?.handoff.mode,
 			"interview-prep",
 		);
+		assert.equal(
+			latestPayload.selected.summary?.handoff.detailSurface?.path,
+			"/research-specialist",
+		);
 		assert.equal(latestPayload.selected.summary?.run.state, "waiting");
 		assert.equal(latestPayload.selected.summary?.approval?.status, "pending");
 		assert.equal(
@@ -352,6 +356,14 @@ test("specialist workspace summary applies latest-session selection, stale-sessi
 		});
 		assert.equal(runningPayload.selected.summary?.run.state, "running");
 		assert.equal(runningPayload.selected.summary?.job?.status, "running");
+		assert.equal(
+			runningPayload.selected.summary?.handoff.detailSurface?.path,
+			"/research-specialist",
+		);
+		assert.equal(
+			runningPayload.selected.summary?.result.state,
+			"dedicated-detail",
+		);
 	} finally {
 		await services.dispose();
 		await fixture.cleanup();
@@ -435,7 +447,10 @@ test("specialist workspace summary covers completed dedicated-detail and degrade
 			),
 			true,
 		);
-		assert.equal(degradedPayload.selected.summary?.result.state, "blocked");
+		assert.equal(
+			degradedPayload.selected.summary?.result.state,
+			"dedicated-detail",
+		);
 	} finally {
 		await services.dispose();
 		await fixture.cleanup();

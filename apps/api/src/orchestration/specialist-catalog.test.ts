@@ -29,8 +29,11 @@ test("ready routes expose specialist-owned tools while tooling-gap routes expose
 	const blockedRoute = getWorkflowSpecialistRoute("tracker-status");
 	const applicationHelpRoute = getWorkflowSpecialistRoute("application-help");
 	const compareOffersRoute = getWorkflowSpecialistRoute("compare-offers");
+	const deepResearchRoute = getWorkflowSpecialistRoute("deep-company-research");
 	const followUpRoute = getWorkflowSpecialistRoute("follow-up-cadence");
+	const linkedinOutreachRoute = getWorkflowSpecialistRoute("linkedin-outreach");
 	const patternsRoute = getWorkflowSpecialistRoute("rejection-patterns");
+	const trainingRoute = getWorkflowSpecialistRoute("training-review");
 
 	assert.equal(readyRoute?.status, "ready");
 	assert.equal(readyRoute?.specialistId, "evaluation-specialist");
@@ -84,6 +87,27 @@ test("ready routes expose specialist-owned tools while tooling-gap routes expose
 		"list-evaluation-artifacts",
 		"summarize-profile-sources",
 	]);
+	assert.equal(deepResearchRoute?.status, "ready");
+	assert.deepEqual(deepResearchRoute?.missingCapabilities, []);
+	assert.deepEqual(deepResearchRoute?.toolPolicy.allowedToolNames, [
+		"resolve-research-specialist-context",
+		"stage-research-specialist-packet",
+		"load-research-specialist-packet",
+		"list-workspace-artifacts",
+		"summarize-profile-sources",
+	]);
+	assert.equal(
+		deepResearchRoute?.workspace.detailSurface?.path,
+		"/research-specialist",
+	);
+	assert.equal(
+		linkedinOutreachRoute?.workspace.detailSurface?.path,
+		"/research-specialist",
+	);
+	assert.equal(
+		trainingRoute?.workspace.summaryAvailability,
+		"dedicated-detail",
+	);
 });
 
 test("specialist workspace routes expose shared metadata for remaining specialist workflows", () => {
@@ -118,5 +142,12 @@ test("specialist workspace routes expose shared metadata for remaining specialis
 		"/tracker-specialist",
 	);
 	assert.equal(interviewPrepRoute?.workspace.family, "research-and-narrative");
-	assert.equal(interviewPrepRoute?.workspace.summaryAvailability, "pending");
+	assert.equal(
+		interviewPrepRoute?.workspace.summaryAvailability,
+		"dedicated-detail",
+	);
+	assert.equal(
+		interviewPrepRoute?.workspace.detailSurface?.path,
+		"/research-specialist",
+	);
 });

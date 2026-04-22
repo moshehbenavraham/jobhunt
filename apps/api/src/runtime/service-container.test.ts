@@ -406,10 +406,13 @@ test("service container lazily creates and reuses a tool execution service with 
 		assert.ok(catalogNames.includes("generate-ats-pdf"));
 		assert.ok(catalogNames.includes("inspect-startup-diagnostics"));
 		assert.ok(catalogNames.includes("preview-onboarding-repair"));
+		assert.ok(catalogNames.includes("resolve-research-specialist-context"));
 		assert.ok(catalogNames.includes("retry-batch-evaluation-failures"));
 		assert.ok(catalogNames.includes("reserve-report-artifact"));
+		assert.ok(catalogNames.includes("stage-research-specialist-packet"));
 		assert.ok(catalogNames.includes("start-batch-evaluation"));
 		assert.ok(catalogNames.includes("stage-tracker-addition"));
+		assert.ok(catalogNames.includes("load-research-specialist-packet"));
 		assert.ok(catalogNames.includes("write-tool-state"));
 		assert.equal(result.status, "completed");
 		assert.deepEqual(result.output, {

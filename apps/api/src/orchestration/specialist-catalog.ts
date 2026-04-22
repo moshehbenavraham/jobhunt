@@ -132,16 +132,18 @@ const REJECTION_PATTERN_TOOLS = [
 	"summarize-profile-sources",
 ] as const;
 
-const RESEARCH_FALLBACK_TOOLS = [
-	"inspect-prompt-contract",
-	"list-workspace-artifacts",
-	"summarize-profile-sources",
-] as const;
-
 const APPLICATION_HELP_TOOLS = [
 	"resolve-application-help-context",
 	"stage-application-help-draft",
 	"list-evaluation-artifacts",
+	"summarize-profile-sources",
+] as const;
+
+const RESEARCH_SPECIALIST_TOOLS = [
+	"resolve-research-specialist-context",
+	"stage-research-specialist-packet",
+	"load-research-specialist-packet",
+	"list-workspace-artifacts",
 	"summarize-profile-sources",
 ] as const;
 
@@ -414,16 +416,20 @@ const workflowRoutes = [
 	},
 	{
 		message:
-			"Deep company research remains blocked until typed research tooling is implemented.",
-		missingCapabilities: ["typed-company-research"],
+			"Deep company research can launch with the research specialist using typed context resolution, packet staging, and dedicated-detail review state.",
+		missingCapabilities: [],
 		specialistId: "research-specialist",
-		status: "tooling-gap",
+		status: "ready",
 		toolPolicy: {
-			allowedToolNames: [],
-			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
+			allowedToolNames: RESEARCH_SPECIALIST_TOOLS,
+			restrictedToolNames: ["inspect-prompt-contract"],
 		},
 		workflow: "deep-company-research",
 		workspace: createWorkspaceMetadata("deep-company-research", {
+			detailSurface: {
+				label: "Deep Research",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "company-role",
@@ -431,22 +437,26 @@ const workflowRoutes = [
 					"Deep research expects a company and role target, with saved evaluation context when available.",
 				requiresSavedState: false,
 			},
-			summaryAvailability: "pending",
+			summaryAvailability: "dedicated-detail",
 			workspaceLabel: "Deep Research",
 		}),
 	},
 	{
 		message:
-			"LinkedIn outreach remains blocked until typed outreach tooling is implemented.",
-		missingCapabilities: ["typed-linkedin-outreach"],
+			"LinkedIn outreach can launch with the research specialist using typed context resolution, packet staging, and manual-send guardrails.",
+		missingCapabilities: [],
 		specialistId: "research-specialist",
-		status: "tooling-gap",
+		status: "ready",
 		toolPolicy: {
-			allowedToolNames: [],
-			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
+			allowedToolNames: RESEARCH_SPECIALIST_TOOLS,
+			restrictedToolNames: ["inspect-prompt-contract"],
 		},
 		workflow: "linkedin-outreach",
 		workspace: createWorkspaceMetadata("linkedin-outreach", {
+			detailSurface: {
+				label: "LinkedIn Outreach",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "company-role",
@@ -454,22 +464,26 @@ const workflowRoutes = [
 					"LinkedIn outreach expects a company, role, or contact target to generate a bounded outreach draft.",
 				requiresSavedState: false,
 			},
-			summaryAvailability: "pending",
+			summaryAvailability: "dedicated-detail",
 			workspaceLabel: "LinkedIn Outreach",
 		}),
 	},
 	{
 		message:
-			"Interview prep remains blocked until typed interview-prep tooling is implemented.",
-		missingCapabilities: ["typed-interview-prep"],
+			"Interview prep can launch with the research specialist using typed context resolution, story-bank awareness, packet staging, and dedicated-detail review.",
+		missingCapabilities: [],
 		specialistId: "research-specialist",
-		status: "tooling-gap",
+		status: "ready",
 		toolPolicy: {
-			allowedToolNames: [],
-			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
+			allowedToolNames: RESEARCH_SPECIALIST_TOOLS,
+			restrictedToolNames: ["inspect-prompt-contract"],
 		},
 		workflow: "interview-prep",
 		workspace: createWorkspaceMetadata("interview-prep", {
+			detailSurface: {
+				label: "Interview Prep",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "company-role",
@@ -477,22 +491,26 @@ const workflowRoutes = [
 					"Interview prep expects a company and role target, with saved report context when available.",
 				requiresSavedState: false,
 			},
-			summaryAvailability: "pending",
+			summaryAvailability: "dedicated-detail",
 			workspaceLabel: "Interview Prep",
 		}),
 	},
 	{
 		message:
-			"Training review remains blocked until typed training-review tooling is implemented.",
-		missingCapabilities: ["typed-training-review"],
+			"Training review can launch with the research specialist using typed context resolution, packet staging, and dedicated-detail review state.",
+		missingCapabilities: [],
 		specialistId: "research-specialist",
-		status: "tooling-gap",
+		status: "ready",
 		toolPolicy: {
-			allowedToolNames: [],
-			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
+			allowedToolNames: RESEARCH_SPECIALIST_TOOLS,
+			restrictedToolNames: ["inspect-prompt-contract"],
 		},
 		workflow: "training-review",
 		workspace: createWorkspaceMetadata("training-review", {
+			detailSurface: {
+				label: "Training Review",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "training-topic",
@@ -500,22 +518,26 @@ const workflowRoutes = [
 					"Training review expects a course, certification, or skill investment to evaluate.",
 				requiresSavedState: false,
 			},
-			summaryAvailability: "pending",
+			summaryAvailability: "dedicated-detail",
 			workspaceLabel: "Training Review",
 		}),
 	},
 	{
 		message:
-			"Project review remains blocked until typed project-review tooling is implemented.",
-		missingCapabilities: ["typed-project-review"],
+			"Project review can launch with the research specialist using typed context resolution, packet staging, and dedicated-detail review state.",
+		missingCapabilities: [],
 		specialistId: "research-specialist",
-		status: "tooling-gap",
+		status: "ready",
 		toolPolicy: {
-			allowedToolNames: [],
-			fallbackToolNames: RESEARCH_FALLBACK_TOOLS,
+			allowedToolNames: RESEARCH_SPECIALIST_TOOLS,
+			restrictedToolNames: ["inspect-prompt-contract"],
 		},
 		workflow: "project-review",
 		workspace: createWorkspaceMetadata("project-review", {
+			detailSurface: {
+				label: "Project Review",
+				path: "/research-specialist",
+			},
 			family: "research-and-narrative",
 			intake: {
 				kind: "project-idea",
@@ -523,7 +545,7 @@ const workflowRoutes = [
 					"Project review expects a portfolio project concept, brief, or artifact outline.",
 				requiresSavedState: false,
 			},
-			summaryAvailability: "pending",
+			summaryAvailability: "dedicated-detail",
 			workspaceLabel: "Project Review",
 		}),
 	},

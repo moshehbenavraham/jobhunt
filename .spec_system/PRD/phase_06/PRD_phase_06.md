@@ -4,7 +4,7 @@
 **Sessions**: 6
 **Estimated Duration**: 8-12 days
 
-**Progress**: 3/6 sessions (50%)
+**Progress**: 4/6 sessions (67%)
 
 ---
 
@@ -33,7 +33,7 @@ boundary.
 | 01      | Specialist Workflow Intake and Result Contracts | Complete    | ~12-25     | 2026-04-22 |
 | 02      | Specialist Workspace Foundation                 | Complete    | ~12-25     | 2026-04-22 |
 | 03      | Offer, Follow-Up, and Pattern Contracts         | Complete    | ~12-25     | 2026-04-22 |
-| 04      | Research and Narrative Specialist Contracts     | Not Started | ~12-25     | -          |
+| 04      | Research and Narrative Specialist Contracts     | Complete    | ~12-25     | 2026-04-22 |
 | 05      | Specialist Review Surfaces                      | Not Started | ~12-25     | -          |
 | 06      | Dashboard Replacement, Maintenance, and Cutover | Not Started | ~12-25     | -          |
 
@@ -44,12 +44,14 @@ boundary.
 1. Session 01: Specialist Workflow Intake and Result Contracts
 2. Session 02: Specialist Workspace Foundation
 3. Session 03: Offer, Follow-Up, and Pattern Contracts
+4. Session 04: Research and Narrative Specialist Contracts
 
 ---
 
 ## Upcoming Sessions
 
-- Session 04: Research and Narrative Specialist Contracts
+- Session 05: Specialist Review Surfaces
+- Session 06: Dashboard Replacement, Maintenance, and Cutover
 
 ---
 

@@ -10,6 +10,7 @@ import { createLivenessCheckTools } from "./liveness-check-tools.js";
 import { createOnboardingRepairTools } from "./onboarding-repair-tools.js";
 import { createPdfGenerationTools } from "./pdf-generation-tools.js";
 import { createPipelineProcessingTools } from "./pipeline-processing-tools.js";
+import { createResearchSpecialistTools } from "./research-specialist-tools.js";
 import { createScanWorkflowTools } from "./scan-workflow-tools.js";
 import { createStartupInspectionTools } from "./startup-inspection-tools.js";
 import type { ToolRegistryInput } from "./tool-contract.js";
@@ -44,6 +45,7 @@ export function createDefaultToolSuite(options: {
 		...createBatchWorkflowTools(),
 		...createEvaluationArtifactTools(),
 		...createApplicationHelpTools(),
+		...createResearchSpecialistTools(),
 		...createPdfGenerationTools(),
 		...createTrackerSpecialistTools(),
 		...createTrackerIntegrityTools(),

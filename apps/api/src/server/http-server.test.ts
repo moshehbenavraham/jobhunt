@@ -6379,6 +6379,589 @@ test("tracker-specialist route covers missing-input, degraded, resumed, complete
 	}
 });
 
+test("research-specialist route covers missing-input, no-packet-yet, approval-paused, rejected, resumed, completed, latest fallback, and invalid query states", async () => {
+	const fixture = await createReadyFixture();
+	const services = createApiServiceContainer({
+		agentRuntime: createDelayedReadyAgentRuntime(fixture.repoRoot, 0),
+		repoRoot: fixture.repoRoot,
+	});
+	const runtimeStore = await services.operationalStore.getStore();
+
+	const saveResearchSpecialistSession = async (input: {
+		activeJobId?: string | null;
+		context?: JsonValue | null;
+		sessionId: string;
+		status: RuntimeSessionStatus;
+		timestamp: string;
+		workflow:
+			| "deep-company-research"
+			| "interview-prep"
+			| "linkedin-outreach"
+			| "project-review"
+			| "training-review";
+	}) => {
+		await runtimeStore.sessions.save({
+			activeJobId: input.activeJobId ?? null,
+			context:
+				input.context === undefined
+					? {
+							workflow: input.workflow,
+						}
+					: input.context,
+			createdAt: input.timestamp,
+			lastHeartbeatAt: input.timestamp,
+			runnerId:
+				input.status === "pending" || input.activeJobId === null
+					? null
+					: "runner-http-research-specialist",
+			sessionId: input.sessionId,
+			status: input.status,
+			updatedAt: input.timestamp,
+			workflow: input.workflow,
+		});
+	};
+
+	const saveResearchSpecialistJob = async (input: {
+		error?: JsonValue | null;
+		jobId: string;
+		sessionId: string;
+		status: RuntimeJobStatus;
+		timestamp: string;
+		waitApprovalId?: string | null;
+		waitReason?: RuntimeJobWaitReason | null;
+		workflow:
+			| "deep-company-research"
+			| "interview-prep"
+			| "linkedin-outreach"
+			| "project-review"
+			| "training-review";
+	}) => {
+		const isActive = input.status === "running" || input.status === "waiting";
+
+		await runtimeStore.jobs.save({
+			attempt: 1,
+			claimOwnerId: isActive ? "runner-http-research-specialist" : null,
+			claimToken: isActive ? `claim-${input.jobId}` : null,
+			completedAt:
+				input.status === "completed" ||
+				input.status === "failed" ||
+				input.status === "cancelled"
+					? input.timestamp
+					: null,
+			createdAt: input.timestamp,
+			currentRunId: `${input.jobId}-run`,
+			error: input.error ?? null,
+			jobId: input.jobId,
+			jobType: input.workflow,
+			lastHeartbeatAt: isActive ? input.timestamp : null,
+			leaseExpiresAt: input.status === "running" ? input.timestamp : null,
+			maxAttempts: 3,
+			nextAttemptAt: null,
+			payload: {
+				workflow: input.workflow,
+			},
+			result: null,
+			retryBackoffMs: 1_000,
+			sessionId: input.sessionId,
+			startedAt:
+				input.status === "pending" || input.status === "queued"
+					? null
+					: input.timestamp,
+			status: input.status,
+			updatedAt: input.timestamp,
+			waitApprovalId: input.waitApprovalId ?? null,
+			waitReason: input.waitReason ?? null,
+		});
+	};
+
+	const saveResearchApproval = async (input: {
+		approvalId: string;
+		jobId: string;
+		sessionId: string;
+		status: "approved" | "pending" | "rejected";
+		timestamp: string;
+		title: string;
+	}) => {
+		await runtimeStore.approvals.save({
+			approvalId: input.approvalId,
+			jobId: input.jobId,
+			request: {
+				action: "review-research-specialist",
+				title: input.title,
+			},
+			requestedAt: input.timestamp,
+			resolvedAt: input.status === "pending" ? null : input.timestamp,
+			response: input.status === "pending" ? null : { message: "Resolved" },
+			sessionId: input.sessionId,
+			status: input.status,
+			traceId: `${input.approvalId}-trace`,
+			updatedAt: input.timestamp,
+		});
+	};
+
+	const saveResearchFailure = async (input: {
+		jobId: string;
+		message: string;
+		sessionId: string;
+		timestamp: string;
+	}) => {
+		await runtimeStore.events.save({
+			approvalId: null,
+			eventId: `${input.jobId}-failed`,
+			eventType: "job-failed",
+			jobId: input.jobId,
+			level: "error",
+			metadata: {
+				message: input.message,
+				runId: `${input.jobId}-run`,
+			},
+			occurredAt: input.timestamp,
+			requestId: null,
+			sessionId: input.sessionId,
+			summary: input.message,
+			traceId: `${input.jobId}-trace`,
+		});
+	};
+
+	const stageResearchPacket = async (sessionId: string, input: JsonValue) => {
+		const toolService = await services.tools.getService();
+
+		await toolService.execute({
+			correlation: {
+				jobId: `tool-job-${sessionId}`,
+				requestId: `tool-request-${sessionId}`,
+				sessionId,
+				traceId: `tool-trace-${sessionId}`,
+			},
+			input,
+			toolName: "stage-research-specialist-packet",
+		});
+	};
+
+	const createContext = (
+		mode:
+			| "deep-company-research"
+			| "interview-prep"
+			| "linkedin-outreach"
+			| "project-review"
+			| "training-review",
+		input: Partial<{
+			company: string | null;
+			role: string | null;
+			subject: string | null;
+		}> = {},
+	) => ({
+		artifactName: null,
+		company: input.company ?? null,
+		mode,
+		modeDescription: `Mode description for ${mode}`,
+		modeRepoRelativePath:
+			mode === "deep-company-research"
+				? "modes/deep.md"
+				: mode === "linkedin-outreach"
+					? "modes/contacto.md"
+					: mode === "interview-prep"
+						? "modes/interview-prep.md"
+						: mode === "training-review"
+							? "modes/training.md"
+							: "modes/project.md",
+		reportContext: null,
+		role: input.role ?? null,
+		storyBank: null,
+		subject: input.subject ?? null,
+	});
+
+	await saveResearchSpecialistSession({
+		sessionId: "deep-missing-http",
+		status: "completed",
+		timestamp: "2026-04-22T09:55:00.000Z",
+		workflow: "deep-company-research",
+	});
+
+	await saveResearchSpecialistSession({
+		activeJobId: "job-deep-completed-http",
+		context: {
+			company: "Context Co",
+			role: "Applied AI Engineer",
+		},
+		sessionId: "deep-completed-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:00:00.000Z",
+		workflow: "deep-company-research",
+	});
+	await saveResearchSpecialistJob({
+		jobId: "job-deep-completed-http",
+		sessionId: "deep-completed-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:00:00.000Z",
+		workflow: "deep-company-research",
+	});
+	await stageResearchPacket("deep-completed-http", {
+		context: createContext("deep-company-research", {
+			company: "Context Co",
+			role: "Applied AI Engineer",
+		}),
+		message: "Deep research packet ready.",
+		mode: "deep-company-research",
+		resultStatus: "ready",
+		sections: {
+			aiStrategy: ["Production AI assistant"],
+			candidateAngle: ["Applied delivery story"],
+			competitors: ["Rival Co"],
+			engineeringCulture: ["Remote-first"],
+			likelyChallenges: ["Latency"],
+			recentMoves: ["Recent AI launch"],
+		},
+		sessionId: "deep-completed-http",
+		sources: [
+			{
+				label: "Company blog",
+				note: "Mentions applied AI",
+				url: "https://example.com/blog",
+			},
+		],
+		warnings: [],
+	});
+
+	await saveResearchSpecialistSession({
+		activeJobId: "job-interview-paused-http",
+		context: {
+			company: "Context Co",
+			role: "Applied AI Engineer",
+		},
+		sessionId: "interview-paused-http",
+		status: "waiting",
+		timestamp: "2026-04-22T10:05:00.000Z",
+		workflow: "interview-prep",
+	});
+	await saveResearchSpecialistJob({
+		jobId: "job-interview-paused-http",
+		sessionId: "interview-paused-http",
+		status: "waiting",
+		timestamp: "2026-04-22T10:05:00.000Z",
+		waitApprovalId: "approval-interview-paused-http",
+		waitReason: "approval",
+		workflow: "interview-prep",
+	});
+	await saveResearchApproval({
+		approvalId: "approval-interview-paused-http",
+		jobId: "job-interview-paused-http",
+		sessionId: "interview-paused-http",
+		status: "pending",
+		timestamp: "2026-04-22T10:05:00.000Z",
+		title: "Review interview prep scope",
+	});
+	await stageResearchPacket("interview-paused-http", {
+		context: createContext("interview-prep", {
+			company: "Context Co",
+			role: "Applied AI Engineer",
+		}),
+		message: "Interview prep packet ready.",
+		mode: "interview-prep",
+		outputRepoRelativePath: "interview-prep/context-co-applied-ai-engineer.md",
+		processOverview: {
+			difficulty: "4/5",
+			format: "screen -> panel",
+			knownQuirks: ["Practical discussion"],
+			positiveExperienceRate: "60%",
+			rounds: "3 rounds",
+			sources: ["Glassdoor"],
+		},
+		resultStatus: "ready",
+		rounds: [
+			{
+				conductedBy: "Hiring manager",
+				duration: "45 min",
+				evaluates: ["AI delivery"],
+				name: "Technical Screen",
+				preparation: ["Review recent launches"],
+				questions: ["Tell me about a production AI system you shipped."],
+			},
+		],
+		sessionId: "interview-paused-http",
+		storyBankGaps: ["Need one conflict-resolution story"],
+		technicalChecklist: [
+			{
+				reason: "Practical system design focus",
+				topic: "Production LLM reliability",
+			},
+		],
+		warnings: [],
+	});
+
+	await saveResearchSpecialistSession({
+		activeJobId: "job-outreach-rejected-http",
+		context: {
+			company: "Context Co",
+			role: "Applied AI Engineer",
+		},
+		sessionId: "outreach-rejected-http",
+		status: "failed",
+		timestamp: "2026-04-22T10:08:00.000Z",
+		workflow: "linkedin-outreach",
+	});
+	await saveResearchSpecialistJob({
+		error: {
+			message: "Needs revised message.",
+		},
+		jobId: "job-outreach-rejected-http",
+		sessionId: "outreach-rejected-http",
+		status: "failed",
+		timestamp: "2026-04-22T10:08:00.000Z",
+		workflow: "linkedin-outreach",
+	});
+	await saveResearchApproval({
+		approvalId: "approval-outreach-rejected-http",
+		jobId: "job-outreach-rejected-http",
+		sessionId: "outreach-rejected-http",
+		status: "rejected",
+		timestamp: "2026-04-22T10:08:00.000Z",
+		title: "Review outreach draft",
+	});
+	await stageResearchPacket("outreach-rejected-http", {
+		alternativeTargets: [],
+		characterCount: 120,
+		context: createContext("linkedin-outreach", {
+			company: "Context Co",
+			role: "Applied AI Engineer",
+		}),
+		language: "English",
+		message: "LinkedIn outreach packet ready.",
+		messageDraft: "Hi - reaching out because your team is scaling AI systems.",
+		mode: "linkedin-outreach",
+		primaryTarget: {
+			name: "Hiring Manager",
+			profileUrl: null,
+			title: "Director of AI",
+			type: "hiring-manager",
+		},
+		resultStatus: "ready",
+		sessionId: "outreach-rejected-http",
+		warnings: [],
+	});
+
+	await saveResearchSpecialistSession({
+		activeJobId: "job-training-resumed-http",
+		context: {
+			subject: "LLM evals certification",
+		},
+		sessionId: "training-resumed-http",
+		status: "running",
+		timestamp: "2026-04-22T10:10:00.000Z",
+		workflow: "training-review",
+	});
+	await saveResearchSpecialistJob({
+		jobId: "job-training-resumed-http",
+		sessionId: "training-resumed-http",
+		status: "running",
+		timestamp: "2026-04-22T10:10:00.000Z",
+		workflow: "training-review",
+	});
+	await saveResearchFailure({
+		jobId: "job-training-resumed-http",
+		message: "Earlier run timed out before retry.",
+		sessionId: "training-resumed-http",
+		timestamp: "2026-04-22T10:09:00.000Z",
+	});
+	await stageResearchPacket("training-resumed-http", {
+		betterAlternative: null,
+		context: createContext("training-review", {
+			subject: "LLM evals certification",
+		}),
+		dimensions: [
+			{
+				dimension: "North Star alignment",
+				rationale: "Strong fit",
+				score: 5,
+			},
+		],
+		message: "Training review packet ready.",
+		mode: "training-review",
+		plan: [
+			{
+				deliverable: "Complete week-one labs",
+				label: "Week 1",
+			},
+		],
+		resultStatus: "ready",
+		sessionId: "training-resumed-http",
+		trainingTitle: "LLM evals certification",
+		verdict: "do-it",
+		warnings: [],
+	});
+
+	await saveResearchSpecialistSession({
+		context: {
+			subject: "AI portfolio project",
+		},
+		sessionId: "project-no-packet-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:12:00.000Z",
+		workflow: "project-review",
+	});
+
+	const handle = await startStartupHttpServer({
+		host: "127.0.0.1",
+		port: 0,
+		rateLimitMaxRequests: 20,
+		services,
+	});
+
+	try {
+		const { payload: missingPayload, response: missingResponse } =
+			await readJsonResponse(
+				`${handle.url}/research-specialist?sessionId=deep-missing-http`,
+			);
+		assert.equal(missingResponse.status, 200);
+		assert.equal(
+			(
+				missingPayload as {
+					selected: { summary: { state: string } | null };
+				}
+			).selected.summary?.state,
+			"missing-input",
+		);
+
+		const { payload: noPacketPayload } = await readJsonResponse(
+			`${handle.url}/research-specialist?sessionId=project-no-packet-http`,
+		);
+		assert.equal(
+			(
+				noPacketPayload as {
+					selected: { summary: { state: string } | null };
+				}
+			).selected.summary?.state,
+			"no-packet-yet",
+		);
+
+		const { payload: pausedPayload } = await readJsonResponse(
+			`${handle.url}/research-specialist?mode=interview-prep`,
+		);
+		assert.equal(
+			(
+				pausedPayload as {
+					selected: {
+						summary: {
+							approval: { status: string } | null;
+							state: string;
+						} | null;
+					};
+				}
+			).selected.summary?.state,
+			"approval-paused",
+		);
+		assert.equal(
+			(
+				pausedPayload as {
+					selected: {
+						summary: {
+							approval: { status: string } | null;
+							state: string;
+						} | null;
+					};
+				}
+			).selected.summary?.approval?.status,
+			"pending",
+		);
+
+		const { payload: rejectedPayload } = await readJsonResponse(
+			`${handle.url}/research-specialist?sessionId=outreach-rejected-http`,
+		);
+		assert.equal(
+			(
+				rejectedPayload as {
+					selected: { summary: { state: string } | null };
+				}
+			).selected.summary?.state,
+			"rejected",
+		);
+
+		const { payload: resumedPayload } = await readJsonResponse(
+			`${handle.url}/research-specialist?sessionId=training-resumed-http`,
+		);
+		assert.equal(
+			(
+				resumedPayload as {
+					selected: {
+						summary: {
+							run: { state: string };
+							state: string;
+						} | null;
+					};
+				}
+			).selected.summary?.state,
+			"resumed",
+		);
+		assert.equal(
+			(
+				resumedPayload as {
+					selected: {
+						summary: {
+							run: { state: string };
+							state: string;
+						} | null;
+					};
+				}
+			).selected.summary?.run.state,
+			"running",
+		);
+
+		const { payload: completedPayload } = await readJsonResponse(
+			`${handle.url}/research-specialist?sessionId=deep-completed-http`,
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					selected: { summary: { state: string } | null };
+				}
+			).selected.summary?.state,
+			"completed",
+		);
+
+		const { payload: latestPayload } = await readJsonResponse(
+			`${handle.url}/research-specialist`,
+		);
+		assert.equal(
+			(
+				latestPayload as {
+					selected: {
+						origin: string;
+						summary: { session: { sessionId: string } | null } | null;
+					};
+				}
+			).selected.origin,
+			"latest-session",
+		);
+		assert.equal(
+			(
+				latestPayload as {
+					selected: {
+						origin: string;
+						summary: { session: { sessionId: string } | null } | null;
+					};
+				}
+			).selected.summary?.session?.sessionId,
+			"training-resumed-http",
+		);
+
+		const { payload: invalidPayload, response: invalidResponse } =
+			await readJsonResponse(`${handle.url}/research-specialist?mode=bad`);
+		assert.equal(invalidResponse.status, 400);
+		assert.equal(
+			(
+				invalidPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-research-specialist-query",
+		);
+	} finally {
+		await handle.close();
+		await services.dispose();
+		await fixture.cleanup();
+	}
+});
+
 test("specialist-workspace routes cover latest-session summaries, stale focus recovery, ready tracker launch, completed resume, missing-session resume, and duplicate launch guards", async () => {
 	const fixture = await createReadyFixture();
 	const services = createApiServiceContainer({
