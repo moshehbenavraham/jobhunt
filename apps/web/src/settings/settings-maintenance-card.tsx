@@ -211,7 +211,9 @@ export function SettingsMaintenanceCard({
           <strong>{updateCheck.remoteVersion ?? 'n/a'}</strong>
         </p>
         {updateCheck.changelogExcerpt ? (
-          <p style={{ color: '#475569', marginBottom: 0, marginTop: '0.45rem' }}>
+          <p
+            style={{ color: '#475569', marginBottom: 0, marginTop: '0.45rem' }}
+          >
             {updateCheck.changelogExcerpt}
           </p>
         ) : null}

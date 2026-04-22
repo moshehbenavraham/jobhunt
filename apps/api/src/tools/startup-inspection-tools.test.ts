@@ -5,17 +5,6 @@ import { createWorkspaceAdapter } from '../workspace/index.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
 import { createStartupInspectionTools } from './startup-inspection-tools.js';
 
-function getTool(name: string) {
-  const tool = createStartupInspectionTools({
-    getStartupDiagnostics: async () => {
-      throw new Error(`Tool ${name} did not receive a diagnostics provider.`);
-    },
-  }).find((candidate) => candidate.name === name);
-
-  assert.ok(tool);
-  return tool;
-}
-
 function createReadOnlyContext(repoRoot: string) {
   const workspace = createWorkspaceAdapter({ repoRoot });
 

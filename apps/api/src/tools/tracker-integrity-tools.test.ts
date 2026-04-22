@@ -3,8 +3,12 @@ import test from 'node:test';
 import { createTrackerIntegrityTools } from './tracker-integrity-tools.js';
 import { createToolHarness } from './test-utils.js';
 
-function getOutput(result: unknown) {
-  return (result as { output?: unknown }).output as Record<string, any>;
+type TrackerToolOutput = {
+  status: string;
+};
+
+function getOutput<T>(result: unknown): T {
+  return (result as { output?: unknown }).output as T;
 }
 
 function createCorrelation(toolName: string) {
@@ -67,13 +71,16 @@ test('tracker staging formats TSV content and becomes idempotent on repeat input
     });
 
     assert.equal(firstResult.status, 'completed');
-    assert.equal(getOutput(firstResult).status, 'staged');
+    assert.equal(getOutput<TrackerToolOutput>(firstResult).status, 'staged');
     assert.equal(
       await harness.fixture.readText('batch/tracker-additions/7-acme.tsv'),
       '7\t2026-04-21\tAcme\tPlatform Engineer\tEvaluated\t4.5/5\t\t[007](reports/007-acme-2026-04-21.md)\tone line note\n',
     );
     assert.equal(secondResult.status, 'completed');
-    assert.equal(getOutput(secondResult).status, 'already-staged');
+    assert.equal(
+      getOutput<TrackerToolOutput>(secondResult).status,
+      'already-staged',
+    );
   } finally {
     await harness.cleanup();
   }

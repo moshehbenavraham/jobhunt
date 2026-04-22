@@ -284,7 +284,10 @@ function parseChecklistItem(value: unknown): OnboardingChecklistItem {
   };
 }
 
-function parseChecklistItems(record: JsonRecord, key: string): OnboardingChecklistItem[] {
+function parseChecklistItems(
+  record: JsonRecord,
+  key: string,
+): OnboardingChecklistItem[] {
   const value = record[key];
 
   if (!Array.isArray(value)) {
@@ -416,8 +419,7 @@ function parseCurrentSession(
     id: readString(record, 'id'),
     monorepo: readNullableBoolean(record, 'monorepo'),
     packagePath: readNullableString(record, 'packagePath'),
-    phase:
-      record.phase === null ? null : readNumber(record, 'phase'),
+    phase: record.phase === null ? null : readNumber(record, 'phase'),
     source,
     stateFilePath: readString(record, 'stateFilePath'),
   };
@@ -495,7 +497,9 @@ export function parseOnboardingRepairPayload(
   };
 }
 
-export function parseOnboardingErrorPayload(value: unknown): OnboardingErrorPayload {
+export function parseOnboardingErrorPayload(
+  value: unknown,
+): OnboardingErrorPayload {
   const record = assertRecord(value, 'onboarding error payload');
   const error = assertRecord(record.error, 'error payload');
   const status = readString(record, 'status');

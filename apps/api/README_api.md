@@ -2,7 +2,8 @@
 
 The API package owns the local app runtime for Job-Hunt. It provides the
 one-shot diagnostics entrypoint, the long-lived boot server, the workspace
-adapter, the prompt-loading contract used by the app shell, and the
+adapter, the prompt-loading contract used by the app shell, onboarding repair
+summary and mutation routes, approval inbox routes, settings routes, and the
 authenticated agent-runtime bootstrap plus the durable job-runner surface used
 by later runner and tool work.
 
@@ -37,6 +38,7 @@ npm run validate:tools
 - `src/runtime/` - validated runtime config and the package service container
 - `src/agent-runtime/` - typed auth readiness, provider bridge, and prompt bootstrap service
 - `src/approval-runtime/` - persisted approval creation, resolution, and pending-approval summaries
+- `src/server/` - HTTP routes for startup, onboarding, approvals, settings, and workflow surfaces
 - `src/job-runner/` - durable queueing, checkpoint recovery, executor registry, and service tests
 - `src/observability/` - redacted runtime event writes and bounded diagnostics summaries
 - `src/orchestration/` - workflow routing, specialist topology, session reuse, and typed orchestration handoff envelopes
@@ -46,6 +48,18 @@ npm run validate:tools
 - `src/tools/` - typed backend-owned tool contracts, execution policy, and constrained side-effect adapters
 - `src/workspace/` - repo-bound file contract helpers and guarded read/write logic
 - `src/prompt/` - prompt source ordering, cache, composition, and loader logic
+
+## HTTP Surfaces
+
+- `/startup` and `/health` expose the startup diagnostics and runtime health
+  contract.
+- `/onboarding` and `/onboarding/repair` expose the missing-file summary and
+  template-backed repair flow.
+- `/approvals` exposes the approval inbox and approve/reject mutations.
+- `/settings` exposes maintenance commands, updater state, and bounded
+  workspace previews.
+- Workflow bootstrap routes expose the app-owned launch and resume helpers for
+  the operator shell.
 
 When you are working from the repo root, the corresponding aliases are
 `npm run app:api:dev`, `npm run app:api:serve`, `npm run app:api:build`,

@@ -14,11 +14,7 @@ const SCRIPT_DIR = dirname(SCRIPT_PATH);
 const PROJECT_ROOT = process.env.JOBHUNT_ROOT
   ? resolve(process.env.JOBHUNT_ROOT)
   : resolve(SCRIPT_DIR, '..');
-const RUNNER_PATH = resolve(
-  PROJECT_ROOT,
-  'scripts',
-  'run-scheduled-backup.sh',
-);
+const RUNNER_PATH = resolve(PROJECT_ROOT, 'scripts', 'run-scheduled-backup.sh');
 
 const BEGIN_MARKER = '# BEGIN jobhunt daily backup';
 const END_MARKER = '# END jobhunt daily backup';

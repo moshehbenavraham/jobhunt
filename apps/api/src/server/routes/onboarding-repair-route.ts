@@ -45,7 +45,11 @@ function createRepairErrorResponse(error: unknown) {
     if (error.code === 'tool-invalid-config') {
       return createJsonRouteResponse(
         500,
-        createErrorPayload('error', 'onboarding-template-missing', error.message),
+        createErrorPayload(
+          'error',
+          'onboarding-template-missing',
+          error.message,
+        ),
       );
     }
 

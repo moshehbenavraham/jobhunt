@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import {
   scanWorkflowPayloadSchema,
   type ScanWorkflowPayload,

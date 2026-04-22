@@ -84,21 +84,25 @@ If you want a direct repo-owned runtime check after login, run:
 npm run agents:codex:smoke -- --json
 ```
 
-### 6. Start the app scaffold
+### 6. Start the app surface
 
 ```bash
 npm run app:validate
 ```
 
-The app scaffold gives you the new boot surface:
+The app surface gives you the local operator runtime:
 
 - `npm run app:web:dev` for the React shell
 - `npm run app:api:serve` for the long-lived API server
 - `npm run app:boot:test` for the live repo-root smoke test
 
+The shell now includes onboarding repair, approval review, and settings
+surfaces on top of startup diagnostics, so `npm run app:validate` is the
+preferred first runtime check after setup.
+
 From the repo root, the legacy `codex` workflow still works for CLI-based
-job-search operations, but the app scaffold is now the preferred boot path for
-the Phase 00 runtime contract.
+job-search operations, but the app surface is now the preferred boot path for
+the local runtime contract.
 
 ## Follow-up Verification
 

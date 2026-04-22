@@ -5,10 +5,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import {
-  fetchSettingsSummary,
-  SettingsClientError,
-} from './settings-client';
+import { fetchSettingsSummary, SettingsClientError } from './settings-client';
 import type {
   SettingsSummaryPayload,
   SettingsViewStatus,
@@ -48,11 +45,13 @@ function toSettingsClientError(error: unknown): SettingsClientError {
   });
 }
 
-export function useSettingsSurface(options: {
-  onSummaryRefresh?: () => void;
-  toolLimit?: number;
-  workflowLimit?: number;
-} = {}): {
+export function useSettingsSurface(
+  options: {
+    onSummaryRefresh?: () => void;
+    toolLimit?: number;
+    workflowLimit?: number;
+  } = {},
+): {
   refresh: () => void;
   state: SettingsSurfaceState;
 } {

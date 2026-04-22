@@ -1,7 +1,7 @@
 # Job-Hunt
 
 AI-powered job search pipeline driven by `AGENTS.md`, checked-in Codex skills,
-repo-owned scripts, and the app scaffold under `apps/`.
+repo-owned scripts, and the app surface under `apps/`.
 
 It also includes a Go-based terminal dashboard for browsing and updating the
 job-search pipeline.
@@ -33,7 +33,7 @@ See the [Setup Guide](docs/SETUP.md) for the detailed walkthrough.
 After it passes, you have two normal next steps:
 
 - if you want repo-owned OpenAI runtime flows, run `npm run auth:openai -- login` once from the repo root
-- if you want the app scaffold, run `npm run app:validate`, then `npm run app:web:dev` and `npm run app:api:serve`
+- if you want the app surface, run `npm run app:validate`, then `npm run app:web:dev` and `npm run app:api:serve`
 - if you already have a job URL or JD and want the legacy CLI workflow, launch `codex` from the repo root and paste it
 - if you need discovery first, run `npm run scan`, then review `data/pipeline.md -> ## Shortlist` and start with the top 3 roles
 
@@ -74,11 +74,11 @@ The standard user-layer inputs are:
 `pdflatex` available locally, or when you want to hand off the generated `.tex`
 file to Overleaf.
 
-## App Scaffold
+## App Surface
 
-Phase 00 adds a minimal app scaffold under `apps/` so later local-parity
-sessions have explicit package boundaries instead of process-relative runtime
-assumptions.
+The app surface under `apps/` is the preferred local runtime path. It now
+covers startup diagnostics, onboarding repair, approval review, settings, and
+the long-lived API boot server instead of only the initial scaffold.
 
 - `npm run app:web:dev` - start the React shell with Vite
 - `npm run app:web:build` - build the web scaffold into `apps/web/dist`
@@ -89,10 +89,14 @@ assumptions.
 - `npm run app:boot:test` - run the repo boot smoke harness
 - `npm run app:validate` - run the app checks and boot smoke together
 
-The scaffold owns only `apps/web`, `apps/api`, and the repo-root
+The surface owns only `apps/web`, `apps/api`, and the repo-root
 `.jobhunt-app/` runtime directory. App commands must not create or mutate
 user-layer files under `profile/`, `config/`, `data/`, `reports/`, `output/`,
 `interview-prep/`, or `jds/`.
+
+The API package exposes the startup, onboarding, approval inbox, settings, and
+workflow bootstrap routes used by the web shell. The web package renders those
+operator surfaces and keeps them read-first against the repo-owned contract.
 
 `npm run scan` is currently an API-first scanner. It uses
 `tracked_companies`, `title_filter.positive`, and `title_filter.negative` from

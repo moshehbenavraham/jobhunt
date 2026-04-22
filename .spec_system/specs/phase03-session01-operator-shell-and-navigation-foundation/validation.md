@@ -29,12 +29,12 @@
 
 ### Status: PASS
 
-| Category      | Required | Completed | Status |
-| ------------- | -------- | --------- | ------ |
-| Setup         | 3        | 3         | PASS   |
-| Foundation    | 5        | 5         | PASS   |
-| Implementation| 4        | 4         | PASS   |
-| Testing       | 4        | 4         | PASS   |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 3        | 3         | PASS   |
+| Foundation     | 5        | 5         | PASS   |
+| Implementation | 4        | 4         | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -48,25 +48,25 @@ None.
 
 ### Files Reviewed
 
-| File | Found | Status |
-| ---- | ----- | ------ |
-| `apps/web/src/shell/shell-types.ts` | Yes | PASS |
-| `apps/web/src/shell/operator-shell-client.ts` | Yes | PASS |
-| `apps/web/src/shell/use-operator-shell.ts` | Yes | PASS |
-| `apps/web/src/shell/navigation-rail.tsx` | Yes | PASS |
-| `apps/web/src/shell/status-strip.tsx` | Yes | PASS |
-| `apps/web/src/shell/surface-placeholder.tsx` | Yes | PASS |
-| `apps/web/src/shell/operator-shell.tsx` | Yes | PASS |
-| `apps/api/src/server/operator-shell-summary.ts` | Yes | PASS |
-| `apps/api/src/server/routes/operator-shell-route.ts` | Yes | PASS |
-| `scripts/test-app-shell.mjs` | Yes | PASS |
-| `apps/web/src/App.tsx` | Yes | PASS |
-| `apps/web/src/boot/startup-status-panel.tsx` | Yes | PASS |
-| `apps/web/src/boot/startup-types.ts` | Yes | PASS |
-| `apps/web/src/boot/use-startup-diagnostics.ts` | Yes | PASS |
-| `apps/api/src/server/routes/index.ts` | Yes | PASS |
-| `apps/api/src/server/http-server.test.ts` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
+| File                                                 | Found | Status |
+| ---------------------------------------------------- | ----- | ------ |
+| `apps/web/src/shell/shell-types.ts`                  | Yes   | PASS   |
+| `apps/web/src/shell/operator-shell-client.ts`        | Yes   | PASS   |
+| `apps/web/src/shell/use-operator-shell.ts`           | Yes   | PASS   |
+| `apps/web/src/shell/navigation-rail.tsx`             | Yes   | PASS   |
+| `apps/web/src/shell/status-strip.tsx`                | Yes   | PASS   |
+| `apps/web/src/shell/surface-placeholder.tsx`         | Yes   | PASS   |
+| `apps/web/src/shell/operator-shell.tsx`              | Yes   | PASS   |
+| `apps/api/src/server/operator-shell-summary.ts`      | Yes   | PASS   |
+| `apps/api/src/server/routes/operator-shell-route.ts` | Yes   | PASS   |
+| `scripts/test-app-shell.mjs`                         | Yes   | PASS   |
+| `apps/web/src/App.tsx`                               | Yes   | PASS   |
+| `apps/web/src/boot/startup-status-panel.tsx`         | Yes   | PASS   |
+| `apps/web/src/boot/startup-types.ts`                 | Yes   | PASS   |
+| `apps/web/src/boot/use-startup-diagnostics.ts`       | Yes   | PASS   |
+| `apps/api/src/server/routes/index.ts`                | Yes   | PASS   |
+| `apps/api/src/server/http-server.test.ts`            | Yes   | PASS   |
+| `scripts/test-all.mjs`                               | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -78,25 +78,25 @@ None.
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-| ---- | -------- | ------------ | ------ |
-| `apps/web/src/shell/shell-types.ts` | ASCII | LF | PASS |
-| `apps/web/src/shell/operator-shell-client.ts` | ASCII | LF | PASS |
-| `apps/web/src/shell/use-operator-shell.ts` | ASCII | LF | PASS |
-| `apps/web/src/shell/navigation-rail.tsx` | ASCII | LF | PASS |
-| `apps/web/src/shell/status-strip.tsx` | ASCII | LF | PASS |
-| `apps/web/src/shell/surface-placeholder.tsx` | ASCII | LF | PASS |
-| `apps/web/src/shell/operator-shell.tsx` | ASCII | LF | PASS |
-| `apps/api/src/server/operator-shell-summary.ts` | ASCII | LF | PASS |
-| `apps/api/src/server/routes/operator-shell-route.ts` | ASCII | LF | PASS |
-| `scripts/test-app-shell.mjs` | ASCII | LF | PASS |
-| `apps/web/src/App.tsx` | ASCII | LF | PASS |
-| `apps/web/src/boot/startup-status-panel.tsx` | ASCII | LF | PASS |
-| `apps/web/src/boot/startup-types.ts` | ASCII | LF | PASS |
-| `apps/web/src/boot/use-startup-diagnostics.ts` | ASCII | LF | PASS |
-| `apps/api/src/server/routes/index.ts` | ASCII | LF | PASS |
-| `apps/api/src/server/http-server.test.ts` | ASCII | LF | PASS |
-| `scripts/test-all.mjs` | ASCII | LF | PASS |
+| File                                                 | Encoding | Line Endings | Status |
+| ---------------------------------------------------- | -------- | ------------ | ------ |
+| `apps/web/src/shell/shell-types.ts`                  | ASCII    | LF           | PASS   |
+| `apps/web/src/shell/operator-shell-client.ts`        | ASCII    | LF           | PASS   |
+| `apps/web/src/shell/use-operator-shell.ts`           | ASCII    | LF           | PASS   |
+| `apps/web/src/shell/navigation-rail.tsx`             | ASCII    | LF           | PASS   |
+| `apps/web/src/shell/status-strip.tsx`                | ASCII    | LF           | PASS   |
+| `apps/web/src/shell/surface-placeholder.tsx`         | ASCII    | LF           | PASS   |
+| `apps/web/src/shell/operator-shell.tsx`              | ASCII    | LF           | PASS   |
+| `apps/api/src/server/operator-shell-summary.ts`      | ASCII    | LF           | PASS   |
+| `apps/api/src/server/routes/operator-shell-route.ts` | ASCII    | LF           | PASS   |
+| `scripts/test-app-shell.mjs`                         | ASCII    | LF           | PASS   |
+| `apps/web/src/App.tsx`                               | ASCII    | LF           | PASS   |
+| `apps/web/src/boot/startup-status-panel.tsx`         | ASCII    | LF           | PASS   |
+| `apps/web/src/boot/startup-types.ts`                 | ASCII    | LF           | PASS   |
+| `apps/web/src/boot/use-startup-diagnostics.ts`       | ASCII    | LF           | PASS   |
+| `apps/api/src/server/routes/index.ts`                | ASCII    | LF           | PASS   |
+| `apps/api/src/server/http-server.test.ts`            | ASCII    | LF           | PASS   |
+| `scripts/test-all.mjs`                               | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -108,12 +108,12 @@ None.
 
 ### Status: PASS
 
-| Metric      | Value |
-| ----------- | ----- |
+| Metric      | Value               |
+| ----------- | ------------------- |
 | Total Tests | 310 reported checks |
-| Passed      | 310 |
-| Failed      | 0 |
-| Warnings    | 0 |
+| Passed      | 310                 |
+| Failed      | 0                   |
+| Warnings    | 0                   |
 
 ### Validated Commands
 
@@ -179,13 +179,13 @@ From `spec.md`:
 
 ### Status: PASS
 
-| Category | Status | Notes |
-| -------- | ------ | ----- |
-| Naming | PASS | File and symbol names follow repo patterns |
-| File Structure | PASS | Session files live under the expected `apps/web`, `apps/api`, `scripts`, and `.spec_system` paths |
-| Error Handling | PASS | Explicit loading, offline, and runtime-error states are preserved |
-| Comments | PASS | Comments remain sparse and behavior-focused |
-| Testing | PASS | New tests cover routing, shell smoke, and the quick regression suite |
+| Category       | Status | Notes                                                                                             |
+| -------------- | ------ | ------------------------------------------------------------------------------------------------- |
+| Naming         | PASS   | File and symbol names follow repo patterns                                                        |
+| File Structure | PASS   | Session files live under the expected `apps/web`, `apps/api`, `scripts`, and `.spec_system` paths |
+| Error Handling | PASS   | Explicit loading, offline, and runtime-error states are preserved                                 |
+| Comments       | PASS   | Comments remain sparse and behavior-focused                                                       |
+| Testing        | PASS   | New tests cover routing, shell smoke, and the quick regression suite                              |
 
 ### Convention Violations
 
@@ -201,10 +201,10 @@ None.
 
 #### Summary
 
-| Area | Status | Findings |
-| ---- | ------ | -------- |
-| Security | PASS | 0 issues |
-| GDPR | N/A | No user-data collection or new sharing paths introduced |
+| Area     | Status | Findings                                                |
+| -------- | ------ | ------------------------------------------------------- |
+| Security | PASS   | 0 issues                                                |
+| GDPR     | N/A    | No user-data collection or new sharing paths introduced |
 
 ### Critical Violations
 
@@ -225,13 +225,13 @@ None.
 - `apps/web/src/shell/navigation-rail.tsx`
 - `apps/web/src/shell/status-strip.tsx`
 
-| Category | Status | File | Details |
-| -------- | ------ | ---- | ------- |
-| Trust boundaries | PASS | `apps/web/src/shell/operator-shell-client.ts` | Browser input is parsed into a bounded shell-summary model before UI consumption |
-| Resource cleanup | PASS | `apps/web/src/shell/use-operator-shell.ts` | Abort controllers and event listeners are cleaned up on scope exit |
-| Mutation safety | PASS | `apps/web/src/shell/use-operator-shell.ts` | Refresh and navigation actions are guarded against duplicate in-flight work |
-| Failure paths | PASS | `apps/web/src/shell/status-strip.tsx` | Loading, empty, offline, and runtime-error states are explicitly rendered |
-| Contract alignment | PASS | `apps/web/src/shell/navigation-rail.tsx` | Surface ids, badges, and hash-backed navigation remain aligned with the typed shell contract |
+| Category           | Status | File                                          | Details                                                                                      |
+| ------------------ | ------ | --------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Trust boundaries   | PASS   | `apps/web/src/shell/operator-shell-client.ts` | Browser input is parsed into a bounded shell-summary model before UI consumption             |
+| Resource cleanup   | PASS   | `apps/web/src/shell/use-operator-shell.ts`    | Abort controllers and event listeners are cleaned up on scope exit                           |
+| Mutation safety    | PASS   | `apps/web/src/shell/use-operator-shell.ts`    | Refresh and navigation actions are guarded against duplicate in-flight work                  |
+| Failure paths      | PASS   | `apps/web/src/shell/status-strip.tsx`         | Loading, empty, offline, and runtime-error states are explicitly rendered                    |
+| Contract alignment | PASS   | `apps/web/src/shell/navigation-rail.tsx`      | Surface ids, badges, and hash-backed navigation remain aligned with the typed shell contract |
 
 ### Violations Found
 

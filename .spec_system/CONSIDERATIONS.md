@@ -1,7 +1,7 @@
 # Considerations
 
 > Institutional memory for AI assistants. Updated between phases via carryforward.
-> **Line budget**: 600 max | **Last updated**: Phase 02 (2026-04-21)
+> **Line budget**: 600 max | **Last updated**: Phase 03 (2026-04-22)
 
 ---
 
@@ -17,6 +17,7 @@ Items requiring attention in upcoming phases. Review before each session.
 - [P00-apps/api] **Workspace registry coupling**: Boundary, read, and write helpers all depend on the checked-in surface registry; edits should flow through the registry instead of ad hoc path checks.
 - [P02-apps/api] **Tool catalog drift**: Keep default suite registration, scoped visibility, and router maps aligned as new tools and workflows are added.
 - [P02-apps/api] **Durable workflow fan-out**: Preserve the single enqueue/executor contract as scan, pipeline, and batch surfaces expand.
+- [P03-apps/web] **Frontend parser and fixture drift**: Strict payload parsers now gate shell, chat, onboarding, approvals, and settings; update fake API fixtures and backend summaries together.
 
 ### External Dependencies
 
@@ -24,6 +25,7 @@ Items requiring attention in upcoming phases. Review before each session.
 
 - [P00] **Repo-bound startup freshness**: Startup remains sensitive to missing or stale checked-in files. Keep required-file checks and onboarding messages aligned with the live contract.
 - [P02-apps/api] **Allowlisted script coverage**: Workflow scripts remain the execution boundary, so new script-backed tools need explicit registration and validation.
+- [P03-apps/api] **Updater JSON contract drift**: Settings relies on normalized results from `node scripts/update-system.mjs check`; keep the route helper aligned if updater output changes.
 
 ### Performance / Security
 
@@ -32,6 +34,8 @@ Items requiring attention in upcoming phases. Review before each session.
 - [P00] **Read-first boot surface**: Startup and diagnostics must stay read-only and metadata-only. Do not reintroduce hidden writes or stdout scraping.
 - [P00] **Live contract payload size**: Keep the boot response narrow so startup stays fast and the web UI does not depend on large derived payloads.
 - [P02-apps/api] **Mutation guardrails**: Workspace writes and report outputs must stay repo-relative and approval-aware; do not widen the target surface.
+- [P03-apps/web] **Bounded polling payloads**: Shell, chat, approval, and settings surfaces now poll backend summaries; keep queue/detail splits and preview caps intact as parity surfaces expand.
+- [P03-apps/web+apps/api] **Interaction race guards**: Onboarding repair and approval actions need browser-side duplicate-submit guards plus backend idempotence; do not rely on async UI state alone.
 
 ### Architecture
 
@@ -40,6 +44,8 @@ Items requiring attention in upcoming phases. Review before each session.
 - [P00] **Canonical live surface**: `AGENTS.md`, `.codex/skills/`, `modes/`, `docs/`, and the user-layer files remain the source of truth.
 - [P00] **Registry-first contracts**: Prompt routing, workspace ownership, and startup summaries should derive from checked-in registries, not duplicated path logic.
 - [P02-apps/api] **Catalog-driven routing**: Specialist routing and tool visibility should stay deterministic and checked-in; avoid implicit privilege expansion.
+- [P03-apps/web] **Thin browser surfaces**: New UX surfaces should stay parser-driven and backend-owned; avoid recreating routing, tool logic, or filesystem rules in React state.
+- [P03-apps/web+apps/api] **Single mutation paths**: Chat resume, onboarding repair, and approval decisions must reuse canonical runtime services instead of adding parallel UI-only command paths.
 
 ---
 
@@ -61,8 +67,11 @@ Proven patterns and anti-patterns. Reference during implementation.
 - [P02-apps/api] **Read-first inspection**: Deterministic summaries and prompt checks kept onboarding safe and testable.
 - [P02-apps/api] **Reservation before write**: Reserving report artifacts before writing prevented duplicate allocation.
 - [P02-apps/api] **Enqueue then run**: Durable workflow boundaries were cleaner than exposing direct long-running execution.
-- [P02-apps/api] **Resume first orchestration**: Reusing live sessions preserved approvals and runtime state.
+- [P02-apps/api] **Resume-first orchestration**: Reusing live sessions preserved approvals and runtime state.
 - [P02-apps/api] **Template-backed repair**: Bounded repairs from checked-in templates kept onboarding fixes predictable.
+- [P03-apps/web] **Bounded read models**: Queue-plus-selected-detail and summary-plus-preview contracts kept polling predictable and browser code small.
+- [P03-apps/web] **Strict payload parsing**: Browser-edge parsers surfaced contract drift explicitly instead of silently rendering partial state.
+- [P03-apps/web+apps/api] **Shell-wide refresh reuse**: Shared refresh callbacks let onboarding, approvals, and settings revalidate backend state without duplicating client wiring.
 
 ### What to Avoid
 
@@ -75,6 +84,9 @@ Proven patterns and anti-patterns. Reference during implementation.
 - [P00] **Hidden writes during diagnostics**: Boot and validation paths should not create app state or user-layer files.
 - [P02-apps/api] **Silent fallthrough**: Blocked workflows should fail explicitly instead of guessing a route.
 - [P02-apps/api] **Split tool registration**: Avoid a second startup tool path or parallel catalog source.
+- [P03-apps/web] **Unbounded polling summaries**: Do not return full approval, session, or preview detail when a bounded queue plus selected item or small preview will do.
+- [P03-apps/web] **UI-only mutation logic**: Do not let React surfaces invent repair, approval, or orchestration rules outside backend routes and runtime services.
+- [P03-apps/web] **Async-only submit locks**: React state alone is too slow to stop rapid double submits; use synchronous interaction guards where explicit mutations can race.
 
 ### Tool/Library Notes
 
@@ -82,10 +94,9 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 - [P00] **`scripts/test-app-scaffold.mjs`**: Use it for repo-boundary and startup-contract drift.
 - [P00] **`scripts/test-app-bootstrap.mjs`**: Use it for live boot-surface checks and no-mutation validation.
-- [P00] **`scripts/test-all.mjs --quick`**: The quick suite now covers scaffold, prompt, boot, and ASCII regressions.
-- [P00-apps/api] **Prompt cache invalidation**: File freshness should be rechecked on every lookup; missing files should evict cached entries immediately.
-- [P02-apps/api] **`scripts/test-all.mjs --quick`**: The quick suite now covers the Phase 02 tool and orchestration surface, so it remains the fastest repo-wide regression gate.
+- [P02-apps/api] **`scripts/test-all.mjs --quick`**: It remains the fastest repo-wide regression gate and now covers shell, chat, onboarding, approvals, and settings smoke paths.
 - [P02-apps/api] **Lazy service resolution**: Tool and job-executor wiring must stay acyclic when they cross-reference each other.
+- [P03-apps/web] **Fake API smoke fixtures**: Keep fixture payloads aligned with strict frontend parsers or the surfaces should fail closed by design.
 
 ---
 
@@ -93,13 +104,6 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 Recently closed items (buffer - rotates out after 2 phases).
 
-| Phase | Item                           | Resolution                                                                                                        |
-| ----- | ------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
-| P00   | Scaffold boundary drift        | Workspace, app-state, and repo-gate checks now cover the new app scaffold and keep writes inside `.jobhunt-app/`. |
-| P00   | Workspace contract drift       | Adapter ownership checks now reject protected targets before mutation and keep startup diagnostics read-only.     |
-| P00   | Prompt routing ambiguity       | Workflow-to-mode routing and source precedence are now explicit in the prompt loader contract.                    |
-| P00   | Boot-path drift                | API boot payloads now serialize from the startup contract and the web shell renders the same diagnostics surface. |
-| P00   | Version ownership drift        | Root `VERSION` remains canonical and mirrored by package metadata plus validation checks.                         |
-| P00   | Validator runtime footer drift | `npm run doctor` now ends with Codex-primary guidance and the repo gate asserts that output.                      |
+None. Older Phase 00 resolved items rotated out after the two-phase buffer.
 
 _Auto-generated by carryforward. Manual edits allowed but may be overwritten._

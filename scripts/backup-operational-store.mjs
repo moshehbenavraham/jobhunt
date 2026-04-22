@@ -65,13 +65,19 @@ function parseArgs(args = process.argv.slice(2)) {
       '--retention-days',
       DEFAULT_RETENTION_DAYS,
     ),
-    source: resolve(PROJECT_ROOT, parseStringFlag(args, '--source', DEFAULT_SOURCE)),
+    source: resolve(
+      PROJECT_ROOT,
+      parseStringFlag(args, '--source', DEFAULT_SOURCE),
+    ),
     verify: args.includes('--verify'),
   };
 }
 
 function formatTimestamp(date = new Date()) {
-  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  return date
+    .toISOString()
+    .replace(/[-:]/g, '')
+    .replace(/\.\d{3}Z$/, 'Z');
 }
 
 function formatExpiryCutoff(retentionDays) {
@@ -119,9 +125,7 @@ async function verifyRestoredBackup(backupPath) {
 
     const database = new DatabaseSync(restoredPath, { readOnly: true });
     try {
-      const integrityRow = database
-        .prepare('PRAGMA integrity_check;')
-        .get();
+      const integrityRow = database.prepare('PRAGMA integrity_check;').get();
       if (!integrityRow || integrityRow.integrity_check !== 'ok') {
         throw new Error(
           `Restored backup failed integrity check: ${backupPath}`,
@@ -154,12 +158,7 @@ async function getDatabaseSync() {
   return databaseSyncLoader;
 }
 
-async function createBackup({
-  destination,
-  retentionDays,
-  source,
-  verify,
-}) {
+async function createBackup({ destination, retentionDays, source, verify }) {
   if (!existsSync(source)) {
     return {
       created: false,

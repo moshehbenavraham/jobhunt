@@ -1,6 +1,8 @@
 export const SHELL_SURFACE_IDS = [
   'startup',
   'chat',
+  'pipeline',
+  'artifacts',
   'onboarding',
   'approvals',
   'settings',
@@ -29,6 +31,20 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
     id: 'chat',
     label: 'Chat',
     owner: 'Session 02',
+  },
+  {
+    description:
+      'Review shortlist context plus pending and processed queue rows with bounded detail and report handoff.',
+    id: 'pipeline',
+    label: 'Pipeline',
+    owner: 'Phase 04',
+  },
+  {
+    description:
+      'Review checked-in reports and browse recent report or PDF artifacts in one read-only shell surface.',
+    id: 'artifacts',
+    label: 'Artifacts',
+    owner: 'Phase 04',
   },
   {
     description:

@@ -108,7 +108,9 @@ export function OnboardingWizardSurface({
 
         <button
           aria-label="Refresh onboarding summary"
-          disabled={wizard.state.isRefreshing || wizard.state.pendingAction !== null}
+          disabled={
+            wizard.state.isRefreshing || wizard.state.pendingAction !== null
+          }
           onClick={wizard.refresh}
           style={{
             ...buttonStyle,

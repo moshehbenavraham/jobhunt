@@ -1,4 +1,4 @@
-import { ZodError } from 'zod';
+import type { ZodError } from 'zod';
 import type { OperationalStore } from '../store/index.js';
 import { WORKFLOW_INTENTS, type WorkflowIntent } from '../prompt/index.js';
 import {

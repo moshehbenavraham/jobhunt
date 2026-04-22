@@ -85,8 +85,6 @@ function listCandidateRoots(startDirectory: string): string[] {
   }
 }
 
-let cachedRepoRoot: string | undefined;
-
 function isPathInside(basePath: string, candidatePath: string): boolean {
   const relativePath = relative(basePath, candidatePath);
   return (
@@ -120,7 +118,6 @@ export function resolveRepoRoot(startDirectory: string = moduleDirectory): strin
     throw new RepoRootResolutionError(candidates);
   }
 
-  cachedRepoRoot = repoRoot;
   repoRootCache.set(resolvedStartDirectory, repoRoot);
   return repoRoot;
 }

@@ -6,7 +6,10 @@ import {
   type ApprovalInboxSummaryPayload,
   type ApprovalResolutionPayload,
 } from './approval-inbox-types';
-import { parseChatConsoleCommandPayload, type ChatConsoleCommandPayload } from '../chat/chat-console-types';
+import {
+  parseChatConsoleCommandPayload,
+  type ChatConsoleCommandPayload,
+} from '../chat/chat-console-types';
 import { resolveOrchestrationEndpoint } from '../chat/chat-console-client';
 
 const DEFAULT_TIMEOUT_MS = 4_000;
@@ -32,7 +35,10 @@ export class ApprovalInboxClientError extends Error {
     payload?: ApprovalInboxErrorPayload | null;
     state: 'error' | 'offline';
   }) {
-    super(options.message, options.cause ? { cause: options.cause } : undefined);
+    super(
+      options.message,
+      options.cause ? { cause: options.cause } : undefined,
+    );
     this.code = options.code;
     this.httpStatus = options.httpStatus ?? null;
     this.name = 'ApprovalInboxClientError';
@@ -170,7 +176,10 @@ function shouldRetry(error: unknown): boolean {
   return error.state === 'offline' || error.httpStatus === 429;
 }
 
-async function waitForRetry(delayMs: number, signal?: AbortSignal): Promise<void> {
+async function waitForRetry(
+  delayMs: number,
+  signal?: AbortSignal,
+): Promise<void> {
   if (delayMs === 0) {
     return;
   }

@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { EvaluationArtifactRail } from './evaluation-artifact-rail';
 import { RecentSessionList } from './recent-session-list';
 import { RunStatusPanel } from './run-status-panel';
 import { RunTimeline } from './run-timeline';
@@ -6,7 +7,17 @@ import { useChatConsole } from './use-chat-console';
 import { WorkflowComposer } from './workflow-composer';
 
 type ChatConsoleSurfaceProps = {
-  onOpenApprovals: (focus: { approvalId: string | null; sessionId: string | null }) => void;
+  onOpenApprovals: (focus: {
+    approvalId: string | null;
+    sessionId: string | null;
+  }) => void;
+  onOpenPipelineReview: (focus: {
+    reportNumber: string | null;
+    url: string | null;
+  }) => void;
+  onOpenReportViewer: (focus: {
+    reportPath: string | null;
+  }) => void;
 };
 
 const surfaceStyle: CSSProperties = {
@@ -40,11 +51,9 @@ const twoColumnStyle: CSSProperties = {
   gridTemplateColumns: 'repeat(auto-fit, minmax(20rem, 1fr))',
 };
 
-const lowerGridStyle: CSSProperties = {
-  alignItems: 'start',
+const rightColumnStyle: CSSProperties = {
   display: 'grid',
   gap: '1rem',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 20rem), 1fr))',
 };
 
 const selectedSummaryStyle: CSSProperties = {
@@ -54,6 +63,13 @@ const selectedSummaryStyle: CSSProperties = {
   display: 'grid',
   gap: '0.9rem',
   padding: '1rem',
+};
+
+const artifactWorkspaceStyle: CSSProperties = {
+  alignItems: 'start',
+  display: 'grid',
+  gap: '1rem',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 20rem), 1fr))',
 };
 
 function formatTimestamp(value: string | null): string {
@@ -72,6 +88,8 @@ function formatTimestamp(value: string | null): string {
 
 export function ChatConsoleSurface({
   onOpenApprovals,
+  onOpenPipelineReview,
+  onOpenReportViewer,
 }: ChatConsoleSurfaceProps) {
   const chatConsole = useChatConsole();
   const selectedWorkflow =
@@ -82,10 +100,25 @@ export function ChatConsoleSurface({
     chatConsole.state.command?.selectedSession ??
     chatConsole.state.data?.selectedSession ??
     null;
+  const evaluationSummary =
+    chatConsole.state.evaluationResult.data?.summary ?? null;
   const startupMessage =
     chatConsole.state.data?.message ??
     chatConsole.state.error?.message ??
     'Chat console summary has not loaded yet.';
+  const isConsoleBusy =
+    chatConsole.state.isRefreshing ||
+    chatConsole.state.evaluationResult.isRefreshing ||
+    chatConsole.state.pendingAction !== null;
+  const selectedSessionTitle =
+    selectedSession?.session.sessionId ??
+    evaluationSummary?.session?.sessionId ??
+    'No selected session';
+  const selectedSessionBody = evaluationSummary
+    ? `Evaluation state ${evaluationSummary.state} with ${evaluationSummary.closeout.state} closeout and ${evaluationSummary.warnings.totalCount} warning${evaluationSummary.warnings.totalCount === 1 ? '' : 's'}.`
+    : selectedSession
+      ? `Workflow ${selectedSession.session.workflow} with ${selectedSession.jobs.length} tracked jobs and ${selectedSession.approvals.length} approvals.`
+      : 'Select a recent session to inspect the evaluation handoff, runtime timeline, and next review action in one place.';
 
   return (
     <section aria-labelledby="chat-console-title" style={surfaceStyle}>
@@ -100,14 +133,15 @@ export function ChatConsoleSurface({
               textTransform: 'uppercase',
             }}
           >
-            Session 02
+            Phase 04 / Session 02
           </p>
           <h2 id="chat-console-title" style={{ marginBottom: '0.35rem' }}>
-            Chat console and session resume
+            Evaluation console and artifact handoff
           </h2>
           <p style={{ color: '#64748b', marginBottom: '0.2rem' }}>
-            Launch supported workflows, inspect deterministic run state, and
-            reopen recent sessions without leaving the shell.
+            Launch or resume evaluation workflows, then inspect run-to-artifact
+            state without guessing at report, PDF, tracker, or approval
+            readiness in the browser.
           </p>
           <p style={{ color: '#94a3b8', margin: 0 }}>
             Last refreshed: {formatTimestamp(chatConsole.state.lastUpdatedAt)}
@@ -116,28 +150,22 @@ export function ChatConsoleSurface({
 
         <button
           aria-label="Refresh chat console"
-          disabled={
-            chatConsole.state.isRefreshing ||
-            chatConsole.state.pendingAction !== null
-          }
+          disabled={isConsoleBusy}
           onClick={chatConsole.refresh}
           style={{
             ...buttonStyle,
-            opacity:
-              chatConsole.state.isRefreshing ||
-              chatConsole.state.pendingAction !== null
-                ? 0.7
-                : 1,
+            opacity: isConsoleBusy ? 0.7 : 1,
           }}
           type="button"
         >
-          {chatConsole.state.isRefreshing ? 'Refreshing...' : 'Refresh console'}
+          {isConsoleBusy ? 'Refreshing...' : 'Refresh console'}
         </button>
       </header>
 
       <div style={twoColumnStyle}>
         <WorkflowComposer
           draftInput={chatConsole.state.draftInput}
+          isBusy={isConsoleBusy}
           onDraftInputChange={chatConsole.setDraftInput}
           onLaunch={chatConsole.launch}
           onWorkflowChange={chatConsole.setSelectedWorkflow}
@@ -151,6 +179,8 @@ export function ChatConsoleSurface({
         <RunStatusPanel
           command={chatConsole.state.command}
           error={chatConsole.state.error}
+          evaluationResult={chatConsole.state.evaluationResult.data}
+          isBusy={isConsoleBusy}
           onOpenApprovals={onOpenApprovals}
           selectedSession={selectedSession}
           selectedWorkflow={selectedWorkflow}
@@ -159,8 +189,9 @@ export function ChatConsoleSurface({
         />
       </div>
 
-      <div style={lowerGridStyle}>
+      <div style={twoColumnStyle}>
         <RecentSessionList
+          isBusy={isConsoleBusy}
           onResume={chatConsole.resume}
           onSelect={chatConsole.selectSession}
           pendingAction={chatConsole.state.pendingAction}
@@ -169,8 +200,11 @@ export function ChatConsoleSurface({
           status={chatConsole.state.status}
         />
 
-        <div style={{ display: 'grid', gap: '1rem' }}>
-          <section aria-labelledby="chat-console-selected-title" style={selectedSummaryStyle}>
+        <div style={rightColumnStyle}>
+          <section
+            aria-labelledby="chat-console-selected-title"
+            style={selectedSummaryStyle}
+          >
             <header>
               <p
                 style={{
@@ -183,19 +217,18 @@ export function ChatConsoleSurface({
               >
                 Selected session
               </p>
-              <h2 id="chat-console-selected-title" style={{ marginBottom: '0.35rem' }}>
-                {selectedSession
-                  ? selectedSession.session.sessionId
-                  : 'No selected session'}
+              <h2
+                id="chat-console-selected-title"
+                style={{ marginBottom: '0.35rem' }}
+              >
+                {selectedSessionTitle}
               </h2>
               <p style={{ color: '#64748b', marginBottom: 0 }}>
-                {selectedSession
-                  ? `Workflow ${selectedSession.session.workflow} with ${selectedSession.jobs.length} tracked jobs and ${selectedSession.approvals.length} approvals.`
-                  : 'Select a recent session to see its stored route, jobs, and bounded timeline.'}
+                {selectedSessionBody}
               </p>
             </header>
 
-            {selectedSession ? (
+            {(selectedSession || evaluationSummary) ? (
               <div
                 style={{
                   display: 'grid',
@@ -211,10 +244,20 @@ export function ChatConsoleSurface({
                     padding: '0.85rem 0.9rem',
                   }}
                 >
-                  <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+                  <p
+                    style={{
+                      color: '#64748b',
+                      marginBottom: '0.25rem',
+                      marginTop: 0,
+                    }}
+                  >
                     Route message
                   </p>
-                  <p style={{ margin: 0 }}>{selectedSession.route.message}</p>
+                  <p style={{ margin: 0 }}>
+                    {selectedSession?.route.message ??
+                      evaluationSummary?.message ??
+                      'No route message recorded yet'}
+                  </p>
                 </article>
                 <article
                   style={{
@@ -224,11 +267,19 @@ export function ChatConsoleSurface({
                     padding: '0.85rem 0.9rem',
                   }}
                 >
-                  <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+                  <p
+                    style={{
+                      color: '#64748b',
+                      marginBottom: '0.25rem',
+                      marginTop: 0,
+                    }}
+                  >
                     Latest job
                   </p>
                   <p style={{ margin: 0 }}>
-                    {selectedSession.session.job?.jobId ?? 'No job recorded yet'}
+                    {selectedSession?.session.job?.jobId ??
+                      evaluationSummary?.job?.jobId ??
+                      'No job recorded yet'}
                   </p>
                 </article>
                 <article
@@ -239,18 +290,65 @@ export function ChatConsoleSurface({
                     padding: '0.85rem 0.9rem',
                   }}
                 >
-                  <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
-                    Pending approvals
+                  <p
+                    style={{
+                      color: '#64748b',
+                      marginBottom: '0.25rem',
+                      marginTop: 0,
+                    }}
+                  >
+                    Approval or warnings
                   </p>
                   <p style={{ margin: 0 }}>
-                    {selectedSession.session.pendingApprovalCount}
+                    {evaluationSummary
+                      ? `${evaluationSummary.warnings.totalCount} warning${evaluationSummary.warnings.totalCount === 1 ? '' : 's'}`
+                      : String(selectedSession?.session.pendingApprovalCount ?? 0)}
+                  </p>
+                </article>
+                <article
+                  style={{
+                    background: 'rgba(248, 250, 252, 0.9)',
+                    border: '1px solid rgba(148, 163, 184, 0.2)',
+                    borderRadius: '1rem',
+                    padding: '0.85rem 0.9rem',
+                  }}
+                >
+                  <p
+                    style={{
+                      color: '#64748b',
+                      marginBottom: '0.25rem',
+                      marginTop: 0,
+                    }}
+                  >
+                    Closeout
+                  </p>
+                  <p style={{ margin: 0 }}>
+                    {evaluationSummary?.closeout.state ??
+                      selectedSession?.session.state ??
+                      'No closeout state yet'}
                   </p>
                 </article>
               </div>
             ) : null}
           </section>
 
-          <RunTimeline detail={selectedSession} status={chatConsole.state.status} />
+          <div style={artifactWorkspaceStyle}>
+            <EvaluationArtifactRail
+              error={chatConsole.state.evaluationResult.error}
+              isBusy={isConsoleBusy}
+              isRefreshing={chatConsole.state.evaluationResult.isRefreshing}
+              onOpenApprovals={onOpenApprovals}
+              onOpenPipelineReview={onOpenPipelineReview}
+              onOpenReportViewer={onOpenReportViewer}
+              payload={chatConsole.state.evaluationResult.data}
+              status={chatConsole.state.evaluationResult.status}
+            />
+
+            <RunTimeline
+              detail={selectedSession}
+              status={chatConsole.state.status}
+            />
+          </div>
         </div>
       </div>
     </section>

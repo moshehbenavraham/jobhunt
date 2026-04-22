@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed** (session deliverables only):
+
 - `apps/web/src/onboarding/onboarding-types.ts` - onboarding payload contracts and parsers
 - `apps/web/src/onboarding/onboarding-client.ts` - onboarding summary and repair client
 - `apps/web/src/onboarding/use-onboarding-wizard.ts` - onboarding state orchestration
@@ -36,13 +37,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No untrusted string concatenation or shell injection paths found in the session deliverables. |
-| Hardcoded Secrets | PASS | -- | No secrets or credentials were added. |
-| Sensitive Data Exposure | PASS | -- | No new PII logging or plaintext sensitive data exposure was introduced. |
-| Insecure Dependencies | PASS | -- | No new dependencies were added in this session. |
-| Security Misconfiguration | PASS | -- | No debug-only security changes or permissive runtime settings were introduced. |
+| Category                      | Status | Severity | Details                                                                                       |
+| ----------------------------- | ------ | -------- | --------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No untrusted string concatenation or shell injection paths found in the session deliverables. |
+| Hardcoded Secrets             | PASS   | --       | No secrets or credentials were added.                                                         |
+| Sensitive Data Exposure       | PASS   | --       | No new PII logging or plaintext sensitive data exposure was introduced.                       |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were added in this session.                                               |
+| Security Misconfiguration     | PASS   | --       | No debug-only security changes or permissive runtime settings were introduced.                |
 
 ### Findings
 
@@ -55,4 +56,3 @@ No security findings.
 ### Overall: N/A
 
 No new personal data collection, storage, or third-party sharing was introduced by this session.
-

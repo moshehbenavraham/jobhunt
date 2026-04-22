@@ -370,7 +370,7 @@ test('service container lazily creates and reuses a tool execution service with 
             mutationTargets: ['app-state'],
           },
         },
-      } satisfies ToolDefinition<{}>,
+      } satisfies ToolDefinition<Record<string, never>>,
     ],
   });
 
@@ -601,7 +601,7 @@ test('service container merges the default Session 03 script allowlist into tool
             scripts: ['verify-pipeline'],
           },
         },
-      } satisfies ToolDefinition<{}>,
+      } satisfies ToolDefinition<Record<string, never>>,
     ],
   });
 

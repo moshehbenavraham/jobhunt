@@ -284,13 +284,11 @@ function extractStoredRoute(value: JsonValue): StoredSessionRoute {
   };
 }
 
-function toWorkflowOption(
-  input: {
-    description: string;
-    intent: WorkflowIntent;
-    modeRepoRelativePath: string;
-  },
-): ChatConsoleWorkflowOption {
+function toWorkflowOption(input: {
+  description: string;
+  intent: WorkflowIntent;
+  modeRepoRelativePath: string;
+}): ChatConsoleWorkflowOption {
   const route = getWorkflowSpecialistRoute(input.intent);
   const specialist = route ? getSpecialistDefinition(route.specialistId) : null;
 
@@ -615,8 +613,7 @@ function resolveHandoffState(
 ): ChatConsoleRunState {
   if (
     handoff.pendingApproval ||
-    (handoff.job?.status === 'waiting' &&
-      handoff.job.waitReason === 'approval')
+    (handoff.job?.status === 'waiting' && handoff.job.waitReason === 'approval')
   ) {
     return 'waiting-for-approval';
   }
@@ -743,17 +740,15 @@ export async function createChatConsoleSummary(
   const recentSessionSummaries = await Promise.all(
     recentSessions.map((session) => buildSessionSummary(store, session)),
   );
-  const focusSessionId = options.sessionId ?? recentSessions[0]?.sessionId ?? null;
+  const focusSessionId =
+    options.sessionId ?? recentSessions[0]?.sessionId ?? null;
   const selectedSession = focusSessionId
     ? await buildSelectedSessionDetail(services, focusSessionId)
     : null;
 
   return {
     generatedAt,
-    message:
-      status === 'ready'
-        ? 'Chat console summary is ready.'
-        : message,
+    message: status === 'ready' ? 'Chat console summary is ready.' : message,
     ok: true,
     recentSessions: recentSessionSummaries,
     selectedSession,

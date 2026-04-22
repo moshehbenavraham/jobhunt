@@ -6,6 +6,7 @@ import type {
 import type { ChatConsoleSessionSummary } from './chat-console-types';
 
 type RecentSessionListProps = {
+  isBusy: boolean;
   onResume: (sessionId: string) => void;
   onSelect: (sessionId: string) => void;
   pendingAction: ChatConsolePendingAction;
@@ -124,6 +125,7 @@ function renderEmptyState(status: ChatConsoleViewStatus): {
 }
 
 export function RecentSessionList({
+  isBusy,
   onResume,
   onSelect,
   pendingAction,
@@ -148,7 +150,10 @@ export function RecentSessionList({
           >
             Recent sessions
           </p>
-          <h2 id="chat-console-recent-title" style={{ marginBottom: '0.35rem' }}>
+          <h2
+            id="chat-console-recent-title"
+            style={{ marginBottom: '0.35rem' }}
+          >
             {emptyState.title}
           </h2>
           <p style={{ color: '#64748b', marginBottom: 0 }}>{emptyState.body}</p>
@@ -236,7 +241,9 @@ export function RecentSessionList({
 
               {session.pendingApproval ? (
                 <p style={{ color: '#92400e', margin: 0 }}>
-                  Pending approval: {session.pendingApproval.title || session.pendingApproval.approvalId}
+                  Pending approval:{' '}
+                  {session.pendingApproval.title ||
+                    session.pendingApproval.approvalId}
                 </p>
               ) : null}
 
@@ -254,24 +261,32 @@ export function RecentSessionList({
                 }}
               >
                 <button
+                  disabled={isBusy}
                   onClick={() => onSelect(session.sessionId)}
                   style={{
                     ...buttonStyle,
                     background: isSelected ? '#334155' : '#0f172a',
+                    opacity: isBusy ? 0.7 : 1,
                   }}
                   type="button"
                 >
                   {isSelected ? 'Selected' : 'Select'}
                 </button>
                 <button
-                  disabled={!session.resumeAllowed || pendingAction !== null}
+                  disabled={
+                    isBusy || !session.resumeAllowed || pendingAction !== null
+                  }
                   onClick={() => onResume(session.sessionId)}
                   style={{
                     ...buttonStyle,
                     background: '#f59e0b',
                     color: '#1f2937',
                     opacity:
-                      !session.resumeAllowed || pendingAction !== null ? 0.65 : 1,
+                      isBusy ||
+                      !session.resumeAllowed ||
+                      pendingAction !== null
+                        ? 0.65
+                        : 1,
                   }}
                   type="button"
                 >

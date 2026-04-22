@@ -7,7 +7,7 @@ runtime policy, app boot surfaces, and repo reference material.
 
 - [Setup Guide](SETUP.md)
 - [Workflow Checklist](WORKFLOW_CHECKLIST.md) - main operator flow plus side-path capability map
-- [Onboarding](onboarding.md)
+- [Onboarding](onboarding.md) - startup repair, approvals, and settings entry point
 - [Data Contract](DATA_CONTRACT.md)
 - [Customization Guide](CUSTOMIZATION.md)
 - [Scripts Reference](SCRIPTS.md)
@@ -45,7 +45,7 @@ runtime policy, app boot surfaces, and repo reference material.
 
 - Start from this page when you need the current setup, support,
   customization, or policy surface in one place.
-- Use the app boot docs when you need the API server, web shell, or startup
-  diagnostics path.
+- Use the app boot docs when you need the API server, web shell, onboarding
+  repair, approval inbox, settings, or startup diagnostics path.
 - Keep docs current with the repo's actual scripts and file layout.
 - Prefer links to a single source of truth over duplicated explanations.

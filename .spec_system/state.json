@@ -43,8 +43,9 @@
     },
     "4": {
       "name": "Evaluation, Artifacts, and Tracker Parity",
-      "status": "not_started",
-      "session_count": 0
+      "description": "Land the core evaluate-to-artifact loop end to end through typed evaluation results, artifact review surfaces, pipeline and tracker workspaces, and full auto-pipeline parity.",
+      "status": "in_progress",
+      "session_count": 6
     },
     "5": {
       "name": "Scan, Batch, and Application-Help Parity",
@@ -129,10 +130,28 @@
     {
       "id": "phase03-session05-settings-and-maintenance-surface",
       "package": "apps/web"
+    },
+    {
+      "id": "phase04-session01-evaluation-result-contract",
+      "package": "apps/api"
+    },
+    {
+      "id": "phase04-session02-evaluation-console-and-artifact-handoff",
+      "package": "apps/web"
+    },
+    {
+      "id": "phase04-session03-report-viewer-and-artifact-browser",
+      "package": "apps/web"
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session03-report-viewer-and-artifact-browser",
+      "package": "apps/web",
+      "status": "completed"
+    },
     {
       "date": "2026-04-21",
       "session": "phase00-session01-monorepo-app-skeleton",
@@ -328,6 +347,48 @@
     {
       "date": "2026-04-22",
       "session": "phase03-session05-settings-and-maintenance-surface",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session01-evaluation-result-contract",
+      "package": "apps/api",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session01-evaluation-result-contract",
+      "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session02-evaluation-console-and-artifact-handoff",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session02-evaluation-console-and-artifact-handoff",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session03-report-viewer-and-artifact-browser",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session04-pipeline-review-workspace",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase04-session04-pipeline-review-workspace",
       "package": "apps/web",
       "status": "completed"
     }

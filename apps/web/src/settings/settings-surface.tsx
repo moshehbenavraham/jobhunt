@@ -62,17 +62,10 @@ export function SettingsSurface({
 
     pendingInteractiveRefreshRef.current = false;
     setFocusSignal((previous) => previous + 1);
-  }, [
-    settings.state.isRefreshing,
-    settings.state.lastUpdatedAt,
-    settings.state.status,
-  ]);
+  }, [settings.state.isRefreshing, settings.state.status]);
 
   return (
-    <section
-      aria-labelledby="settings-surface-title"
-      style={pageStyle}
-    >
+    <section aria-labelledby="settings-surface-title" style={pageStyle}>
       <header style={heroStyle}>
         <p
           style={{

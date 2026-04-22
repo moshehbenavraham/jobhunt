@@ -178,7 +178,7 @@ export function useOperatorShell(): {
 
   useEffect(() => {
     if (window.location.hash.trim().length === 0) {
-      syncHash(state.selectedSurface, true);
+      syncHash(EMPTY_STATE.selectedSurface, true);
     }
 
     void loadSummary('mount');

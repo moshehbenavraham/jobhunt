@@ -153,7 +153,7 @@ export function RepairConfirmationPanel({
         {pendingAction ? (
           <p style={{ margin: 0 }}>
             Repairing {pendingAction.targets.length} target
-            {pendingAction.targets.length === 1 ? '' : 's'}: {' '}
+            {pendingAction.targets.length === 1 ? '' : 's'}:{' '}
             {pendingAction.targets.join(', ')}
           </p>
         ) : error ? (
@@ -181,7 +181,9 @@ export function RepairConfirmationPanel({
           }}
         >
           {selectedTargets.length === 0 ? (
-            <span style={{ color: '#94a3b8' }}>Select targets from the preview list.</span>
+            <span style={{ color: '#94a3b8' }}>
+              Select targets from the preview list.
+            </span>
           ) : (
             selectedTargets.map((target) => (
               <span
@@ -223,7 +225,8 @@ export function RepairConfirmationPanel({
           onClick={onClear}
           style={{
             ...secondaryButtonStyle,
-            opacity: pendingAction !== null || selectedTargets.length === 0 ? 0.6 : 1,
+            opacity:
+              pendingAction !== null || selectedTargets.length === 0 ? 0.6 : 1,
           }}
           type="button"
         >

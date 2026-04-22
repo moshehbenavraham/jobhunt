@@ -1,6 +1,10 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { STARTUP_SERVICE_NAME, STARTUP_SESSION_ID, type CurrentSessionMetadata } from '../index.js';
+import {
+  STARTUP_SERVICE_NAME,
+  STARTUP_SESSION_ID,
+  type CurrentSessionMetadata,
+} from '../index.js';
 import {
   getSpecialistDefinition,
   getWorkflowSpecialistRoute,
@@ -8,8 +12,17 @@ import {
 import { resolveRepoRelativePath } from '../config/repo-paths.js';
 import type { WorkflowIntent } from '../prompt/index.js';
 import type { ApiServiceContainer } from '../runtime/service-container.js';
-import { createHealthPayload, getStartupMessage, getStartupStatus, type StartupHealthPayload, type StartupStatus } from './startup-status.js';
-import { readSettingsUpdateCheck, type SettingsUpdateCheckPayload } from './settings-update-check.js';
+import {
+  createHealthPayload,
+  getStartupMessage,
+  getStartupStatus,
+  type StartupHealthPayload,
+  type StartupStatus,
+} from './startup-status.js';
+import {
+  readSettingsUpdateCheck,
+  type SettingsUpdateCheckPayload,
+} from './settings-update-check.js';
 import type { ToolCatalogEntry } from '../tools/index.js';
 
 const DEFAULT_TOOL_LIMIT = 6;
@@ -181,28 +194,32 @@ function createMaintenanceCommands(): SettingsMaintenanceCommand[] {
     {
       category: 'diagnostics',
       command: 'npm run doctor',
-      description: 'Validate repo prerequisites, auth readiness, and required user-layer files.',
+      description:
+        'Validate repo prerequisites, auth readiness, and required user-layer files.',
       id: 'doctor',
       label: 'Run doctor',
     },
     {
       category: 'diagnostics',
       command: 'node scripts/test-all.mjs --quick',
-      description: 'Run the repo quick regression suite after maintenance changes.',
+      description:
+        'Run the repo quick regression suite after maintenance changes.',
       id: 'quick-regression',
       label: 'Quick regression',
     },
     {
       category: 'auth',
       command: 'npm run auth:openai -- status',
-      description: 'Inspect the stored OpenAI account auth state and the next recommended command.',
+      description:
+        'Inspect the stored OpenAI account auth state and the next recommended command.',
       id: 'auth-status',
       label: 'Auth status',
     },
     {
       category: 'auth',
       command: 'npm run auth:openai -- login',
-      description: 'Create the first stored OpenAI account auth state for this repo.',
+      description:
+        'Create the first stored OpenAI account auth state for this repo.',
       id: 'auth-login',
       label: 'Auth login',
     },
@@ -216,28 +233,32 @@ function createMaintenanceCommands(): SettingsMaintenanceCommand[] {
     {
       category: 'backup',
       command: 'npm run backup:run',
-      description: 'Write a timestamped backup of the operational store under `.jobhunt-app/backups/`.',
+      description:
+        'Write a timestamped backup of the operational store under `.jobhunt-app/backups/`.',
       id: 'backup-run',
       label: 'Run backup',
     },
     {
       category: 'updates',
       command: 'node scripts/update-system.mjs check',
-      description: 'Check for upstream repo-managed updates without mutating local files.',
+      description:
+        'Check for upstream repo-managed updates without mutating local files.',
       id: 'update-check',
       label: 'Check updates',
     },
     {
       category: 'updates',
       command: 'node scripts/update-system.mjs apply',
-      description: 'Apply the latest repo-managed update after confirming the scope in the terminal.',
+      description:
+        'Apply the latest repo-managed update after confirming the scope in the terminal.',
       id: 'update-apply',
       label: 'Apply update',
     },
     {
       category: 'updates',
       command: 'node scripts/update-system.mjs rollback',
-      description: 'Rollback the most recent repo-managed update from the terminal.',
+      description:
+        'Rollback the most recent repo-managed update from the terminal.',
       id: 'update-rollback',
       label: 'Rollback update',
     },
@@ -257,9 +278,12 @@ function createWorkspaceSummary(
 
   if (currentSession.packagePath) {
     try {
-      packageAbsolutePath = resolveRepoRelativePath(currentSession.packagePath, {
-        repoRoot: repoPaths.repoRoot,
-      });
+      packageAbsolutePath = resolveRepoRelativePath(
+        currentSession.packagePath,
+        {
+          repoRoot: repoPaths.repoRoot,
+        },
+      );
     } catch {
       packageAbsolutePath = null;
     }
@@ -325,7 +349,9 @@ function createWorkflowSupportItem(input: {
     ...route.toolPolicy.allowedToolNames,
     ...(route.toolPolicy.fallbackToolNames ?? []),
   ]
-    .filter((toolName, index, toolNames) => toolNames.indexOf(toolName) === index)
+    .filter(
+      (toolName, index, toolNames) => toolNames.indexOf(toolName) === index,
+    )
     .sort()
     .slice(0, 5);
 
@@ -431,7 +457,8 @@ export async function createSettingsSummary(
           role: source.role,
         }))
         .sort((left, right) => left.precedence - right.precedence),
-      supportedWorkflowCount: diagnostics.promptContract.supportedWorkflows.length,
+      supportedWorkflowCount:
+        diagnostics.promptContract.supportedWorkflows.length,
     },
     toolCatalog,
     toolLimit,

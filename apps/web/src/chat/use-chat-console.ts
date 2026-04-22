@@ -11,6 +11,10 @@ import {
   submitChatConsoleCommand,
   type ChatConsoleCommandInput,
 } from './chat-console-client';
+import {
+  EvaluationResultClientError,
+  fetchEvaluationResultSummary,
+} from './evaluation-result-client';
 import type {
   ChatConsoleCommandHandoff,
   ChatConsoleSessionSummary,
@@ -18,10 +22,19 @@ import type {
   ChatConsoleSummaryPayload,
   ChatConsoleWorkflowIntent,
 } from './chat-console-types';
+import type { EvaluationResultSummaryPayload } from './evaluation-result-types';
 
 const POLL_INTERVAL_MS = 4_000;
+const EVALUATION_PREVIEW_LIMIT = 4;
 
 export type ChatConsoleViewStatus =
+  | 'empty'
+  | 'error'
+  | 'loading'
+  | 'offline'
+  | ChatConsoleStartupStatus;
+
+export type ChatConsoleEvaluationResultStatus =
   | 'empty'
   | 'error'
   | 'loading'
@@ -41,11 +54,20 @@ export type ChatConsolePendingAction =
     }
   | null;
 
+export type ChatConsoleEvaluationResultState = {
+  data: EvaluationResultSummaryPayload | null;
+  error: EvaluationResultClientError | null;
+  isRefreshing: boolean;
+  status: ChatConsoleEvaluationResultStatus;
+  targetSessionId: string | null;
+};
+
 export type ChatConsoleState = {
   command: ChatConsoleCommandHandoff | null;
   data: ChatConsoleSummaryPayload | null;
   draftInput: string;
   error: ChatConsoleClientError | null;
+  evaluationResult: ChatConsoleEvaluationResultState;
   isRefreshing: boolean;
   lastUpdatedAt: string | null;
   pendingAction: ChatConsolePendingAction;
@@ -59,7 +81,10 @@ function readSelectedSessionIdFromUrl(): string | null {
   return value?.trim() ? value.trim() : null;
 }
 
-function syncSelectedSessionId(sessionId: string | null, replace = false): void {
+function syncSelectedSessionId(
+  sessionId: string | null,
+  replace = false,
+): void {
   const url = new URL(window.location.href);
 
   if (sessionId) {
@@ -83,16 +108,43 @@ function syncSelectedSessionId(sessionId: string | null, replace = false): void 
   window.history.pushState(null, '', nextUrl);
 }
 
+function createEmptyEvaluationResultState(
+  targetSessionId: string | null,
+): ChatConsoleEvaluationResultState {
+  return {
+    data: null,
+    error: null,
+    isRefreshing: false,
+    status: 'empty',
+    targetSessionId,
+  };
+}
+
+function createLoadingEvaluationResultState(
+  targetSessionId: string | null,
+): ChatConsoleEvaluationResultState {
+  return {
+    data: null,
+    error: null,
+    isRefreshing: false,
+    status: 'loading',
+    targetSessionId,
+  };
+}
+
 function createEmptyState(): ChatConsoleState {
+  const selectedSessionId = readSelectedSessionIdFromUrl();
+
   return {
     command: null,
     data: null,
     draftInput: '',
     error: null,
+    evaluationResult: createEmptyEvaluationResultState(selectedSessionId),
     isRefreshing: false,
     lastUpdatedAt: null,
     pendingAction: null,
-    selectedSessionId: readSelectedSessionIdFromUrl(),
+    selectedSessionId,
     selectedWorkflow: 'single-evaluation',
     status: 'empty',
   };
@@ -113,7 +165,26 @@ function toChatConsoleClientError(error: unknown): ChatConsoleClientError {
   });
 }
 
-function getCommandSessionId(command: ChatConsoleCommandHandoff | null): string | null {
+function toEvaluationResultClientError(
+  error: unknown,
+): EvaluationResultClientError {
+  if (error instanceof EvaluationResultClientError) {
+    return error;
+  }
+
+  const message = error instanceof Error ? error.message : String(error);
+
+  return new EvaluationResultClientError({
+    cause: error,
+    code: 'unknown-client-error',
+    message,
+    state: 'error',
+  });
+}
+
+function getCommandSessionId(
+  command: ChatConsoleCommandHandoff | null,
+): string | null {
   if (!command) {
     return null;
   }
@@ -125,17 +196,6 @@ function getCommandSessionId(command: ChatConsoleCommandHandoff | null): string 
   );
 }
 
-function hasPollingWork(summary: ChatConsoleSummaryPayload | null): boolean {
-  if (!summary) {
-    return false;
-  }
-
-  return summary.recentSessions.some(
-    (session) =>
-      session.state === 'running' || session.state === 'waiting-for-approval',
-  );
-}
-
 function upsertRecentSession(
   sessions: ChatConsoleSessionSummary[],
   nextSession: ChatConsoleSessionSummary | null,
@@ -144,7 +204,12 @@ function upsertRecentSession(
     return sessions;
   }
 
-  const merged = [nextSession, ...sessions.filter((session) => session.sessionId !== nextSession.sessionId)];
+  const merged = [
+    nextSession,
+    ...sessions.filter(
+      (session) => session.sessionId !== nextSession.sessionId,
+    ),
+  ];
 
   return merged.sort((left, right) => {
     const updatedAtComparison = right.updatedAt.localeCompare(left.updatedAt);
@@ -176,6 +241,58 @@ function resolveNextSelectedSessionId(
   return summary.recentSessions[0]?.sessionId ?? null;
 }
 
+function resolveEvaluationTargetSessionId(
+  summary: ChatConsoleSummaryPayload,
+  requestedSessionId: string | null,
+): string | null {
+  if (requestedSessionId) {
+    return requestedSessionId;
+  }
+
+  return summary.selectedSession?.session.sessionId ?? null;
+}
+
+function resolveSelectedSessionForPolling(
+  summary: ChatConsoleSummaryPayload | null,
+  selectedSessionId: string | null,
+): ChatConsoleSessionSummary | null {
+  if (!summary) {
+    return null;
+  }
+
+  if (selectedSessionId) {
+    return (
+      summary.recentSessions.find((session) => session.sessionId === selectedSessionId) ??
+      (summary.selectedSession?.session.sessionId === selectedSessionId
+        ? summary.selectedSession.session
+        : null)
+    );
+  }
+
+  return summary.selectedSession?.session ?? summary.recentSessions[0] ?? null;
+}
+
+function hasPollingWork(input: {
+  evaluationResult: EvaluationResultSummaryPayload | null;
+  selectedSession: ChatConsoleSessionSummary | null;
+}): boolean {
+  if (
+    input.selectedSession &&
+    (input.selectedSession.state === 'running' ||
+      input.selectedSession.state === 'waiting-for-approval')
+  ) {
+    return true;
+  }
+
+  const summaryState = input.evaluationResult?.summary?.state;
+
+  return (
+    summaryState === 'approval-paused' ||
+    summaryState === 'pending' ||
+    summaryState === 'running'
+  );
+}
+
 export function useChatConsole(): {
   launch: () => void;
   refresh: () => void;
@@ -185,21 +302,124 @@ export function useChatConsole(): {
   setSelectedWorkflow: (workflow: ChatConsoleWorkflowIntent) => void;
   state: ChatConsoleState;
 } {
-  const abortRef = useRef<AbortController | null>(null);
-  const requestIdRef = useRef(0);
+  const summaryAbortRef = useRef<AbortController | null>(null);
+  const summaryRequestIdRef = useRef(0);
+  const evaluationAbortRef = useRef<AbortController | null>(null);
+  const evaluationRequestIdRef = useRef(0);
   const [state, setState] = useState<ChatConsoleState>(createEmptyState);
+
+  const loadEvaluationResult = useEffectEvent(
+    async (
+      reason: 'command' | 'mount' | 'online' | 'refresh' | 'select',
+      targetSessionId: string | null = state.evaluationResult.targetSessionId,
+    ) => {
+      evaluationRequestIdRef.current += 1;
+      const requestId = evaluationRequestIdRef.current;
+
+      evaluationAbortRef.current?.abort();
+      const controller = new AbortController();
+      evaluationAbortRef.current = controller;
+
+      startTransition(() => {
+        setState((previous) => {
+          const targetChanged =
+            previous.evaluationResult.targetSessionId !== targetSessionId;
+          const canRefreshInPlace =
+            !targetChanged &&
+            previous.evaluationResult.data !== null &&
+            (reason === 'refresh' || reason === 'online');
+
+          if (canRefreshInPlace) {
+            return {
+              ...previous,
+              evaluationResult: {
+                ...previous.evaluationResult,
+                error: null,
+                isRefreshing: true,
+                targetSessionId,
+              },
+            };
+          }
+
+          return {
+            ...previous,
+            evaluationResult: {
+              data: targetChanged ? null : previous.evaluationResult.data,
+              error: null,
+              isRefreshing: false,
+              status: 'loading',
+              targetSessionId,
+            },
+          };
+        });
+      });
+
+      try {
+        const payload = await fetchEvaluationResultSummary({
+          previewLimit: EVALUATION_PREVIEW_LIMIT,
+          sessionId: targetSessionId,
+          signal: controller.signal,
+        });
+
+        if (
+          controller.signal.aborted ||
+          requestId !== evaluationRequestIdRef.current
+        ) {
+          return;
+        }
+
+        startTransition(() => {
+          setState((previous) => ({
+            ...previous,
+            evaluationResult: {
+              data: payload,
+              error: null,
+              isRefreshing: false,
+              status: payload.status,
+              targetSessionId,
+            },
+          }));
+        });
+      } catch (error) {
+        if (
+          controller.signal.aborted ||
+          requestId !== evaluationRequestIdRef.current
+        ) {
+          return;
+        }
+
+        const clientError = toEvaluationResultClientError(error);
+
+        startTransition(() => {
+          setState((previous) => ({
+            ...previous,
+            evaluationResult: {
+              data:
+                previous.evaluationResult.targetSessionId === targetSessionId
+                  ? previous.evaluationResult.data
+                  : null,
+              error: clientError,
+              isRefreshing: false,
+              status: clientError.state,
+              targetSessionId,
+            },
+          }));
+        });
+      }
+    },
+  );
 
   const loadSummary = useEffectEvent(
     async (
       reason: 'command' | 'mount' | 'online' | 'refresh' | 'select',
       requestedSessionId: string | null = state.selectedSessionId,
     ) => {
-      requestIdRef.current += 1;
-      const requestId = requestIdRef.current;
+      summaryRequestIdRef.current += 1;
+      const requestId = summaryRequestIdRef.current;
 
-      abortRef.current?.abort();
+      summaryAbortRef.current?.abort();
       const controller = new AbortController();
-      abortRef.current = controller;
+      summaryAbortRef.current = controller;
 
       startTransition(() => {
         setState((previous) => {
@@ -231,11 +451,15 @@ export function useChatConsole(): {
           signal: controller.signal,
         });
 
-        if (controller.signal.aborted || requestId !== requestIdRef.current) {
+        if (controller.signal.aborted || requestId !== summaryRequestIdRef.current) {
           return;
         }
 
         const nextSelectedSessionId = resolveNextSelectedSessionId(
+          payload,
+          requestedSessionId,
+        );
+        const nextEvaluationTargetSessionId = resolveEvaluationTargetSessionId(
           payload,
           requestedSessionId,
         );
@@ -257,12 +481,10 @@ export function useChatConsole(): {
           }));
         });
 
-        syncSelectedSessionId(
-          nextSelectedSessionId,
-          reason !== 'select',
-        );
+        syncSelectedSessionId(nextSelectedSessionId, reason !== 'select');
+        void loadEvaluationResult(reason, nextEvaluationTargetSessionId);
       } catch (error) {
-        if (controller.signal.aborted || requestId !== requestIdRef.current) {
+        if (controller.signal.aborted || requestId !== summaryRequestIdRef.current) {
           return;
         }
 
@@ -284,7 +506,12 @@ export function useChatConsole(): {
   );
 
   const runCommand = useEffectEvent(async (input: ChatConsoleCommandInput) => {
-    if (state.pendingAction) {
+    if (
+      state.pendingAction ||
+      state.isRefreshing ||
+      state.status === 'loading' ||
+      state.evaluationResult.isRefreshing
+    ) {
       return;
     }
 
@@ -329,13 +556,18 @@ export function useChatConsole(): {
                     payload.handoff.session,
                 ),
                 selectedSession:
-                  payload.handoff.selectedSession ?? previous.data.selectedSession,
+                  payload.handoff.selectedSession ??
+                  previous.data.selectedSession,
                 status: payload.status,
               }
             : previous.data,
           error: null,
+          evaluationResult: createLoadingEvaluationResultState(
+            nextSelectedSessionId,
+          ),
           pendingAction,
-          selectedSessionId: nextSelectedSessionId ?? previous.selectedSessionId,
+          selectedSessionId:
+            nextSelectedSessionId ?? previous.selectedSessionId,
           status: payload.status,
         }));
       });
@@ -366,6 +598,9 @@ export function useChatConsole(): {
           : {
               ...previous,
               command: null,
+              evaluationResult: createLoadingEvaluationResultState(
+                nextSelectedSessionId,
+              ),
               selectedSessionId: nextSelectedSessionId,
             },
       );
@@ -375,7 +610,10 @@ export function useChatConsole(): {
   });
 
   const handleOnline = useEffectEvent(() => {
-    if (state.status === 'offline') {
+    if (
+      state.status === 'offline' ||
+      state.evaluationResult.status === 'offline'
+    ) {
       void loadSummary('online');
     }
   });
@@ -386,16 +624,29 @@ export function useChatConsole(): {
     window.addEventListener('popstate', handlePopState);
 
     return () => {
-      requestIdRef.current += 1;
-      abortRef.current?.abort();
-      abortRef.current = null;
+      summaryRequestIdRef.current += 1;
+      evaluationRequestIdRef.current += 1;
+      summaryAbortRef.current?.abort();
+      evaluationAbortRef.current?.abort();
+      summaryAbortRef.current = null;
+      evaluationAbortRef.current = null;
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('popstate', handlePopState);
     };
   }, []);
 
   useEffect(() => {
-    if (!hasPollingWork(state.data)) {
+    const selectedSession = resolveSelectedSessionForPolling(
+      state.data,
+      state.selectedSessionId,
+    );
+
+    if (
+      !hasPollingWork({
+        evaluationResult: state.evaluationResult.data,
+        selectedSession,
+      })
+    ) {
       return;
     }
 
@@ -406,7 +657,11 @@ export function useChatConsole(): {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [state.data]);
+  }, [
+    state.data,
+    state.evaluationResult.data,
+    state.selectedSessionId,
+  ]);
 
   return {
     launch: () => {
@@ -422,7 +677,12 @@ export function useChatConsole(): {
       });
     },
     refresh: () => {
-      if (state.isRefreshing || state.status === 'loading') {
+      if (
+        state.isRefreshing ||
+        state.status === 'loading' ||
+        state.evaluationResult.isRefreshing ||
+        state.evaluationResult.status === 'loading'
+      ) {
         return;
       }
 
@@ -446,6 +706,7 @@ export function useChatConsole(): {
             getCommandSessionId(previous.command) === sessionId
               ? previous.command
               : null,
+          evaluationResult: createLoadingEvaluationResultState(sessionId),
           selectedSessionId: sessionId,
         }));
       });

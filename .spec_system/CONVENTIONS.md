@@ -108,18 +108,19 @@
 | Testing       | `node scripts/test-all.mjs`, `npm run doctor` | repo scripts                                   |
 | Coverage      | `npm run coverage`                            | `c8`, `go test -cover`                         |
 | Observability | pino                                          | apps/api/src/logger.ts                         |
-| Git Hooks     | not configured                                | -                                              |
+| Git Hooks     | husky + lint-staged                           | .husky/pre-commit, .lintstagedrc.mjs           |
 | Database      | not configured                                | -                                              |
 
 ## Infrastructure
 
-| Surface   | Command                                               | Details                                                                                                    |
-| --------- | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Health    | `npm run doctor && node scripts/test-all.mjs --quick` | Repo health gate; validates setup, version consistency, and dashboard build                                |
-| Coverage  | `npm run coverage`                                    | Measures Node script coverage via `c8` and dashboard package coverage via `go test -cover`                 |
-| Security  | `npm run app:boot:test`                               | API startup server rate limits burst traffic per client and returns HTTP 429 after the configured window   |
+| Surface   | Command                                               | Details                                                                                                     |
+| --------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Health    | `npm run doctor && node scripts/test-all.mjs --quick` | Repo health gate; validates setup, version consistency, and dashboard build                                 |
+| Coverage  | `npm run coverage`                                    | Measures Node script coverage via `c8` and dashboard package coverage via `go test -cover`                  |
+| Security  | `npm run app:boot:test`                               | API startup server rate limits burst traffic per client and returns HTTP 429 after the configured window    |
 | Backup    | `npm run backup:run`                                  | Timestamped SQLite backups in `.jobhunt-app/backups/` with 7-day retention; use `--verify` to restore-check |
-| Local Dev | `npm run dashboard`                                   | Preferred launcher for the Go TUI dashboard; builds in `dashboard/` and defaults `--path` to the repo root |
+| Backup Schedule | `npm run backup:install-cron`                   | Installs the repo-managed daily backup cron entry at `05:15` local time and writes logs to `tmp/cron/backup.log` |
+| Local Dev | `npm run dashboard`                                   | Preferred launcher for the Go TUI dashboard; builds in `dashboard/` and defaults `--path` to the repo root  |
 
 ## CI/CD
 

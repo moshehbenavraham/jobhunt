@@ -202,7 +202,9 @@ export function ApprovalContextPanel({
         }}
       >
         <article style={cardStyle}>
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Approval
           </p>
           <p style={{ margin: 0 }}>
@@ -210,19 +212,27 @@ export function ApprovalContextPanel({
           </p>
         </article>
         <article style={cardStyle}>
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Session
           </p>
-          <p style={{ margin: 0 }}>{selected.session?.sessionId ?? 'Unknown'}</p>
+          <p style={{ margin: 0 }}>
+            {selected.session?.sessionId ?? 'Unknown'}
+          </p>
         </article>
         <article style={cardStyle}>
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Job
           </p>
           <p style={{ margin: 0 }}>{selected.job?.jobId ?? 'No active job'}</p>
         </article>
         <article style={cardStyle}>
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Trace
           </p>
           <p style={{ margin: 0 }}>
@@ -240,7 +250,9 @@ export function ApprovalContextPanel({
             ? `${selected.session.workflow} is ${selected.session.status}. Updated ${formatTimestamp(selected.session.updatedAt)}.`
             : 'No session summary is available for this approval.'}
         </p>
-        <p style={{ color: '#475569', marginBottom: 0 }}>{selected.route.message}</p>
+        <p style={{ color: '#475569', marginBottom: 0 }}>
+          {selected.route.message}
+        </p>
       </article>
 
       {selected.failure ? (
@@ -251,7 +263,9 @@ export function ApprovalContextPanel({
             borderColor: '#fecaca',
           }}
         >
-          <p style={{ color: '#991b1b', marginBottom: '0.35rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#991b1b', marginBottom: '0.35rem', marginTop: 0 }}
+          >
             Latest failure
           </p>
           <p style={{ marginBottom: '0.35rem', marginTop: 0 }}>
@@ -283,7 +297,9 @@ export function ApprovalContextPanel({
           Recent timeline
         </p>
         {selected.timeline.length === 0 ? (
-          <p style={{ margin: 0 }}>No runtime timeline entries are available yet.</p>
+          <p style={{ margin: 0 }}>
+            No runtime timeline entries are available yet.
+          </p>
         ) : (
           <div style={{ display: 'grid', gap: '0.7rem' }}>
             {selected.timeline.slice(0, 4).map((item) => (
@@ -294,7 +310,13 @@ export function ApprovalContextPanel({
                   paddingTop: '0.7rem',
                 }}
               >
-                <p style={{ fontWeight: 700, marginBottom: '0.2rem', marginTop: 0 }}>
+                <p
+                  style={{
+                    fontWeight: 700,
+                    marginBottom: '0.2rem',
+                    marginTop: 0,
+                  }}
+                >
                   {item.summary}
                 </p>
                 <p style={{ color: '#475569', margin: 0 }}>

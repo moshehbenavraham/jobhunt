@@ -40,14 +40,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-| -------- | ------ | -------- | ------- |
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | Inputs are schema-validated before they reach route handlers, store access, or shell-facing state |
-| Hardcoded Secrets | PASS | Critical | No secrets, tokens, or credentials were added |
-| Sensitive Data Exposure | PASS | High | The console summary stays bounded and does not expose raw store rows |
-| Insecure Dependencies | PASS | -- | No dependency changes were introduced in this session |
-| Misconfiguration | PASS | Medium | The new routes and browser smoke remain within the existing app/runtime surface |
-| Database Security | N/A | -- | No DB-layer schema or persistence shape changes were introduced |
+| Category                      | Status | Severity | Details                                                                                           |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | Inputs are schema-validated before they reach route handlers, store access, or shell-facing state |
+| Hardcoded Secrets             | PASS   | Critical | No secrets, tokens, or credentials were added                                                     |
+| Sensitive Data Exposure       | PASS   | High     | The console summary stays bounded and does not expose raw store rows                              |
+| Insecure Dependencies         | PASS   | --       | No dependency changes were introduced in this session                                             |
+| Misconfiguration              | PASS   | Medium   | The new routes and browser smoke remain within the existing app/runtime surface                   |
+| Database Security             | N/A    | --       | No DB-layer schema or persistence shape changes were introduced                                   |
 
 ### Findings
 
@@ -61,14 +61,14 @@ No security findings.
 
 No new personal data collection, storage, consent, erasure, or third-party sharing path was introduced in this session.
 
-| Category | Status | Details |
-| -------- | ------ | ------- |
-| Data Collection & Purpose | N/A | No new personal-data collection |
-| Consent Mechanism | N/A | No new collection flow |
-| Data Minimization | N/A | No new user-data store added |
-| Right to Erasure | N/A | No new persistence surface added |
-| PII in Logs | PASS | No personal data logging added |
-| Third-Party Data Transfers | N/A | No new external sharing path added |
+| Category                   | Status | Details                            |
+| -------------------------- | ------ | ---------------------------------- |
+| Data Collection & Purpose  | N/A    | No new personal-data collection    |
+| Consent Mechanism          | N/A    | No new collection flow             |
+| Data Minimization          | N/A    | No new user-data store added       |
+| Right to Erasure           | N/A    | No new persistence surface added   |
+| PII in Logs                | PASS   | No personal data logging added     |
+| Third-Party Data Transfers | N/A    | No new external sharing path added |
 
 ### Personal Data Inventory
 

@@ -97,7 +97,9 @@ export function SettingsSupportCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Prompt cache
           </p>
           <p style={{ margin: 0 }}>{summary.support.prompt.cacheMode}</p>
@@ -110,7 +112,9 @@ export function SettingsSupportCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Prompt sources
           </p>
           <p style={{ margin: 0 }}>{summary.support.prompt.sources.length}</p>
@@ -123,10 +127,14 @@ export function SettingsSupportCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Supported workflows
           </p>
-          <p style={{ margin: 0 }}>{summary.support.prompt.supportedWorkflowCount}</p>
+          <p style={{ margin: 0 }}>
+            {summary.support.prompt.supportedWorkflowCount}
+          </p>
         </article>
         <article
           style={{
@@ -136,11 +144,14 @@ export function SettingsSupportCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Tool preview
           </p>
           <p style={{ margin: 0 }}>
-            {summary.support.tools.tools.length} / {summary.support.tools.totalCount}
+            {summary.support.tools.tools.length} /{' '}
+            {summary.support.tools.totalCount}
           </p>
         </article>
       </div>
@@ -184,7 +195,8 @@ export function SettingsSupportCard({
               <li key={source.key}>
                 <strong>{source.label}</strong>{' '}
                 <span style={{ color: '#475569' }}>
-                  ({source.key}, {source.role}, {source.optional ? 'optional' : 'required'})
+                  ({source.key}, {source.role},{' '}
+                  {source.optional ? 'optional' : 'required'})
                 </span>
               </li>
             ))}

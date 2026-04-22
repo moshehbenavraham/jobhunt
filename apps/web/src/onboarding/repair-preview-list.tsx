@@ -154,7 +154,9 @@ export function RepairPreviewList({
       ) : (
         <ul style={listStyle}>
           {items.map((item) => {
-            const isSelected = selectedTargets.includes(item.destination.surfaceKey);
+            const isSelected = selectedTargets.includes(
+              item.destination.surfaceKey,
+            );
             const canSelect = item.reason === 'ready';
 
             return (
@@ -191,15 +193,35 @@ export function RepairPreviewList({
                         {item.reason}
                       </span>
                     </div>
-                    <p style={{ color: '#475569', marginBottom: '0.3rem', marginTop: 0 }}>
+                    <p
+                      style={{
+                        color: '#475569',
+                        marginBottom: '0.3rem',
+                        marginTop: 0,
+                      }}
+                    >
                       Destination:{' '}
                       <code>{item.destination.canonicalRepoRelativePath}</code>
                     </p>
-                    <p style={{ color: '#475569', marginBottom: '0.3rem', marginTop: 0 }}>
+                    <p
+                      style={{
+                        color: '#475569',
+                        marginBottom: '0.3rem',
+                        marginTop: 0,
+                      }}
+                    >
                       Template:{' '}
-                      <code>{item.source.repoRelativePath ?? item.source.surfaceKey}</code>
+                      <code>
+                        {item.source.repoRelativePath ?? item.source.surfaceKey}
+                      </code>
                     </p>
-                    <p style={{ color: '#64748b', marginBottom: 0, marginTop: 0 }}>
+                    <p
+                      style={{
+                        color: '#64748b',
+                        marginBottom: 0,
+                        marginTop: 0,
+                      }}
+                    >
                       {getReasonCopy(item.reason)}
                     </p>
                   </div>

@@ -160,7 +160,8 @@ function createWorkflowOptions() {
       missingCapabilities: [],
       modeRepoRelativePath: 'modes/oferta.md',
       specialist: {
-        description: 'Owns job-description intake and evaluation follow-through.',
+        description:
+          'Owns job-description intake and evaluation follow-through.',
         id: 'evaluation-specialist',
         label: 'Evaluation Specialist',
       },
@@ -224,21 +225,20 @@ function createSessionDetail(summary, overrides = {}) {
       status: 'ready',
     },
     session: summary,
-    timeline:
-      overrides.timeline ?? [
-        {
-          approvalId: null,
-          eventId: 'event-live',
-          eventType: 'job-execution-started',
-          jobId: summary.job?.jobId ?? null,
-          level: 'info',
-          occurredAt: summary.updatedAt,
-          requestId: 'request-live',
-          sessionId: summary.sessionId,
-          summary: overrides.timelineSummary ?? 'Launch accepted.',
-          traceId: 'trace-live',
-        },
-      ],
+    timeline: overrides.timeline ?? [
+      {
+        approvalId: null,
+        eventId: 'event-live',
+        eventType: 'job-execution-started',
+        jobId: summary.job?.jobId ?? null,
+        level: 'info',
+        occurredAt: summary.updatedAt,
+        requestId: 'request-live',
+        sessionId: summary.sessionId,
+        summary: overrides.timelineSummary ?? 'Launch accepted.',
+        traceId: 'trace-live',
+      },
+    ],
   };
 }
 
@@ -262,6 +262,541 @@ function createChatConsoleSummaryPayload(state, selectedSessionId = null) {
     sessionId: 'phase01-session03-agent-runtime-bootstrap',
     status: 'ready',
     workflows: createWorkflowOptions(),
+  };
+}
+
+function createEvaluationArtifactSummary(kind, overrides = {}) {
+  const artifactState = overrides.state ?? 'pending';
+
+  return {
+    exists: overrides.exists ?? artifactState === 'ready',
+    kind,
+    message:
+      overrides.message ??
+      (artifactState === 'ready'
+        ? `${kind} artifact is ready.`
+        : artifactState === 'pending'
+          ? `${kind} artifact is still pending.`
+          : `${kind} artifact is missing.`),
+    repoRelativePath: overrides.repoRelativePath ?? null,
+    state: artifactState,
+  };
+}
+
+function createEvaluationResultSummary(overrides = {}) {
+  const summaryState = overrides.state ?? 'running';
+  const sessionId = overrides.sessionId ?? 'session-live';
+  const workflow = overrides.workflow ?? 'single-evaluation';
+  const updatedAt = overrides.updatedAt ?? '2026-04-22T00:00:00.000Z';
+  const sessionStatus = overrides.sessionStatus ??
+    (summaryState === 'approval-paused'
+      ? 'waiting'
+      : summaryState === 'pending'
+        ? 'pending'
+        : summaryState === 'running'
+          ? 'running'
+          : summaryState === 'failed'
+            ? 'failed'
+            : 'completed');
+  const jobStatus = overrides.jobStatus ??
+    (summaryState === 'approval-paused'
+      ? 'waiting'
+      : summaryState === 'pending'
+        ? 'queued'
+        : summaryState === 'running'
+          ? 'running'
+          : summaryState === 'failed'
+            ? 'failed'
+            : 'completed');
+
+  if (summaryState === 'empty') {
+    return {
+      artifacts: {
+        pdf: createEvaluationArtifactSummary('pdf', {
+          message: 'pdf artifact is missing.',
+          state: 'missing',
+        }),
+        report: createEvaluationArtifactSummary('report', {
+          message: 'report artifact is missing.',
+          state: 'missing',
+        }),
+        tracker: createEvaluationArtifactSummary('tracker', {
+          message: 'tracker artifact is missing.',
+          state: 'missing',
+        }),
+      },
+      checkpoint: {
+        completedStepCount: 0,
+        completedSteps: [],
+        cursor: null,
+        hasMore: false,
+        updatedAt: null,
+      },
+      closeout: {
+        message: 'No review-ready evaluation closeout is available yet.',
+        readyForReview: false,
+        state: 'not-ready',
+      },
+      failure: null,
+      handoff: {
+        approval: null,
+        approvalStatus: 'none',
+        message: 'No approval handoff is attached to this result.',
+        resumeAllowed: false,
+        state: 'none',
+      },
+      job: null,
+      legitimacy: null,
+      message:
+        overrides.message ?? 'No evaluation sessions have been recorded yet.',
+      reportNumber: null,
+      score: null,
+      session: null,
+      state: 'empty',
+      workflow: null,
+      warnings: {
+        hasMore: false,
+        items: [],
+        totalCount: 0,
+      },
+    };
+  }
+
+  if (
+    summaryState === 'missing-session' ||
+    summaryState === 'unsupported-workflow'
+  ) {
+    return {
+      ...createEvaluationResultSummary({
+        message:
+          summaryState === 'missing-session'
+            ? `Evaluation session ${sessionId} was not found.`
+            : `Workflow ${workflow} is not supported by the evaluation-result route.`,
+        state: 'empty',
+      }),
+      message:
+        overrides.message ??
+        (summaryState === 'missing-session'
+          ? `Evaluation session ${sessionId} was not found.`
+          : `Workflow ${workflow} is not supported by the evaluation-result route.`),
+      state: summaryState,
+    };
+  }
+
+  const approval =
+    summaryState === 'approval-paused'
+      ? {
+          action: 'approve-run',
+          approvalId: overrides.approvalId ?? 'approval-resume',
+          jobId: overrides.jobId ?? 'job-live',
+          requestedAt: updatedAt,
+          resolvedAt: null,
+          status: 'pending',
+          title: overrides.approvalTitle ?? 'Review resumed run',
+          traceId: 'trace-resume',
+        }
+      : overrides.approval ?? null;
+  const warnings =
+    summaryState === 'degraded'
+      ? overrides.warnings ?? [
+          {
+            code: null,
+            message: 'Manual legitimacy review required.',
+          },
+          {
+            code: null,
+            message: 'PDF generation is incomplete.',
+          },
+        ]
+      : overrides.warnings ?? [];
+
+  return {
+    artifacts: overrides.artifacts ?? {
+      pdf: createEvaluationArtifactSummary('pdf', {
+        repoRelativePath:
+          summaryState === 'completed'
+            ? 'output/101-ready.pdf'
+            : summaryState === 'degraded'
+              ? 'output/102-missing.pdf'
+              : null,
+        state:
+          summaryState === 'completed'
+            ? 'ready'
+            : summaryState === 'degraded'
+              ? 'missing'
+              : 'pending',
+      }),
+      report: createEvaluationArtifactSummary('report', {
+        repoRelativePath:
+          summaryState === 'completed'
+            ? 'reports/101-ready.md'
+            : summaryState === 'degraded'
+              ? 'reports/102-degraded.md'
+              : null,
+        state:
+          summaryState === 'completed' || summaryState === 'degraded'
+            ? 'ready'
+            : 'pending',
+      }),
+      tracker: createEvaluationArtifactSummary('tracker', {
+        repoRelativePath:
+          summaryState === 'completed'
+            ? 'batch/tracker-additions/101-ready.tsv'
+            : summaryState === 'degraded'
+              ? 'batch/tracker-additions/102-degraded.tsv'
+              : null,
+        state:
+          summaryState === 'completed' || summaryState === 'degraded'
+            ? 'ready'
+            : 'pending',
+      }),
+    },
+    checkpoint: overrides.checkpoint ?? {
+      completedStepCount: summaryState === 'running' ? 4 : 0,
+      completedSteps:
+        summaryState === 'running'
+          ? [
+              'validated-input',
+              'captured-job-description',
+              'scored-fit',
+              'prepared-report',
+            ]
+          : [],
+      cursor: summaryState === 'running' ? 'prepared-report' : null,
+      hasMore: false,
+      updatedAt: summaryState === 'running' ? updatedAt : null,
+    },
+    closeout: overrides.closeout ?? {
+      message:
+        summaryState === 'completed'
+          ? 'All evaluation artifacts are ready for review.'
+          : summaryState === 'degraded'
+            ? 'Evaluation completed with warnings or missing artifacts that need attention.'
+            : summaryState === 'failed'
+              ? 'Evaluation failed before a clean artifact handoff completed.'
+              : 'Evaluation closeout is still in progress.',
+      readyForReview:
+        summaryState === 'completed' || summaryState === 'degraded',
+      state:
+        summaryState === 'completed'
+          ? 'review-ready'
+          : summaryState === 'degraded' || summaryState === 'failed'
+            ? 'attention-required'
+            : 'in-progress',
+    },
+    failure:
+      summaryState === 'failed'
+        ? {
+            failedAt: updatedAt,
+            jobId: overrides.jobId ?? 'job-live',
+            message: overrides.failureMessage ?? 'JD extraction failed.',
+            runId: 'run-live',
+            sessionId,
+            traceId: 'trace-live',
+          }
+        : null,
+    handoff:
+      summaryState === 'approval-paused'
+        ? {
+            approval,
+            approvalStatus: 'pending',
+            message: `Evaluation session is waiting for approval: ${approval.title}.`,
+            resumeAllowed: false,
+            state: 'waiting-for-approval',
+          }
+        : summaryState === 'failed'
+          ? {
+              approval: null,
+              approvalStatus: 'none',
+              message: 'The shared resume path can inspect this failed session.',
+              resumeAllowed: true,
+              state: 'resume-ready',
+            }
+          : {
+              approval: null,
+              approvalStatus: 'none',
+              message: 'No approval handoff is attached to this result.',
+              resumeAllowed: false,
+              state: 'none',
+            },
+    job: overrides.job ?? {
+      attempt: 1,
+      completedAt:
+        jobStatus === 'completed' || jobStatus === 'failed' ? updatedAt : null,
+      currentRunId: 'run-live',
+      jobId: overrides.jobId ?? 'job-live',
+      jobType: 'evaluate-job',
+      startedAt:
+        jobStatus === 'queued' || jobStatus === 'pending' ? null : updatedAt,
+      status: jobStatus,
+      updatedAt,
+      waitReason: summaryState === 'approval-paused' ? 'approval' : null,
+    },
+    legitimacy:
+      overrides.legitimacy ??
+      (summaryState === 'completed'
+        ? 'High Confidence'
+        : summaryState === 'degraded'
+          ? 'Proceed with Caution'
+          : null),
+    message:
+      overrides.message ??
+      (summaryState === 'pending'
+        ? 'Evaluation session is queued and has not started yet.'
+        : summaryState === 'running'
+          ? 'Evaluation session is still running.'
+          : summaryState === 'approval-paused'
+            ? `Evaluation session is waiting for approval: ${approval.title}.`
+            : summaryState === 'failed'
+              ? 'JD extraction failed.'
+              : summaryState === 'completed'
+                ? 'Evaluation result summary is ready.'
+                : 'Evaluation result summary is ready with warnings or missing artifacts.'),
+    reportNumber:
+      overrides.reportNumber ??
+      (summaryState === 'completed'
+        ? '101'
+        : summaryState === 'degraded'
+          ? '102'
+          : null),
+    score:
+      overrides.score ??
+      (summaryState === 'completed'
+        ? 4.9
+        : summaryState === 'degraded'
+          ? 3.8
+          : null),
+    session: overrides.session ?? {
+      activeJobId: overrides.jobId ?? 'job-live',
+      lastHeartbeatAt: updatedAt,
+      sessionId,
+      status: sessionStatus,
+      updatedAt,
+      workflow,
+    },
+    state: summaryState,
+    workflow,
+    warnings: {
+      hasMore: false,
+      items: warnings,
+      totalCount: warnings.length,
+    },
+  };
+}
+
+function isEvaluationWorkflow(workflow) {
+  return workflow === 'auto-pipeline' || workflow === 'single-evaluation';
+}
+
+function toEvaluationSessionPreview(summary) {
+  return {
+    sessionId: summary.session.sessionId,
+    state: summary.state,
+    status: summary.session.status,
+    updatedAt: summary.session.updatedAt,
+    workflow: summary.workflow,
+  };
+}
+
+function createEvaluationResultPayload(state, requestUrl) {
+  const url = new URL(requestUrl, 'http://127.0.0.1');
+  const requestedSessionId = url.searchParams.get('sessionId');
+  const requestedWorkflow = url.searchParams.get('workflow');
+  const previewLimit = Number.parseInt(
+    url.searchParams.get('previewLimit') ?? '4',
+    10,
+  );
+  const recentEntries = [...state.evaluationResults.values()]
+    .filter((summary) =>
+      requestedWorkflow ? summary.workflow === requestedWorkflow : true,
+    )
+    .sort((left, right) =>
+      right.session.updatedAt.localeCompare(left.session.updatedAt),
+    );
+  let summary;
+
+  if (requestedSessionId) {
+    summary = state.evaluationResults.get(requestedSessionId) ?? null;
+
+    if (!summary) {
+      const selectedDetail = state.sessionDetails.get(requestedSessionId) ?? null;
+      summary = selectedDetail
+        ? createEvaluationResultSummary({
+            message: `Workflow ${selectedDetail.session.workflow} is not supported by the evaluation-result route.`,
+            sessionId: requestedSessionId,
+            state: isEvaluationWorkflow(selectedDetail.session.workflow)
+              ? 'missing-session'
+              : 'unsupported-workflow',
+            workflow: selectedDetail.session.workflow,
+          })
+        : createEvaluationResultSummary({
+            message: `Evaluation session ${requestedSessionId} was not found.`,
+            sessionId: requestedSessionId,
+            state: 'missing-session',
+          });
+    }
+  } else if (requestedWorkflow && !isEvaluationWorkflow(requestedWorkflow)) {
+    summary = createEvaluationResultSummary({
+      message: `Workflow ${requestedWorkflow} is not supported by the evaluation-result route.`,
+      state: 'unsupported-workflow',
+      workflow: requestedWorkflow,
+    });
+  } else {
+    summary = recentEntries[0] ?? createEvaluationResultSummary({ state: 'empty' });
+  }
+
+  return {
+    filters: {
+      previewLimit: Number.isNaN(previewLimit) ? 4 : previewLimit,
+      sessionId: requestedSessionId,
+      workflow: requestedWorkflow,
+    },
+    generatedAt: '2026-04-22T00:00:00.000Z',
+    message: summary.message,
+    ok: true,
+    recentSessions: recentEntries.map((entry) => toEvaluationSessionPreview(entry)),
+    service: 'jobhunt-api-scaffold',
+    sessionId: 'phase01-session03-agent-runtime-bootstrap',
+    status: 'ready',
+    summary,
+  };
+}
+
+function createPipelineReviewPayload(requestUrl) {
+  const url = new URL(requestUrl, 'http://127.0.0.1');
+  const reportNumber = url.searchParams.get('reportNumber');
+  const selectedRow =
+    reportNumber === '102'
+      ? {
+          company: 'Degraded Co',
+          kind: 'processed',
+          legitimacy: 'Proceed with Caution',
+          pdf: {
+            exists: false,
+            message: 'PDF generation is incomplete.',
+            repoRelativePath: null,
+          },
+          report: {
+            exists: true,
+            message: 'Checked-in report reports/102-degraded.md is available.',
+            repoRelativePath: 'reports/102-degraded.md',
+          },
+          reportNumber: '102',
+          role: 'Degraded Role',
+          score: 3.8,
+          selected: true,
+          sourceLine:
+            '- [x] #102 | https://example.com/jobs/degraded | Degraded Co | Degraded Role | 3.8/5 | PDF No',
+          url: 'https://example.com/jobs/degraded',
+          verification: 'manual review',
+          warningCount: 2,
+          warnings: [
+            {
+              code: 'caution-legitimacy',
+              message: 'Legitimacy is marked Proceed with Caution.',
+            },
+            {
+              code: 'missing-pdf',
+              message: 'PDF generation is incomplete.',
+            },
+          ],
+        }
+      : {
+          company: 'Ready Co',
+          kind: 'processed',
+          legitimacy: 'High Confidence',
+          pdf: {
+            exists: true,
+            message: 'Checked-in PDF artifact output/cv-ready.pdf is available.',
+            repoRelativePath: 'output/cv-ready.pdf',
+          },
+          report: {
+            exists: true,
+            message: 'Checked-in report reports/101-ready.md is available.',
+            repoRelativePath: 'reports/101-ready.md',
+          },
+          reportNumber: '101',
+          role: 'Ready Role',
+          score: 4.9,
+          selected: true,
+          sourceLine:
+            '- [x] #101 | https://example.com/jobs/ready | Ready Co | Ready Role | 4.9/5 | PDF Yes',
+          url: 'https://example.com/jobs/ready',
+          verification: 'active via browser review',
+          warningCount: 0,
+          warnings: [],
+        };
+
+  return {
+    filters: {
+      limit: 12,
+      offset: 0,
+      reportNumber: selectedRow.reportNumber,
+      section: 'processed',
+      sort: 'queue',
+      url: null,
+    },
+    generatedAt: '2026-04-22T00:00:00.000Z',
+    message: `Showing queue detail for processed row #${selectedRow.reportNumber}.`,
+    ok: true,
+    queue: {
+      counts: {
+        malformed: 0,
+        pending: 0,
+        processed: 1,
+      },
+      hasMore: false,
+      items: [selectedRow],
+      limit: 12,
+      offset: 0,
+      section: 'processed',
+      sort: 'queue',
+      totalCount: 1,
+    },
+    selectedDetail: {
+      message: `Showing queue detail for processed row #${selectedRow.reportNumber}.`,
+      origin: 'report-number',
+      requestedReportNumber: selectedRow.reportNumber,
+      requestedUrl: null,
+      row: {
+        ...selectedRow,
+        header: {
+          archetype: 'Applied AI',
+          date: '2026-04-22',
+          legitimacy: selectedRow.legitimacy,
+          pdf: selectedRow.pdf,
+          score: selectedRow.score,
+          title: `Evaluation: ${selectedRow.company} -- ${selectedRow.role}`,
+          url: selectedRow.url,
+          verification: selectedRow.verification,
+        },
+      },
+      state: 'ready',
+    },
+    service: 'jobhunt-api-scaffold',
+    sessionId: 'phase01-session03-agent-runtime-bootstrap',
+    shortlist: {
+      available: true,
+      bucketCounts: {
+        adjacentOrNoisy: 0,
+        possibleFit: 0,
+        strongestFit: 1,
+      },
+      campaignGuidance: 'Current strongest lane: Forward Deployed.',
+      generatedBy: 'npm run scan',
+      lastRefreshed: '2026-04-22',
+      message: 'Shortlist guidance is available for queue review.',
+      topRoles: [
+        {
+          bucketLabel: 'Strongest fit',
+          company: selectedRow.company,
+          reasonSummary: 'focus from evaluation handoff',
+          role: selectedRow.role,
+          url: selectedRow.url,
+        },
+      ],
+    },
+    status: 'ready',
   };
 }
 
@@ -373,12 +908,17 @@ async function waitForHttpOk(url, child, stderrLog) {
     await delay(100);
   }
 
-  throw new Error(`Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`);
+  throw new Error(
+    `Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`,
+  );
 }
 
 async function startFakeApiServer() {
   const state = {
     chatConsoleMode: 'empty',
+    evaluationResultDelayMs: 0,
+    evaluationResultMode: 'ready',
+    evaluationResults: new Map(),
     launchCount: 0,
     launchMode: 'running',
     nextLaunchGate: null,
@@ -404,6 +944,46 @@ async function startFakeApiServer() {
         'content-type': 'application/json; charset=utf-8',
       });
       response.end(JSON.stringify(readyShellSummary, null, 2));
+      return;
+    }
+
+    if ((request.url ?? '').startsWith('/evaluation-result')) {
+      if (state.evaluationResultDelayMs > 0) {
+        await delay(state.evaluationResultDelayMs);
+      }
+
+      if (state.evaluationResultMode === 'invalid-payload') {
+        response.writeHead(200, {
+          'content-type': 'application/json; charset=utf-8',
+        });
+        response.end(JSON.stringify({ ok: true, message: 'broken' }, null, 2));
+        return;
+      }
+
+      response.writeHead(200, {
+        'content-type': 'application/json; charset=utf-8',
+      });
+      response.end(
+        JSON.stringify(
+          createEvaluationResultPayload(state, request.url ?? '/evaluation-result'),
+          null,
+          2,
+        ),
+      );
+      return;
+    }
+
+    if ((request.url ?? '').startsWith('/pipeline-review')) {
+      response.writeHead(200, {
+        'content-type': 'application/json; charset=utf-8',
+      });
+      response.end(
+        JSON.stringify(
+          createPipelineReviewPayload(request.url ?? '/pipeline-review'),
+          null,
+          2,
+        ),
+      );
       return;
     }
 
@@ -448,7 +1028,10 @@ async function startFakeApiServer() {
           state.nextLaunchGate = null;
         }
 
-        if (body.workflow === 'tracker-status' || state.launchMode === 'tooling-gap') {
+        if (
+          body.workflow === 'tracker-status' ||
+          state.launchMode === 'tooling-gap'
+        ) {
           const detail = createSessionDetail(
             createSessionSummary({
               sessionId: 'session-gap',
@@ -470,6 +1053,7 @@ async function startFakeApiServer() {
           );
           state.sessionDetails.set(detail.session.sessionId, detail);
           state.selectedSessionId = detail.session.sessionId;
+          state.evaluationResults.delete(detail.session.sessionId);
 
           response.writeHead(200, {
             'content-type': 'application/json; charset=utf-8',
@@ -521,6 +1105,15 @@ async function startFakeApiServer() {
           );
           state.sessionDetails.set(detail.session.sessionId, detail);
           state.selectedSessionId = detail.session.sessionId;
+          state.evaluationResults.set(
+            detail.session.sessionId,
+            createEvaluationResultSummary({
+              message: 'Evaluation session is queued and has not started yet.',
+              sessionId: detail.session.sessionId,
+              state: 'pending',
+              updatedAt: detail.session.updatedAt,
+            }),
+          );
 
           response.writeHead(200, {
             'content-type': 'application/json; charset=utf-8',
@@ -570,6 +1163,15 @@ async function startFakeApiServer() {
         );
         state.sessionDetails.set(detail.session.sessionId, detail);
         state.selectedSessionId = detail.session.sessionId;
+        state.evaluationResults.set(
+          detail.session.sessionId,
+          createEvaluationResultSummary({
+            sessionId: detail.session.sessionId,
+            state: 'running',
+            updatedAt: detail.session.updatedAt,
+            workflow: detail.session.workflow,
+          }),
+        );
 
         response.writeHead(200, {
           'content-type': 'application/json; charset=utf-8',
@@ -674,6 +1276,17 @@ async function startFakeApiServer() {
       );
       state.sessionDetails.set(resumedDetail.session.sessionId, resumedDetail);
       state.selectedSessionId = resumedDetail.session.sessionId;
+      state.evaluationResults.set(
+        resumedDetail.session.sessionId,
+        createEvaluationResultSummary({
+          approvalId: 'approval-resume',
+          approvalTitle: 'Review resumed run',
+          sessionId: resumedDetail.session.sessionId,
+          state: 'approval-paused',
+          updatedAt: resumedDetail.session.updatedAt,
+          workflow: resumedDetail.session.workflow,
+        }),
+      );
 
       response.writeHead(200, {
         'content-type': 'application/json; charset=utf-8',
@@ -757,11 +1370,25 @@ async function startFakeApiServer() {
     setChatConsoleMode(mode) {
       state.chatConsoleMode = mode;
     },
+    setEvaluationResultMode(mode) {
+      state.evaluationResultMode = mode;
+    },
+    setEvaluationResultDelayMs(delayMs) {
+      state.evaluationResultDelayMs = delayMs;
+    },
     setLaunchMode(mode) {
       state.launchMode = mode;
     },
     setSummaryDelayMs(delayMs) {
       state.summaryDelayMs = delayMs;
+    },
+    upsertEvaluationResult(summary) {
+      if (summary.session?.sessionId) {
+        state.evaluationResults.set(summary.session.sessionId, summary);
+      }
+    },
+    upsertSessionDetail(detail) {
+      state.sessionDetails.set(detail.session.sessionId, detail);
     },
     state,
     url: `http://127.0.0.1:${address.port}`,
@@ -803,17 +1430,33 @@ try {
 
   try {
     fakeApi.setSummaryDelayMs(800);
+    fakeApi.setEvaluationResultDelayMs(800);
     const page = await browser.newPage();
     await page.goto(`${webUrl}#chat`, { waitUntil: 'domcontentloaded' });
 
-    await page.getByRole('heading', { name: 'Job-Hunt control surface' }).waitFor();
-    await page.getByRole('heading', { name: 'Launch a supported workflow' }).waitFor();
-    await page.getByRole('heading', { name: 'Loading recent sessions' }).waitFor();
-    await page.getByRole('heading', { name: 'Loading timeline' }).waitFor();
+    await page
+      .getByRole('heading', { name: 'Job-Hunt control surface' })
+      .waitFor();
+    await page
+      .getByRole('heading', { name: 'Launch a supported workflow' })
+      .waitFor();
+    await page
+      .getByRole('heading', { name: 'Loading recent sessions' })
+      .waitFor();
+    await page
+      .getByRole('heading', { name: 'Loading evaluation handoff' })
+      .waitFor();
 
     await page.waitForLoadState('networkidle');
     fakeApi.setSummaryDelayMs(0);
-    await page.getByRole('heading', { name: 'No recent sessions yet' }).waitFor();
+    fakeApi.setEvaluationResultDelayMs(0);
+    await page
+      .getByRole('heading', { name: 'No recent sessions yet' })
+      .waitFor();
+    await page
+      .locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
+      .getByRole('heading', { name: 'No evaluation handoff yet' })
+      .waitFor();
 
     const launchGate = fakeApi.holdNextLaunch();
     const launchButton = page.getByRole('button', {
@@ -826,46 +1469,270 @@ try {
     assert.equal(fakeApi.state.launchCount, 1);
     launchGate.resolve();
 
-    await page.getByText('Run handoff is active.').waitFor();
+    await page.getByRole('heading', { name: 'Evaluation is running' }).waitFor();
+    await page
+      .locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
+      .getByText('Evaluation session is still running.')
+      .waitFor();
     await page.getByText('session-live').first().waitFor();
 
     await page.getByRole('button', { name: 'Resume' }).first().click();
-    await page.getByText('Run is waiting for approval: Review resumed run.').waitFor();
+    await page
+      .getByRole('heading', { name: 'Evaluation is waiting for approval' })
+      .waitFor();
     assert.equal(fakeApi.state.resumeCount, 1);
 
-    fakeApi.setLaunchMode('auth-blocked');
-    await page.getByRole('button', { name: 'Launch Single Evaluation' }).click();
-    await page.getByText('Stored OpenAI account credentials are required.').waitFor();
+    fakeApi.setSummaryDelayMs(600);
+    fakeApi.setEvaluationResultDelayMs(600);
+    await page.getByRole('button', { name: 'Refresh chat console' }).click();
+    await page.getByText('Refreshing...').waitFor();
+    assert.equal(
+      await page
+        .locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
+        .getByRole('button', { name: 'Open approval review' })
+        .isDisabled(),
+      true,
+    );
+    fakeApi.setSummaryDelayMs(0);
+    fakeApi.setEvaluationResultDelayMs(0);
+    await page
+      .getByRole('heading', { name: 'Evaluation is waiting for approval' })
+      .waitFor();
 
-    fakeApi.setLaunchMode('running');
-    await page.getByLabel('Select workflow').selectOption('tracker-status');
-    await page.getByRole('button', { name: 'Launch Tracker Status' }).click();
+    await page
+      .locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
+      .getByRole('button', { name: 'Open approval review' })
+      .click();
+    await page
+      .getByRole('heading', { name: 'Approval inbox and human review flow' })
+      .waitFor();
+    assert.equal(page.url().includes('#approvals'), true);
+    assert.equal(page.url().includes('approval=approval-resume'), true);
+
+    const completedDetail = createSessionDetail(
+      createSessionSummary({
+        job: {
+          attempt: 1,
+          completedAt: '2026-04-22T00:10:00.000Z',
+          currentRunId: 'run-completed',
+          jobId: 'job-completed',
+          jobType: 'evaluate-job',
+          startedAt: '2026-04-22T00:09:00.000Z',
+          status: 'completed',
+          updatedAt: '2026-04-22T00:10:00.000Z',
+          waitReason: null,
+        },
+        sessionId: 'session-completed',
+        state: 'ready',
+        status: 'completed',
+        updatedAt: '2026-04-22T00:10:00.000Z',
+        workflow: 'single-evaluation',
+      }),
+      {
+        timelineSummary: 'Evaluation completed successfully.',
+      },
+    );
+    const degradedDetail = createSessionDetail(
+      createSessionSummary({
+        job: {
+          attempt: 1,
+          completedAt: '2026-04-22T00:11:00.000Z',
+          currentRunId: 'run-degraded',
+          jobId: 'job-degraded',
+          jobType: 'evaluate-job',
+          startedAt: '2026-04-22T00:10:00.000Z',
+          status: 'completed',
+          updatedAt: '2026-04-22T00:11:00.000Z',
+          waitReason: null,
+        },
+        sessionId: 'session-degraded',
+        state: 'ready',
+        status: 'completed',
+        updatedAt: '2026-04-22T00:11:00.000Z',
+        workflow: 'auto-pipeline',
+      }),
+      {
+        timelineSummary: 'Evaluation completed with warnings.',
+      },
+    );
+    const failedDetail = createSessionDetail(
+      createSessionSummary({
+        job: {
+          attempt: 1,
+          completedAt: '2026-04-22T00:12:00.000Z',
+          currentRunId: 'run-failed',
+          jobId: 'job-failed',
+          jobType: 'evaluate-job',
+          startedAt: '2026-04-22T00:11:00.000Z',
+          status: 'failed',
+          updatedAt: '2026-04-22T00:12:00.000Z',
+          waitReason: null,
+        },
+        latestFailure: {
+          failedAt: '2026-04-22T00:12:00.000Z',
+          jobId: 'job-failed',
+          message: 'JD extraction failed.',
+          runId: 'run-failed',
+          sessionId: 'session-failed',
+          traceId: 'trace-failed',
+        },
+        sessionId: 'session-failed',
+        state: 'failed',
+        status: 'failed',
+        updatedAt: '2026-04-22T00:12:00.000Z',
+        workflow: 'single-evaluation',
+      }),
+      {
+        failure: {
+          failedAt: '2026-04-22T00:12:00.000Z',
+          jobId: 'job-failed',
+          message: 'JD extraction failed.',
+          runId: 'run-failed',
+          sessionId: 'session-failed',
+          traceId: 'trace-failed',
+        },
+        timelineSummary: 'Evaluation failed.',
+      },
+    );
+
+    fakeApi.upsertSessionDetail(completedDetail);
+    fakeApi.upsertSessionDetail(degradedDetail);
+    fakeApi.upsertSessionDetail(failedDetail);
+    fakeApi.upsertEvaluationResult(
+      createEvaluationResultSummary({
+        jobId: 'job-completed',
+        sessionId: 'session-completed',
+        state: 'completed',
+        updatedAt: '2026-04-22T00:10:00.000Z',
+        workflow: 'single-evaluation',
+      }),
+    );
+    fakeApi.upsertEvaluationResult(
+      createEvaluationResultSummary({
+        jobId: 'job-degraded',
+        sessionId: 'session-degraded',
+        state: 'degraded',
+        updatedAt: '2026-04-22T00:11:00.000Z',
+        workflow: 'auto-pipeline',
+      }),
+    );
+    fakeApi.upsertEvaluationResult(
+      createEvaluationResultSummary({
+        failureMessage: 'JD extraction failed.',
+        jobId: 'job-failed',
+        sessionId: 'session-failed',
+        state: 'failed',
+        updatedAt: '2026-04-22T00:12:00.000Z',
+        workflow: 'single-evaluation',
+      }),
+    );
+
+    await page.goto(`${webUrl}?session=session-live#chat`, {
+      waitUntil: 'networkidle',
+    });
+    await page.getByText('session-completed').first().waitFor();
+
+    const recentSessions = page.locator(
+      'section[aria-labelledby="chat-console-recent-title"]',
+    );
+
+    await recentSessions
+      .locator('article')
+      .filter({ hasText: 'session-completed' })
+      .getByRole('button', { name: 'Select' })
+      .click();
+    await page
+      .getByRole('heading', { name: 'Artifacts are ready for review' })
+      .waitFor();
+    const completedRail = page.locator(
+      'section[aria-labelledby="evaluation-artifact-rail-title"]',
+    );
+    await completedRail.getByText('reports/101-ready.md').first().waitFor();
+    assert.equal(
+      await completedRail
+        .getByRole('button', { name: 'Open report viewer' })
+        .isDisabled(),
+      false,
+    );
+    assert.equal(
+      await completedRail
+        .getByRole('button', { name: 'PDF handoff deferred' })
+        .isDisabled(),
+      true,
+    );
+    assert.equal(
+      await completedRail
+        .getByRole('button', { name: 'Open pipeline review' })
+        .isDisabled(),
+      false,
+    );
+    await completedRail
+      .getByRole('button', { name: 'Open pipeline review' })
+      .click();
+    await page
+      .getByRole('heading', { name: 'Pipeline review workspace' })
+      .waitFor();
+    await page
+      .locator('section[aria-labelledby="pipeline-review-title"]')
+      .getByText('Showing queue detail for processed row #101.')
+      .first()
+      .waitFor();
+    assert.match(page.url(), /pipelineReportNumber=101/);
+    assert.match(page.url(), /#pipeline$/);
+    await page.getByRole('link', { name: /Chat/ }).click();
+    await page
+      .getByRole('heading', { name: 'Launch a supported workflow' })
+      .waitFor();
+
+    await recentSessions
+      .locator('article')
+      .filter({ hasText: 'session-degraded' })
+      .getByRole('button', { name: 'Select' })
+      .click();
+    await page
+      .getByRole('heading', { name: 'Evaluation needs review attention' })
+      .waitFor();
+    await completedRail.getByText('Manual legitimacy review required.').waitFor();
+    await completedRail.getByText('PDF generation is incomplete.').waitFor();
+
+    await recentSessions
+      .locator('article')
+      .filter({ hasText: 'session-failed' })
+      .getByRole('button', { name: 'Select' })
+      .click();
+    await page.getByRole('heading', { name: 'Evaluation failed' }).waitFor();
     await page
       .locator('section[aria-labelledby="chat-console-status-title"]')
-      .getByText(
-        'Tracker status remains blocked until a typed tracker-summary tool is implemented.',
-      )
+      .getByRole('button', { name: 'Open interrupted run' })
       .waitFor();
 
-    fakeApi.setChatConsoleMode('invalid-payload');
+    fakeApi.setEvaluationResultMode('invalid-payload');
     const errorPage = await browser.newPage();
-    await errorPage.goto(`${webUrl}#chat`, { waitUntil: 'networkidle' });
+    await errorPage.goto(`${webUrl}?session=session-completed#chat`, {
+      waitUntil: 'networkidle',
+    });
     await errorPage
-      .getByRole('heading', { name: 'Recent sessions unavailable' })
+      .getByRole('heading', { name: 'Evaluation handoff unavailable' })
       .waitFor();
     await errorPage.close();
-    fakeApi.setChatConsoleMode('empty');
+    fakeApi.setEvaluationResultMode('ready');
 
     const offlinePage = await browser.newPage();
-    await offlinePage.route('**/api/chat-console*', async (route) => {
+    await offlinePage.goto(`${webUrl}?session=session-completed#chat`, {
+      waitUntil: 'networkidle',
+    });
+    await offlinePage
+      .locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
+      .getByText('reports/101-ready.md')
+      .first()
+      .waitFor();
+    await offlinePage.route('**/api/evaluation-result*', async (route) => {
       await route.abort('failed');
     });
-    await offlinePage.goto(`${webUrl}#chat`, { waitUntil: 'networkidle' });
+    await offlinePage.getByRole('button', { name: 'Refresh chat console' }).click();
     await offlinePage
-      .getByRole('heading', { name: 'Recent sessions offline' })
-      .waitFor();
-    await offlinePage
-      .getByRole('heading', { name: 'Timeline offline' })
+      .locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
+      .getByText('Showing the last handoff snapshot')
       .waitFor();
     await offlinePage.close();
 

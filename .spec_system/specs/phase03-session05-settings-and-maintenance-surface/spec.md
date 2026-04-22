@@ -183,31 +183,31 @@ lists, and no shell-script logs.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/settings/settings-types.ts` | Define settings payloads, update-check enums, and maintenance-command contracts | ~220 |
-| `apps/web/src/settings/settings-client.ts` | Fetch settings summaries and normalize client-side refresh failures | ~200 |
-| `apps/web/src/settings/use-settings-surface.ts` | Manage refresh, stale-summary fallback, and shell-resync callbacks | ~240 |
-| `apps/web/src/settings/settings-runtime-card.tsx` | Render startup, store, and phase-close readiness state | ~170 |
-| `apps/web/src/settings/settings-workspace-card.tsx` | Render repo, app-state, and current-session path context | ~180 |
-| `apps/web/src/settings/settings-auth-card.tsx` | Render auth readiness, runtime config, and next-step guidance | ~190 |
-| `apps/web/src/settings/settings-support-card.tsx` | Render prompt workflow support and tool-catalog preview | ~200 |
-| `apps/web/src/settings/settings-maintenance-card.tsx` | Render update-check visibility and terminal maintenance commands | ~220 |
-| `apps/web/src/settings/settings-surface.tsx` | Compose the full Settings and maintenance surface inside the shell | ~250 |
-| `apps/api/src/server/settings-update-check.ts` | Execute the read-only updater check and normalize route-safe states | ~170 |
-| `apps/api/src/server/settings-summary.ts` | Build the bounded settings summary from startup, prompt, tool, and updater data | ~260 |
-| `apps/api/src/server/routes/settings-route.ts` | Expose the GET-only settings summary endpoint | ~120 |
-| `scripts/test-app-settings.mjs` | Run browser smoke checks for the settings surface and update-check states | ~320 |
+| File                                                  | Purpose                                                                         | Est. Lines |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/settings/settings-types.ts`             | Define settings payloads, update-check enums, and maintenance-command contracts | ~220       |
+| `apps/web/src/settings/settings-client.ts`            | Fetch settings summaries and normalize client-side refresh failures             | ~200       |
+| `apps/web/src/settings/use-settings-surface.ts`       | Manage refresh, stale-summary fallback, and shell-resync callbacks              | ~240       |
+| `apps/web/src/settings/settings-runtime-card.tsx`     | Render startup, store, and phase-close readiness state                          | ~170       |
+| `apps/web/src/settings/settings-workspace-card.tsx`   | Render repo, app-state, and current-session path context                        | ~180       |
+| `apps/web/src/settings/settings-auth-card.tsx`        | Render auth readiness, runtime config, and next-step guidance                   | ~190       |
+| `apps/web/src/settings/settings-support-card.tsx`     | Render prompt workflow support and tool-catalog preview                         | ~200       |
+| `apps/web/src/settings/settings-maintenance-card.tsx` | Render update-check visibility and terminal maintenance commands                | ~220       |
+| `apps/web/src/settings/settings-surface.tsx`          | Compose the full Settings and maintenance surface inside the shell              | ~250       |
+| `apps/api/src/server/settings-update-check.ts`        | Execute the read-only updater check and normalize route-safe states             | ~170       |
+| `apps/api/src/server/settings-summary.ts`             | Build the bounded settings summary from startup, prompt, tool, and updater data | ~260       |
+| `apps/api/src/server/routes/settings-route.ts`        | Expose the GET-only settings summary endpoint                                   | ~120       |
+| `scripts/test-app-settings.mjs`                       | Run browser smoke checks for the settings surface and update-check states       | ~320       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/shell/operator-shell.tsx` | Replace the Settings placeholder with the live settings surface and handoff callbacks | ~70 |
-| `apps/api/src/server/routes/index.ts` | Register the settings route in deterministic order | ~20 |
-| `apps/api/src/server/http-server.test.ts` | Add contract coverage for settings summary and updater-check states | ~260 |
-| `scripts/test-app-shell.mjs` | Extend shell smoke coverage to enter and refresh the Settings surface | ~120 |
-| `scripts/test-all.mjs` | Add Session 05 files and settings smoke coverage to the quick regression suite | ~110 |
+| File                                      | Changes                                                                               | Est. Lines |
+| ----------------------------------------- | ------------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/shell/operator-shell.tsx`   | Replace the Settings placeholder with the live settings surface and handoff callbacks | ~70        |
+| `apps/api/src/server/routes/index.ts`     | Register the settings route in deterministic order                                    | ~20        |
+| `apps/api/src/server/http-server.test.ts` | Add contract coverage for settings summary and updater-check states                   | ~260       |
+| `scripts/test-app-shell.mjs`              | Extend shell smoke coverage to enter and refresh the Settings surface                 | ~120       |
+| `scripts/test-all.mjs`                    | Add Session 05 files and settings smoke coverage to the quick regression suite        | ~110       |
 
 ---
 
@@ -299,6 +299,7 @@ lists, and no shell-script logs.
 
 Checklist active: Yes
 Top behavioral risks for this session:
+
 - Showing stale update, auth, or readiness state after the operator refreshes
   the Settings page
 - Letting the browser imply that update, rollback, backup, or auth repair can

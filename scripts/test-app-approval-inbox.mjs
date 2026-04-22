@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-
-import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer as createHttpServer } from 'node:http';
 import { createServer } from 'node:net';
@@ -76,7 +74,9 @@ async function waitForHttpOk(url, child, stderrLog) {
     await delay(100);
   }
 
-  throw new Error(`Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`);
+  throw new Error(
+    `Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`,
+  );
 }
 
 function escapeAttributeValue(value) {
@@ -247,7 +247,8 @@ function createCommandPayload(sessionId, message, state) {
       pendingApproval: null,
       requestedAt: '2026-04-22T00:20:00.000Z',
       route: {
-        message: 'Single evaluation can launch with the evaluation specialist and the current typed evaluation toolset.',
+        message:
+          'Single evaluation can launch with the evaluation specialist and the current typed evaluation toolset.',
         missingCapabilities: [],
         requestKind: 'resume',
         sessionId,
@@ -280,7 +281,8 @@ function createCommandPayload(sessionId, message, state) {
         workflow: 'single-evaluation',
       },
       specialist: {
-        description: 'Owns job-description intake and evaluation follow-through.',
+        description:
+          'Owns job-description intake and evaluation follow-through.',
         id: 'evaluation-specialist',
         label: 'Evaluation Specialist',
       },
@@ -332,9 +334,12 @@ function normalizeApprovals(state) {
 
 function buildInterruptedRun(state, sessionId) {
   const session = state.sessions.get(sessionId) ?? null;
-  const job = session?.activeJobId ? state.jobs.get(session.activeJobId) ?? null : null;
+  const job = session?.activeJobId
+    ? (state.jobs.get(session.activeJobId) ?? null)
+    : null;
   const pendingCount = normalizeApprovals(state).filter(
-    (approval) => approval.sessionId === sessionId && approval.status === 'pending',
+    (approval) =>
+      approval.sessionId === sessionId && approval.status === 'pending',
   ).length;
 
   if (!session) {
@@ -351,7 +356,8 @@ function buildInterruptedRun(state, sessionId) {
     (job?.status === 'waiting' && job.waitReason === 'approval')
   ) {
     return {
-      message: 'Resolve the pending approval before attempting a resume handoff.',
+      message:
+        'Resolve the pending approval before attempting a resume handoff.',
       resumeAllowed: false,
       sessionId,
       state: 'waiting-for-approval',
@@ -360,7 +366,8 @@ function buildInterruptedRun(state, sessionId) {
 
   if (session.status === 'failed' || job?.status === 'failed') {
     return {
-      message: 'This session can be handed back to the shared orchestration resume path.',
+      message:
+        'This session can be handed back to the shared orchestration resume path.',
       resumeAllowed: true,
       sessionId,
       state: 'resume-ready',
@@ -409,28 +416,32 @@ function buildApprovalInboxPayload(state, url) {
   });
 
   let selectedApproval = approvalId
-    ? state.approvals.get(approvalId) ?? null
+    ? (state.approvals.get(approvalId) ?? null)
     : queue[0]
-      ? state.approvals.get(queue[0].approvalId) ?? null
+      ? (state.approvals.get(queue[0].approvalId) ?? null)
       : null;
 
   if (!selectedApproval && sessionFilter) {
     selectedApproval =
-      normalizeApprovals(state).find((approval) => approval.sessionId === sessionFilter) ??
-      null;
+      normalizeApprovals(state).find(
+        (approval) => approval.sessionId === sessionFilter,
+      ) ?? null;
   }
 
   const selectedSessionId =
     selectedApproval?.sessionId ?? sessionFilter ?? null;
   const selectedSession = selectedSessionId
-    ? state.sessions.get(selectedSessionId) ?? null
+    ? (state.sessions.get(selectedSessionId) ?? null)
     : null;
-  const selectedJob =
-    selectedSession?.activeJobId
-      ? state.jobs.get(selectedSession.activeJobId) ?? null
-      : null;
-  const failure = selectedSessionId ? state.failures.get(selectedSessionId) ?? null : null;
-  const timeline = selectedSessionId ? state.timelines.get(selectedSessionId) ?? [] : [];
+  const selectedJob = selectedSession?.activeJobId
+    ? (state.jobs.get(selectedSession.activeJobId) ?? null)
+    : null;
+  const failure = selectedSessionId
+    ? (state.failures.get(selectedSessionId) ?? null)
+    : null;
+  const timeline = selectedSessionId
+    ? (state.timelines.get(selectedSessionId) ?? [])
+    : [];
   const selectionState =
     !selectedApproval && approvalId
       ? 'missing'
@@ -467,10 +478,7 @@ function buildApprovalInboxPayload(state, url) {
         ? {
             approval: selectedApproval,
             failure,
-            interruptedRun: buildInterruptedRun(
-              state,
-              selectedSessionId,
-            ),
+            interruptedRun: buildInterruptedRun(state, selectedSessionId),
             job: selectedJob,
             route: {
               message:
@@ -513,7 +521,9 @@ function buildShellSummary(state) {
             activeJob: {
               jobId: 'job-live',
               status: state.jobs.get('job-live')?.status ?? 'running',
-              updatedAt: state.jobs.get('job-live')?.updatedAt ?? '2026-04-22T00:00:00.000Z',
+              updatedAt:
+                state.jobs.get('job-live')?.updatedAt ??
+                '2026-04-22T00:00:00.000Z',
               waitReason: state.jobs.get('job-live')?.waitReason ?? null,
             },
             activeJobId: 'job-live',
@@ -821,7 +831,8 @@ async function startFakeApiServer() {
       createTimelineItem({
         approvalId,
         eventId: `event-${approvalId}-${status}`,
-        eventType: status === 'approved' ? 'approval-approved' : 'approval-rejected',
+        eventType:
+          status === 'approved' ? 'approval-approved' : 'approval-rejected',
         jobId: approval.jobId,
         level: status === 'approved' ? 'info' : 'warn',
         occurredAt: resolvedAt,
@@ -891,7 +902,9 @@ async function startFakeApiServer() {
       response.writeHead(200, {
         'content-type': 'application/json; charset=utf-8',
       });
-      response.end(JSON.stringify(buildApprovalInboxPayload(state, url), null, 2));
+      response.end(
+        JSON.stringify(buildApprovalInboxPayload(state, url), null, 2),
+      );
       return;
     }
 
@@ -925,7 +938,7 @@ async function startFakeApiServer() {
           JSON.stringify(
             toResolutionPayload(
               approval,
-              approval.jobId ? state.jobs.get(approval.jobId) ?? null : null,
+              approval.jobId ? (state.jobs.get(approval.jobId) ?? null) : null,
               approval.status === 'approved'
                 ? 'already-approved'
                 : 'already-rejected',
@@ -972,7 +985,11 @@ async function startFakeApiServer() {
         });
         response.end(
           JSON.stringify(
-            createCommandPayload(body.sessionId, `Runtime session does not exist: ${body.sessionId}.`, 'failed'),
+            createCommandPayload(
+              body.sessionId,
+              `Runtime session does not exist: ${body.sessionId}.`,
+              'failed',
+            ),
             null,
             2,
           ),
@@ -983,7 +1000,9 @@ async function startFakeApiServer() {
       session.status = 'running';
       session.updatedAt = '2026-04-22T00:20:00.000Z';
       session.lastHeartbeatAt = '2026-04-22T00:20:00.000Z';
-      const job = session.activeJobId ? state.jobs.get(session.activeJobId) ?? null : null;
+      const job = session.activeJobId
+        ? (state.jobs.get(session.activeJobId) ?? null)
+        : null;
 
       if (job) {
         job.status = 'running';
@@ -1014,7 +1033,11 @@ async function startFakeApiServer() {
       });
       response.end(
         JSON.stringify(
-          createCommandPayload(session.sessionId, 'Run handoff is active.', 'running'),
+          createCommandPayload(
+            session.sessionId,
+            'Run handoff is active.',
+            'running',
+          ),
           null,
           2,
         ),
@@ -1130,9 +1153,15 @@ try {
     const page = await browser.newPage();
     await page.goto(`${webUrl}#approvals`, { waitUntil: 'domcontentloaded' });
 
-    await page.getByRole('heading', { name: 'Job-Hunt control surface' }).waitFor();
-    await page.getByRole('heading', { name: 'Loading approval queue' }).waitFor();
-    await page.getByRole('heading', { name: 'Loading approval context' }).waitFor();
+    await page
+      .getByRole('heading', { name: 'Job-Hunt control surface' })
+      .waitFor();
+    await page
+      .getByRole('heading', { name: 'Loading approval queue' })
+      .waitFor();
+    await page
+      .getByRole('heading', { name: 'Loading approval context' })
+      .waitFor();
 
     fakeApi.setSummaryDelayMs(0);
     await page.waitForLoadState('networkidle');
@@ -1162,7 +1191,9 @@ try {
       .filter({ hasText: 'Review stale approval' })
       .waitFor();
     await page
-      .locator('button[aria-label="Approve Review stale approval"]:not([disabled])')
+      .locator(
+        'button[aria-label="Approve Review stale approval"]:not([disabled])',
+      )
       .waitFor();
     fakeApi.resolveExternally('approval-stale', 'approved');
     await clickEnabledButton(page, 'Approve Review stale approval');

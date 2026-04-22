@@ -462,9 +462,7 @@ function parseUpdateCheck(value: unknown): SettingsUpdateCheck {
   };
 }
 
-function parseMaintenanceCommand(
-  value: unknown,
-): SettingsMaintenanceCommand {
+function parseMaintenanceCommand(value: unknown): SettingsMaintenanceCommand {
   const record = assertRecord(value, 'maintenance command');
   const category = readString(record, 'category');
   const id = readString(record, 'id');
@@ -568,9 +566,7 @@ function parseToolPreview(value: unknown): SettingsToolPreview {
   };
 }
 
-function parseWorkflowSupportItem(
-  value: unknown,
-): SettingsWorkflowSupportItem {
+function parseWorkflowSupportItem(value: unknown): SettingsWorkflowSupportItem {
   const record = assertRecord(value, 'workflow support item');
   const specialistValue = record.specialist;
   const status = readString(record, 'status');
@@ -612,7 +608,10 @@ function parseWorkflowSupportItem(
 
 function parseWorkspaceSummary(value: unknown): SettingsWorkspaceSummary {
   const record = assertRecord(value, 'workspace summary');
-  const currentSession = assertRecord(record.currentSession, 'workspace currentSession');
+  const currentSession = assertRecord(
+    record.currentSession,
+    'workspace currentSession',
+  );
 
   return {
     agentsGuidePath: readString(record, 'agentsGuidePath'),
@@ -680,7 +679,9 @@ export function parseSettingsSummaryPayload(
     generatedAt: readString(record, 'generatedAt'),
     health,
     maintenance: {
-      commands: maintenanceCommands.map((entry) => parseMaintenanceCommand(entry)),
+      commands: maintenanceCommands.map((entry) =>
+        parseMaintenanceCommand(entry),
+      ),
       updateCheck: parseUpdateCheck(maintenance.updateCheck),
     },
     message: readString(record, 'message'),
@@ -741,7 +742,9 @@ export function parseSettingsSummaryPayload(
         hasMore: readBoolean(workflows, 'hasMore'),
         previewLimit: readNumber(workflows, 'previewLimit'),
         totalCount: readNumber(workflows, 'totalCount'),
-        workflows: workflowItems.map((entry) => parseWorkflowSupportItem(entry)),
+        workflows: workflowItems.map((entry) =>
+          parseWorkflowSupportItem(entry),
+        ),
       },
     },
     workspace: parseWorkspaceSummary(record.workspace),

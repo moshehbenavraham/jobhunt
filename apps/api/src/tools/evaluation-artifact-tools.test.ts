@@ -3,8 +3,29 @@ import test from 'node:test';
 import { createEvaluationArtifactTools } from './evaluation-artifact-tools.js';
 import { createToolHarness } from './test-utils.js';
 
-function getOutput(result: unknown) {
-  return (result as { output?: unknown }).output as Record<string, any>;
+type EvaluationArtifactListItem = {
+  repoRelativePath: string;
+};
+
+type ReserveReportArtifactOutput = {
+  reportNumber: string;
+  reportRepoRelativePath: string;
+  reservationId: string;
+  status: string;
+};
+
+type WriteReportArtifactOutput = {
+  reportRepoRelativePath: string;
+  status: string;
+};
+
+type ListEvaluationArtifactsOutput = {
+  items: EvaluationArtifactListItem[];
+  total: number;
+};
+
+function getOutput<T>(result: unknown): T {
+  return (result as { output?: unknown }).output as T;
 }
 
 function createCorrelation(toolName: string) {
@@ -51,7 +72,7 @@ test('report artifact reservation skips existing files and prior reservations', 
     });
 
     assert.equal(result.status, 'completed');
-    const output = getOutput(result);
+    const output = getOutput<ReserveReportArtifactOutput>(result);
 
     assert.equal(output.status, 'reserved');
     assert.equal(output.reportNumber, '003');
@@ -82,7 +103,7 @@ test('report artifact writer persists the reserved report and becomes idempotent
     });
 
     assert.equal(reserved.status, 'completed');
-    const reservedOutput = getOutput(reserved);
+    const reservedOutput = getOutput<ReserveReportArtifactOutput>(reserved);
 
     const written = await harness.service.execute({
       correlation: createCorrelation('write-report-artifact'),
@@ -106,8 +127,8 @@ test('report artifact writer persists the reserved report and becomes idempotent
     });
 
     assert.equal(written.status, 'completed');
-    const writtenOutput = getOutput(written);
-    const repeatedOutput = getOutput(writtenAgain);
+    const writtenOutput = getOutput<WriteReportArtifactOutput>(written);
+    const repeatedOutput = getOutput<WriteReportArtifactOutput>(writtenAgain);
 
     assert.equal(writtenOutput.status, 'written');
     assert.equal(
@@ -145,13 +166,11 @@ test('evaluation artifact listing is deterministic across reports and PDFs', asy
     });
 
     assert.equal(result.status, 'completed');
-    const output = getOutput(result);
+    const output = getOutput<ListEvaluationArtifactsOutput>(result);
 
     assert.equal(output.total, 3);
     assert.deepEqual(
-      output.items.map(
-        (item: { repoRelativePath: string }) => item.repoRelativePath,
-      ),
+      output.items.map((item) => item.repoRelativePath),
       ['reports/001-a.md', 'reports/002-b.md'],
     );
   } finally {

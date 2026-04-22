@@ -505,9 +505,31 @@ if (appOnboarding !== null) {
   fail('App onboarding smoke tests failed');
 }
 
-// -- 3ae. Bootstrap ASCII validation -----------------------------
+// -- 3ae. App report-viewer smoke --------------------------------
 
-console.log('\n3ae. Bootstrap ASCII validation');
+console.log('\n3ae. App report-viewer smoke');
+
+const appReportViewer = run('node', ['scripts/test-app-report-viewer.mjs']);
+if (appReportViewer !== null) {
+  pass('App report-viewer smoke tests pass');
+} else {
+  fail('App report-viewer smoke tests failed');
+}
+
+// -- 3af. App pipeline-review smoke ------------------------------
+
+console.log('\n3af. App pipeline-review smoke');
+
+const appPipelineReview = run('node', ['scripts/test-app-pipeline-review.mjs']);
+if (appPipelineReview !== null) {
+  pass('App pipeline-review smoke tests pass');
+} else {
+  fail('App pipeline-review smoke tests failed');
+}
+
+// -- 3ag. Bootstrap ASCII validation -----------------------------
+
+console.log('\n3ag. Bootstrap ASCII validation');
 
 const bootstrapFiles = [
   'apps/api/src/approval-runtime/approval-runtime-contract.ts',
@@ -560,6 +582,10 @@ const bootstrapFiles = [
   'apps/api/src/server/http-server.ts',
   'apps/api/src/server/index.ts',
   'apps/api/src/server/chat-console-summary.ts',
+  'apps/api/src/server/pipeline-review-contract.ts',
+  'apps/api/src/server/pipeline-review-summary.ts',
+  'apps/api/src/server/report-viewer-contract.ts',
+  'apps/api/src/server/report-viewer-summary.ts',
   'apps/api/src/server/onboarding-summary.ts',
   'apps/api/src/server/operator-shell-summary.ts',
   'apps/api/src/server/settings-summary.ts',
@@ -572,6 +598,8 @@ const bootstrapFiles = [
   'apps/api/src/server/routes/onboarding-route.ts',
   'apps/api/src/server/routes/orchestration-route.ts',
   'apps/api/src/server/routes/operator-shell-route.ts',
+  'apps/api/src/server/routes/pipeline-review-route.ts',
+  'apps/api/src/server/routes/report-viewer-route.ts',
   'apps/api/src/server/routes/settings-route.ts',
   'apps/api/src/server/routes/approval-inbox-route.ts',
   'apps/api/src/server/routes/approval-resolution-route.ts',
@@ -644,6 +672,9 @@ const bootstrapFiles = [
   'apps/web/src/chat/chat-console-client.ts',
   'apps/web/src/chat/chat-console-surface.tsx',
   'apps/web/src/chat/chat-console-types.ts',
+  'apps/web/src/chat/evaluation-artifact-rail.tsx',
+  'apps/web/src/chat/evaluation-result-client.ts',
+  'apps/web/src/chat/evaluation-result-types.ts',
   'apps/web/src/chat/recent-session-list.tsx',
   'apps/web/src/chat/run-status-panel.tsx',
   'apps/web/src/chat/run-timeline.tsx',
@@ -657,6 +688,14 @@ const bootstrapFiles = [
   'apps/web/src/onboarding/repair-confirmation-panel.tsx',
   'apps/web/src/onboarding/repair-preview-list.tsx',
   'apps/web/src/onboarding/use-onboarding-wizard.ts',
+  'apps/web/src/pipeline/pipeline-review-client.ts',
+  'apps/web/src/pipeline/pipeline-review-surface.tsx',
+  'apps/web/src/pipeline/pipeline-review-types.ts',
+  'apps/web/src/pipeline/use-pipeline-review.ts',
+  'apps/web/src/reports/report-viewer-client.ts',
+  'apps/web/src/reports/report-viewer-surface.tsx',
+  'apps/web/src/reports/report-viewer-types.ts',
+  'apps/web/src/reports/use-report-viewer.ts',
   'apps/web/src/settings/settings-auth-card.tsx',
   'apps/web/src/settings/settings-client.ts',
   'apps/web/src/settings/settings-maintenance-card.tsx',
@@ -679,6 +718,8 @@ const bootstrapFiles = [
   'scripts/test-app-bootstrap.mjs',
   'scripts/test-app-chat-console.mjs',
   'scripts/test-app-onboarding.mjs',
+  'scripts/test-app-pipeline-review.mjs',
+  'scripts/test-app-report-viewer.mjs',
   'scripts/test-app-settings.mjs',
   'scripts/test-app-shell.mjs',
 ];
@@ -1412,6 +1453,32 @@ for (const check of contributorMetadataChecks) {
       .join('; ');
     fail(`${check.path} has metadata path drift: ${details}`);
   }
+}
+
+const welcomeWorkflowText = readFile('.github/workflows/welcome.yml');
+const requiredWelcomeInputs = ['repo_token:', 'pr_message:', 'issue_message:'];
+const forbiddenWelcomeInputs = ['repo-token:', 'pr-message:', 'issue-message:'];
+const missingWelcomeInputs = requiredWelcomeInputs.filter(
+  (input) => !welcomeWorkflowText.includes(input),
+);
+const staleWelcomeInputs = forbiddenWelcomeInputs.filter((input) =>
+  welcomeWorkflowText.includes(input),
+);
+
+if (missingWelcomeInputs.length === 0 && staleWelcomeInputs.length === 0) {
+  pass('Welcome workflow uses actions/first-interaction@v3 input names');
+} else {
+  const details = [
+    missingWelcomeInputs.length > 0
+      ? `missing ${missingWelcomeInputs.join(', ')}`
+      : null,
+    staleWelcomeInputs.length > 0
+      ? `contains ${staleWelcomeInputs.join(', ')}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join('; ');
+  fail(`Welcome workflow input names drifted: ${details}`);
 }
 
 // -- 11. VALIDATOR RUNTIME CONTRACT -------------------------------

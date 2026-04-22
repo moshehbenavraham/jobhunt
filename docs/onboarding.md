@@ -9,9 +9,14 @@ Use this checklist for a new checkout:
 5. If you have public proof points, optionally copy `profile/article-digest.example.md` to `profile/article-digest.md`.
 6. Run `npm run doctor`.
 7. If you plan to use the repo-owned OpenAI runtime flow, run `npm run auth:openai -- login`.
-8. Run `npm run app:validate` to check the app scaffold and live boot path.
+8. Run `npm run app:validate` to check the app surface and live boot path.
 9. Start `npm run app:web:dev` and `npm run app:api:serve` from the repo root.
-10. Use `codex` only for the legacy CLI workflow if you need it.
+10. Use the app shell first for missing-file repair, approvals, and settings.
+11. Use `codex` only for the legacy CLI workflow if you need it.
+
+If the app reports missing onboarding files, use the onboarding surface to
+review the gap list and apply the checked-in repair templates instead of
+editing everything manually.
 
 For the full setup path, see [Setup Guide](SETUP.md).
 

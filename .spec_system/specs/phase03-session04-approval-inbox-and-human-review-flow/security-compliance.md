@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed (session deliverables only):**
+
 - `apps/api/src/server/approval-inbox-summary.ts` - bounded approval inbox read model
 - `apps/api/src/server/routes/approval-inbox-route.ts` - GET approval inbox route
 - `apps/api/src/server/routes/approval-resolution-route.ts` - POST approval decision route
@@ -39,13 +40,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No untrusted string concatenation or shell injection paths were introduced in the session deliverables. |
-| Hardcoded Secrets | PASS | -- | No secrets or credentials were added. |
-| Sensitive Data Exposure | PASS | -- | No new PII logging or plaintext sensitive data exposure was introduced. |
-| Insecure Dependencies | PASS | -- | No new dependencies were added in this session. |
-| Security Misconfiguration | PASS | -- | No debug-only security changes or permissive runtime settings were introduced. |
+| Category                      | Status | Severity | Details                                                                                                 |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No untrusted string concatenation or shell injection paths were introduced in the session deliverables. |
+| Hardcoded Secrets             | PASS   | --       | No secrets or credentials were added.                                                                   |
+| Sensitive Data Exposure       | PASS   | --       | No new PII logging or plaintext sensitive data exposure was introduced.                                 |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were added in this session.                                                         |
+| Security Misconfiguration     | PASS   | --       | No debug-only security changes or permissive runtime settings were introduced.                          |
 
 ### Findings
 

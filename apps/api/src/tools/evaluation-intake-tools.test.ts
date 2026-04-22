@@ -3,8 +3,56 @@ import test from 'node:test';
 import { createEvaluationIntakeTools } from './evaluation-intake-tools.js';
 import { createToolHarness } from './test-utils.js';
 
-function getOutput(result: unknown) {
-  return (result as { output?: unknown }).output as Record<string, any>;
+type AtsUrlEvaluationInput = {
+  applyUrl: string;
+  ats: string;
+  company: string;
+  compensation: unknown;
+  datePosted: string | null;
+  department: string;
+  descriptionHtml: string;
+  descriptionText: string;
+  employmentType: string;
+  kind: 'ats-url';
+  location: string;
+  sourceUrl: string;
+  team: string;
+  title: string;
+  url: string;
+  workplaceType: string;
+};
+
+type RawJobDescriptionEvaluationInput = {
+  applyUrl: string | null;
+  ats: null;
+  company: string;
+  compensation: null;
+  datePosted: null;
+  department: string;
+  descriptionHtml: string;
+  descriptionText: string;
+  employmentType: string;
+  kind: 'raw-jd';
+  location: string;
+  sourceUrl: string | null;
+  team: string;
+  title: string;
+  url: string | null;
+  workplaceType: string;
+};
+
+type AtsEvaluationInput =
+  | AtsUrlEvaluationInput
+  | RawJobDescriptionEvaluationInput;
+
+type AtsIntakeOutput = {
+  evaluationInput?: AtsEvaluationInput;
+  message?: string;
+  status: string;
+};
+
+function getOutput<T>(result: unknown): T {
+  return (result as { output?: unknown }).output as T;
 }
 
 function createCorrelation() {
@@ -40,7 +88,7 @@ test('ATS intake tool returns normalized evaluation input for supported URLs', a
         "  url: 'https://jobs.example.com/123',",
         "  workplaceType: 'remote'",
         '};',
-        'process.stdout.write(`${JSON.stringify(payload)}\\n`);',
+        "process.stdout.write(JSON.stringify(payload) + '\\n');",
       ].join('\n'),
     },
     scriptDefinitions: [
@@ -64,12 +112,14 @@ test('ATS intake tool returns normalized evaluation input for supported URLs', a
     });
 
     assert.equal(result.status, 'completed');
-    const output = getOutput(result);
+    const output = getOutput<AtsIntakeOutput>(result);
+    assert.ok(output.evaluationInput);
+    const evaluationInput = output.evaluationInput!;
 
     assert.equal(output.status, 'ready');
-    assert.equal(output.evaluationInput.kind, 'ats-url');
-    assert.equal(output.evaluationInput.company, 'Example Co');
-    assert.equal(output.evaluationInput.ats, 'greenhouse');
+    assert.equal(evaluationInput.kind, 'ats-url');
+    assert.equal(evaluationInput.company, 'Example Co');
+    assert.equal(evaluationInput.ats, 'greenhouse');
   } finally {
     await harness.cleanup();
   }
@@ -104,7 +154,7 @@ test('ATS intake tool maps unsupported URLs onto a typed completed envelope', as
     });
 
     assert.equal(result.status, 'completed');
-    const output = getOutput(result);
+    const output = getOutput<AtsIntakeOutput>(result);
 
     assert.equal(output.status, 'unsupported-ats');
     assert.match(String(output.message), /Unsupported ATS URL/);
@@ -164,15 +214,14 @@ test('raw JD intake tool normalizes pasted text without script dispatch', async 
     });
 
     assert.equal(result.status, 'completed');
-    const output = getOutput(result);
+    const output = getOutput<AtsIntakeOutput>(result);
+    assert.ok(output.evaluationInput);
+    const evaluationInput = output.evaluationInput!;
 
     assert.equal(output.status, 'ready');
-    assert.equal(output.evaluationInput.kind, 'raw-jd');
-    assert.equal(output.evaluationInput.company, 'Raw Co');
-    assert.equal(
-      output.evaluationInput.descriptionText,
-      'Build resilient agents.',
-    );
+    assert.equal(evaluationInput.kind, 'raw-jd');
+    assert.equal(evaluationInput.company, 'Raw Co');
+    assert.equal(evaluationInput.descriptionText, 'Build resilient agents.');
   } finally {
     await harness.cleanup();
   }

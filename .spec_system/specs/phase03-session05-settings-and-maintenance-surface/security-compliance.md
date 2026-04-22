@@ -10,6 +10,7 @@
 ## Scope
 
 **Files reviewed (session deliverables only):**
+
 - `apps/api/src/server/settings-update-check.ts` - read-only updater check helper
 - `apps/api/src/server/settings-summary.ts` - bounded settings summary helper
 - `apps/api/src/server/routes/settings-route.ts` - GET settings route
@@ -37,13 +38,13 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-|----------|--------|----------|---------|
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | No untrusted string concatenation or shell injection paths were introduced in the session deliverables. |
-| Hardcoded Secrets | PASS | -- | No secrets or credentials were added. |
-| Sensitive Data Exposure | PASS | -- | No new PII logging or plaintext sensitive data exposure was introduced. |
-| Insecure Dependencies | PASS | -- | No new dependencies were added in this session. |
-| Security Misconfiguration | PASS | -- | No debug-only security changes or permissive runtime settings were introduced. |
+| Category                      | Status | Severity | Details                                                                                                 |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | No untrusted string concatenation or shell injection paths were introduced in the session deliverables. |
+| Hardcoded Secrets             | PASS   | --       | No secrets or credentials were added.                                                                   |
+| Sensitive Data Exposure       | PASS   | --       | No new PII logging or plaintext sensitive data exposure was introduced.                                 |
+| Insecure Dependencies         | PASS   | --       | No new dependencies were added in this session.                                                         |
+| Security Misconfiguration     | PASS   | --       | No debug-only security changes or permissive runtime settings were introduced.                          |
 
 ### Findings
 
@@ -57,14 +58,14 @@ No security findings.
 
 No new personal data collection, storage, or third-party sharing was introduced by this session.
 
-| Category | Status | Details |
-|----------|--------|---------|
-| Data Collection & Purpose | N/A | No personal data was collected. |
-| Consent Mechanism | N/A | No new personal data processing was added. |
-| Data Minimization | N/A | No new personal data processing was added. |
-| Right to Erasure | N/A | No new personal data storage was introduced. |
-| PII in Logs | N/A | No PII logging paths were added. |
-| Third-Party Data Transfers | N/A | No new third-party transfers were added. |
+| Category                   | Status | Details                                      |
+| -------------------------- | ------ | -------------------------------------------- |
+| Data Collection & Purpose  | N/A    | No personal data was collected.              |
+| Consent Mechanism          | N/A    | No new personal data processing was added.   |
+| Data Minimization          | N/A    | No new personal data processing was added.   |
+| Right to Erasure           | N/A    | No new personal data storage was introduced. |
+| PII in Logs                | N/A    | No PII logging paths were added.             |
+| Third-Party Data Transfers | N/A    | No new third-party transfers were added.     |
 
 ### Personal Data Inventory
 

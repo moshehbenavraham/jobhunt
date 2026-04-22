@@ -1,5 +1,8 @@
 import type { CSSProperties } from 'react';
-import type { OnboardingRepairPayload, OnboardingSummaryPayload } from './onboarding-types';
+import type {
+  OnboardingRepairPayload,
+  OnboardingSummaryPayload,
+} from './onboarding-types';
 import type { OnboardingWizardViewStatus } from './use-onboarding-wizard';
 
 type ReadinessHandoffCardProps = {
@@ -148,7 +151,9 @@ export function ReadinessHandoffCard({
         <h2 id="readiness-handoff-title" style={{ marginBottom: '0.35rem' }}>
           Readiness and next steps
         </h2>
-        <p style={{ color: copy.tone, fontWeight: 700, marginBottom: '0.35rem' }}>
+        <p
+          style={{ color: copy.tone, fontWeight: 700, marginBottom: '0.35rem' }}
+        >
           {copy.nextAction}
         </p>
         <p style={{ color: '#475569', marginBottom: 0 }}>{copy.note}</p>
@@ -169,7 +174,9 @@ export function ReadinessHandoffCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Last refreshed
           </p>
           <p style={{ margin: 0 }}>{formatTimestamp(lastUpdatedAt)}</p>
@@ -182,7 +189,9 @@ export function ReadinessHandoffCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Remaining required files
           </p>
           <p style={{ margin: 0 }}>{health.missing.onboarding}</p>
@@ -195,7 +204,9 @@ export function ReadinessHandoffCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Runtime blockers
           </p>
           <p style={{ margin: 0 }}>{health.missing.runtime}</p>
@@ -215,7 +226,8 @@ export function ReadinessHandoffCard({
             <strong>Most recent repair</strong>
           </p>
           <p style={{ margin: 0 }}>
-            {lastRepair.repairedCount} file{lastRepair.repairedCount === 1 ? '' : 's'} created.
+            {lastRepair.repairedCount} file
+            {lastRepair.repairedCount === 1 ? '' : 's'} created.
           </p>
         </section>
       ) : null}
@@ -236,7 +248,9 @@ export function ReadinessHandoffCard({
           style={{
             ...buttonStyle,
             opacity:
-              health.missing.onboarding > 0 || health.missing.runtime > 0 ? 0.6 : 1,
+              health.missing.onboarding > 0 || health.missing.runtime > 0
+                ? 0.6
+                : 1,
           }}
           type="button"
         >

@@ -178,7 +178,9 @@ export function SettingsRuntimeCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Startup status
           </p>
           <p style={{ margin: 0 }}>{summary.health.startupStatus}</p>
@@ -191,7 +193,9 @@ export function SettingsRuntimeCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Operational store
           </p>
           <p style={{ margin: 0 }}>{summary.operationalStore.status}</p>
@@ -204,7 +208,9 @@ export function SettingsRuntimeCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Onboarding blockers
           </p>
           <p style={{ margin: 0 }}>{summary.health.missing.onboarding}</p>
@@ -217,7 +223,9 @@ export function SettingsRuntimeCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Runtime blockers
           </p>
           <p style={{ margin: 0 }}>{summary.health.missing.runtime}</p>

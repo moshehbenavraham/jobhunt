@@ -132,7 +132,8 @@ export function ApprovalQueueList({
           {summary.pendingApprovalCount} pending approvals
         </h2>
         <p style={{ color: '#64748b', marginBottom: 0 }}>
-          Queue ordering is backend-owned and stays bounded for deterministic polling.
+          Queue ordering is backend-owned and stays bounded for deterministic
+          polling.
         </p>
       </header>
 
@@ -141,7 +142,8 @@ export function ApprovalQueueList({
           const isSelected = item.approvalId === selectedApprovalId;
           const isBusy =
             pendingAction !== null &&
-            (pendingAction.kind === 'resume' || pendingAction.approvalId === item.approvalId);
+            (pendingAction.kind === 'resume' ||
+              pendingAction.approvalId === item.approvalId);
 
           return (
             <article
@@ -194,7 +196,9 @@ export function ApprovalQueueList({
                 Requested {formatTimestamp(item.requestedAt)}
               </p>
               {item.traceId ? (
-                <p style={{ color: '#64748b', margin: 0 }}>Trace: {item.traceId}</p>
+                <p style={{ color: '#64748b', margin: 0 }}>
+                  Trace: {item.traceId}
+                </p>
               ) : null}
 
               <button

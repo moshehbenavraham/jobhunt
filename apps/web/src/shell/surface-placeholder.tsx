@@ -27,8 +27,7 @@ function getPlaceholderBody(
   switch (surface.id) {
     case 'chat':
       return {
-        body:
-          'The shell already tracks runtime activity and current session context. Session 02 will attach the live chat console and resume controls inside this frame.',
+        body: 'The shell already tracks runtime activity and current session context. Session 02 will attach the live chat console and resume controls inside this frame.',
         highlights: [
           summary?.activity.activeSession
             ? `Active workflow: ${summary.activity.activeSession.workflow}`
@@ -38,10 +37,29 @@ function getPlaceholderBody(
         ],
         title: 'Chat console lands in Session 02',
       };
+    case 'artifacts':
+      return {
+        body: 'Phase 04 adds the dedicated artifact review surface here. The placeholder keeps the shell registry exhaustive until the real report viewer is mounted.',
+        highlights: [
+          'Report review stays read-only and backend-owned.',
+          'Recent report and PDF browsing will land without widening filesystem access in the browser.',
+          'Chat handoff can target this surface once the report viewer is wired.',
+        ],
+        title: 'Artifact review lands in Phase 04',
+      };
+    case 'pipeline':
+      return {
+        body: 'Phase 04 adds the dedicated pipeline review workspace here. The placeholder keeps the shell registry exhaustive until the real queue surface is mounted.',
+        highlights: [
+          'Pipeline review stays read-only and backend-owned.',
+          'Queue filters, row selection, and shortlist context will land without exposing raw markdown parsing to the browser.',
+          'Evaluation closeout can hand off here once the queue workspace is wired.',
+        ],
+        title: 'Pipeline review lands in Phase 04',
+      };
     case 'onboarding':
       return {
-        body:
-          'Session 03 owns the onboarding wizard. This placeholder keeps the future surface stable while the shell already exposes startup readiness and missing-file counts.',
+        body: 'Session 03 owns the onboarding wizard. This placeholder keeps the future surface stable while the shell already exposes startup readiness and missing-file counts.',
         highlights: [
           `${summary?.health.missing.onboarding ?? 0} required onboarding files are still missing.`,
           `${summary?.health.missing.optional ?? 0} optional surfaces are absent from the repo summary.`,
@@ -51,8 +69,7 @@ function getPlaceholderBody(
       };
     case 'approvals':
       return {
-        body:
-          'Session 04 will turn this surface into the approval inbox. The shell already knows the pending count and can show the latest queued request without exposing raw store rows.',
+        body: 'Session 04 will turn this surface into the approval inbox. The shell already knows the pending count and can show the latest queued request without exposing raw store rows.',
         highlights: [
           `${summary?.activity.pendingApprovalCount ?? 0} approvals are pending right now.`,
           summary?.activity.latestPendingApprovals[0]
@@ -64,8 +81,7 @@ function getPlaceholderBody(
       };
     case 'settings':
       return {
-        body:
-          'Session 05 will add auth and maintenance controls here. For now the shell keeps package, current spec-session, and store health context visible so settings work has a stable home.',
+        body: 'Session 05 will add auth and maintenance controls here. For now the shell keeps package, current spec-session, and store health context visible so settings work has a stable home.',
         highlights: [
           `Package scope: ${summary?.currentSession.packagePath ?? 'cross-cutting'}`,
           `Store status: ${summary?.health.operationalStore.status ?? 'unknown'}`,
@@ -75,8 +91,7 @@ function getPlaceholderBody(
       };
     case 'startup':
       return {
-        body:
-          'Startup is the one fully populated surface in Session 01 and should not render through the generic placeholder.',
+        body: 'Startup is the one fully populated surface in Session 01 and should not render through the generic placeholder.',
         highlights: [],
         title: 'Startup',
       };
@@ -109,7 +124,10 @@ export function SurfacePlaceholder({
         >
           {surface.owner}
         </p>
-        <h2 id={`surface-title-${surface.id}`} style={{ marginBottom: '0.45rem' }}>
+        <h2
+          id={`surface-title-${surface.id}`}
+          style={{ marginBottom: '0.45rem' }}
+        >
           {copy.title}
         </h2>
         <p style={{ color: '#475569', marginBottom: 0 }}>{copy.body}</p>

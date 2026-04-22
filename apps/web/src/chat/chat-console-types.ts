@@ -367,9 +367,7 @@ function readWorkflowIntent(
 ): ChatConsoleWorkflowIntent {
   const value = readString(record, key);
 
-  if (
-    !(CHAT_CONSOLE_WORKFLOW_INTENTS as readonly string[]).includes(value)
-  ) {
+  if (!(CHAT_CONSOLE_WORKFLOW_INTENTS as readonly string[]).includes(value)) {
     throw new Error(`Unsupported workflow intent: ${value}`);
   }
 
@@ -509,8 +507,7 @@ function parseSessionRoute(value: unknown): ChatConsoleSessionRoute {
     message: readString(record, 'message'),
     missingCapabilities: readStringArray(record, 'missingCapabilities'),
     specialistId: readNullableString(record, 'specialistId'),
-    status:
-      record.status === null ? null : readRouteStatus(record, 'status'),
+    status: record.status === null ? null : readRouteStatus(record, 'status'),
   };
 }
 
@@ -520,7 +517,11 @@ function parseSessionDetail(value: unknown): ChatConsoleSessionDetail {
   const jobs = record.jobs;
   const timeline = record.timeline;
 
-  if (!Array.isArray(approvals) || !Array.isArray(jobs) || !Array.isArray(timeline)) {
+  if (
+    !Array.isArray(approvals) ||
+    !Array.isArray(jobs) ||
+    !Array.isArray(timeline)
+  ) {
     throw new Error('Session detail arrays are missing.');
   }
 
@@ -619,10 +620,7 @@ function parseCommandHandoff(value: unknown): ChatConsoleCommandHandoff {
     toolingGap:
       record.toolingGap && typeof record.toolingGap === 'object'
         ? {
-            message: readString(
-              record.toolingGap as JsonRecord,
-              'message',
-            ),
+            message: readString(record.toolingGap as JsonRecord, 'message'),
             missingCapabilities: readStringArray(
               record.toolingGap as JsonRecord,
               'missingCapabilities',

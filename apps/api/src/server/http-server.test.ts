@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import test from 'node:test';
 import {
   createAgentRuntimeAuthFixture,
@@ -16,7 +16,13 @@ import {
 } from '../runtime/service-container.js';
 import { createSettingsRoute } from './routes/settings-route.js';
 import { createOperationalStore } from '../store/index.js';
+import type {
+  RuntimeJobStatus,
+  RuntimeJobWaitReason,
+  RuntimeSessionStatus,
+} from '../store/store-contract.js';
 import { createWorkspaceFixture } from '../workspace/test-utils.js';
+import type { JsonValue } from '../workspace/workspace-types.js';
 import { startStartupHttpServer } from './http-server.js';
 
 async function readJsonResponse(
@@ -47,7 +53,8 @@ async function createReadyFixture() {
 }
 
 const ONBOARDING_TEMPLATE_FIXTURE_FILES = {
-  'config/portals.example.yml': 'title_filter:\n  positive:\n    - AI Engineer\n',
+  'config/portals.example.yml':
+    'title_filter:\n  positive:\n    - AI Engineer\n',
   'config/profile.example.yml': 'candidate:\n  full_name: Template User\n',
   'data/applications.example.md': [
     '# Applications Tracker',
@@ -60,9 +67,7 @@ const ONBOARDING_TEMPLATE_FIXTURE_FILES = {
   'profile/cv.example.md': '# Template CV\n',
 };
 
-async function createOnboardingFixture(
-  files: Record<string, string> = {},
-) {
+async function createOnboardingFixture(files: Record<string, string> = {}) {
   return createWorkspaceFixture({
     files: {
       ...ONBOARDING_TEMPLATE_FIXTURE_FILES,
@@ -168,24 +173,22 @@ async function seedRuntimeContext(
   });
 }
 
-async function seedWaitingApprovalContext(
-  input: {
-    approvalRuntime: Awaited<
-      ReturnType<ApiServiceContainer['approvalRuntime']['getService']>
-    >;
-    observability: Awaited<
-      ReturnType<ApiServiceContainer['observability']['getService']>
-    >;
-    store: Awaited<ReturnType<typeof createOperationalStore>>;
-    title: string;
-    jobId: string;
-    requestId: string;
-    sessionId: string;
-    timestamp: string;
-    traceId: string;
-    workflow: string;
-  },
-) {
+async function seedWaitingApprovalContext(input: {
+  approvalRuntime: Awaited<
+    ReturnType<ApiServiceContainer['approvalRuntime']['getService']>
+  >;
+  observability: Awaited<
+    ReturnType<ApiServiceContainer['observability']['getService']>
+  >;
+  store: Awaited<ReturnType<typeof createOperationalStore>>;
+  title: string;
+  jobId: string;
+  requestId: string;
+  sessionId: string;
+  timestamp: string;
+  traceId: string;
+  workflow: string;
+}) {
   await input.store.sessions.save({
     activeJobId: input.jobId,
     context: {
@@ -288,6 +291,124 @@ async function seedWaitingApprovalContext(
   });
 
   return approval.approval;
+}
+
+async function writeRepoArtifact(
+  repoRoot: string,
+  repoRelativePath: string,
+  content = 'artifact\n',
+): Promise<void> {
+  const absolutePath = join(repoRoot, repoRelativePath);
+  await mkdir(dirname(absolutePath), { recursive: true });
+  await writeFile(absolutePath, content, 'utf8');
+}
+
+async function saveEvaluationSession(
+  store: Awaited<ReturnType<typeof createOperationalStore>>,
+  input: {
+    activeJobId?: string | null;
+    createdAt?: string;
+    lastHeartbeatAt?: string | null;
+    sessionId: string;
+    status: RuntimeSessionStatus;
+    updatedAt: string;
+    workflow: string;
+  },
+): Promise<void> {
+  await store.sessions.save({
+    activeJobId: input.activeJobId ?? null,
+    context: {
+      workflow: input.workflow,
+    },
+    createdAt: input.createdAt ?? input.updatedAt,
+    lastHeartbeatAt: input.lastHeartbeatAt ?? input.updatedAt,
+    runnerId:
+      input.status === 'pending' || input.activeJobId === null
+        ? null
+        : 'runner-evaluation-http',
+    sessionId: input.sessionId,
+    status: input.status,
+    updatedAt: input.updatedAt,
+    workflow: input.workflow,
+  });
+}
+
+async function saveEvaluationJob(
+  store: Awaited<ReturnType<typeof createOperationalStore>>,
+  input: {
+    completedAt?: string | null;
+    createdAt?: string;
+    error?: JsonValue | null;
+    jobId: string;
+    result?: JsonValue | null;
+    sessionId: string;
+    startedAt?: string | null;
+    status: RuntimeJobStatus;
+    updatedAt: string;
+    waitApprovalId?: string | null;
+    waitReason?: RuntimeJobWaitReason | null;
+  },
+): Promise<void> {
+  const isActive =
+    input.status === 'running' || input.status === 'waiting';
+  await store.jobs.save({
+    attempt: 1,
+    claimOwnerId: isActive ? 'runner-evaluation-http' : null,
+    claimToken: isActive ? `claim-${input.jobId}` : null,
+    completedAt:
+      input.completedAt ??
+      (input.status === 'completed' || input.status === 'failed'
+        ? input.updatedAt
+        : null),
+    createdAt: input.createdAt ?? input.updatedAt,
+    currentRunId: `${input.jobId}-run`,
+    error: input.error ?? null,
+    jobId: input.jobId,
+    jobType: 'evaluate-job',
+    lastHeartbeatAt: isActive ? input.updatedAt : null,
+    leaseExpiresAt: input.status === 'running' ? input.updatedAt : null,
+    maxAttempts: 3,
+    nextAttemptAt: null,
+    payload: {
+      company: input.jobId,
+    },
+    result: input.result ?? null,
+    retryBackoffMs: 1_000,
+    sessionId: input.sessionId,
+    startedAt:
+      input.startedAt ??
+      (input.status === 'pending' || input.status === 'queued'
+        ? null
+        : input.createdAt ?? input.updatedAt),
+    status: input.status,
+    updatedAt: input.updatedAt,
+    waitApprovalId: input.waitApprovalId ?? null,
+    waitReason: input.waitReason ?? null,
+  });
+}
+
+async function saveEvaluationCheckpoint(
+  store: Awaited<ReturnType<typeof createOperationalStore>>,
+  input: {
+    completedSteps: string[];
+    cursor: string | null;
+    jobId: string;
+    sessionId: string;
+    updatedAt: string;
+    value: JsonValue | null;
+  },
+): Promise<void> {
+  await store.runMetadata.saveCheckpoint({
+    checkpoint: {
+      completedSteps: input.completedSteps,
+      cursor: input.cursor,
+      updatedAt: input.updatedAt,
+      value: input.value,
+    },
+    jobId: input.jobId,
+    runId: `${input.jobId}-run`,
+    sessionId: input.sessionId,
+  });
 }
 
 test('health and startup routes report ready diagnostics after explicit store initialization', async () => {
@@ -395,6 +516,23 @@ test('health and startup routes report ready diagnostics after explicit store in
       ).bootSurface.startupPath,
       '/startup',
     );
+
+    const persistedStore = await createOperationalStore({
+      repoRoot: fixture.repoRoot,
+    });
+    try {
+      const requestEvents = await persistedStore.events.list({ limit: 10 });
+      assert.equal(
+        requestEvents.some(
+          (event) =>
+            event.eventType === 'http-request-completed' ||
+            event.eventType === 'http-request-received',
+        ),
+        false,
+      );
+    } finally {
+      await persistedStore.close();
+    }
   } finally {
     await handle.close();
     await services.dispose();
@@ -552,7 +690,10 @@ test('operator-shell route reports missing prerequisites without creating runtim
     );
 
     assert.equal(response.status, 200);
-    assert.equal((payload as { status: string }).status, 'missing-prerequisites');
+    assert.equal(
+      (payload as { status: string }).status,
+      'missing-prerequisites',
+    );
     assert.equal(
       (
         payload as {
@@ -598,6 +739,7 @@ test('operator-shell route reports ready shell state without leaking raw runtime
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
+    rateLimitMaxRequests: 20,
     services,
   });
 
@@ -661,10 +803,7 @@ test('operator-shell route reports ready shell state without leaking raw runtime
       ).currentSession.id,
       STARTUP_SESSION_ID,
     );
-    assert.equal(
-      'diagnostics' in (payload as Record<string, unknown>),
-      false,
-    );
+    assert.equal('diagnostics' in (payload as Record<string, unknown>), false);
   } finally {
     await handle.close();
     await services.dispose();
@@ -690,6 +829,7 @@ test('startup routes surface corrupt operational-store state as a runtime error'
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
+    rateLimitMaxRequests: 20,
     services,
   });
 
@@ -797,6 +937,7 @@ test('operator-shell route exposes active-work badges and validates bounded quer
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
+    rateLimitMaxRequests: 20,
     services,
   });
 
@@ -914,11 +1055,16 @@ test('settings route reports missing prerequisites without mutating workspace st
   });
 
   try {
-    const { payload, response } = await readJsonResponse(`${handle.url}/settings`);
+    const { payload, response } = await readJsonResponse(
+      `${handle.url}/settings`,
+    );
     const afterSnapshot = await fixture.snapshotUserLayer();
 
     assert.equal(response.status, 200);
-    assert.equal((payload as { status: string }).status, 'missing-prerequisites');
+    assert.equal(
+      (payload as { status: string }).status,
+      'missing-prerequisites',
+    );
     assert.equal(
       (
         payload as {
@@ -970,7 +1116,8 @@ test('settings route exposes bounded preview data, updater states, and query val
     port: 0,
     routes: [
       createSettingsRoute({
-        readUpdateCheck: async () => createSettingsUpdateCheckFixture(updateState),
+        readUpdateCheck: async () =>
+          createSettingsUpdateCheckFixture(updateState),
       }),
     ],
     services,
@@ -1079,7 +1226,9 @@ test('settings route exposes bounded preview data, updater states, and query val
     assert.equal(
       (
         payload as {
-          maintenance: { updateCheck: { state: string; remoteVersion: string } };
+          maintenance: {
+            updateCheck: { state: string; remoteVersion: string };
+          };
         }
       ).maintenance.updateCheck.state,
       'update-available',
@@ -1087,7 +1236,9 @@ test('settings route exposes bounded preview data, updater states, and query val
     assert.equal(
       (
         payload as {
-          maintenance: { updateCheck: { state: string; remoteVersion: string } };
+          maintenance: {
+            updateCheck: { state: string; remoteVersion: string };
+          };
         }
       ).maintenance.updateCheck.remoteVersion,
       '1.6.0',
@@ -1211,6 +1362,7 @@ test('chat-console route reports workflow support and selected-session detail wi
   const handle = await startStartupHttpServer({
     host: '127.0.0.1',
     port: 0,
+    rateLimitMaxRequests: 20,
     services,
   });
 
@@ -1265,6 +1417,1532 @@ test('chat-console route reports workflow support and selected-session detail wi
           }
         ).selectedSession.session,
       false,
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
+    await fixture.cleanup();
+  }
+});
+
+test('evaluation-result route reports pending, running, approval-paused, failed, completed, and degraded states across supported evaluation workflows', async () => {
+  const fixture = await createReadyFixture();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-evaluation-result' });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-http-evaluation-result-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const runtimeStore = await services.operationalStore.getStore();
+  const approvalRuntime = await services.approvalRuntime.getService();
+  const observability = await services.observability.getService();
+
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'reports/001-ready-http.md',
+    '# Ready report\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'output/001-ready-http.pdf',
+    'ready pdf\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'batch/tracker-additions/1-ready-http.tsv',
+    '1\t2026-04-21\tReady Co\tRole\tApplied\t4.9/5\toutput/001-ready-http.pdf\t[001](reports/001-ready-http.md)\tReady\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'reports/002-degraded-http.md',
+    '# Degraded report\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'batch/tracker-additions/2-degraded-http.tsv',
+    '2\t2026-04-21\tDegraded Co\tRole\tApplied\t3.8/5\t\t[002](reports/002-degraded-http.md)\tNeeds review\n',
+  );
+
+  await saveEvaluationSession(runtimeStore, {
+    sessionId: 'session-eval-pending',
+    status: 'pending',
+    updatedAt: '2026-04-21T09:00:00.000Z',
+    workflow: 'single-evaluation',
+  });
+  await saveEvaluationJob(runtimeStore, {
+    jobId: 'job-eval-pending',
+    sessionId: 'session-eval-pending',
+    status: 'queued',
+    updatedAt: '2026-04-21T09:00:00.000Z',
+  });
+
+  await saveEvaluationSession(runtimeStore, {
+    activeJobId: 'job-eval-running',
+    sessionId: 'session-eval-running',
+    status: 'running',
+    updatedAt: '2026-04-21T09:10:00.000Z',
+    workflow: 'single-evaluation',
+  });
+  await saveEvaluationJob(runtimeStore, {
+    jobId: 'job-eval-running',
+    sessionId: 'session-eval-running',
+    status: 'running',
+    updatedAt: '2026-04-21T09:10:00.000Z',
+  });
+  await saveEvaluationCheckpoint(runtimeStore, {
+    completedSteps: [
+      'validated-input',
+      'captured-job-description',
+      'scored-fit',
+      'prepared-report',
+    ],
+    cursor: 'prepared-report',
+    jobId: 'job-eval-running',
+    sessionId: 'session-eval-running',
+    updatedAt: '2026-04-21T09:10:00.000Z',
+    value: {
+      stage: 'report-draft',
+    },
+  });
+
+  const pausedApproval = await seedWaitingApprovalContext({
+    approvalRuntime,
+    jobId: 'job-eval-approval',
+    observability,
+    requestId: 'request-eval-approval',
+    sessionId: 'session-eval-approval',
+    store: runtimeStore,
+    timestamp: '2026-04-21T09:20:00.000Z',
+    title: 'Review evaluation approval',
+    traceId: 'trace-eval-approval',
+    workflow: 'auto-pipeline',
+  });
+
+  await saveEvaluationSession(runtimeStore, {
+    activeJobId: 'job-eval-failed',
+    sessionId: 'session-eval-failed',
+    status: 'failed',
+    updatedAt: '2026-04-21T09:30:00.000Z',
+    workflow: 'single-evaluation',
+  });
+  await saveEvaluationJob(runtimeStore, {
+    error: {
+      message: 'JD extraction failed.',
+    },
+    jobId: 'job-eval-failed',
+    sessionId: 'session-eval-failed',
+    status: 'failed',
+    updatedAt: '2026-04-21T09:30:00.000Z',
+  });
+  await observability.recordEvent({
+    correlation: {
+      jobId: 'job-eval-failed',
+      requestId: 'request-eval-failed',
+      sessionId: 'session-eval-failed',
+      traceId: 'trace-eval-failed',
+    },
+    eventType: 'job-failed',
+    level: 'error',
+    metadata: {
+      message: 'JD extraction failed.',
+      runId: 'job-eval-failed-run',
+    },
+    occurredAt: '2026-04-21T09:30:00.000Z',
+    summary: 'JD extraction failed.',
+  });
+
+  await saveEvaluationSession(runtimeStore, {
+    sessionId: 'session-eval-completed',
+    status: 'completed',
+    updatedAt: '2026-04-21T09:40:00.000Z',
+    workflow: 'single-evaluation',
+  });
+  await saveEvaluationJob(runtimeStore, {
+    jobId: 'job-eval-completed',
+    result: {
+      legitimacy: 'High Confidence',
+      pdf: 'output/001-ready-http.pdf',
+      report: 'reports/001-ready-http.md',
+      report_num: '001',
+      score: 4.9,
+      tracker: 'batch/tracker-additions/1-ready-http.tsv',
+      warnings: [],
+    },
+    sessionId: 'session-eval-completed',
+    status: 'completed',
+    updatedAt: '2026-04-21T09:40:00.000Z',
+  });
+
+  await saveEvaluationSession(runtimeStore, {
+    sessionId: 'session-eval-degraded',
+    status: 'completed',
+    updatedAt: '2026-04-21T09:50:00.000Z',
+    workflow: 'auto-pipeline',
+  });
+  await saveEvaluationJob(runtimeStore, {
+    jobId: 'job-eval-degraded',
+    result: {
+      legitimacy: 'Proceed with Caution',
+      pdf: 'output/002-missing-http.pdf',
+      report: 'reports/002-degraded-http.md',
+      report_num: '002',
+      score: 3.8,
+      tracker: 'batch/tracker-additions/2-degraded-http.tsv',
+      warnings: [
+        'Manual legitimacy review required.',
+        'PDF generation is incomplete.',
+      ],
+    },
+    sessionId: 'session-eval-degraded',
+    status: 'completed',
+    updatedAt: '2026-04-21T09:50:00.000Z',
+  });
+
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    rateLimitMaxRequests: 20,
+    services,
+  });
+
+  try {
+    const { payload: pendingPayload, response: pendingResponse } =
+      await readJsonResponse(
+        `${handle.url}/evaluation-result?sessionId=session-eval-pending`,
+      );
+
+    assert.equal(pendingResponse.status, 200);
+    assert.equal((pendingPayload as { status: string }).status, 'ready');
+    assert.equal(
+      (
+        pendingPayload as {
+          summary: { state: string; job: { status: string } };
+        }
+      ).summary.state,
+      'pending',
+    );
+    assert.equal(
+      (
+        pendingPayload as {
+          summary: { state: string; job: { status: string } };
+        }
+      ).summary.job.status,
+      'queued',
+    );
+
+    const { payload: runningPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?sessionId=session-eval-running&previewLimit=2`,
+    );
+
+    assert.equal(
+      (
+        runningPayload as {
+          summary: {
+            state: string;
+            checkpoint: { completedSteps: string[]; hasMore: boolean };
+          };
+        }
+      ).summary.state,
+      'running',
+    );
+    assert.deepEqual(
+      (
+        runningPayload as {
+          summary: {
+            checkpoint: { completedSteps: string[]; hasMore: boolean };
+          };
+        }
+      ).summary.checkpoint.completedSteps,
+      ['validated-input', 'captured-job-description'],
+    );
+    assert.equal(
+      (
+        runningPayload as {
+          summary: {
+            checkpoint: { completedSteps: string[]; hasMore: boolean };
+          };
+        }
+      ).summary.checkpoint.hasMore,
+      true,
+    );
+
+    const { payload: approvalPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?sessionId=session-eval-approval`,
+    );
+
+    assert.equal(
+      (
+        approvalPayload as {
+          summary: {
+            state: string;
+            handoff: {
+              state: string;
+              approval: { approvalId: string; status: string };
+            };
+          };
+        }
+      ).summary.state,
+      'approval-paused',
+    );
+    assert.equal(
+      (
+        approvalPayload as {
+          summary: {
+            handoff: {
+              state: string;
+              approval: { approvalId: string; status: string };
+            };
+          };
+        }
+      ).summary.handoff.state,
+      'waiting-for-approval',
+    );
+    assert.equal(
+      (
+        approvalPayload as {
+          summary: {
+            handoff: {
+              state: string;
+              approval: { approvalId: string; status: string };
+            };
+          };
+        }
+      ).summary.handoff.approval.approvalId,
+      pausedApproval.approvalId,
+    );
+
+    const { payload: failedPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?sessionId=session-eval-failed`,
+    );
+
+    assert.equal(
+      (
+        failedPayload as {
+          summary: {
+            state: string;
+            failure: { message: string };
+            handoff: { state: string; resumeAllowed: boolean };
+          };
+        }
+      ).summary.state,
+      'failed',
+    );
+    assert.equal(
+      (
+        failedPayload as {
+          summary: {
+            state: string;
+            failure: { message: string };
+            handoff: { state: string; resumeAllowed: boolean };
+          };
+        }
+      ).summary.failure.message,
+      'JD extraction failed.',
+    );
+    assert.equal(
+      (
+        failedPayload as {
+          summary: {
+            state: string;
+            failure: { message: string };
+            handoff: { state: string; resumeAllowed: boolean };
+          };
+        }
+      ).summary.handoff.state,
+      'resume-ready',
+    );
+
+    const { payload: completedPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?sessionId=session-eval-completed`,
+    );
+
+    assert.equal(
+      (
+        completedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            score: number;
+            artifacts: {
+              report: { state: string };
+              pdf: { state: string };
+              tracker: { state: string };
+            };
+          };
+        }
+      ).summary.state,
+      'completed',
+    );
+    assert.equal(
+      (
+        completedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            score: number;
+            artifacts: {
+              report: { state: string };
+              pdf: { state: string };
+              tracker: { state: string };
+            };
+          };
+        }
+      ).summary.closeout.state,
+      'review-ready',
+    );
+    assert.equal(
+      (
+        completedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            score: number;
+            artifacts: {
+              report: { state: string };
+              pdf: { state: string };
+              tracker: { state: string };
+            };
+          };
+        }
+      ).summary.score,
+      4.9,
+    );
+    assert.equal(
+      (
+        completedPayload as {
+          summary: {
+            artifacts: {
+              report: { state: string };
+              pdf: { state: string };
+              tracker: { state: string };
+            };
+          };
+        }
+      ).summary.artifacts.report.state,
+      'ready',
+    );
+    assert.equal(
+      (
+        completedPayload as {
+          summary: {
+            artifacts: {
+              report: { state: string };
+              pdf: { state: string };
+              tracker: { state: string };
+            };
+          };
+        }
+      ).summary.artifacts.pdf.state,
+      'ready',
+    );
+    assert.equal(
+      (
+        completedPayload as {
+          summary: {
+            artifacts: {
+              report: { state: string };
+              pdf: { state: string };
+              tracker: { state: string };
+            };
+          };
+        }
+      ).summary.artifacts.tracker.state,
+      'ready',
+    );
+
+    const { payload: degradedPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?sessionId=session-eval-degraded&previewLimit=1`,
+    );
+
+    assert.equal(
+      (
+        degradedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            artifacts: { pdf: { state: string } };
+            warnings: { items: Array<{ message: string }>; hasMore: boolean };
+            workflow: string;
+          };
+        }
+      ).summary.state,
+      'degraded',
+    );
+    assert.equal(
+      (
+        degradedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            artifacts: { pdf: { state: string } };
+            warnings: { items: Array<{ message: string }>; hasMore: boolean };
+            workflow: string;
+          };
+        }
+      ).summary.closeout.state,
+      'attention-required',
+    );
+    assert.equal(
+      (
+        degradedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            artifacts: { pdf: { state: string } };
+            warnings: { items: Array<{ message: string }>; hasMore: boolean };
+            workflow: string;
+          };
+        }
+      ).summary.artifacts.pdf.state,
+      'missing',
+    );
+    assert.equal(
+      (
+        degradedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            artifacts: { pdf: { state: string } };
+            warnings: { items: Array<{ message: string }>; hasMore: boolean };
+            workflow: string;
+          };
+        }
+      ).summary.warnings.items.length,
+      1,
+    );
+    assert.equal(
+      (
+        degradedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            artifacts: { pdf: { state: string } };
+            warnings: { items: Array<{ message: string }>; hasMore: boolean };
+            workflow: string;
+          };
+        }
+      ).summary.warnings.hasMore,
+      true,
+    );
+    assert.equal(
+      (
+        degradedPayload as {
+          summary: {
+            state: string;
+            closeout: { state: string };
+            artifacts: { pdf: { state: string } };
+            warnings: { items: Array<{ message: string }>; hasMore: boolean };
+            workflow: string;
+          };
+        }
+      ).summary.workflow,
+      'auto-pipeline',
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
+    await fixture.cleanup();
+  }
+});
+
+test('evaluation-result route supports latest-session fallback, workflow filters, unsupported workflows, and invalid input handling', async () => {
+  const fixture = await createReadyFixture();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-evaluation-result-fallback' });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR:
+          'jobhunt-http-evaluation-result-fallback-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const runtimeStore = await services.operationalStore.getStore();
+
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'reports/010-single-http.md',
+    '# Single evaluation report\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'output/010-single-http.pdf',
+    'single pdf\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'batch/tracker-additions/10-single-http.tsv',
+    '10\t2026-04-21\tSingle Co\tRole\tApplied\t4.4/5\toutput/010-single-http.pdf\t[010](reports/010-single-http.md)\tSingle\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'reports/011-auto-http.md',
+    '# Auto pipeline report\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'output/011-auto-http.pdf',
+    'auto pdf\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'batch/tracker-additions/11-auto-http.tsv',
+    '11\t2026-04-21\tAuto Co\tRole\tApplied\t4.7/5\toutput/011-auto-http.pdf\t[011](reports/011-auto-http.md)\tAuto\n',
+  );
+
+  await saveEvaluationSession(runtimeStore, {
+    sessionId: 'session-fallback-single',
+    status: 'completed',
+    updatedAt: '2026-04-21T10:00:00.000Z',
+    workflow: 'single-evaluation',
+  });
+  await saveEvaluationJob(runtimeStore, {
+    jobId: 'job-fallback-single',
+    result: {
+      legitimacy: 'High Confidence',
+      pdf: 'output/010-single-http.pdf',
+      report: 'reports/010-single-http.md',
+      report_num: '010',
+      score: 4.4,
+      tracker: 'batch/tracker-additions/10-single-http.tsv',
+      warnings: [],
+    },
+    sessionId: 'session-fallback-single',
+    status: 'completed',
+    updatedAt: '2026-04-21T10:00:00.000Z',
+  });
+
+  await saveEvaluationSession(runtimeStore, {
+    sessionId: 'session-fallback-auto',
+    status: 'completed',
+    updatedAt: '2026-04-21T10:05:00.000Z',
+    workflow: 'auto-pipeline',
+  });
+  await saveEvaluationJob(runtimeStore, {
+    jobId: 'job-fallback-auto',
+    result: {
+      legitimacy: 'High Confidence',
+      pdf: 'output/011-auto-http.pdf',
+      report: 'reports/011-auto-http.md',
+      report_num: '011',
+      score: 4.7,
+      tracker: 'batch/tracker-additions/11-auto-http.tsv',
+      warnings: [],
+    },
+    sessionId: 'session-fallback-auto',
+    status: 'completed',
+    updatedAt: '2026-04-21T10:05:00.000Z',
+  });
+
+  await saveEvaluationSession(runtimeStore, {
+    sessionId: 'session-unsupported-workflow',
+    status: 'completed',
+    updatedAt: '2026-04-21T10:10:00.000Z',
+    workflow: 'tracker-status',
+  });
+  await saveEvaluationJob(runtimeStore, {
+    jobId: 'job-unsupported-workflow',
+    sessionId: 'session-unsupported-workflow',
+    status: 'completed',
+    updatedAt: '2026-04-21T10:10:00.000Z',
+  });
+
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    rateLimitMaxRequests: 20,
+    services,
+  });
+
+  try {
+    const { payload: fallbackPayload, response: fallbackResponse } =
+      await readJsonResponse(`${handle.url}/evaluation-result?previewLimit=2`);
+
+    assert.equal(fallbackResponse.status, 200);
+    assert.equal(
+      (
+        fallbackPayload as {
+          summary: { session: { sessionId: string } };
+          recentSessions: Array<{ sessionId: string }>;
+        }
+      ).summary.session.sessionId,
+      'session-fallback-auto',
+    );
+    assert.deepEqual(
+      (
+        fallbackPayload as {
+          summary: { session: { sessionId: string } };
+          recentSessions: Array<{ sessionId: string }>;
+        }
+      ).recentSessions.map((session) => session.sessionId),
+      ['session-fallback-auto', 'session-fallback-single'],
+    );
+
+    const { payload: singleWorkflowPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?workflow=single-evaluation&previewLimit=1`,
+    );
+
+    assert.equal(
+      (
+        singleWorkflowPayload as {
+          summary: { session: { sessionId: string } };
+          recentSessions: Array<{ sessionId: string; workflow: string }>;
+        }
+      ).summary.session.sessionId,
+      'session-fallback-single',
+    );
+    assert.equal(
+      (
+        singleWorkflowPayload as {
+          summary: { session: { sessionId: string } };
+          recentSessions: Array<{ sessionId: string; workflow: string }>;
+        }
+      ).recentSessions[0]?.workflow,
+      'single-evaluation',
+    );
+
+    const { payload: unsupportedFilterPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?workflow=tracker-status`,
+    );
+
+    assert.equal(
+      (
+        unsupportedFilterPayload as {
+          summary: { state: string };
+          recentSessions: Array<{ sessionId: string }>;
+        }
+      ).summary.state,
+      'unsupported-workflow',
+    );
+    assert.equal(
+      (
+        unsupportedFilterPayload as {
+          summary: { state: string };
+          recentSessions: Array<{ sessionId: string }>;
+        }
+      ).recentSessions.length,
+      0,
+    );
+
+    const { payload: unsupportedSessionPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?sessionId=session-unsupported-workflow`,
+    );
+
+    assert.equal(
+      (
+        unsupportedSessionPayload as {
+          summary: { state: string };
+        }
+      ).summary.state,
+      'unsupported-workflow',
+    );
+
+    const { payload: missingSessionPayload } = await readJsonResponse(
+      `${handle.url}/evaluation-result?sessionId=missing-session`,
+    );
+
+    assert.equal(
+      (
+        missingSessionPayload as {
+          summary: { state: string };
+        }
+      ).summary.state,
+      'missing-session',
+    );
+
+    const { payload: invalidPayload, response: invalidResponse } =
+      await readJsonResponse(`${handle.url}/evaluation-result?previewLimit=0`);
+
+    assert.equal(invalidResponse.status, 400);
+    assert.equal(
+      (
+        invalidPayload as {
+          error: { code: string };
+        }
+      ).error.code,
+      'invalid-evaluation-result-query',
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
+    await fixture.cleanup();
+  }
+});
+
+test('report-viewer route supports selected report reads, latest fallback, stale selections, invalid paths, and bounded artifact browsing', async () => {
+  const fixture = await createReadyFixture();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-report-viewer' });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-http-report-viewer-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'reports/021-http-selected-2026-04-22.md',
+    [
+      '# Evaluation: HTTP Co -- Selected Role',
+      '',
+      '**Date:** 2026-04-22',
+      '**URL:** https://example.com/jobs/selected-role',
+      '**Archetype:** Platform Engineering',
+      '**Score:** 4.2/5',
+      '**Legitimacy:** High Confidence',
+      '**Verification:** active via browser review',
+      '**PDF:** output/cv-http-selected-2026-04-22.pdf',
+      '',
+      '---',
+      '',
+      '## Match',
+      '',
+      'Selected report body.',
+      '',
+    ].join('\n'),
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'reports/022-http-latest-2026-04-23.md',
+    [
+      '# Evaluation: HTTP Co -- Latest Role',
+      '',
+      '**Date:** 2026-04-23',
+      '**URL:** https://example.com/jobs/latest-role',
+      '**Archetype:** Applied AI',
+      '**Score:** 4.8/5',
+      '**Legitimacy:** Proceed with Caution',
+      '**Verification:** active via browser review',
+      '**PDF:** output/cv-http-latest-2026-04-23.pdf',
+      '',
+      '---',
+      '',
+      '## Summary',
+      '',
+      'Latest report body.',
+      '',
+    ].join('\n'),
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'output/cv-http-selected-2026-04-22.pdf',
+    'selected pdf\n',
+  );
+  await writeRepoArtifact(
+    fixture.repoRoot,
+    'output/cv-http-latest-2026-04-23.pdf',
+    'latest pdf\n',
+  );
+
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    rateLimitMaxRequests: 20,
+    services,
+  });
+
+  try {
+    const { payload: selectedPayload, response: selectedResponse } =
+      await readJsonResponse(
+        `${handle.url}/report-viewer?group=reports&limit=2&reportPath=reports/021-http-selected-2026-04-22.md`,
+      );
+
+    assert.equal(selectedResponse.status, 200);
+    assert.equal((selectedPayload as { status: string }).status, 'ready');
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedReport: { state: string; origin: string; repoRelativePath: string };
+        }
+      ).selectedReport.state,
+      'ready',
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedReport: { state: string; origin: string; repoRelativePath: string };
+        }
+      ).selectedReport.origin,
+      'selected',
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedReport: {
+            header: {
+              title: string;
+              legitimacy: string;
+              pdf: { exists: boolean; repoRelativePath: string };
+            };
+          };
+        }
+      ).selectedReport.header.title,
+      'Evaluation: HTTP Co -- Selected Role',
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedReport: {
+            header: {
+              title: string;
+              legitimacy: string;
+              pdf: { exists: boolean; repoRelativePath: string };
+            };
+          };
+        }
+      ).selectedReport.header.legitimacy,
+      'High Confidence',
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedReport: {
+            header: {
+              title: string;
+              legitimacy: string;
+              pdf: { exists: boolean; repoRelativePath: string };
+            };
+          };
+        }
+      ).selectedReport.header.pdf.repoRelativePath,
+      'output/cv-http-selected-2026-04-22.pdf',
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedReport: {
+            header: {
+              title: string;
+              legitimacy: string;
+              pdf: { exists: boolean; repoRelativePath: string };
+            };
+          };
+        }
+      ).selectedReport.header.pdf.exists,
+      true,
+    );
+    assert.match(
+      (
+        selectedPayload as {
+          selectedReport: { body: string };
+        }
+      ).selectedReport.body,
+      /Selected report body\./,
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ kind: string; repoRelativePath: string; selected: boolean }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.totalCount,
+      2,
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ kind: string; repoRelativePath: string; selected: boolean }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.hasMore,
+      false,
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ kind: string; repoRelativePath: string; selected: boolean }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.items.some(
+        (item) =>
+          item.repoRelativePath === 'reports/021-http-selected-2026-04-22.md' &&
+          item.selected,
+      ),
+      true,
+    );
+
+    const { payload: allArtifactsPayload } = await readJsonResponse(
+      `${handle.url}/report-viewer?group=all&limit=3`,
+    );
+
+    assert.equal(
+      (
+        allArtifactsPayload as {
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ kind: string; repoRelativePath: string; selected: boolean }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.totalCount,
+      4,
+    );
+    assert.equal(
+      (
+        allArtifactsPayload as {
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ kind: string; repoRelativePath: string; selected: boolean }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.hasMore,
+      true,
+    );
+    assert.equal(
+      (
+        allArtifactsPayload as {
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ kind: string; repoRelativePath: string; selected: boolean }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.items.some((item) => item.kind === 'pdf'),
+      true,
+    );
+
+    const { payload: fallbackPayload } = await readJsonResponse(
+      `${handle.url}/report-viewer?group=reports&limit=1`,
+    );
+
+    assert.equal(
+      (
+        fallbackPayload as {
+          selectedReport: { origin: string; repoRelativePath: string };
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ repoRelativePath: string }>;
+            totalCount: number;
+          };
+        }
+      ).selectedReport.origin,
+      'latest',
+    );
+    assert.equal(
+      (
+        fallbackPayload as {
+          selectedReport: { origin: string; repoRelativePath: string };
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ repoRelativePath: string }>;
+            totalCount: number;
+          };
+        }
+      ).selectedReport.repoRelativePath,
+      'reports/022-http-latest-2026-04-23.md',
+    );
+    assert.equal(
+      (
+        fallbackPayload as {
+          selectedReport: { origin: string; repoRelativePath: string };
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ repoRelativePath: string }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.items[0]?.repoRelativePath,
+      'reports/022-http-latest-2026-04-23.md',
+    );
+    assert.equal(
+      (
+        fallbackPayload as {
+          selectedReport: { origin: string; repoRelativePath: string };
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ repoRelativePath: string }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.totalCount,
+      2,
+    );
+    assert.equal(
+      (
+        fallbackPayload as {
+          selectedReport: { origin: string; repoRelativePath: string };
+          recentArtifacts: {
+            hasMore: boolean;
+            items: Array<{ repoRelativePath: string }>;
+            totalCount: number;
+          };
+        }
+      ).recentArtifacts.hasMore,
+      true,
+    );
+
+    const { payload: missingPayload } = await readJsonResponse(
+      `${handle.url}/report-viewer?reportPath=reports/099-http-missing-2026-04-22.md`,
+    );
+
+    assert.equal(
+      (
+        missingPayload as {
+          selectedReport: {
+            message: string;
+            origin: string;
+            requestedRepoRelativePath: string;
+            state: string;
+          };
+        }
+      ).selectedReport.state,
+      'missing',
+    );
+    assert.equal(
+      (
+        missingPayload as {
+          selectedReport: {
+            message: string;
+            origin: string;
+            requestedRepoRelativePath: string;
+            state: string;
+          };
+        }
+      ).selectedReport.origin,
+      'selected',
+    );
+    assert.equal(
+      (
+        missingPayload as {
+          selectedReport: {
+            message: string;
+            origin: string;
+            requestedRepoRelativePath: string;
+            state: string;
+          };
+        }
+      ).selectedReport.requestedRepoRelativePath,
+      'reports/099-http-missing-2026-04-22.md',
+    );
+
+    const { payload: invalidPayload, response: invalidResponse } =
+      await readJsonResponse(
+        `${handle.url}/report-viewer?reportPath=../profile/cv.md`,
+      );
+
+    assert.equal(invalidResponse.status, 400);
+    assert.equal(
+      (
+        invalidPayload as {
+          error: { code: string };
+        }
+      ).error.code,
+      'invalid-report-viewer-query',
+    );
+  } finally {
+    await handle.close();
+    await services.dispose();
+    await backend.close();
+    await authFixture.cleanup();
+    await fixture.cleanup();
+  }
+});
+
+test('pipeline-review route reports missing pipeline data, parsed queue rows, warning classification, stale selections, and invalid query handling', async () => {
+  const fixture = await createReadyFixture();
+  const authFixture = await createAgentRuntimeAuthFixture();
+  const backend = await startFakeCodexBackend();
+  const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+  await store.close();
+  await authFixture.setReady({ accountId: 'acct-http-pipeline-review' });
+  const services = createApiServiceContainer({
+    agentRuntime: createAgentRuntimeService({
+      authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+      env: {
+        JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+        JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+        JOBHUNT_API_OPENAI_ORIGINATOR: 'jobhunt-http-pipeline-review-test',
+      },
+      repoRoot: fixture.repoRoot,
+    }),
+    repoRoot: fixture.repoRoot,
+  });
+  const handle = await startStartupHttpServer({
+    host: '127.0.0.1',
+    port: 0,
+    rateLimitMaxRequests: 20,
+    services,
+  });
+
+  try {
+    const { payload: emptyPayload, response: emptyResponse } =
+      await readJsonResponse(`${handle.url}/pipeline-review`);
+
+    assert.equal(emptyResponse.status, 200);
+    assert.equal((emptyPayload as { status: string }).status, 'ready');
+    assert.equal(
+      (
+        emptyPayload as {
+          queue: { totalCount: number };
+          shortlist: { available: boolean };
+          selectedDetail: { state: string };
+        }
+      ).queue.totalCount,
+      0,
+    );
+    assert.equal(
+      (
+        emptyPayload as {
+          queue: { totalCount: number };
+          shortlist: { available: boolean };
+          selectedDetail: { state: string };
+        }
+      ).shortlist.available,
+      false,
+    );
+    assert.equal(
+      (
+        emptyPayload as {
+          queue: { totalCount: number };
+          shortlist: { available: boolean };
+          selectedDetail: { state: string };
+        }
+      ).selectedDetail.state,
+      'empty',
+    );
+
+    await writeRepoArtifact(
+      fixture.repoRoot,
+      'data/pipeline.md',
+      [
+        '# Pipeline',
+        '',
+        '## Shortlist',
+        '',
+        'Last refreshed: 2026-04-22 by npm run scan.',
+        '',
+        'Campaign guidance: Current strongest lane: Forward Deployed.',
+        '',
+        'Bucket counts:',
+        '- Strongest fit: 2',
+        '- Possible fit: 1',
+        '- Adjacent or noisy: 4',
+        '',
+        'Top 10 to evaluate first:',
+        '1. Strongest fit | https://example.com/jobs/pending-fde | Acme | Forward Deployed Engineer | direct forward-deployed title',
+        '2. Possible fit | https://example.com/jobs/processed-caution | Beta | Solutions Architect | aligned geography',
+        '',
+        '## Pending',
+        '',
+        '- [ ] https://example.com/jobs/pending-fde | Acme | Forward Deployed Engineer',
+        '- [ ] https://example.com/jobs/pending-architect | Beta | Solutions Architect',
+        '',
+        '## Processed',
+        '',
+        '- [x] #021 | https://example.com/jobs/processed-caution | Beta | Solutions Architect | 4.2/5 | PDF Yes',
+        '- [x] #022 | https://example.com/jobs/processed-low-score | Gamma | Sales Engineer | 3.1/5 | PDF No',
+        '- [x] #023 | https://example.com/jobs/processed-suspicious | Delta | AI Deployment Lead | 2.5/5 | PDF Yes',
+        '- [!] https://example.com/jobs/bad-row -- Error: parse me later',
+        '',
+      ].join('\n'),
+    );
+    await writeRepoArtifact(
+      fixture.repoRoot,
+      'reports/021-beta-solutions-architect-2026-04-22.md',
+      [
+        '# Evaluation: Beta -- Solutions Architect',
+        '',
+        '**Date:** 2026-04-22',
+        '**URL:** https://example.com/jobs/processed-caution',
+        '**Archetype:** Solutions Architect',
+        '**Score:** 4.2/5',
+        '**Legitimacy:** Proceed with Caution',
+        '**Verification:** active via browser review',
+        '**PDF:** output/cv-beta-solutions-architect-2026-04-22.pdf',
+        '',
+        '---',
+        '',
+        'Processed caution report body.',
+        '',
+      ].join('\n'),
+    );
+    await writeRepoArtifact(
+      fixture.repoRoot,
+      'reports/023-delta-ai-deployment-lead-2026-04-22.md',
+      [
+        '# Evaluation: Delta -- AI Deployment Lead',
+        '',
+        '**Date:** 2026-04-22',
+        '**URL:** https://example.com/jobs/processed-suspicious',
+        '**Archetype:** AI Deployment',
+        '**Score:** 2.5/5',
+        '**Legitimacy:** Suspicious',
+        '**Verification:** unconfirmed',
+        '**PDF:** output/cv-delta-ai-deployment-lead-2026-04-22.pdf',
+        '',
+        '---',
+        '',
+        'Processed suspicious report body.',
+        '',
+      ].join('\n'),
+    );
+    await writeRepoArtifact(
+      fixture.repoRoot,
+      'output/cv-beta-solutions-architect-2026-04-22.pdf',
+      'beta pdf\n',
+    );
+
+    const { payload: selectedPayload, response: selectedResponse } =
+      await readJsonResponse(
+        `${handle.url}/pipeline-review?section=processed&sort=score&limit=3&reportNumber=023`,
+      );
+
+    assert.equal(selectedResponse.status, 200);
+    assert.equal(
+      (
+        selectedPayload as {
+          shortlist: {
+            available: boolean;
+            topRoles: Array<{ role: string }>;
+          };
+        }
+      ).shortlist.available,
+      true,
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          shortlist: {
+            available: boolean;
+            topRoles: Array<{ role: string }>;
+          };
+        }
+      ).shortlist.topRoles[0]?.role,
+      'Forward Deployed Engineer',
+    );
+    assert.deepEqual(
+      (
+        selectedPayload as {
+          queue: {
+            counts: { malformed: number; pending: number; processed: number };
+          };
+        }
+      ).queue.counts,
+      {
+        malformed: 1,
+        pending: 2,
+        processed: 3,
+      },
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          queue: {
+            items: Array<{ reportNumber: string | null; warnings: Array<{ code: string }> }>;
+          };
+        }
+      ).queue.items[0]?.reportNumber,
+      '021',
+    );
+    assert.ok(
+      (
+        selectedPayload as {
+          queue: {
+            items: Array<{ reportNumber: string | null; warnings: Array<{ code: string }> }>;
+          };
+        }
+      ).queue.items[0]?.warnings.some((warning) => warning.code === 'caution-legitimacy'),
+    );
+    assert.ok(
+      (
+        selectedPayload as {
+          queue: {
+            items: Array<{ reportNumber: string | null; warnings: Array<{ code: string }> }>;
+          };
+        }
+      ).queue.items[1]?.warnings.some((warning) => warning.code === 'missing-report'),
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedDetail: {
+            origin: string;
+            row: {
+              legitimacy: string | null;
+              pdf: { exists: boolean };
+              report: { exists: boolean };
+              warnings: Array<{ code: string }>;
+            } | null;
+            state: string;
+          };
+        }
+      ).selectedDetail.state,
+      'ready',
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedDetail: {
+            origin: string;
+            row: {
+              legitimacy: string | null;
+              pdf: { exists: boolean };
+              report: { exists: boolean };
+              warnings: Array<{ code: string }>;
+            } | null;
+            state: string;
+          };
+        }
+      ).selectedDetail.origin,
+      'report-number',
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedDetail: {
+            origin: string;
+            row: {
+              legitimacy: string | null;
+              pdf: { exists: boolean };
+              report: { exists: boolean };
+              warnings: Array<{ code: string }>;
+            } | null;
+            state: string;
+          };
+        }
+      ).selectedDetail.row?.legitimacy,
+      'Suspicious',
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedDetail: {
+            origin: string;
+            row: {
+              legitimacy: string | null;
+              pdf: { exists: boolean };
+              report: { exists: boolean };
+              warnings: Array<{ code: string }>;
+            } | null;
+            state: string;
+          };
+        }
+      ).selectedDetail.row?.report.exists,
+      true,
+    );
+    assert.equal(
+      (
+        selectedPayload as {
+          selectedDetail: {
+            origin: string;
+            row: {
+              legitimacy: string | null;
+              pdf: { exists: boolean };
+              report: { exists: boolean };
+              warnings: Array<{ code: string }>;
+            } | null;
+            state: string;
+          };
+        }
+      ).selectedDetail.row?.pdf.exists,
+      false,
+    );
+    assert.ok(
+      (
+        selectedPayload as {
+          selectedDetail: {
+            row: {
+              warnings: Array<{ code: string }>;
+            } | null;
+          };
+        }
+      ).selectedDetail.row?.warnings.some(
+        (warning) => warning.code === 'suspicious-legitimacy',
+      ),
+    );
+    assert.ok(
+      (
+        selectedPayload as {
+          selectedDetail: {
+            row: {
+              warnings: Array<{ code: string }>;
+            } | null;
+          };
+        }
+      ).selectedDetail.row?.warnings.some(
+        (warning) => warning.code === 'missing-pdf',
+      ),
+    );
+
+    const { payload: stalePayload } = await readJsonResponse(
+      `${handle.url}/pipeline-review?section=pending&reportNumber=023`,
+    );
+
+    assert.equal(
+      (
+        stalePayload as {
+          selectedDetail: { message: string; state: string };
+        }
+      ).selectedDetail.state,
+      'missing',
+    );
+    assert.match(
+      (
+        stalePayload as {
+          selectedDetail: { message: string; state: string };
+        }
+      ).selectedDetail.message,
+      /no longer present/i,
+    );
+
+    const { payload: invalidPayload, response: invalidResponse } =
+      await readJsonResponse(
+        `${handle.url}/pipeline-review?reportNumber=023&url=https://example.com/jobs/processed-suspicious`,
+      );
+
+    assert.equal(invalidResponse.status, 400);
+    assert.equal(
+      (
+        invalidPayload as {
+          error: { code: string };
+        }
+      ).error.code,
+      'invalid-pipeline-review-query',
     );
   } finally {
     await handle.close();
@@ -1663,7 +3341,8 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
           };
         }
       ).selected.timeline.some(
-        (item) => item.summary === 'Review primary approval is waiting for approval.',
+        (item) =>
+          item.summary === 'Review primary approval is waiting for approval.',
       ),
       true,
     );
@@ -1693,7 +3372,11 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
     assert.equal(
       (
         approvePayload as {
-          resolution: { outcome: string; applied: boolean; job: { status: string } };
+          resolution: {
+            outcome: string;
+            applied: boolean;
+            job: { status: string };
+          };
         }
       ).resolution.outcome,
       'approved',
@@ -1701,7 +3384,11 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
     assert.equal(
       (
         approvePayload as {
-          resolution: { outcome: string; applied: boolean; job: { status: string } };
+          resolution: {
+            outcome: string;
+            applied: boolean;
+            job: { status: string };
+          };
         }
       ).resolution.applied,
       true,
@@ -1709,7 +3396,11 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
     assert.equal(
       (
         approvePayload as {
-          resolution: { outcome: string; applied: boolean; job: { status: string } };
+          resolution: {
+            outcome: string;
+            applied: boolean;
+            job: { status: string };
+          };
         }
       ).resolution.job.status,
       'queued',
@@ -1745,10 +3436,12 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
       false,
     );
 
-    const { payload: approvedSummaryPayload, response: approvedSummaryResponse } =
-      await readJsonResponse(
-        `${handle.url}/approval-inbox?approvalId=${primaryApproval.approvalId}`,
-      );
+    const {
+      payload: approvedSummaryPayload,
+      response: approvedSummaryResponse,
+    } = await readJsonResponse(
+      `${handle.url}/approval-inbox?approvalId=${primaryApproval.approvalId}`,
+    );
 
     assert.equal(approvedSummaryResponse.status, 200);
     assert.equal(
@@ -1776,7 +3469,11 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
     assert.equal(
       (
         rejectedPayload as {
-          resolution: { outcome: string; applied: boolean; job: { status: string } };
+          resolution: {
+            outcome: string;
+            applied: boolean;
+            job: { status: string };
+          };
         }
       ).resolution.outcome,
       'rejected',
@@ -1784,16 +3481,22 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
     assert.equal(
       (
         rejectedPayload as {
-          resolution: { outcome: string; applied: boolean; job: { status: string } };
+          resolution: {
+            outcome: string;
+            applied: boolean;
+            job: { status: string };
+          };
         }
       ).resolution.job.status,
       'failed',
     );
 
-    const { payload: rejectedSummaryPayload, response: rejectedSummaryResponse } =
-      await readJsonResponse(
-        `${handle.url}/approval-inbox?approvalId=${rejectedApproval.approvalId}`,
-      );
+    const {
+      payload: rejectedSummaryPayload,
+      response: rejectedSummaryResponse,
+    } = await readJsonResponse(
+      `${handle.url}/approval-inbox?approvalId=${rejectedApproval.approvalId}`,
+    );
 
     assert.equal(rejectedSummaryResponse.status, 200);
     assert.equal(
@@ -1832,17 +3535,19 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
       'invalid-approval-inbox-query',
     );
 
-    const { payload: invalidResolutionPayload, response: invalidResolutionResponse } =
-      await readJsonResponse(`${handle.url}/approval-resolution`, {
-        body: JSON.stringify({
-          approvalId: rejectedApproval.approvalId,
-          decision: 'maybe',
-        }),
-        headers: {
-          'content-type': 'application/json',
-        },
-        method: 'POST',
-      });
+    const {
+      payload: invalidResolutionPayload,
+      response: invalidResolutionResponse,
+    } = await readJsonResponse(`${handle.url}/approval-resolution`, {
+      body: JSON.stringify({
+        approvalId: rejectedApproval.approvalId,
+        decision: 'maybe',
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+      method: 'POST',
+    });
 
     assert.equal(invalidResolutionResponse.status, 400);
     assert.equal(
@@ -1854,17 +3559,19 @@ test('approval inbox and resolution routes cover filtered queue reads, stale sta
       'invalid-approval-resolution-request',
     );
 
-    const { payload: missingResolutionPayload, response: missingResolutionResponse } =
-      await readJsonResponse(`${handle.url}/approval-resolution`, {
-        body: JSON.stringify({
-          approvalId: 'missing-approval',
-          decision: 'approved',
-        }),
-        headers: {
-          'content-type': 'application/json',
-        },
-        method: 'POST',
-      });
+    const {
+      payload: missingResolutionPayload,
+      response: missingResolutionResponse,
+    } = await readJsonResponse(`${handle.url}/approval-resolution`, {
+      body: JSON.stringify({
+        approvalId: 'missing-approval',
+        decision: 'approved',
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+      method: 'POST',
+    });
 
     assert.equal(missingResolutionResponse.status, 404);
     assert.equal(
@@ -1907,7 +3614,10 @@ test('onboarding summary route composes startup checklist state with bounded rep
     const afterSnapshot = await fixture.snapshotUserLayer();
 
     assert.equal(response.status, 200);
-    assert.equal((payload as { status: string }).status, 'missing-prerequisites');
+    assert.equal(
+      (payload as { status: string }).status,
+      'missing-prerequisites',
+    );
     assert.equal(
       (
         payload as {
@@ -2010,10 +3720,7 @@ test('onboarding repair route creates requested files and revalidates startup st
     const afterSnapshot = await fixture.snapshotUserLayer();
 
     assert.equal(response.status, 200);
-    assert.equal(
-      (payload as { repairedCount: number }).repairedCount,
-      2,
-    );
+    assert.equal((payload as { repairedCount: number }).repairedCount, 2);
     assert.equal((payload as { status: string }).status, 'auth-required');
     assert.equal(
       (

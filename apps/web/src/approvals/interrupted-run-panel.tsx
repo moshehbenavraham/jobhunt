@@ -105,7 +105,8 @@ export function InterruptedRunPanel({
           Resume handoff
         </h2>
         <p style={{ color: '#64748b', marginBottom: 0 }}>
-          Resume uses the existing orchestration route instead of a second runner path.
+          Resume uses the existing orchestration route instead of a second
+          runner path.
         </p>
       </header>
 
@@ -120,7 +121,9 @@ export function InterruptedRunPanel({
               padding: '0.85rem 0.9rem',
             }}
           >
-            <p style={{ fontWeight: 700, marginBottom: '0.3rem', marginTop: 0 }}>
+            <p
+              style={{ fontWeight: 700, marginBottom: '0.3rem', marginTop: 0 }}
+            >
               {interruptedRun.state}
             </p>
             <p style={{ margin: 0 }}>{interruptedRun.message}</p>

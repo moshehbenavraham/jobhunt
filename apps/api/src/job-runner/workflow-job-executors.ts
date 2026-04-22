@@ -25,10 +25,7 @@ import {
   type ScanWorkflowResult,
   type WorkflowWarning,
 } from './workflow-job-contract.js';
-import type {
-  ToolExecutionEnvelope,
-  ToolExecutionService,
-} from '../tools/index.js';
+import type { ToolExecutionService } from '../tools/index.js';
 import type { JsonValue } from '../workspace/workspace-types.js';
 
 const execFileAsync = promisify(execFile);

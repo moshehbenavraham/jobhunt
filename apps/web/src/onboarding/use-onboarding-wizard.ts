@@ -84,9 +84,11 @@ function reconcileSelectedTargets(
   return [...summary.repairPreview.readyTargets];
 }
 
-export function useOnboardingWizard(options: {
-  onRepairApplied?: () => void;
-} = {}) {
+export function useOnboardingWizard(
+  options: {
+    onRepairApplied?: () => void;
+  } = {},
+) {
   const summaryAbortRef = useRef<AbortController | null>(null);
   const summaryRequestIdRef = useRef(0);
   const repairAbortRef = useRef<AbortController | null>(null);
@@ -127,7 +129,10 @@ export function useOnboardingWizard(options: {
           signal: controller.signal,
         });
 
-        if (controller.signal.aborted || requestId !== summaryRequestIdRef.current) {
+        if (
+          controller.signal.aborted ||
+          requestId !== summaryRequestIdRef.current
+        ) {
           return;
         }
 
@@ -146,7 +151,10 @@ export function useOnboardingWizard(options: {
           }));
         });
       } catch (error) {
-        if (controller.signal.aborted || requestId !== summaryRequestIdRef.current) {
+        if (
+          controller.signal.aborted ||
+          requestId !== summaryRequestIdRef.current
+        ) {
           return;
         }
 
@@ -202,7 +210,10 @@ export function useOnboardingWizard(options: {
         targets: selectedTargets,
       });
 
-      if (controller.signal.aborted || requestId !== repairRequestIdRef.current) {
+      if (
+        controller.signal.aborted ||
+        requestId !== repairRequestIdRef.current
+      ) {
         return;
       }
 
@@ -218,7 +229,10 @@ export function useOnboardingWizard(options: {
       options.onRepairApplied?.();
       await loadSummary('repair');
     } catch (error) {
-      if (controller.signal.aborted || requestId !== repairRequestIdRef.current) {
+      if (
+        controller.signal.aborted ||
+        requestId !== repairRequestIdRef.current
+      ) {
         return;
       }
 
@@ -268,7 +282,11 @@ export function useOnboardingWizard(options: {
       });
     },
     refresh: () => {
-      if (state.pendingAction !== null || state.isRefreshing || state.status === 'loading') {
+      if (
+        state.pendingAction !== null ||
+        state.isRefreshing ||
+        state.status === 'loading'
+      ) {
         return;
       }
 
@@ -279,10 +297,12 @@ export function useOnboardingWizard(options: {
         return;
       }
 
+      const readyTargets = state.data.repairPreview.readyTargets;
+
       startTransition(() => {
         setState((previous) => ({
           ...previous,
-          selectedTargets: [...state.data!.repairPreview.readyTargets],
+          selectedTargets: [...readyTargets],
         }));
       });
     },

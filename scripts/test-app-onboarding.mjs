@@ -32,7 +32,8 @@ function createHealth(input) {
           ? 'Authentication is still required.'
           : 'Agent runtime is ready.',
       promptState: input.startupStatus === 'auth-required' ? null : 'ready',
-      status: input.startupStatus === 'auth-required' ? 'auth-required' : 'ready',
+      status:
+        input.startupStatus === 'auth-required' ? 'auth-required' : 'ready',
     },
     message: input.message,
     missing: {
@@ -228,9 +229,10 @@ function createOnboardingSummary(mode) {
           }),
         ]
       : [];
-  const startupStatus = mode === 'complete' || mode === 'empty'
-    ? 'auth-required'
-    : 'missing-prerequisites';
+  const startupStatus =
+    mode === 'complete' || mode === 'empty'
+      ? 'auth-required'
+      : 'missing-prerequisites';
   const message =
     mode === 'empty'
       ? 'No onboarding repair targets are registered for this workspace.'
@@ -255,7 +257,8 @@ function createOnboardingSummary(mode) {
     },
     generatedAt: '2026-04-22T00:00:00.000Z',
     health: createHealth({
-      healthStatus: startupStatus === 'missing-prerequisites' ? 'degraded' : 'degraded',
+      healthStatus:
+        startupStatus === 'missing-prerequisites' ? 'degraded' : 'degraded',
       message:
         startupStatus === 'missing-prerequisites'
           ? 'Bootstrap is live, but onboarding files are still missing.'
@@ -427,7 +430,9 @@ async function waitForHttpOk(url, child, stderrLog) {
     await delay(100);
   }
 
-  throw new Error(`Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`);
+  throw new Error(
+    `Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`,
+  );
 }
 
 async function startFakeApiServer() {
@@ -493,7 +498,11 @@ async function startFakeApiServer() {
           'content-type': 'application/json; charset=utf-8',
         });
         response.end(
-          JSON.stringify(createOnboardingSummary(state.onboardingMode), null, 2),
+          JSON.stringify(
+            createOnboardingSummary(state.onboardingMode),
+            null,
+            2,
+          ),
         );
         return;
       }
@@ -618,19 +627,22 @@ try {
     await page.goto(webUrl, { waitUntil: 'networkidle' });
 
     try {
-      await page
-        .getByRole('button', { name: /Open.*onboarding/i })
-        .waitFor();
+      await page.getByRole('button', { name: /Open.*onboarding/i }).waitFor();
     } catch (error) {
       console.error(await page.locator('body').textContent());
       throw error;
     }
     await page.getByRole('button', { name: /Open.*onboarding/i }).click();
-    await page.getByRole('heading', { name: 'Loading onboarding checklist' }).waitFor();
+    await page
+      .getByRole('heading', { name: 'Loading onboarding checklist' })
+      .waitFor();
     await page
       .getByRole('heading', { name: 'Startup checklist and onboarding wizard' })
       .waitFor();
-    await page.getByText('config/profile.yml', { exact: true }).first().waitFor();
+    await page
+      .getByText('config/profile.yml', { exact: true })
+      .first()
+      .waitFor();
     await page.getByText('profile/cv.md', { exact: true }).first().waitFor();
 
     await page.getByLabel('Select repair target applicationsTracker').click();
@@ -640,7 +652,9 @@ try {
       name: /Confirm onboarding repair|Repair 2 selected targets/i,
     });
     await repairButton.dblclick();
-    await page.getByText('Repairing 2 targets: profileConfig, profileCv').waitFor();
+    await page
+      .getByText('Repairing 2 targets: profileConfig, profileCv')
+      .waitFor();
     await page.getByText('2 files created.').waitFor();
 
     assert.equal(fakeApi.getRepairRequests(), 1);
@@ -649,12 +663,18 @@ try {
       'profileCv',
     ]);
 
-    await page.getByRole('button', { name: 'Open the startup surface' }).click();
-    await page.getByText('Missing counts: onboarding 0, optional 1, runtime 0').waitFor();
+    await page
+      .getByRole('button', { name: 'Open the startup surface' })
+      .click();
+    await page
+      .getByText('Missing counts: onboarding 0, optional 1, runtime 0')
+      .waitFor();
 
     await page.getByRole('link', { name: /Onboarding/ }).click();
     fakeApi.setOnboardingMode('empty');
-    await page.getByRole('button', { name: /Refresh onboarding summary/i }).click();
+    await page
+      .getByRole('button', { name: /Refresh onboarding summary/i })
+      .click();
     await page
       .getByText(
         'No onboarding repair targets are registered for this workspace.',
@@ -663,13 +683,19 @@ try {
       .waitFor();
 
     fakeApi.setOnboardingMode('error');
-    await page.getByRole('button', { name: /Refresh onboarding summary/i }).click();
-    await page.getByRole('heading', { name: 'Onboarding summary error' }).waitFor();
+    await page
+      .getByRole('button', { name: /Refresh onboarding summary/i })
+      .click();
+    await page
+      .getByRole('heading', { name: 'Onboarding summary error' })
+      .waitFor();
 
     await page.route('**/api/onboarding*', async (route) => {
       await route.abort('failed');
     });
-    await page.getByRole('button', { name: /Refresh onboarding summary/i }).click();
+    await page
+      .getByRole('button', { name: /Refresh onboarding summary/i })
+      .click();
     await page
       .getByRole('heading', { name: 'Using the last good onboarding summary' })
       .waitFor();

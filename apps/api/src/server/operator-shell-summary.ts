@@ -246,7 +246,10 @@ export async function createOperatorShellSummary(
   const previewApprovalLimit = clampPreviewLimit(options.approvalLimit);
   const previewFailureLimit = clampPreviewLimit(options.failureLimit);
   const focusSessionId = options.sessionId?.trim() || null;
-  const pendingApprovals = await listPendingApprovals(store, focusSessionId ?? undefined);
+  const pendingApprovals = await listPendingApprovals(
+    store,
+    focusSessionId ?? undefined,
+  );
   const observability = await services.observability.getService();
   const diagnosticsSummary = await observability.getDiagnosticsSummary({
     limit: MAX_COUNT_LIMIT,
@@ -264,8 +267,9 @@ export async function createOperatorShellSummary(
     activity: {
       activeSession,
       activeSessionCount: focusSessionId
-        ? activeSessions.filter((session) => session.sessionId === focusSessionId)
-            .length
+        ? activeSessions.filter(
+            (session) => session.sessionId === focusSessionId,
+          ).length
         : activeSessions.length,
       latestPendingApprovals: pendingApprovals
         .slice(0, previewApprovalLimit)
@@ -277,8 +281,9 @@ export async function createOperatorShellSummary(
         .map((failure) => toFailureSummary(failure)),
       state: getActivityState({
         activeSessionCount: focusSessionId
-          ? activeSessions.filter((session) => session.sessionId === focusSessionId)
-              .length
+          ? activeSessions.filter(
+              (session) => session.sessionId === focusSessionId,
+            ).length
           : activeSessions.length,
         pendingApprovalCount: pendingApprovals.length,
         recentFailureCount: diagnosticsSummary.failedJobs.length,

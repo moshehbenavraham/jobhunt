@@ -9,6 +9,7 @@ exposed via `npm run <name>`. Repo-local shell helpers such as
 | Command                      | Script                                  | Purpose                                     |
 | ---------------------------- | --------------------------------------- | ------------------------------------------- |
 | `npm run cron:install`       | `scripts/install-scan-cron.mjs`         | Install repo-managed daily scan cron        |
+| `npm run backup:install-cron` | `scripts/install-backup-cron.mjs`      | Install repo-managed daily backup cron      |
 | `npm run doctor`             | `scripts/doctor.mjs`                    | Validate setup prerequisites                |
 | `npm run auth:openai`        | `scripts/openai-account-auth.mjs`       | Manage stored OpenAI account auth           |
 | `npm run lint:shell`         | `shellcheck`                            | Lint repo shell scripts                     |
@@ -53,6 +54,32 @@ Notes:
 - intended host timezone is `Asia/Jerusalem` when you want Israel-local runs
 - the installer replaces only the tagged `jobhunt daily scan` block and leaves
   other cron entries untouched
+
+**Exit codes:** `0` success, `1` invalid arguments or crontab failure.
+
+---
+
+## backup:install-cron
+
+Installs or refreshes the checked-in daily backup cron entry in the current
+user's crontab. The active cron line calls the repo-owned
+`scripts/run-scheduled-backup.sh` runner, which writes logs to
+`tmp/cron/backup.log`.
+
+```bash
+npm run backup:install-cron
+npm run backup:install-cron -- --hour 5 --minute 15
+npm run backup:install-cron -- --remove
+```
+
+Notes:
+
+- default schedule is `05:15` host local time
+- intended host timezone is `Asia/Jerusalem` when you want Israel-local runs
+- the installer replaces only the tagged `jobhunt daily backup` block and
+  leaves other cron entries untouched
+- each scheduled run uses `flock` on `/tmp/jobhunt-backup.lock` and runs
+  `npm run backup:run -- --verify`
 
 **Exit codes:** `0` success, `1` invalid arguments or crontab failure.
 

@@ -179,7 +179,6 @@ export function createOrchestrationService(
 
         if (attempt < bootstrapMaxAttempts) {
           await delay(bootstrapRetryDelayMs);
-          continue;
         }
       }
     }

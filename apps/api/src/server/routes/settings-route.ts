@@ -22,11 +22,13 @@ function toValidationError(error: z.ZodError): ApiRequestValidationError {
   );
 }
 
-export function createSettingsRoute(options: {
-  readUpdateCheck?: (input: {
-    repoRoot: string;
-  }) => Promise<SettingsUpdateCheckPayload>;
-} = {}): ApiRouteDefinition {
+export function createSettingsRoute(
+  options: {
+    readUpdateCheck?: (input: {
+      repoRoot: string;
+    }) => Promise<SettingsUpdateCheckPayload>;
+  } = {},
+): ApiRouteDefinition {
   return defineApiRoute({
     async handle({ requestInput, services }) {
       const parsedQuery = settingsQuerySchema.safeParse({

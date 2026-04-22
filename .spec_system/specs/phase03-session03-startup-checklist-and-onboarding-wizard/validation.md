@@ -9,16 +9,16 @@
 
 ## Validation Summary
 
-| Check | Status | Notes |
-| ----- | ------ | ----- |
-| Tasks Complete | PASS | 18/18 tasks complete |
-| Files Exist | PASS | Session deliverables are present in the repo |
-| ASCII Encoding | PASS | Session deliverables are ASCII text with LF line endings |
-| Tests Passing | PASS | `npm run app:web:check`, `npm run app:web:build`, `npm run app:api:test:runtime`, `node scripts/test-app-onboarding.mjs`, `npm run doctor`, and `node scripts/test-all.mjs --quick` passed |
-| Quality Gates | PASS | Required package and repo quick gates passed |
-| Conventions | PASS | Spot-check aligns with `.spec_system/CONVENTIONS.md` |
-| Security & GDPR | PASS | See `security-compliance.md` |
-| Behavioral Quality | PASS | Duplicate-submit prevention, explicit repair flow, and refresh behavior are covered |
+| Check              | Status | Notes                                                                                                                                                                                      |
+| ------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Tasks Complete     | PASS   | 18/18 tasks complete                                                                                                                                                                       |
+| Files Exist        | PASS   | Session deliverables are present in the repo                                                                                                                                               |
+| ASCII Encoding     | PASS   | Session deliverables are ASCII text with LF line endings                                                                                                                                   |
+| Tests Passing      | PASS   | `npm run app:web:check`, `npm run app:web:build`, `npm run app:api:test:runtime`, `node scripts/test-app-onboarding.mjs`, `npm run doctor`, and `node scripts/test-all.mjs --quick` passed |
+| Quality Gates      | PASS   | Required package and repo quick gates passed                                                                                                                                               |
+| Conventions        | PASS   | Spot-check aligns with `.spec_system/CONVENTIONS.md`                                                                                                                                       |
+| Security & GDPR    | PASS   | See `security-compliance.md`                                                                                                                                                               |
+| Behavioral Quality | PASS   | Duplicate-submit prevention, explicit repair flow, and refresh behavior are covered                                                                                                        |
 
 **Overall**: PASS
 
@@ -28,12 +28,12 @@
 
 ### Status: PASS
 
-| Category | Required | Completed | Status |
-| -------- | -------- | --------- | ------ |
-| Setup | 4 | 4 | PASS |
-| Foundation | 5 | 5 | PASS |
-| Implementation | 5 | 5 | PASS |
-| Testing | 4 | 4 | PASS |
+| Category       | Required | Completed | Status |
+| -------------- | -------- | --------- | ------ |
+| Setup          | 4        | 4         | PASS   |
+| Foundation     | 5        | 5         | PASS   |
+| Implementation | 5        | 5         | PASS   |
+| Testing        | 4        | 4         | PASS   |
 
 ### Incomplete Tasks
 
@@ -47,25 +47,25 @@ None
 
 #### Files Created or Modified
 
-| File | Found | Status |
-| ---- | ----- | ------ |
-| `apps/api/src/server/onboarding-summary.ts` | Yes | PASS |
-| `apps/api/src/server/routes/onboarding-route.ts` | Yes | PASS |
-| `apps/api/src/server/routes/onboarding-repair-route.ts` | Yes | PASS |
-| `apps/api/src/server/routes/index.ts` | Yes | PASS |
-| `apps/api/src/server/http-server.test.ts` | Yes | PASS |
-| `apps/web/src/onboarding/onboarding-types.ts` | Yes | PASS |
-| `apps/web/src/onboarding/onboarding-client.ts` | Yes | PASS |
-| `apps/web/src/onboarding/use-onboarding-wizard.ts` | Yes | PASS |
-| `apps/web/src/onboarding/onboarding-checklist.tsx` | Yes | PASS |
-| `apps/web/src/onboarding/repair-preview-list.tsx` | Yes | PASS |
-| `apps/web/src/onboarding/repair-confirmation-panel.tsx` | Yes | PASS |
-| `apps/web/src/onboarding/readiness-handoff-card.tsx` | Yes | PASS |
-| `apps/web/src/onboarding/onboarding-wizard-surface.tsx` | Yes | PASS |
-| `apps/web/src/shell/operator-shell.tsx` | Yes | PASS |
-| `apps/web/src/boot/startup-status-panel.tsx` | Yes | PASS |
-| `scripts/test-app-onboarding.mjs` | Yes | PASS |
-| `scripts/test-all.mjs` | Yes | PASS |
+| File                                                    | Found | Status |
+| ------------------------------------------------------- | ----- | ------ |
+| `apps/api/src/server/onboarding-summary.ts`             | Yes   | PASS   |
+| `apps/api/src/server/routes/onboarding-route.ts`        | Yes   | PASS   |
+| `apps/api/src/server/routes/onboarding-repair-route.ts` | Yes   | PASS   |
+| `apps/api/src/server/routes/index.ts`                   | Yes   | PASS   |
+| `apps/api/src/server/http-server.test.ts`               | Yes   | PASS   |
+| `apps/web/src/onboarding/onboarding-types.ts`           | Yes   | PASS   |
+| `apps/web/src/onboarding/onboarding-client.ts`          | Yes   | PASS   |
+| `apps/web/src/onboarding/use-onboarding-wizard.ts`      | Yes   | PASS   |
+| `apps/web/src/onboarding/onboarding-checklist.tsx`      | Yes   | PASS   |
+| `apps/web/src/onboarding/repair-preview-list.tsx`       | Yes   | PASS   |
+| `apps/web/src/onboarding/repair-confirmation-panel.tsx` | Yes   | PASS   |
+| `apps/web/src/onboarding/readiness-handoff-card.tsx`    | Yes   | PASS   |
+| `apps/web/src/onboarding/onboarding-wizard-surface.tsx` | Yes   | PASS   |
+| `apps/web/src/shell/operator-shell.tsx`                 | Yes   | PASS   |
+| `apps/web/src/boot/startup-status-panel.tsx`            | Yes   | PASS   |
+| `scripts/test-app-onboarding.mjs`                       | Yes   | PASS   |
+| `scripts/test-all.mjs`                                  | Yes   | PASS   |
 
 ### Missing Deliverables
 
@@ -77,9 +77,9 @@ None
 
 ### Status: PASS
 
-| File | Encoding | Line Endings | Status |
-| ---- | -------- | ------------ | ------ |
-| Session deliverables | ASCII | LF | PASS |
+| File                 | Encoding | Line Endings | Status |
+| -------------------- | -------- | ------------ | ------ |
+| Session deliverables | ASCII    | LF           | PASS   |
 
 ### Encoding Issues
 
@@ -91,15 +91,15 @@ None
 
 ### Status: PASS
 
-| Metric | Value |
-| ------ | ----- |
-| `npm run app:web:check` | Passed |
-| `npm run app:web:build` | Passed |
-| `npm run app:api:test:runtime` | Passed |
+| Metric                                 | Value  |
+| -------------------------------------- | ------ |
+| `npm run app:web:check`                | Passed |
+| `npm run app:web:build`                | Passed |
+| `npm run app:api:test:runtime`         | Passed |
 | `node scripts/test-app-onboarding.mjs` | Passed |
-| `npm run doctor` | Passed |
-| `node scripts/test-all.mjs --quick` | Passed |
-| Coverage | N/A |
+| `npm run doctor`                       | Passed |
+| `node scripts/test-all.mjs --quick`    | Passed |
+| Coverage                               | N/A    |
 
 ### Failed Tests
 
@@ -137,13 +137,13 @@ From `spec.md`:
 
 ### Status: PASS
 
-| Category | Status | Notes |
-| -------- | ------ | ----- |
-| Naming | PASS | File and symbol names follow repo conventions |
-| File Structure | PASS | Session files live under the expected `.spec_system` and `apps/*` paths |
-| Error Handling | PASS | Failure paths remain explicit and deterministic |
-| Comments | PASS | Comments are sparse and only used where they clarify behavior |
-| Testing | PASS | Session tests cover the new onboarding surface and backend routes |
+| Category       | Status | Notes                                                                   |
+| -------------- | ------ | ----------------------------------------------------------------------- |
+| Naming         | PASS   | File and symbol names follow repo conventions                           |
+| File Structure | PASS   | Session files live under the expected `.spec_system` and `apps/*` paths |
+| Error Handling | PASS   | Failure paths remain explicit and deterministic                         |
+| Comments       | PASS   | Comments are sparse and only used where they clarify behavior           |
+| Testing        | PASS   | Session tests cover the new onboarding surface and backend routes       |
 
 ### Convention Violations
 
@@ -163,13 +163,13 @@ See `security-compliance.md` in this session directory.
 
 ### Status: PASS
 
-| Category | Status | Details |
-| -------- | ------ | ------- |
-| Trust boundaries | PASS | Summary and repair routes stay read-first and confirm-then-mutate |
-| Resource cleanup | PASS | In-flight repair reservations are released on completion or failure |
-| Mutation safety | PASS | Duplicate repair submits are blocked deterministically |
-| Failure paths | PASS | Invalid target, conflict, and template-missing cases are explicit |
-| Contract alignment | PASS | Browser state stays aligned with backend summary and repair payloads |
+| Category           | Status | Details                                                              |
+| ------------------ | ------ | -------------------------------------------------------------------- |
+| Trust boundaries   | PASS   | Summary and repair routes stay read-first and confirm-then-mutate    |
+| Resource cleanup   | PASS   | In-flight repair reservations are released on completion or failure  |
+| Mutation safety    | PASS   | Duplicate repair submits are blocked deterministically               |
+| Failure paths      | PASS   | Invalid target, conflict, and template-missing cases are explicit    |
+| Contract alignment | PASS   | Browser state stays aligned with backend summary and repair payloads |
 
 ---
 

@@ -18,9 +18,10 @@ Repo instructions and scripts
 ```
 
 Job-Hunt is a local-first repo that keeps its durable business data in checked-
-in files and its operational app state in `.jobhunt-app/`. Phase 00 introduced
-the app scaffold so the runtime contract can move from process-relative CLI
-behavior to explicit packages, diagnostics, and boot surfaces.
+in files and its operational app state in `.jobhunt-app/`. The app surface now
+covers startup diagnostics, onboarding repair, approval review, settings, and
+workflow bootstrapping through explicit packages, diagnostics, and boot
+surfaces.
 
 ## Main Components
 
@@ -30,15 +31,18 @@ behavior to explicit packages, diagnostics, and boot surfaces.
 - `.codex/skills/` contains the checked-in skill surface.
 - `modes/` contains the task-specific workflow files used by the repo.
 
-### App scaffold
+### App surface
 
-- `apps/api` owns the diagnostics entrypoint and the long-lived boot server.
-- `apps/web` owns the React bootstrap shell that renders startup state.
+- `apps/api` owns the diagnostics entrypoint, onboarding summary and repair
+  routes, approval inbox routes, settings routes, workflow bootstrap helpers,
+  and the long-lived boot server.
+- `apps/web` owns the React shell that renders startup, onboarding, approval,
+  settings, and maintenance surfaces.
 - Package-level docs live in `apps/api/README_api.md` and
   `apps/web/README_web.md`.
 - `scripts/test-app-bootstrap.mjs` verifies the live app boot contract from the
   repo root.
-- `scripts/test-app-scaffold.mjs` keeps the scaffold and diagnostics contract
+- `scripts/test-app-scaffold.mjs` keeps the surface and diagnostics contract
   aligned with the repo gate.
 
 ### Job evaluation pipeline
@@ -80,16 +84,17 @@ behavior to explicit packages, diagnostics, and boot surfaces.
 
 ## App Boot Surface
 
-The phase 00 app contract splits startup into three checks:
+The app contract keeps the runtime read-first:
 
 1. `apps/api/src/index.ts` emits one-shot diagnostics for repo readiness.
-2. `apps/api/src/server/index.ts` serves `/health` and `/startup` for the live
-   boot surface.
+2. `apps/api/src/server/index.ts` serves `/health`, `/startup`, onboarding,
+   approval inbox, settings, and workflow routes for the live boot surface.
 3. `apps/web/src/App.tsx` renders loading, ready, missing-prerequisites,
-   offline, and runtime-error states from the startup payload.
+   offline, onboarding, approval, settings, and runtime-error states from the
+   API payloads.
 
-This design keeps the runtime read-first. The server and web shell inspect the
-existing repo contract, but they do not create or mutate user-layer files.
+The server and web shell inspect the existing repo contract, but they do not
+create or mutate user-layer files outside explicit repair actions.
 
 ## Data Flow
 
@@ -133,7 +138,7 @@ exhausted.
 
 - Keep the repo-owned file contract as the source of truth for domain data.
 - Keep app-owned runtime state in `.jobhunt-app/` only.
-- Keep the app scaffold read-first so the web shell and boot server do not
+- Keep the app surface read-first so the web shell and boot server do not
   mutate user-layer files during startup.
 - Preserve the current CLI and batch workflows while the app parity effort
   grows.

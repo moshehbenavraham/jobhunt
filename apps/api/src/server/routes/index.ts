@@ -2,11 +2,14 @@ import { createApprovalInboxRoute } from './approval-inbox-route.js';
 import { createApprovalResolutionRoute } from './approval-resolution-route.js';
 import { createChatConsoleRoute } from './chat-console-route.js';
 import type { ApiRouteDefinition } from '../route-contract.js';
+import { createEvaluationResultRoute } from './evaluation-result-route.js';
 import { createHealthRoute } from './health-route.js';
 import { createOnboardingRepairRoute } from './onboarding-repair-route.js';
 import { createOnboardingRoute } from './onboarding-route.js';
 import { createOrchestrationRoute } from './orchestration-route.js';
 import { createOperatorShellRoute } from './operator-shell-route.js';
+import { createPipelineReviewRoute } from './pipeline-review-route.js';
+import { createReportViewerRoute } from './report-viewer-route.js';
 import { createRuntimeApprovalsRoute } from './runtime-approvals-route.js';
 import { createRuntimeDiagnosticsRoute } from './runtime-diagnostics-route.js';
 import { createSettingsRoute } from './settings-route.js';
@@ -36,10 +39,13 @@ export function createApiRouteRegistry(): ApiRouteDefinition[] {
     createApprovalInboxRoute(),
     createApprovalResolutionRoute(),
     createChatConsoleRoute(),
+    createEvaluationResultRoute(),
     createOrchestrationRoute(),
     createOnboardingRoute(),
     createOnboardingRepairRoute(),
     createOperatorShellRoute(),
+    createPipelineReviewRoute(),
+    createReportViewerRoute(),
     createSettingsRoute(),
     createStartupRoute(),
     createRuntimeApprovalsRoute(),

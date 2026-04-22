@@ -49,7 +49,10 @@ const toneStyles: Record<'critical' | 'info' | 'warning', CSSProperties> = {
   },
 };
 
-function getEmptyStateCopy(status: OnboardingWizardViewStatus, message: string) {
+function getEmptyStateCopy(
+  status: OnboardingWizardViewStatus,
+  message: string,
+) {
   switch (status) {
     case 'loading':
       return {
@@ -147,7 +150,10 @@ export function OnboardingChecklist({
           >
             Checklist
           </p>
-          <h2 id="onboarding-checklist-title" style={{ marginBottom: '0.35rem' }}>
+          <h2
+            id="onboarding-checklist-title"
+            style={{ marginBottom: '0.35rem' }}
+          >
             {copy.title}
           </h2>
           <p style={{ marginBottom: 0 }}>{copy.body}</p>

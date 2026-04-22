@@ -105,7 +105,10 @@ export function RunTimeline({ detail, status }: RunTimelineProps) {
           >
             Timeline
           </p>
-          <h2 id="chat-console-timeline-title" style={{ marginBottom: '0.35rem' }}>
+          <h2
+            id="chat-console-timeline-title"
+            style={{ marginBottom: '0.35rem' }}
+          >
             {emptyState.title}
           </h2>
           <p style={{ color: '#64748b', marginBottom: 0 }}>{emptyState.body}</p>
@@ -128,7 +131,10 @@ export function RunTimeline({ detail, status }: RunTimelineProps) {
         >
           Timeline
         </p>
-        <h2 id="chat-console-timeline-title" style={{ marginBottom: '0.35rem' }}>
+        <h2
+          id="chat-console-timeline-title"
+          style={{ marginBottom: '0.35rem' }}
+        >
           Runtime events for the selected session
         </h2>
         <p style={{ color: '#64748b', marginBottom: 0 }}>

@@ -99,7 +99,9 @@ export function SettingsWorkspaceCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Repo root
           </p>
           <p style={{ margin: 0 }}>
@@ -114,7 +116,9 @@ export function SettingsWorkspaceCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             App-state root
           </p>
           <p style={{ margin: 0 }}>
@@ -129,7 +133,9 @@ export function SettingsWorkspaceCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Current spec session
           </p>
           <p style={{ margin: 0 }}>{summary.currentSession.id}</p>
@@ -142,7 +148,9 @@ export function SettingsWorkspaceCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Phase / package
           </p>
           <p style={{ margin: 0 }}>
@@ -150,8 +158,11 @@ export function SettingsWorkspaceCard({
               ? `Phase ${summary.currentSession.phase}`
               : 'No phase in state file'}
           </p>
-          <p style={{ color: '#475569', marginBottom: 0, marginTop: '0.35rem' }}>
-            {summary.currentSession.packagePath ?? 'Cross-cutting or unresolved'}
+          <p
+            style={{ color: '#475569', marginBottom: 0, marginTop: '0.35rem' }}
+          >
+            {summary.currentSession.packagePath ??
+              'Cross-cutting or unresolved'}
           </p>
         </article>
       </div>
@@ -173,7 +184,9 @@ export function SettingsWorkspaceCard({
         <p style={{ marginBottom: 0, marginTop: '0.35rem' }}>
           <strong>Resolved package path</strong>
         </p>
-        <code>{sessionWorkspace.packageAbsolutePath ?? 'No package path resolved'}</code>
+        <code>
+          {sessionWorkspace.packageAbsolutePath ?? 'No package path resolved'}
+        </code>
       </section>
 
       <section

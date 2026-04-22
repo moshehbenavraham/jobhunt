@@ -171,30 +171,30 @@ state instead of optimistic guesses.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/onboarding/onboarding-types.ts` | Define onboarding payloads, repair target enums, and view-state types | ~170 |
-| `apps/web/src/onboarding/onboarding-client.ts` | Fetch onboarding summaries and submit explicit repair requests | ~170 |
-| `apps/web/src/onboarding/use-onboarding-wizard.ts` | Manage refresh, target selection, and in-flight repair state | ~240 |
-| `apps/web/src/onboarding/onboarding-checklist.tsx` | Render required, optional, and runtime checklist cards | ~180 |
-| `apps/web/src/onboarding/repair-preview-list.tsx` | Render preview items for ready, already-present, and template-missing targets | ~170 |
-| `apps/web/src/onboarding/repair-confirmation-panel.tsx` | Render explicit repair controls and pending-action messaging | ~170 |
-| `apps/web/src/onboarding/readiness-handoff-card.tsx` | Render post-repair readiness guidance and next-step messaging | ~130 |
-| `apps/web/src/onboarding/onboarding-wizard-surface.tsx` | Compose the full onboarding wizard inside the shell surface | ~230 |
-| `apps/api/src/server/onboarding-summary.ts` | Build the bounded onboarding summary from startup plus repair preview data | ~220 |
-| `apps/api/src/server/routes/onboarding-route.ts` | Expose the GET-only onboarding summary endpoint | ~100 |
-| `apps/api/src/server/routes/onboarding-repair-route.ts` | Expose the POST repair endpoint for explicit template-backed repairs | ~150 |
-| `scripts/test-app-onboarding.mjs` | Run browser smoke checks for onboarding checklist, preview, and repair flows | ~280 |
+| File                                                    | Purpose                                                                       | Est. Lines |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/onboarding/onboarding-types.ts`           | Define onboarding payloads, repair target enums, and view-state types         | ~170       |
+| `apps/web/src/onboarding/onboarding-client.ts`          | Fetch onboarding summaries and submit explicit repair requests                | ~170       |
+| `apps/web/src/onboarding/use-onboarding-wizard.ts`      | Manage refresh, target selection, and in-flight repair state                  | ~240       |
+| `apps/web/src/onboarding/onboarding-checklist.tsx`      | Render required, optional, and runtime checklist cards                        | ~180       |
+| `apps/web/src/onboarding/repair-preview-list.tsx`       | Render preview items for ready, already-present, and template-missing targets | ~170       |
+| `apps/web/src/onboarding/repair-confirmation-panel.tsx` | Render explicit repair controls and pending-action messaging                  | ~170       |
+| `apps/web/src/onboarding/readiness-handoff-card.tsx`    | Render post-repair readiness guidance and next-step messaging                 | ~130       |
+| `apps/web/src/onboarding/onboarding-wizard-surface.tsx` | Compose the full onboarding wizard inside the shell surface                   | ~230       |
+| `apps/api/src/server/onboarding-summary.ts`             | Build the bounded onboarding summary from startup plus repair preview data    | ~220       |
+| `apps/api/src/server/routes/onboarding-route.ts`        | Expose the GET-only onboarding summary endpoint                               | ~100       |
+| `apps/api/src/server/routes/onboarding-repair-route.ts` | Expose the POST repair endpoint for explicit template-backed repairs          | ~150       |
+| `scripts/test-app-onboarding.mjs`                       | Run browser smoke checks for onboarding checklist, preview, and repair flows  | ~280       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/shell/operator-shell.tsx` | Replace the Onboarding placeholder with the live onboarding wizard surface | ~70 |
-| `apps/web/src/boot/startup-status-panel.tsx` | Add onboarding handoff affordances and repair-refresh status copy | ~90 |
-| `apps/api/src/server/routes/index.ts` | Register the onboarding summary and repair routes in deterministic order | ~25 |
-| `apps/api/src/server/http-server.test.ts` | Add contract coverage for onboarding summary and repair routes | ~260 |
-| `scripts/test-all.mjs` | Add Session 03 files and onboarding smoke coverage to the quick regression suite | ~90 |
+| File                                         | Changes                                                                          | Est. Lines |
+| -------------------------------------------- | -------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/shell/operator-shell.tsx`      | Replace the Onboarding placeholder with the live onboarding wizard surface       | ~70        |
+| `apps/web/src/boot/startup-status-panel.tsx` | Add onboarding handoff affordances and repair-refresh status copy                | ~90        |
+| `apps/api/src/server/routes/index.ts`        | Register the onboarding summary and repair routes in deterministic order         | ~25        |
+| `apps/api/src/server/http-server.test.ts`    | Add contract coverage for onboarding summary and repair routes                   | ~260       |
+| `scripts/test-all.mjs`                       | Add Session 03 files and onboarding smoke coverage to the quick regression suite | ~90        |
 
 ---
 
@@ -284,6 +284,7 @@ state instead of optimistic guesses.
 
 Checklist active: Yes
 Top behavioral risks for this session:
+
 - Duplicate repair submits can create conflicting state or misleading success
   banners if the UI does not lock correctly.
 - Stale readiness after a successful repair can leave Startup and Onboarding

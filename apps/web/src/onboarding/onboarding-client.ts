@@ -26,7 +26,10 @@ export class OnboardingClientError extends Error {
     payload?: OnboardingErrorPayload | null;
     state: 'error' | 'offline';
   }) {
-    super(options.message, options.cause ? { cause: options.cause } : undefined);
+    super(
+      options.message,
+      options.cause ? { cause: options.cause } : undefined,
+    );
     this.code = options.code;
     this.httpStatus = options.httpStatus ?? null;
     this.name = 'OnboardingClientError';
@@ -113,7 +116,10 @@ function shouldRetryRepair(error: unknown): boolean {
   return error instanceof OnboardingClientError && error.httpStatus === 429;
 }
 
-async function waitForRetry(delayMs: number, signal?: AbortSignal): Promise<void> {
+async function waitForRetry(
+  delayMs: number,
+  signal?: AbortSignal,
+): Promise<void> {
   if (delayMs === 0) {
     return;
   }
@@ -169,7 +175,9 @@ async function parseResponsePayload<TPayload>(
         message: errorPayload.error.message,
         payload: errorPayload,
         state:
-          response.status === 429 || response.status >= 500 ? 'offline' : 'error',
+          response.status === 429 || response.status >= 500
+            ? 'offline'
+            : 'error',
       });
     } catch (parsedError) {
       if (parsedError instanceof OnboardingClientError) {
@@ -268,12 +276,14 @@ async function fetchSummaryOnce(options: {
   }
 }
 
-export async function fetchOnboardingSummary(options: {
-  endpoint?: string;
-  signal?: AbortSignal;
-  targets?: readonly OnboardingRepairTarget[];
-  timeoutMs?: number;
-} = {}): Promise<OnboardingSummaryPayload> {
+export async function fetchOnboardingSummary(
+  options: {
+    endpoint?: string;
+    signal?: AbortSignal;
+    targets?: readonly OnboardingRepairTarget[];
+    timeoutMs?: number;
+  } = {},
+): Promise<OnboardingSummaryPayload> {
   let lastError: unknown;
 
   for (const delayMs of SUMMARY_RETRY_DELAYS_MS) {
@@ -287,7 +297,10 @@ export async function fetchOnboardingSummary(options: {
 
       lastError = error;
 
-      if (!shouldRetrySummary(error) || delayMs === SUMMARY_RETRY_DELAYS_MS.at(-1)) {
+      if (
+        !shouldRetrySummary(error) ||
+        delayMs === SUMMARY_RETRY_DELAYS_MS.at(-1)
+      ) {
         throw error;
       }
     }
@@ -380,7 +393,10 @@ export async function submitOnboardingRepair(options: {
 
       lastError = error;
 
-      if (!shouldRetryRepair(error) || delayMs === REPAIR_RETRY_DELAYS_MS.at(-1)) {
+      if (
+        !shouldRetryRepair(error) ||
+        delayMs === REPAIR_RETRY_DELAYS_MS.at(-1)
+      ) {
         throw error;
       }
     }

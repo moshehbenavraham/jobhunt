@@ -62,7 +62,8 @@
     "scan": "node scripts/scan.mjs",
     "auth:openai": "node scripts/openai-account-auth.mjs",
     "codex:smoke": "node scripts/openai-codex-smoke.mjs",
-    "agents:codex:smoke": "node scripts/openai-agents-codex-smoke.mjs"
+    "agents:codex:smoke": "node scripts/openai-agents-codex-smoke.mjs",
+    "prepare": "husky"
   },
   "keywords": [
     "ai",
@@ -81,6 +82,8 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",
     "c8": "^11.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.8.2"
   }
 }

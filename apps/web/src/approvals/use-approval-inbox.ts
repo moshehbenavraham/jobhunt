@@ -129,7 +129,15 @@ export function useApprovalInbox(): {
 
   const loadSummary = useEffectEvent(
     async (
-      reason: 'decision' | 'focus' | 'mount' | 'online' | 'poll' | 'refresh' | 'resume' | 'select',
+      reason:
+        | 'decision'
+        | 'focus'
+        | 'mount'
+        | 'online'
+        | 'poll'
+        | 'refresh'
+        | 'resume'
+        | 'select',
       focus: ApprovalInboxFocus = state.focus,
     ) => {
       requestIdRef.current += 1;
@@ -274,7 +282,7 @@ export function useApprovalInbox(): {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [state.data, loadSummary]);
+  }, [state.data]);
 
   return {
     refresh: () => {
@@ -376,7 +384,8 @@ export function useApprovalInbox(): {
           });
           const nextFocus = preserveSessionFilter(
             state.focus,
-            payload.handoff.pendingApproval?.approvalId ?? state.focus.approvalId,
+            payload.handoff.pendingApproval?.approvalId ??
+              state.focus.approvalId,
           );
 
           syncApprovalInboxFocus(nextFocus, {

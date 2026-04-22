@@ -11,7 +11,11 @@ import type {
 } from '../store/store-contract.js';
 import type { JsonValue } from '../workspace/workspace-types.js';
 import type { OrchestrationRouteStatus } from '../orchestration/orchestration-contract.js';
-import { getStartupMessage, getStartupStatus, type StartupStatus } from './startup-status.js';
+import {
+  getStartupMessage,
+  getStartupStatus,
+  type StartupStatus,
+} from './startup-status.js';
 
 const DEFAULT_QUEUE_LIMIT = 8;
 const DEFAULT_TIMELINE_LIMIT = 12;
@@ -325,8 +329,9 @@ function toSessionSummary(
   return {
     activeJobId: session.activeJobId,
     lastHeartbeatAt: session.lastHeartbeatAt,
-    pendingApprovalCount: approvals.filter((approval) => approval.status === 'pending')
-      .length,
+    pendingApprovalCount: approvals.filter(
+      (approval) => approval.status === 'pending',
+    ).length,
     sessionId: session.sessionId,
     status: session.status,
     updatedAt: session.updatedAt,
@@ -444,7 +449,8 @@ function resolveInterruptedRun(input: {
       input.selectedJob.waitReason === 'approval')
   ) {
     return {
-      message: 'Resolve the pending approval before attempting a resume handoff.',
+      message:
+        'Resolve the pending approval before attempting a resume handoff.',
       resumeAllowed: false,
       sessionId: input.session.sessionId,
       state: 'waiting-for-approval',
@@ -458,7 +464,8 @@ function resolveInterruptedRun(input: {
       input.selectedJob?.waitReason !== 'approval')
   ) {
     return {
-      message: 'This session can be handed back to the shared orchestration resume path.',
+      message:
+        'This session can be handed back to the shared orchestration resume path.',
       resumeAllowed: true,
       sessionId: input.session.sessionId,
       state: 'resume-ready',
@@ -534,11 +541,13 @@ async function buildSelectedDetail(
     : [];
   const jobs = sessionId ? await store.jobs.listBySessionId(sessionId) : [];
   const selectedJob = selectJob(jobs);
-  const route = session ? extractStoredRoute(session.context) : {
-    missingCapabilities: [],
-    specialistId: null,
-    status: null,
-  };
+  const route = session
+    ? extractStoredRoute(session.context)
+    : {
+        missingCapabilities: [],
+        specialistId: null,
+        status: null,
+      };
   const failureEvents =
     sessionId === null
       ? []
@@ -634,10 +643,7 @@ export async function createApprovalInboxSummary(
   const queueApprovals = pendingApprovals.slice(0, normalizedFilters.limit);
   const queue = await Promise.all(
     queueApprovals.map(async (approval) =>
-      toQueueItem(
-        approval,
-        await store.sessions.getById(approval.sessionId),
-      ),
+      toQueueItem(approval, await store.sessions.getById(approval.sessionId)),
     ),
   );
   const selectedApproval = await resolveSelectedApproval(

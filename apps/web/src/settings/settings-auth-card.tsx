@@ -164,7 +164,9 @@ export function SettingsAuthCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Account id
           </p>
           <p style={{ margin: 0 }}>
@@ -179,7 +181,9 @@ export function SettingsAuthCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Auth state
           </p>
           <p style={{ margin: 0 }}>{summary.auth.auth.state}</p>
@@ -192,7 +196,9 @@ export function SettingsAuthCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Model
           </p>
           <p style={{ margin: 0 }}>{summary.auth.config.model}</p>
@@ -205,7 +211,9 @@ export function SettingsAuthCard({
             padding: '0.85rem 0.9rem',
           }}
         >
-          <p style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.25rem', marginTop: 0 }}
+          >
             Originator
           </p>
           <p style={{ margin: 0 }}>{summary.auth.config.originator}</p>
@@ -232,7 +240,8 @@ export function SettingsAuthCard({
           Auth path: <code>{summary.auth.config.authPath}</code>
         </p>
         <p style={{ marginBottom: 0, marginTop: '0.35rem' }}>
-          Updated at: {summary.auth.auth.updatedAt ?? 'No auth timestamp stored'}
+          Updated at:{' '}
+          {summary.auth.auth.updatedAt ?? 'No auth timestamp stored'}
         </p>
       </section>
 

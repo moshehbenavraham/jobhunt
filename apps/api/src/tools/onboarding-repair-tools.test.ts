@@ -27,7 +27,9 @@ const TEMPLATE_FIXTURE_FILES = {
   'profile/cv.example.md': '# Template CV\n',
 };
 
-function createDirectToolContext(repoRoot: string): ToolExecutionContext<any> {
+function createDirectToolContext(
+  repoRoot: string,
+): ToolExecutionContext<Record<string, never>> {
   const workspace = createWorkspaceAdapter({ repoRoot });
   const mutationAdapter = createWorkspaceMutationAdapter({ repoRoot });
 

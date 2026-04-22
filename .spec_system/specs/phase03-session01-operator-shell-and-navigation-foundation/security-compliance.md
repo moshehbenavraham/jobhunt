@@ -37,14 +37,14 @@
 
 ### Overall: PASS
 
-| Category | Status | Severity | Details |
-| -------- | ------ | -------- | ------- |
-| Injection (SQLi, CMDi, LDAPi) | PASS | -- | Query and route input is schema-validated before it reaches summary construction or browser state |
-| Hardcoded Secrets | PASS | Critical | No secrets, tokens, or credentials were added |
-| Sensitive Data Exposure | PASS | High | The shell summary is bounded and does not expose raw session, approval, or job records |
-| Insecure Dependencies | PASS | -- | No dependency changes were introduced in this session |
-| Misconfiguration | PASS | Medium | Navigation uses browser primitives only and stays within the existing app/runtime surface |
-| Database Security | N/A | -- | No DB-layer schema or persistence shape changes were introduced |
+| Category                      | Status | Severity | Details                                                                                           |
+| ----------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------- |
+| Injection (SQLi, CMDi, LDAPi) | PASS   | --       | Query and route input is schema-validated before it reaches summary construction or browser state |
+| Hardcoded Secrets             | PASS   | Critical | No secrets, tokens, or credentials were added                                                     |
+| Sensitive Data Exposure       | PASS   | High     | The shell summary is bounded and does not expose raw session, approval, or job records            |
+| Insecure Dependencies         | PASS   | --       | No dependency changes were introduced in this session                                             |
+| Misconfiguration              | PASS   | Medium   | Navigation uses browser primitives only and stays within the existing app/runtime surface         |
+| Database Security             | N/A    | --       | No DB-layer schema or persistence shape changes were introduced                                   |
 
 ### Notes
 
@@ -60,14 +60,14 @@
 
 No new user-data collection, consent, erasure, or third-party sharing path was introduced in this session.
 
-| Area | Status | Details |
-| ---- | ------ | ------- |
-| Data Collection | N/A | No new personal-data collection |
-| Consent | N/A | No new collection flow |
-| Data Minimization | N/A | No new user-data store added |
-| Right to Erasure | N/A | No new persistence surface added |
-| Data Logging | PASS | No personal data logging added |
-| Third-Party Sharing | N/A | No new external sharing path added |
+| Area                | Status | Details                            |
+| ------------------- | ------ | ---------------------------------- |
+| Data Collection     | N/A    | No new personal-data collection    |
+| Consent             | N/A    | No new collection flow             |
+| Data Minimization   | N/A    | No new user-data store added       |
+| Right to Erasure    | N/A    | No new persistence surface added   |
+| Data Logging        | PASS   | No personal data logging added     |
+| Third-Party Sharing | N/A    | No new external sharing path added |
 
 ---
 

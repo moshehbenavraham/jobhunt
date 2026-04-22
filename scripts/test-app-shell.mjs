@@ -144,10 +144,10 @@ function createReadyShellSummary() {
       state: 'attention-required',
     },
     currentSession: {
-      id: 'phase03-session01-operator-shell-and-navigation-foundation',
+      id: 'phase04-session04-pipeline-review-workspace',
       monorepo: true,
       packagePath: 'apps/web',
-      phase: 3,
+      phase: 4,
       source: 'state-file',
       stateFilePath: `${ROOT}/.spec_system/state.json`,
     },
@@ -195,10 +195,10 @@ function createRuntimeErrorShellSummary() {
       state: 'unavailable',
     },
     currentSession: {
-      id: 'phase03-session01-operator-shell-and-navigation-foundation',
+      id: 'phase04-session04-pipeline-review-workspace',
       monorepo: true,
       packagePath: 'apps/web',
-      phase: 3,
+      phase: 4,
       source: 'state-file',
       stateFilePath: `${ROOT}/.spec_system/state.json`,
     },
@@ -254,13 +254,102 @@ function createReadyChatConsoleSummary() {
         missingCapabilities: [],
         modeRepoRelativePath: 'modes/oferta.md',
         specialist: {
-          description: 'Owns job-description intake and evaluation follow-through.',
+          description:
+            'Owns job-description intake and evaluation follow-through.',
           id: 'evaluation-specialist',
           label: 'Evaluation Specialist',
         },
         status: 'ready',
       },
     ],
+  };
+}
+
+function createPipelineReviewPayload() {
+  return {
+    filters: {
+      limit: 12,
+      offset: 0,
+      reportNumber: null,
+      section: 'all',
+      sort: 'queue',
+      url: null,
+    },
+    generatedAt: '2026-04-22T00:00:00.000Z',
+    message: 'Showing 1 queue row for review.',
+    ok: true,
+    queue: {
+      counts: {
+        malformed: 0,
+        pending: 1,
+        processed: 0,
+      },
+      hasMore: false,
+      items: [
+        {
+          company: 'Acme',
+          kind: 'pending',
+          legitimacy: null,
+          pdf: {
+            exists: false,
+            message:
+              'Pending queue rows do not have checked-in PDF artifacts yet.',
+            repoRelativePath: null,
+          },
+          report: {
+            exists: false,
+            message:
+              'Pending queue rows do not have checked-in report artifacts yet.',
+            repoRelativePath: null,
+          },
+          reportNumber: null,
+          role: 'Forward Deployed Engineer',
+          score: null,
+          selected: false,
+          url: 'https://example.com/jobs/pending-fde',
+          verification: null,
+          warningCount: 0,
+          warnings: [],
+        },
+      ],
+      limit: 12,
+      offset: 0,
+      section: 'all',
+      sort: 'queue',
+      totalCount: 1,
+    },
+    selectedDetail: {
+      message: 'Select a queue row to inspect its review detail.',
+      origin: 'none',
+      requestedReportNumber: null,
+      requestedUrl: null,
+      row: null,
+      state: 'empty',
+    },
+    service: 'jobhunt-api-scaffold',
+    sessionId: 'phase01-session03-agent-runtime-bootstrap',
+    shortlist: {
+      available: true,
+      bucketCounts: {
+        adjacentOrNoisy: 0,
+        possibleFit: 0,
+        strongestFit: 1,
+      },
+      campaignGuidance: 'Current strongest lane: Forward Deployed.',
+      generatedBy: 'npm run scan',
+      lastRefreshed: '2026-04-22',
+      message: 'Shortlist guidance is available for queue review.',
+      topRoles: [
+        {
+          bucketLabel: 'Strongest fit',
+          company: 'Acme',
+          reasonSummary: 'direct forward-deployed title',
+          role: 'Forward Deployed Engineer',
+          url: 'https://example.com/jobs/pending-fde',
+        },
+      ],
+    },
+    status: 'ready',
   };
 }
 
@@ -410,7 +499,8 @@ function createSettingsSummary(updateState) {
           {
             description: 'Single evaluation route',
             intent: 'single-evaluation',
-            message: 'Single evaluation can launch with the evaluation specialist.',
+            message:
+              'Single evaluation can launch with the evaluation specialist.',
             missingCapabilities: [],
             modeExists: true,
             modeRepoRelativePath: 'modes/oferta.md',
@@ -513,7 +603,9 @@ async function waitForHttpOk(url, child, stderrLog) {
     await delay(100);
   }
 
-  throw new Error(`Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`);
+  throw new Error(
+    `Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`,
+  );
 }
 
 async function startFakeApiServer() {
@@ -554,6 +646,14 @@ async function startFakeApiServer() {
         'content-type': 'application/json; charset=utf-8',
       });
       response.end(JSON.stringify(readyChatConsoleSummary, null, 2));
+      return;
+    }
+
+    if ((request.url ?? '').startsWith('/pipeline-review')) {
+      response.writeHead(200, {
+        'content-type': 'application/json; charset=utf-8',
+      });
+      response.end(JSON.stringify(createPipelineReviewPayload(), null, 2));
       return;
     }
 
@@ -661,15 +761,26 @@ try {
     const page = await browser.newPage();
     await page.goto(webUrl, { waitUntil: 'networkidle' });
 
-    await page.getByRole('heading', { name: 'Job-Hunt control surface' }).waitFor();
+    await page
+      .getByRole('heading', { name: 'Job-Hunt control surface' })
+      .waitFor();
     await page.getByRole('link', { name: /Startup/ }).waitFor();
     await page.getByRole('link', { name: /Approvals/ }).waitFor();
     await page.getByText('Review application email').waitFor();
     await page.getByText('Job-Hunt startup diagnostics').waitFor();
 
     await page.getByRole('link', { name: /Chat/ }).click();
-    await page.getByRole('heading', { name: 'Launch a supported workflow' }).waitFor();
-    await page.getByRole('heading', { name: 'No recent sessions yet' }).waitFor();
+    await page
+      .getByRole('heading', { name: 'Launch a supported workflow' })
+      .waitFor();
+    await page
+      .getByRole('heading', { name: 'No recent sessions yet' })
+      .waitFor();
+    await page.getByRole('link', { name: /Pipeline/ }).click();
+    await page
+      .getByRole('heading', { name: 'Pipeline review workspace' })
+      .waitFor();
+    await page.getByText('Current strongest lane: Forward Deployed.').waitFor();
     await page.getByRole('link', { name: /Approvals/ }).click();
     await page
       .getByRole('heading', { name: 'Approval inbox and human review flow' })
@@ -685,9 +796,7 @@ try {
     await page
       .getByRole('button', { name: /Refresh operator shell summary/ })
       .click();
-    await page
-      .getByRole('heading', { name: 'Runtime blocked' })
-      .waitFor();
+    await page.getByRole('heading', { name: 'Runtime blocked' }).waitFor();
     await page
       .getByText('Bootstrap is live, but required system files are missing.', {
         exact: true,
@@ -731,9 +840,7 @@ try {
     await page
       .getByRole('button', { name: /Refresh operator shell summary/ })
       .click();
-    await page
-      .getByText('Offline after the last good summary')
-      .waitFor();
+    await page.getByText('Offline after the last good summary').waitFor();
   } finally {
     await browser.close();
   }

@@ -384,7 +384,8 @@ function createSettingsSummary(input) {
           {
             description: 'Single evaluation route',
             intent: 'single-evaluation',
-            message: 'Single evaluation can launch with the evaluation specialist.',
+            message:
+              'Single evaluation can launch with the evaluation specialist.',
             missingCapabilities: [],
             modeExists: true,
             modeRepoRelativePath: 'modes/oferta.md',
@@ -399,7 +400,8 @@ function createSettingsSummary(input) {
           {
             description: 'Tracker status route',
             intent: 'tracker-status',
-            message: 'Tracker status remains blocked until typed tracker summary exists.',
+            message:
+              'Tracker status remains blocked until typed tracker summary exists.',
             missingCapabilities: ['typed-tracker-summary'],
             modeExists: true,
             modeRepoRelativePath: 'modes/tracker.md',
@@ -515,7 +517,9 @@ async function waitForHttpOk(url, child, stderrLog) {
     await delay(100);
   }
 
-  throw new Error(`Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`);
+  throw new Error(
+    `Timed out waiting for ${url}. stderr:\n${stderrLog.join('')}`,
+  );
 }
 
 async function startFakeApiServer() {
@@ -652,7 +656,9 @@ try {
     await page.goto(`${webUrl}#settings`, { waitUntil: 'domcontentloaded' });
 
     await page
-      .getByText('Reading startup, operational-store, and closeout readiness from the API.')
+      .getByText(
+        'Reading startup, operational-store, and closeout readiness from the API.',
+      )
       .waitFor();
     fakeApi.setDelayMs(0);
     await page

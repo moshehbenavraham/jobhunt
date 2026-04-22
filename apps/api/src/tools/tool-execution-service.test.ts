@@ -65,7 +65,7 @@ test('tool execution service denies script usage that falls outside the declared
         },
         inputSchema: z.object({}),
         name: 'script-without-permission',
-      } satisfies ToolDefinition<{}>,
+      } satisfies ToolDefinition<Record<string, never>>,
     ],
   });
 
@@ -167,7 +167,7 @@ test('tool execution service maps workspace boundary failures into stable envelo
             mutationTargets: ['profile'],
           },
         },
-      } satisfies ToolDefinition<{}>,
+      } satisfies ToolDefinition<Record<string, never>>,
     ],
   });
 

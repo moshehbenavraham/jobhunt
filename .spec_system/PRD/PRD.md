@@ -748,7 +748,7 @@ Planning assumptions for this PRD:
 ### Phase 04: Evaluation, Artifacts, and Tracker Parity
 
 - Objective: land the core evaluate-to-artifact loop end to end
-- Sessions: `4-6`
+- Sessions: `6`
 - Key outcomes: auto-pipeline, single evaluation, PDF generation triggers,
   report viewer, pipeline and tracker page, tracker status editing, merge and
   verify semantics
@@ -787,7 +787,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | 01    | Backend Runtime and Job Infrastructure                   | 5        | Complete    |
 | 02    | Typed Tools and Agent Orchestration                      | 5        | Complete    |
 | 03    | Chat, Onboarding, and Approvals UX                       | 5        | Complete    |
-| 04    | Evaluation, Artifacts, and Tracker Parity                | 4-6      | Not Started |
+| 04    | Evaluation, Artifacts, and Tracker Parity                | 6        | In Progress |
 | 05    | Scan, Batch, and Application-Help Parity                 | 4-6      | Not Started |
 | 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 4-6      | Not Started |
 
@@ -873,11 +873,17 @@ Progress: 5/5 sessions complete.
 
 ### Phase 04: Evaluation, Artifacts, and Tracker Parity
 
+- Completed Session 01: typed evaluation result contract and bounded
+  evaluation-result route in `apps/api`
+- Completed Session 02: evaluation console and artifact handoff in `apps/web`
 - Implement auto-pipeline and evaluation flows
 - Implement report viewer
 - Preserve PDF generation triggers and output placement
 - Implement pipeline and tracker page
 - Preserve tracker-addition and verification semantics
+- Session plan defined under `.spec_system/PRD/phase_04/`.
+
+Progress: 2/6 sessions complete.
 
 ### Phase 05: Scan, Batch, and Application-Help Parity
 

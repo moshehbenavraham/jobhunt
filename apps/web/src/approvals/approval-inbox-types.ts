@@ -110,7 +110,12 @@ export type ApprovalInboxRouteSummary = {
   message: string;
   missingCapabilities: string[];
   specialistId: string | null;
-  status: 'ready' | 'session-not-found' | 'tooling-gap' | 'unsupported-workflow' | null;
+  status:
+    | 'ready'
+    | 'session-not-found'
+    | 'tooling-gap'
+    | 'unsupported-workflow'
+    | null;
 };
 
 export type ApprovalInboxInterruptedRun = {
@@ -157,11 +162,7 @@ export type ApprovalResolutionPayload = {
     applied: boolean;
     approval: ApprovalInboxApprovalDetail;
     job: ApprovalInboxJobSummary | null;
-    outcome:
-      | 'already-approved'
-      | 'already-rejected'
-      | 'approved'
-      | 'rejected';
+    outcome: 'already-approved' | 'already-rejected' | 'approved' | 'rejected';
   };
   service: string;
   sessionId: string;
@@ -245,16 +246,17 @@ function readNullableObject<TValue>(
 function readStringArray(record: JsonRecord, key: string): string[] {
   const value = record[key];
 
-  if (!Array.isArray(value) || value.some((entry) => typeof entry !== 'string')) {
+  if (
+    !Array.isArray(value) ||
+    value.some((entry) => typeof entry !== 'string')
+  ) {
     throw new Error(`Expected ${key} to be a string array.`);
   }
 
   return [...value];
 }
 
-function readTimelineLevel(
-  value: unknown,
-): ApprovalInboxTimelineItem['level'] {
+function readTimelineLevel(value: unknown): ApprovalInboxTimelineItem['level'] {
   if (value === 'error' || value === 'info' || value === 'warn') {
     return value;
   }
@@ -270,7 +272,9 @@ function readSelectionState(value: unknown): ApprovalInboxSelectionState {
     return value as ApprovalInboxSelectionState;
   }
 
-  throw new Error('Expected selectionState to be a supported approval inbox state.');
+  throw new Error(
+    'Expected selectionState to be a supported approval inbox state.',
+  );
 }
 
 function readInterruptedRunState(
@@ -323,7 +327,9 @@ function parseApprovalDetail(value: unknown): ApprovalInboxApprovalDetail {
   const status = readString(record, 'status');
 
   if (status !== 'approved' && status !== 'pending' && status !== 'rejected') {
-    throw new Error('Expected approval status to be approved, pending, or rejected.');
+    throw new Error(
+      'Expected approval status to be approved, pending, or rejected.',
+    );
   }
 
   return {

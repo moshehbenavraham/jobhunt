@@ -10,6 +10,7 @@ import type {
 
 type WorkflowComposerProps = {
   draftInput: string;
+  isBusy: boolean;
   onDraftInputChange: (value: string) => void;
   onLaunch: () => void;
   onWorkflowChange: (workflow: ChatConsoleWorkflowIntent) => void;
@@ -100,6 +101,7 @@ function getStartupNotice(status: ChatConsoleViewStatus): {
 
 export function WorkflowComposer({
   draftInput,
+  isBusy,
   onDraftInputChange,
   onLaunch,
   onWorkflowChange,
@@ -110,7 +112,8 @@ export function WorkflowComposer({
   workflowOptions,
 }: WorkflowComposerProps) {
   const selectedOption =
-    workflowOptions.find((option) => option.intent === selectedWorkflow) ?? null;
+    workflowOptions.find((option) => option.intent === selectedWorkflow) ??
+    null;
   const startupNotice = getStartupNotice(status);
   const isLaunching =
     pendingAction?.kind === 'launch' &&
@@ -167,8 +170,11 @@ export function WorkflowComposer({
           <span style={{ fontWeight: 700 }}>Workflow</span>
           <select
             aria-label="Select workflow"
+            disabled={isBusy}
             onChange={(event) =>
-              onWorkflowChange(event.currentTarget.value as ChatConsoleWorkflowIntent)
+              onWorkflowChange(
+                event.currentTarget.value as ChatConsoleWorkflowIntent,
+              )
             }
             style={inputStyle}
             value={selectedWorkflow}
@@ -215,7 +221,8 @@ export function WorkflowComposer({
             Tooling gap
           </p>
           <p style={{ margin: 0 }}>
-            Missing capabilities: {selectedOption.missingCapabilities.join(', ')}
+            Missing capabilities:{' '}
+            {selectedOption.missingCapabilities.join(', ')}
           </p>
         </section>
       ) : null}
@@ -224,6 +231,7 @@ export function WorkflowComposer({
         <span style={{ fontWeight: 700 }}>Request input</span>
         <textarea
           aria-label="Workflow request input"
+          disabled={isBusy}
           onChange={(event) => onDraftInputChange(event.currentTarget.value)}
           placeholder="Paste a job description, ATS URL, or short request context for the workflow."
           style={textareaStyle}
@@ -246,11 +254,14 @@ export function WorkflowComposer({
         </p>
         <button
           aria-label={`Launch ${selectedOption?.label ?? 'workflow'}`}
-          disabled={pendingAction !== null || status === 'loading'}
+          disabled={isBusy || pendingAction !== null || status === 'loading'}
           onClick={onLaunch}
           style={{
             ...buttonStyle,
-            opacity: pendingAction !== null || status === 'loading' ? 0.7 : 1,
+            opacity:
+              isBusy || pendingAction !== null || status === 'loading'
+                ? 0.7
+                : 1,
           }}
           type="button"
         >

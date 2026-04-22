@@ -172,28 +172,28 @@ refresh behavior or readiness detail.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/shell/shell-types.ts` | Define typed surface ids, summary types, and shell navigation config | ~80 |
-| `apps/web/src/shell/operator-shell-client.ts` | Fetch and normalize the read-only shell summary contract | ~120 |
-| `apps/web/src/shell/use-operator-shell.ts` | Manage shell summary loading, refresh, and URL-hash navigation state | ~170 |
-| `apps/web/src/shell/navigation-rail.tsx` | Render the shell navigation rail and badge-bearing surface links | ~160 |
-| `apps/web/src/shell/status-strip.tsx` | Render the shared header status region for readiness and active-work summaries | ~140 |
-| `apps/web/src/shell/surface-placeholder.tsx` | Render consistent placeholder surfaces for not-yet-implemented Phase 03 views | ~110 |
-| `apps/web/src/shell/operator-shell.tsx` | Compose navigation, status, startup surface, and placeholder surfaces into the new app frame | ~260 |
-| `apps/api/src/server/operator-shell-summary.ts` | Build the bounded shell summary view model from startup, session, and approval data | ~180 |
-| `apps/api/src/server/routes/operator-shell-route.ts` | Expose the GET-only shell summary endpoint for the web shell | ~80 |
-| `scripts/test-app-shell.mjs` | Run browser smoke checks for shell boot, navigation, and degraded-state rendering | ~240 |
+| File                                                 | Purpose                                                                                      | Est. Lines |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/shell/shell-types.ts`                  | Define typed surface ids, summary types, and shell navigation config                         | ~80        |
+| `apps/web/src/shell/operator-shell-client.ts`        | Fetch and normalize the read-only shell summary contract                                     | ~120       |
+| `apps/web/src/shell/use-operator-shell.ts`           | Manage shell summary loading, refresh, and URL-hash navigation state                         | ~170       |
+| `apps/web/src/shell/navigation-rail.tsx`             | Render the shell navigation rail and badge-bearing surface links                             | ~160       |
+| `apps/web/src/shell/status-strip.tsx`                | Render the shared header status region for readiness and active-work summaries               | ~140       |
+| `apps/web/src/shell/surface-placeholder.tsx`         | Render consistent placeholder surfaces for not-yet-implemented Phase 03 views                | ~110       |
+| `apps/web/src/shell/operator-shell.tsx`              | Compose navigation, status, startup surface, and placeholder surfaces into the new app frame | ~260       |
+| `apps/api/src/server/operator-shell-summary.ts`      | Build the bounded shell summary view model from startup, session, and approval data          | ~180       |
+| `apps/api/src/server/routes/operator-shell-route.ts` | Expose the GET-only shell summary endpoint for the web shell                                 | ~80        |
+| `scripts/test-app-shell.mjs`                         | Run browser smoke checks for shell boot, navigation, and degraded-state rendering            | ~240       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/App.tsx` | Replace the bootstrap-only page with the new operator shell entrypoint | ~120 |
-| `apps/web/src/boot/startup-status-panel.tsx` | Adapt the existing diagnostics panel to render cleanly inside the shell surface | ~150 |
-| `apps/api/src/server/routes/index.ts` | Register the operator-shell route in the existing route registry | ~20 |
-| `apps/api/src/server/http-server.test.ts` | Add contract coverage for the new shell summary route and active-work badge states | ~220 |
-| `scripts/test-all.mjs` | Add Session 01 files and shell smoke coverage to the quick regression suite | ~80 |
+| File                                         | Changes                                                                            | Est. Lines |
+| -------------------------------------------- | ---------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/App.tsx`                       | Replace the bootstrap-only page with the new operator shell entrypoint             | ~120       |
+| `apps/web/src/boot/startup-status-panel.tsx` | Adapt the existing diagnostics panel to render cleanly inside the shell surface    | ~150       |
+| `apps/api/src/server/routes/index.ts`        | Register the operator-shell route in the existing route registry                   | ~20        |
+| `apps/api/src/server/http-server.test.ts`    | Add contract coverage for the new shell summary route and active-work badge states | ~220       |
+| `scripts/test-all.mjs`                       | Add Session 01 files and shell smoke coverage to the quick regression suite        | ~80        |
 
 ---
 

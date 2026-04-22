@@ -3,8 +3,13 @@ import test from 'node:test';
 import { createPdfGenerationTools } from './pdf-generation-tools.js';
 import { createToolHarness } from './test-utils.js';
 
-function getOutput(result: unknown) {
-  return (result as { output?: unknown }).output as Record<string, any>;
+type PdfGenerationOutput = {
+  pageCount: number;
+  status: string;
+};
+
+function getOutput<T>(result: unknown): T {
+  return (result as { output?: unknown }).output as T;
 }
 
 function createCorrelation() {
@@ -52,7 +57,7 @@ test('PDF generation tool validates output ownership and dispatches the allowlis
     });
 
     assert.equal(result.status, 'completed');
-    const output = getOutput(result);
+    const output = getOutput<PdfGenerationOutput>(result);
 
     assert.equal(output.status, 'generated');
     assert.equal(output.pageCount, 2);

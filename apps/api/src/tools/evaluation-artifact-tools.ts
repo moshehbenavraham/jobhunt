@@ -1,4 +1,4 @@
-import { lstat, readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { z } from 'zod';
 import {
   resolveRepoRelativePath,
@@ -77,18 +77,6 @@ function formatReportNumber(value: number): string {
 
 function getReservationRepoRelativePath(reservationId: string): string {
   return `${reportReservationDirectory}/${reservationId}.json`;
-}
-
-async function fileExists(path: string): Promise<boolean> {
-  try {
-    return (await lstat(path)).isFile();
-  } catch (error) {
-    if (isNodeError(error) && error.code === 'ENOENT') {
-      return false;
-    }
-
-    throw error;
-  }
 }
 
 async function listNumberedArtifacts(
@@ -209,7 +197,7 @@ async function reserveReportArtifact(
 }> {
   const repoRoot = context.workspace.repoPaths.repoRoot;
   const companySlug = input.companySlug ?? slugifySegment(input.company);
-  let nextReportNumber = await getNextReportNumber(repoRoot);
+  const nextReportNumber = await getNextReportNumber(repoRoot);
 
   for (let attempt = 0; attempt < 25; attempt += 1) {
     const reportNumber = formatReportNumber(nextReportNumber + attempt);

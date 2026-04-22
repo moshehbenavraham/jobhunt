@@ -105,7 +105,9 @@ export function StartupStatusPanel({
               textTransform: 'uppercase',
             }}
           >
-            {isShellVariant ? 'Startup readiness detail' : 'Local bootstrap contract'}
+            {isShellVariant
+              ? 'Startup readiness detail'
+              : 'Local bootstrap contract'}
           </p>
           <HeadingTag
             style={{

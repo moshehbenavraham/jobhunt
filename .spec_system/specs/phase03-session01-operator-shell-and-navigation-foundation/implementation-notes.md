@@ -9,11 +9,11 @@
 
 ## Session Progress
 
-| Metric | Value |
-|--------|-------|
-| Tasks Completed | 16 / 16 |
+| Metric              | Value   |
+| ------------------- | ------- |
+| Tasks Completed     | 16 / 16 |
 | Estimated Remaining | 0 hours |
-| Blockers | 0 |
+| Blockers            | 0       |
 
 ---
 
@@ -22,6 +22,7 @@
 ### [2026-04-21] - Session Start
 
 **Environment verified**:
+
 - [x] Prerequisites confirmed
 - [x] Tools available
 - [x] Directory structure ready
@@ -40,6 +41,7 @@ pending approvals, and recent failure summaries without leaking raw store
 records.
 
 **BQC checks applied**:
+
 - Trust boundary enforcement via route-level bounded filters and summary-only
   payload shaping
 - Failure path completeness by preserving startup status and store-unavailable
@@ -57,6 +59,7 @@ Added `apps/api/src/server/routes/operator-shell-route.ts` with zod-backed
 query parsing for bounded preview limits and explicit bad-request mapping.
 
 **BQC checks applied**:
+
 - Trust boundary enforcement on all query input
 - Failure path completeness with deterministic `invalid-operator-shell-query`
   responses
@@ -71,6 +74,7 @@ Registered the shell summary route in the shared API route registry so the web
 package can consume it through the existing HTTP server.
 
 **BQC checks applied**:
+
 - Contract alignment by keeping route registration inside the canonical shared
   registry
 
@@ -85,6 +89,7 @@ ready, active-work, and invalid-query cases for `/operator-shell`, then passed
 `npm run app:api:test:runtime`.
 
 **BQC checks applied**:
+
 - Failure path completeness through invalid-query and degraded-state coverage
 - Contract alignment by asserting summary-only payloads and bounded preview
   lists
@@ -100,6 +105,7 @@ definitions, summary and error payload contracts, and runtime parsers that
 exhaustively validate shell enums before the UI renders.
 
 **BQC checks applied**:
+
 - Contract alignment through exhaustive startup, health, and activity enum
   handling
 - Trust boundary enforcement by parsing all shell payloads at the browser edge
@@ -115,6 +121,7 @@ read-only shell-summary fetches, bounded retry/backoff, and explicit offline
 versus error-state mapping.
 
 **BQC checks applied**:
+
 - External dependency resilience through timeout plus retry/backoff behavior
 - Failure path completeness with explicit client error types
 
@@ -129,6 +136,7 @@ surface links, live approval and readiness badges, and accessible hash-backed
 navigation affordances.
 
 **BQC checks applied**:
+
 - Accessibility and platform compliance through labeled anchor navigation and
   current-page state
 - Contract alignment by deriving badges from the bounded shell summary
@@ -144,6 +152,7 @@ approvals, and current-session context visible with explicit loading, empty,
 offline, and degraded render paths.
 
 **BQC checks applied**:
+
 - Failure path completeness through explicit degraded-state banners
 - Accessibility and platform compliance through stable headings and refresh
   control labels
@@ -159,6 +168,7 @@ state, summary loading, refreshes, and online recovery while cleaning up abort
 controllers and event listeners on exit.
 
 **BQC checks applied**:
+
 - Resource cleanup for hash listeners and in-flight fetch aborts
 - Duplicate action prevention on concurrent refresh attempts
 - State freshness on re-entry through hash normalization and reload-safe
@@ -175,6 +185,7 @@ Approvals, and Settings have stable read-only homes with session-owned copy
 and summary-derived highlights.
 
 **BQC checks applied**:
+
 - State freshness on re-entry via remount-safe placeholder composition
 - Contract alignment by limiting placeholder data to summary fields
 
@@ -189,6 +200,7 @@ strip, navigation rail, canonical startup diagnostics surface, and future
 surface placeholders into the new shared shell.
 
 **BQC checks applied**:
+
 - Failure path completeness across shell loading, offline, and runtime-error
   states
 - Accessibility and platform compliance through labeled surface regions
@@ -203,6 +215,7 @@ Replaced `apps/web/src/App.tsx` with the operator-shell entrypoint so the app
 boots into the shared Phase 03 frame instead of the single bootstrap screen.
 
 **BQC checks applied**:
+
 - State freshness on re-entry by handing app-level surface selection to the
   hash-backed shell container
 
@@ -219,6 +232,7 @@ render inside the shell, preserve auth-related startup statuses, and share the
 refresh affordance with the shell header.
 
 **BQC checks applied**:
+
 - Contract alignment by matching the browser startup-status union to the API
   contract
 - Accessibility and platform compliance through explicit refresh button labels
@@ -234,6 +248,7 @@ runtime-error rendering, and offline-after-success behavior against a
 deterministic fake API plus Playwright Chromium.
 
 **BQC checks applied**:
+
 - Failure path completeness through runtime-error and offline smoke assertions
 - Contract alignment by exercising the same `/startup` and `/operator-shell`
   browser contracts as the app
@@ -248,6 +263,7 @@ Updated `scripts/test-all.mjs` to run the new shell smoke script and include
 the Session 01 shell files in the bootstrap ASCII validation gate.
 
 **BQC checks applied**:
+
 - Contract alignment by extending the canonical quick suite instead of adding a
   parallel validation path
 
@@ -266,6 +282,7 @@ Validated the session with:
 - `node scripts/test-all.mjs --quick`
 
 **BQC checks applied**:
+
 - State freshness on re-entry by validating hash-backed reload behavior in the
   shell smoke harness
 - Failure path completeness by verifying offline and runtime-error shell states

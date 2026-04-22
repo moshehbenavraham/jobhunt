@@ -1,5 +1,9 @@
 import { randomUUID } from 'node:crypto';
-import { STARTUP_SERVICE_NAME, STARTUP_SESSION_ID, type StartupDiagnostics } from '../index.js';
+import {
+  STARTUP_SERVICE_NAME,
+  STARTUP_SESSION_ID,
+  type StartupDiagnostics,
+} from '../index.js';
 import type { ApiServiceContainer } from '../runtime/service-container.js';
 import { createOnboardingRepairTools } from '../tools/onboarding-repair-tools.js';
 import { ToolExecutionError } from '../tools/tool-errors.js';
@@ -183,7 +187,9 @@ function createRouteOwnedToolContext(
   return {
     correlation,
     enqueueJob: async () => {
-      throw new Error(`${toolName} cannot enqueue durable jobs from the route.`);
+      throw new Error(
+        `${toolName} cannot enqueue durable jobs from the route.`,
+      );
     },
     input,
     mutateWorkspace: (request: ToolWorkspaceMutationRequest) =>
@@ -251,7 +257,10 @@ function createSummaryMessage(
   return `${requiredCount} onboarding prerequisites are missing. ${preview.repairableCount} can be repaired from checked-in templates.`;
 }
 
-function buildRepairMessage(diagnostics: StartupDiagnostics, repairedCount: number): string {
+function buildRepairMessage(
+  diagnostics: StartupDiagnostics,
+  repairedCount: number,
+): string {
   const startupMessage = getStartupMessage(diagnostics);
 
   if (repairedCount === 0) {
@@ -355,9 +364,9 @@ export async function runOnboardingRepair(
 export function isOnboardingRepairableTarget(
   value: string,
 ): value is OnboardingRepairableSurfaceKey {
-  return (
-    ONBOARDING_REPAIRABLE_SURFACE_KEYS as readonly string[]
-  ).includes(value);
+  return (ONBOARDING_REPAIRABLE_SURFACE_KEYS as readonly string[]).includes(
+    value,
+  );
 }
 
 export function isOnboardingRepairConflict(

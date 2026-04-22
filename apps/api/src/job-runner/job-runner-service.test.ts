@@ -307,9 +307,12 @@ test('durable job runner pauses for approval, resumes after approval, and record
       waitingEvents.some((event) => event.eventType === 'approval-requested'),
       true,
     );
+    const approvalId = pendingApprovals[0]?.approvalId;
+
+    assert.ok(approvalId);
 
     const resolved = await harness.approvalRuntime.resolveApproval({
-      approvalId: pendingApprovals[0]!.approvalId,
+      approvalId,
       decision: 'approved',
       reason: null,
       resolvedAt: '2026-04-21T07:20:00.000Z',
@@ -395,9 +398,12 @@ test('durable job runner leaves rejected approval work in a failed state', async
       await harness.approvalRuntime.listPendingApprovals();
 
     assert.equal(pendingApprovals.length, 1);
+    const approvalId = pendingApprovals[0]?.approvalId;
+
+    assert.ok(approvalId);
 
     const rejected = await harness.approvalRuntime.resolveApproval({
-      approvalId: pendingApprovals[0]!.approvalId,
+      approvalId,
       decision: 'rejected',
       reason: 'Operator rejected the destructive action.',
       resolvedAt: '2026-04-21T07:21:00.000Z',
@@ -414,7 +420,7 @@ test('durable job runner leaves rejected approval work in a failed state', async
     assert.equal(rejected.applied, true);
     assert.equal(failedJob?.status, 'failed');
     assert.deepEqual(failedJob?.error, {
-      approvalId: pendingApprovals[0]!.approvalId,
+      approvalId,
       code: 'approval-rejected',
       decision: 'rejected',
       message: 'Operator rejected the destructive action.',

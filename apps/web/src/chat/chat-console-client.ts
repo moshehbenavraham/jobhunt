@@ -37,7 +37,10 @@ export class ChatConsoleClientError extends Error {
     payload?: ChatConsoleErrorPayload | null;
     state: 'error' | 'offline';
   }) {
-    super(options.message, options.cause ? { cause: options.cause } : undefined);
+    super(
+      options.message,
+      options.cause ? { cause: options.cause } : undefined,
+    );
     this.code = options.code;
     this.httpStatus = options.httpStatus ?? null;
     this.name = 'ChatConsoleClientError';
@@ -121,7 +124,10 @@ function shouldRetry(error: unknown): boolean {
   return error.state === 'offline' || error.httpStatus === 429;
 }
 
-async function waitForRetry(delayMs: number, signal?: AbortSignal): Promise<void> {
+async function waitForRetry(
+  delayMs: number,
+  signal?: AbortSignal,
+): Promise<void> {
   if (delayMs === 0) {
     return;
   }

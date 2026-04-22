@@ -181,31 +181,31 @@ live runtime rather than optimistic browser guesses.
 
 ### Files to Create
 
-| File | Purpose | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/approvals/approval-inbox-types.ts` | Define inbox payloads, decision enums, and review-state contracts | ~180 |
-| `apps/web/src/approvals/approval-inbox-client.ts` | Fetch inbox summaries, submit approval decisions, and hand interrupted sessions to resume | ~190 |
-| `apps/web/src/approvals/use-approval-inbox.ts` | Manage polling, selection, decision locking, and refresh state | ~250 |
-| `apps/web/src/approvals/approval-queue-list.tsx` | Render pending-approval rows and empty or loading states | ~180 |
-| `apps/web/src/approvals/approval-context-panel.tsx` | Render request details, session or job metadata, and trace context | ~210 |
-| `apps/web/src/approvals/approval-decision-bar.tsx` | Render approve or reject controls and resolution messaging | ~160 |
-| `apps/web/src/approvals/interrupted-run-panel.tsx` | Render resumable waiting or failed sessions tied to the inbox context | ~180 |
-| `apps/web/src/approvals/approval-inbox-surface.tsx` | Compose the full approval inbox inside the operator shell | ~240 |
-| `apps/api/src/server/approval-inbox-summary.ts` | Build the bounded approval queue, selected context, and interrupted-session read model | ~260 |
-| `apps/api/src/server/routes/approval-inbox-route.ts` | Expose the GET-only approval inbox summary endpoint | ~110 |
-| `apps/api/src/server/routes/approval-resolution-route.ts` | Expose the POST approve or reject endpoint for pending approvals | ~140 |
-| `scripts/test-app-approval-inbox.mjs` | Run browser smoke checks for queue, decision, stale, and resume-handoff behavior | ~300 |
+| File                                                      | Purpose                                                                                   | Est. Lines |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/approvals/approval-inbox-types.ts`          | Define inbox payloads, decision enums, and review-state contracts                         | ~180       |
+| `apps/web/src/approvals/approval-inbox-client.ts`         | Fetch inbox summaries, submit approval decisions, and hand interrupted sessions to resume | ~190       |
+| `apps/web/src/approvals/use-approval-inbox.ts`            | Manage polling, selection, decision locking, and refresh state                            | ~250       |
+| `apps/web/src/approvals/approval-queue-list.tsx`          | Render pending-approval rows and empty or loading states                                  | ~180       |
+| `apps/web/src/approvals/approval-context-panel.tsx`       | Render request details, session or job metadata, and trace context                        | ~210       |
+| `apps/web/src/approvals/approval-decision-bar.tsx`        | Render approve or reject controls and resolution messaging                                | ~160       |
+| `apps/web/src/approvals/interrupted-run-panel.tsx`        | Render resumable waiting or failed sessions tied to the inbox context                     | ~180       |
+| `apps/web/src/approvals/approval-inbox-surface.tsx`       | Compose the full approval inbox inside the operator shell                                 | ~240       |
+| `apps/api/src/server/approval-inbox-summary.ts`           | Build the bounded approval queue, selected context, and interrupted-session read model    | ~260       |
+| `apps/api/src/server/routes/approval-inbox-route.ts`      | Expose the GET-only approval inbox summary endpoint                                       | ~110       |
+| `apps/api/src/server/routes/approval-resolution-route.ts` | Expose the POST approve or reject endpoint for pending approvals                          | ~140       |
+| `scripts/test-app-approval-inbox.mjs`                     | Run browser smoke checks for queue, decision, stale, and resume-handoff behavior          | ~300       |
 
 ### Files to Modify
 
-| File | Changes | Est. Lines |
-|------|---------|------------|
-| `apps/web/src/shell/operator-shell.tsx` | Replace the Approvals placeholder with the live approval inbox surface | ~70 |
-| `apps/web/src/chat/run-status-panel.tsx` | Add approval-review and interrupted-run handoff affordances into the Approvals surface | ~80 |
-| `apps/web/src/shell/status-strip.tsx` | Align approval badge and handoff copy with the dedicated inbox state | ~70 |
-| `apps/api/src/server/routes/index.ts` | Register the approval inbox and approval resolution routes in deterministic order | ~30 |
-| `apps/api/src/server/http-server.test.ts` | Add route coverage for inbox summaries, approval resolution, stale-state handling, and resume handoff readiness | ~280 |
-| `scripts/test-all.mjs` | Add Session 04 files and approval-inbox smoke coverage to the quick regression suite | ~90 |
+| File                                      | Changes                                                                                                         | Est. Lines |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ---------- |
+| `apps/web/src/shell/operator-shell.tsx`   | Replace the Approvals placeholder with the live approval inbox surface                                          | ~70        |
+| `apps/web/src/chat/run-status-panel.tsx`  | Add approval-review and interrupted-run handoff affordances into the Approvals surface                          | ~80        |
+| `apps/web/src/shell/status-strip.tsx`     | Align approval badge and handoff copy with the dedicated inbox state                                            | ~70        |
+| `apps/api/src/server/routes/index.ts`     | Register the approval inbox and approval resolution routes in deterministic order                               | ~30        |
+| `apps/api/src/server/http-server.test.ts` | Add route coverage for inbox summaries, approval resolution, stale-state handling, and resume handoff readiness | ~280       |
+| `scripts/test-all.mjs`                    | Add Session 04 files and approval-inbox smoke coverage to the quick regression suite                            | ~90        |
 
 ---
 
@@ -297,6 +297,7 @@ live runtime rather than optimistic browser guesses.
 
 Checklist active: Yes
 Top behavioral risks for this session:
+
 - Resolving an approval that was already handled elsewhere or whose underlying
   job already failed
 - Double submitting approve or reject or resume actions while requests remain

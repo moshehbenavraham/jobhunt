@@ -11,7 +11,10 @@ import {
   type ApiRouteDefinition,
 } from '../route-contract.js';
 import { getStartupStatus, type StartupStatus } from '../startup-status.js';
-import type { RuntimeApprovalRecord, RuntimeJobRecord } from '../../store/store-contract.js';
+import type {
+  RuntimeApprovalRecord,
+  RuntimeJobRecord,
+} from '../../store/store-contract.js';
 import type { JsonValue } from '../../workspace/workspace-types.js';
 
 const approvalResolutionBodySchema = z.object({
@@ -235,7 +238,9 @@ export function createApprovalResolutionRoute(): ApiRouteDefinition {
         const startupStatus = getStartupStatus(diagnostics);
         const approvalRuntime = await services.approvalRuntime.getService();
         const store = await services.operationalStore.getStore();
-        const approval = await approvalRuntime.getApproval(parsedBody.data.approvalId);
+        const approval = await approvalRuntime.getApproval(
+          parsedBody.data.approvalId,
+        );
 
         if (!approval) {
           return createJsonRouteResponse(
@@ -264,7 +269,9 @@ export function createApprovalResolutionRoute(): ApiRouteDefinition {
           );
         }
 
-        const existingSession = await store.sessions.getById(approval.sessionId);
+        const existingSession = await store.sessions.getById(
+          approval.sessionId,
+        );
 
         if (!existingSession) {
           return createJsonRouteResponse(

@@ -55,7 +55,9 @@ const badgeToneStyles: Record<NonNullable<NavBadge['tone']>, CSSProperties> = {
   },
 };
 
-function formatStatusLabel(status: OperatorShellSummaryPayload['status']): string {
+function formatStatusLabel(
+  status: OperatorShellSummaryPayload['status'],
+): string {
   switch (status) {
     case 'auth-required':
       return 'Auth';
@@ -93,13 +95,26 @@ function getBadge(
         return {
           count: summary.activity.activeSessionCount,
           label: 'Live',
-          tone: summary.activity.state === 'attention-required' ? 'attention' : 'info',
+          tone:
+            summary.activity.state === 'attention-required'
+              ? 'attention'
+              : 'info',
         };
       }
 
       return {
         label: summary.activity.state === 'idle' ? 'Idle' : 'Queue',
         tone: 'neutral',
+      };
+    case 'artifacts':
+      return {
+        label: summary.status === 'ready' ? 'Review' : 'Read-only',
+        tone: summary.status === 'ready' ? 'info' : 'neutral',
+      };
+    case 'pipeline':
+      return {
+        label: summary.status === 'ready' ? 'Queue' : 'Read-only',
+        tone: summary.status === 'ready' ? 'info' : 'neutral',
       };
     case 'onboarding':
       if (summary.health.missing.onboarding > 0) {
@@ -145,13 +160,13 @@ export function NavigationRail({
             textTransform: 'uppercase',
           }}
         >
-          Phase 03 shell
+          Phase 04 shell
         </p>
         <h2 style={{ fontSize: '1.35rem', marginBottom: '0.35rem' }}>
           Operator navigation
         </h2>
         <p style={{ color: '#cbd5e1', marginBottom: 0, marginTop: 0 }}>
-          One stable frame for startup, active work, reviews, and settings.
+          One stable frame for startup, active work, queue review, and settings.
         </p>
       </div>
 
@@ -197,7 +212,6 @@ export function NavigationRail({
                   <strong>{surface.label}</strong>
                   {badge ? (
                     <span
-                      aria-label={`${surface.label} badge ${badge.label}`}
                       style={{
                         ...badgeToneStyles[badge.tone],
                         borderRadius: '999px',
@@ -208,7 +222,9 @@ export function NavigationRail({
                         padding: '0.2rem 0.55rem',
                       }}
                     >
-                      {badge.count !== undefined ? <span>{badge.count}</span> : null}
+                      {badge.count !== undefined ? (
+                        <span>{badge.count}</span>
+                      ) : null}
                       <span>{badge.label}</span>
                     </span>
                   ) : null}
@@ -231,7 +247,9 @@ export function NavigationRail({
             padding: '0.85rem 0.95rem',
           }}
         >
-          <p style={{ color: '#94a3b8', marginBottom: '0.35rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#94a3b8', marginBottom: '0.35rem', marginTop: 0 }}
+          >
             Current spec session
           </p>
           <p style={{ margin: 0 }}>

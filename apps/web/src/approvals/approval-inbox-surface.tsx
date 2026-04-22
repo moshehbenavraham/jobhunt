@@ -92,7 +92,9 @@ export function ApprovalInboxSurface() {
 
         <button
           aria-label="Refresh approval inbox"
-          disabled={inbox.state.isRefreshing || inbox.state.pendingAction !== null}
+          disabled={
+            inbox.state.isRefreshing || inbox.state.pendingAction !== null
+          }
           onClick={inbox.refresh}
           style={{
             ...buttonStyle,

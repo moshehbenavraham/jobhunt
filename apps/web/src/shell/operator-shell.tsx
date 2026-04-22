@@ -6,6 +6,12 @@ import { StartupStatusPanel } from '../boot/startup-status-panel';
 import { useStartupDiagnostics } from '../boot/use-startup-diagnostics';
 import { ChatConsoleSurface } from '../chat/chat-console-surface';
 import { OnboardingWizardSurface } from '../onboarding/onboarding-wizard-surface';
+import {
+  syncPipelineReviewFocus,
+} from '../pipeline/pipeline-review-client';
+import { PipelineReviewSurface } from '../pipeline/pipeline-review-surface';
+import { syncReportViewerFocus } from '../reports/report-viewer-client';
+import { ReportViewerSurface } from '../reports/report-viewer-surface';
 import { SettingsSurface } from '../settings/settings-surface';
 import { NavigationRail } from './navigation-rail';
 import { StatusStrip } from './status-strip';
@@ -212,7 +218,9 @@ function renderStartupSurface(
 
       {startup.status === 'offline' && hasDiagnostics ? (
         <section style={startupNoticeStyle}>
-          <h2 style={{ marginTop: 0 }}>Offline after the last startup refresh</h2>
+          <h2 style={{ marginTop: 0 }}>
+            Offline after the last startup refresh
+          </h2>
           <p style={{ marginBottom: 0 }}>
             {startup.error?.message ??
               'The API stopped responding after the previous startup refresh.'}
@@ -263,6 +271,39 @@ export function OperatorShell() {
     });
     shell.selectSurface('approvals');
   };
+  const openArtifacts = (focus: {
+    reportPath: string | null;
+  }) => {
+    syncReportViewerFocus(
+      {
+        group: 'reports',
+        offset: 0,
+        reportPath: focus.reportPath,
+      },
+      {
+        openSurface: true,
+      },
+    );
+    shell.selectSurface('artifacts');
+  };
+  const openPipeline = (focus: {
+    reportNumber: string | null;
+    url: string | null;
+  }) => {
+    syncPipelineReviewFocus(
+      {
+        offset: 0,
+        reportNumber: focus.reportNumber,
+        section:
+          focus.reportNumber || focus.url ? 'processed' : 'all',
+        url: focus.reportNumber ? null : focus.url,
+      },
+      {
+        openSurface: true,
+      },
+    );
+    shell.selectSurface('pipeline');
+  };
 
   return (
     <main style={pageStyle}>
@@ -289,47 +330,54 @@ export function OperatorShell() {
             />
           </aside>
 
-          <section id={`surface-${renderedSurface.id}`} style={surfaceWrapperStyle}>
+          <section
+            id={`surface-${renderedSurface.id}`}
+            style={surfaceWrapperStyle}
+          >
             <div style={surfaceCardStyle}>
-              {renderedSurface.id === 'startup'
-                ? renderStartupSurface(
-                    startup.state,
-                    startup.refresh,
-                    () => shell.selectSurface('onboarding'),
-                  )
-                : renderedSurface.id === 'chat'
-                  ? <ChatConsoleSurface onOpenApprovals={openApprovals} />
-                  : renderedSurface.id === 'onboarding'
-                    ? (
-                        <OnboardingWizardSurface
-                          onOpenChat={() => shell.selectSurface('chat')}
-                          onOpenStartup={() => shell.selectSurface('startup')}
-                          onRepairApplied={() => {
-                            startup.refresh();
-                            shell.refresh();
-                          }}
-                        />
-                      )
-                  : renderedSurface.id === 'approvals'
-                    ? <ApprovalInboxSurface />
-                  : renderedSurface.id === 'settings'
-                    ? (
-                        <SettingsSurface
-                          onOpenOnboarding={() => shell.selectSurface('onboarding')}
-                          onOpenStartup={() => shell.selectSurface('startup')}
-                          onSummaryRefresh={() => {
-                            startup.refresh();
-                            shell.refresh();
-                          }}
-                        />
-                      )
-                  : (
-                      <SurfacePlaceholder
-                        key={`${renderedSurface.id}:${shell.state.data?.generatedAt ?? 'empty'}`}
-                        summary={shell.state.data}
-                        surface={renderedSurface}
-                      />
-                    )}
+              {renderedSurface.id === 'startup' ? (
+                renderStartupSurface(startup.state, startup.refresh, () =>
+                  shell.selectSurface('onboarding'),
+                )
+              ) : renderedSurface.id === 'chat' ? (
+                <ChatConsoleSurface
+                  onOpenApprovals={openApprovals}
+                  onOpenPipelineReview={openPipeline}
+                  onOpenReportViewer={openArtifacts}
+                />
+              ) : renderedSurface.id === 'pipeline' ? (
+                <PipelineReviewSurface
+                  onOpenReportViewer={openArtifacts}
+                />
+              ) : renderedSurface.id === 'artifacts' ? (
+                <ReportViewerSurface />
+              ) : renderedSurface.id === 'onboarding' ? (
+                <OnboardingWizardSurface
+                  onOpenChat={() => shell.selectSurface('chat')}
+                  onOpenStartup={() => shell.selectSurface('startup')}
+                  onRepairApplied={() => {
+                    startup.refresh();
+                    shell.refresh();
+                  }}
+                />
+              ) : renderedSurface.id === 'approvals' ? (
+                <ApprovalInboxSurface />
+              ) : renderedSurface.id === 'settings' ? (
+                <SettingsSurface
+                  onOpenOnboarding={() => shell.selectSurface('onboarding')}
+                  onOpenStartup={() => shell.selectSurface('startup')}
+                  onSummaryRefresh={() => {
+                    startup.refresh();
+                    shell.refresh();
+                  }}
+                />
+              ) : (
+                <SurfacePlaceholder
+                  key={`${renderedSurface.id}:${shell.state.data?.generatedAt ?? 'empty'}`}
+                  summary={shell.state.data}
+                  surface={renderedSurface}
+                />
+              )}
             </div>
           </section>
         </div>

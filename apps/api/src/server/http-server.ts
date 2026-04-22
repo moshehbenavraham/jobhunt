@@ -51,8 +51,14 @@ type RateLimitState = {
   windowStartedAt: number;
 };
 
+const BOOT_SURFACE_PATHS = new Set(['/health', '/startup']);
+
 function getClientKey(request: IncomingMessage): string {
   return request.socket.remoteAddress ?? 'unknown';
+}
+
+function shouldPersistRequestEvent(pathname: string): boolean {
+  return !BOOT_SURFACE_PATHS.has(pathname);
 }
 
 function createRateLimiter(config: ApiRuntimeConfig) {
@@ -227,6 +233,10 @@ async function handleRequest(
       summary: string;
     },
   ): Promise<void> {
+    if (!shouldPersistRequestEvent(input.pathname)) {
+      return;
+    }
+
     try {
       const observability = await services.observability.getService();
       await observability.recordEvent({

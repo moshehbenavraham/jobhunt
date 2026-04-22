@@ -148,8 +148,7 @@ function parseUpdateCheckOutput(stdout: string): SettingsUpdateCheckPayload {
         checkedAt,
         command: 'node scripts/update-system.mjs check',
         localVersion: readOptionalString(record, 'local'),
-        message:
-          'Update check could not reach the upstream release source.',
+        message: 'Update check could not reach the upstream release source.',
         remoteVersion: null,
         state: 'offline',
       };
@@ -186,22 +185,15 @@ function parseUpdateCheckOutput(stdout: string): SettingsUpdateCheckPayload {
   }
 }
 
-const defaultRunner: SettingsUpdateCheckRunner = async ({
-  cwd,
-  timeoutMs,
-}) => {
-  const result = await execFileAsync(
-    'node',
-    [...UPDATE_CHECK_COMMAND],
-    {
-      cwd,
-      encoding: 'utf8',
-      env: buildBoundedEnv(process.env),
-      maxBuffer: 64 * 1024,
-      timeout: timeoutMs,
-      windowsHide: true,
-    },
-  );
+const defaultRunner: SettingsUpdateCheckRunner = async ({ cwd, timeoutMs }) => {
+  const result = await execFileAsync('node', [...UPDATE_CHECK_COMMAND], {
+    cwd,
+    encoding: 'utf8',
+    env: buildBoundedEnv(process.env),
+    maxBuffer: 64 * 1024,
+    timeout: timeoutMs,
+    windowsHide: true,
+  });
 
   return {
     stdout: result.stdout,
@@ -215,8 +207,14 @@ export async function readSettingsUpdateCheck(options: {
   runCheck?: SettingsUpdateCheckRunner;
   timeoutMs?: number;
 }): Promise<SettingsUpdateCheckPayload> {
-  const retryAttempts = Math.max(1, options.retryAttempts ?? DEFAULT_RETRY_ATTEMPTS);
-  const retryBackoffMs = Math.max(0, options.retryBackoffMs ?? DEFAULT_RETRY_BACKOFF_MS);
+  const retryAttempts = Math.max(
+    1,
+    options.retryAttempts ?? DEFAULT_RETRY_ATTEMPTS,
+  );
+  const retryBackoffMs = Math.max(
+    0,
+    options.retryBackoffMs ?? DEFAULT_RETRY_BACKOFF_MS,
+  );
   const timeoutMs = Math.max(250, options.timeoutMs ?? DEFAULT_TIMEOUT_MS);
   const runCheck = options.runCheck ?? defaultRunner;
 

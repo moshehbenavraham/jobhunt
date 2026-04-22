@@ -10,7 +10,10 @@ type StatusStripProps = {
   error: OperatorShellClientError | null;
   isRefreshing: boolean;
   lastUpdatedAt: string | null;
-  onOpenApprovals: (focus: { approvalId: string | null; sessionId: string | null }) => void;
+  onOpenApprovals: (focus: {
+    approvalId: string | null;
+    sessionId: string | null;
+  }) => void;
   onRefresh: () => void;
   status: OperatorShellViewStatus;
   summary: OperatorShellSummaryPayload | null;
@@ -242,8 +245,8 @@ export function StatusStrip({
         : 'No review work waiting';
   const approvalBody =
     summary.activity.pendingApprovalCount > 0
-      ? summary.activity.latestPendingApprovals[0]?.title ??
-        'Pending approvals require review in the inbox.'
+      ? (summary.activity.latestPendingApprovals[0]?.title ??
+        'Pending approvals require review in the inbox.')
       : summary.activity.recentFailureCount > 0
         ? 'Recent failed runs can be reopened from the approval inbox.'
         : 'No approval work is waiting right now.';
@@ -339,12 +342,12 @@ export function StatusStrip({
 
       <div style={cardGridStyle}>
         <article style={cardStyle}>
-          <p style={{ color: '#64748b', marginBottom: '0.35rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.35rem', marginTop: 0 }}
+          >
             Readiness
           </p>
-          <h2 style={{ marginBottom: '0.4rem', marginTop: 0 }}>
-            {tone.label}
-          </h2>
+          <h2 style={{ marginBottom: '0.4rem', marginTop: 0 }}>{tone.label}</h2>
           <p style={{ marginBottom: '0.35rem' }}>{summary.health.message}</p>
           <p style={{ color: '#475569', marginBottom: 0 }}>
             Missing: onboarding {summary.health.missing.onboarding}, optional{' '}
@@ -354,7 +357,9 @@ export function StatusStrip({
         </article>
 
         <article style={cardStyle}>
-          <p style={{ color: '#64748b', marginBottom: '0.35rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.35rem', marginTop: 0 }}
+          >
             Active work
           </p>
           <h2 style={{ marginBottom: '0.4rem', marginTop: 0 }}>
@@ -373,15 +378,15 @@ export function StatusStrip({
         </article>
 
         <article style={cardStyle}>
-          <p style={{ color: '#64748b', marginBottom: '0.35rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.35rem', marginTop: 0 }}
+          >
             Approvals
           </p>
           <h2 style={{ marginBottom: '0.4rem', marginTop: 0 }}>
             {approvalHeading}
           </h2>
-          <p style={{ marginBottom: '0.35rem' }}>
-            {approvalBody}
-          </p>
+          <p style={{ marginBottom: '0.35rem' }}>{approvalBody}</p>
           <p style={{ color: '#475569', marginBottom: 0 }}>
             {approvalFocus
               ? 'Open the inbox to review live approvals or interrupted runs.'
@@ -403,7 +408,9 @@ export function StatusStrip({
         </article>
 
         <article style={cardStyle}>
-          <p style={{ color: '#64748b', marginBottom: '0.35rem', marginTop: 0 }}>
+          <p
+            style={{ color: '#64748b', marginBottom: '0.35rem', marginTop: 0 }}
+          >
             Session frame
           </p>
           <h2 style={{ marginBottom: '0.4rem', marginTop: 0 }}>
