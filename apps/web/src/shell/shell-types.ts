@@ -1,4 +1,5 @@
 export const SHELL_SURFACE_IDS = [
+	"home",
 	"startup",
 	"chat",
 	"workflows",
@@ -23,6 +24,13 @@ export type ShellSurfaceDefinition = {
 };
 
 export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
+	{
+		description:
+			"Land on one bounded operator-home surface for readiness, approvals, closeout, artifacts, and maintenance guidance.",
+		id: "home",
+		label: "Home",
+		owner: "Session 06",
+	},
 	{
 		description:
 			"Read the canonical startup diagnostics and keep workspace readiness visible.",
@@ -525,6 +533,20 @@ function parseActiveSessionSummary(
 
 export function isShellSurfaceId(value: string): value is ShellSurfaceId {
 	return (SHELL_SURFACE_IDS as readonly string[]).includes(value);
+}
+
+export function getDefaultShellSurfaceId(
+	status: OperatorShellStartupStatus | null,
+): ShellSurfaceId {
+	if (status === "missing-prerequisites") {
+		return "onboarding";
+	}
+
+	if (status === "ready") {
+		return "home";
+	}
+
+	return "startup";
 }
 
 export function resolveShellSurfaceId(

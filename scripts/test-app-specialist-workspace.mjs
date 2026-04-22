@@ -1148,7 +1148,6 @@ function createSpecialistWorkspaceSummary(
 				message =
 					"Loaded the latest linkedin-outreach specialist session outreach-review-01.";
 				break;
-			case "interview-prep":
 			default:
 				message =
 					"Loaded the latest interview-prep specialist session interview-waiting-01.";

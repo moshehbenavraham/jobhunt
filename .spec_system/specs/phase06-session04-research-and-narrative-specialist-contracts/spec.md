@@ -79,7 +79,7 @@ guessing, raw prompt output, or shell-only follow-through.
 - `.spec_system/SECURITY-COMPLIANCE.md` for the clean posture and the
   requirement to keep repo reads, packet storage, and approvals backend-owned
 - `.spec_system/PRD/PRD.md`, `.spec_system/PRD/PRD_UX.md`, and
-  `.spec_system/PRD/phase_06/PRD_phase_06.md` for specialist parity and
+  `.spec_system/archive/phases/phase_06/PRD_phase_06.md` for specialist parity and
   dashboard-replacement sequencing
 - `modes/deep.md`, `modes/contacto.md`, `modes/interview-prep.md`,
   `modes/training.md`, and `modes/project.md` for the five narrative workflow

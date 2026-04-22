@@ -86,6 +86,27 @@ function getBadge(
 	}
 
 	switch (surfaceId) {
+		case "home":
+			if (summary.activity.pendingApprovalCount > 0) {
+				return {
+					count: summary.activity.pendingApprovalCount,
+					label: "Now",
+					tone: "attention",
+				};
+			}
+
+			if (summary.activity.activeSessionCount > 0) {
+				return {
+					count: summary.activity.activeSessionCount,
+					label: "Live",
+					tone: "info",
+				};
+			}
+
+			return {
+				label: summary.status === "ready" ? "Ready" : "Setup",
+				tone: summary.status === "ready" ? "positive" : "neutral",
+			};
 		case "startup":
 			return {
 				label: formatStatusLabel(summary.status),
@@ -241,9 +262,9 @@ export function NavigationRail({
 					Operator navigation
 				</h2>
 				<p style={{ color: "#cbd5e1", marginBottom: 0, marginTop: 0 }}>
-					One stable frame for startup, chat, specialist workflows, scan review,
-					batch supervision, application-help review, queue review, tracker
-					closeout, and settings.
+					One stable frame for the operator home, startup, chat, specialist
+					workflows, scan review, batch supervision, application-help review,
+					queue review, tracker closeout, and settings.
 				</p>
 			</div>
 

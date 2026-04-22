@@ -274,11 +274,6 @@ function isNodeError(error: unknown): error is NodeJS.ErrnoException {
 	return typeof error === "object" && error !== null && "code" in error;
 }
 
-function normalizeText(value: string | null | undefined): string | null {
-	const trimmed = value?.trim() ?? "";
-	return trimmed.length > 0 ? trimmed : null;
-}
-
 function createWarning(
 	code: TrackerSpecialistWarningCode,
 	message: string,
@@ -547,28 +542,6 @@ function createCompareOffersMissingInputPacket(input: {
 		offers: [],
 		references: input.references.map(copyOfferReference),
 		resultStatus: "missing-input",
-		sessionId: input.sessionId,
-		unmatchedReferences: input.unmatchedReferences.map(copyOfferReference),
-		updatedAt: input.nowIso,
-		warnings: dedupeWarnings(input.warnings),
-	};
-}
-
-function createCompareOffersDegradedPacket(input: {
-	message: string;
-	nowIso: string;
-	references: TrackerSpecialistOfferReference[];
-	sessionId: string;
-	unmatchedReferences: TrackerSpecialistOfferReference[];
-	warnings: TrackerSpecialistWarningItem[];
-}): Omit<CompareOffersResultPacket, "fingerprint" | "revision"> {
-	return {
-		generatedAt: input.nowIso,
-		message: input.message,
-		mode: "compare-offers",
-		offers: [],
-		references: input.references.map(copyOfferReference),
-		resultStatus: "degraded",
 		sessionId: input.sessionId,
 		unmatchedReferences: input.unmatchedReferences.map(copyOfferReference),
 		updatedAt: input.nowIso,

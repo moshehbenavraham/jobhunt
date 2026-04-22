@@ -4,7 +4,7 @@
 
 - Node.js 18 or newer
 - Optional: Codex CLI for the legacy CLI workflow
-- Optional: Go 1.21 or newer for the dashboard TUI
+- Optional: Go 1.21 or newer for the secondary dashboard TUI
 
 ## Quick Start
 
@@ -90,19 +90,20 @@ npm run agents:codex:smoke -- --json
 npm run app:validate
 ```
 
-The app surface gives you the local operator runtime:
+The app surface gives you the primary local operator runtime:
 
 - `npm run app:web:dev` for the React shell
 - `npm run app:api:serve` for the long-lived API server
 - `npm run app:boot:test` for the live repo-root smoke test
 
-The shell now includes onboarding repair, approval review, and settings
-surfaces on top of startup diagnostics, so `npm run app:validate` is the
-preferred first runtime check after setup.
+The shell now includes the operator home landing, onboarding repair, approval
+review, and settings surfaces on top of startup diagnostics, so
+`npm run app:validate` is the preferred first runtime check after setup.
 
 From the repo root, the legacy `codex` workflow still works for CLI-based
-job-search operations, but the app surface is now the preferred boot path for
-the local runtime contract.
+job-search operations, and the dashboard still exists as a secondary review
+path, but the app surface is now the preferred boot path for the local runtime
+contract.
 
 ## Follow-up Verification
 
@@ -116,7 +117,7 @@ npm run app:validate
 npm run auth:openai -- status
 ```
 
-## Optional Dashboard
+## Optional Secondary Dashboard
 
 ```bash
 cd dashboard

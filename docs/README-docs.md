@@ -14,6 +14,7 @@ runtime policy, app boot surfaces, and repo reference material.
 - [Scripts Reference](SCRIPTS.md)
 - [OpenAI Account Auth](OPENAI_ACCOUNT_AUTH.md)
 - [App Boot Runbook](runbooks/README_runbooks.md)
+- [Cutover Note](CUTOVER.md)
 
 ## Contributor and Support
 

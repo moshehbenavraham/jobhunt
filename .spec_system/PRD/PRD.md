@@ -781,15 +781,15 @@ Planning assumptions for this PRD:
 This system delivers the product via phases. Each phase is implemented via
 multiple 2-4 hour sessions (12-25 tasks each).
 
-| Phase | Name                                                     | Sessions | Status      |
-| ----- | -------------------------------------------------------- | -------- | ----------- |
-| 00    | Foundation and Repo Contract                             | 4        | Complete    |
-| 01    | Backend Runtime and Job Infrastructure                   | 5        | Complete    |
-| 02    | Typed Tools and Agent Orchestration                      | 5        | Complete    |
-| 03    | Chat, Onboarding, and Approvals UX                       | 5        | Complete    |
-| 04    | Evaluation, Artifacts, and Tracker Parity                | 6        | Complete    |
-| 05    | Scan, Batch, and Application-Help Parity                 | 6        | Complete    |
-| 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 6        | In Progress |
+| Phase | Name                                                     | Sessions | Status   |
+| ----- | -------------------------------------------------------- | -------- | -------- |
+| 00    | Foundation and Repo Contract                             | 4        | Complete |
+| 01    | Backend Runtime and Job Infrastructure                   | 5        | Complete |
+| 02    | Typed Tools and Agent Orchestration                      | 5        | Complete |
+| 03    | Chat, Onboarding, and Approvals UX                       | 5        | Complete |
+| 04    | Evaluation, Artifacts, and Tracker Parity                | 6        | Complete |
+| 05    | Scan, Batch, and Application-Help Parity                 | 6        | Complete |
+| 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 6        | Complete |
 
 ## Phase 00: Foundation and Repo Contract
 
@@ -914,8 +914,8 @@ Progress: 6/6 sessions complete.
   `apps/api`
 - Completed Session 04: Research and Narrative Specialist Contracts in
   `apps/api`
-- Planned Session 05: Specialist Review Surfaces in `apps/web`
-- Planned Session 06: Dashboard Replacement, Maintenance, and Cutover in
+- Completed Session 05: Specialist Review Surfaces in `apps/web`
+- Completed Session 06: Dashboard Replacement, Maintenance, and Cutover in
   `apps/web` and `apps/api`
 - Implement remaining specialist flows:
   - Compare offers
@@ -933,25 +933,25 @@ Progress: 6/6 sessions complete.
 - Remove Codex CLI from primary onboarding
 - Run final parity validation and close migration gaps
 
-Phase 06 planning artifacts live under `.spec_system/PRD/phase_06/`.
+Phase 06 planning artifacts are archived under
+`.spec_system/archive/phases/phase_06/`.
 
-Progress: 4/6 sessions complete.
+Progress: 6/6 sessions complete.
 
 ## Phase 06 Planned Sessions
 
-1. Session 05: Specialist Review Surfaces
-2. Session 06: Dashboard Replacement, Maintenance, and Cutover
+None. Phase 06 is complete.
 
 ## Success Criteria
 
-- [ ] A single operator can use Job-Hunt primarily through the app without
+- [x] A single operator can use Job-Hunt primarily through the app without
       launching `codex`
-- [ ] The main workflows have app parity with the current Codex-primary path
-- [ ] Reports, PDFs, tracker additions, and verification still work through the
+- [x] The main workflows have app parity with the current Codex-primary path
+- [x] Reports, PDFs, tracker additions, and verification still work through the
       existing file contract
-- [ ] Long-running runs are resumable and visible in the UI
-- [ ] Approvals are explicit, recoverable, and observable
-- [ ] The app runtime is testable enough to validate artifact parity, workflow
+- [x] Long-running runs are resumable and visible in the UI
+- [x] Approvals are explicit, recoverable, and observable
+- [x] The app runtime is testable enough to validate artifact parity, workflow
       parity, and failure semantics before cutover
 
 ## Validation Strategy

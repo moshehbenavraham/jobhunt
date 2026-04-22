@@ -25,6 +25,12 @@ function getPlaceholderBody(
 	title: string;
 } {
 	switch (surface.id) {
+		case "home":
+			return {
+				body: "Operator home is now a real surface and should not render through the generic placeholder.",
+				highlights: [],
+				title: "Operator home",
+			};
 		case "chat":
 			return {
 				body: "The shell already tracks runtime activity and current session context. Session 02 will attach the live chat console and resume controls inside this frame.",

@@ -56,7 +56,7 @@
     "6": {
       "name": "Specialist Workflows, Dashboard Replacement, and Cutover",
       "description": "Close the remaining specialist workflow, dashboard, and cutover gaps so the app can replace Codex for normal single-user operation.",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 6
     }
   },
@@ -200,10 +200,19 @@
     {
       "id": "phase06-session05-specialist-review-surfaces",
       "package": "apps/web"
+    },
+    {
+      "id": "phase06-session06-dashboard-replacement-maintenance-and-cutover",
+      "package": null
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase06-session06-dashboard-replacement-maintenance-and-cutover",
+      "status": "completed"
+    },
     {
       "date": "2026-04-22",
       "session": "phase06-session05-specialist-review-surfaces",

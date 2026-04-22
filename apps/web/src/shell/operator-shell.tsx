@@ -4,6 +4,7 @@ import { syncApplicationHelpFocus } from "../application-help/application-help-c
 import { ApplicationHelpSurface } from "../application-help/application-help-surface";
 import { syncApprovalInboxFocus } from "../approvals/approval-inbox-client";
 import { ApprovalInboxSurface } from "../approvals/approval-inbox-surface";
+import { syncBatchWorkspaceFocus } from "../batch/batch-workspace-client";
 import { BatchWorkspaceSurface } from "../batch/batch-workspace-surface";
 import { StartupStatusPanel } from "../boot/startup-status-panel";
 import { useStartupDiagnostics } from "../boot/use-startup-diagnostics";
@@ -14,6 +15,7 @@ import { syncPipelineReviewFocus } from "../pipeline/pipeline-review-client";
 import { PipelineReviewSurface } from "../pipeline/pipeline-review-surface";
 import { syncReportViewerFocus } from "../reports/report-viewer-client";
 import { ReportViewerSurface } from "../reports/report-viewer-surface";
+import { syncScanReviewFocus } from "../scan/scan-review-client";
 import { ScanReviewSurface } from "../scan/scan-review-surface";
 import { SettingsSurface } from "../settings/settings-surface";
 import { syncTrackerWorkspaceFocus } from "../tracker/tracker-workspace-client";
@@ -21,10 +23,14 @@ import { TrackerWorkspaceSurface } from "../tracker/tracker-workspace-surface";
 import { openSpecialistWorkspaceSurface } from "../workflows/specialist-workspace-client";
 import { SpecialistWorkspaceSurface } from "../workflows/specialist-workspace-surface";
 import type { SpecialistWorkspaceMode } from "../workflows/specialist-workspace-types";
+import { SPECIALIST_WORKSPACE_MODE_VALUES } from "../workflows/specialist-workspace-types";
 import { NavigationRail } from "./navigation-rail";
+import { OperatorHomeSurface } from "./operator-home-surface";
+import type { OperatorHomeAction } from "./operator-home-types";
 import { getShellSurface } from "./shell-types";
 import { StatusStrip } from "./status-strip";
 import { SurfacePlaceholder } from "./surface-placeholder";
+import { useOperatorHome } from "./use-operator-home";
 import { useOperatorShell } from "./use-operator-shell";
 
 const pageStyle: CSSProperties = {
@@ -268,6 +274,9 @@ function renderStartupSurface(
 export function OperatorShell() {
 	const startup = useStartupDiagnostics();
 	const shell = useOperatorShell();
+	const home = useOperatorHome({
+		isActive: shell.state.selectedSurface === "home",
+	});
 	const renderedSurfaceId = useDeferredValue(shell.state.selectedSurface);
 	const renderedSurface = getShellSurface(renderedSurfaceId);
 	const openApprovals = (focus: {
@@ -371,6 +380,88 @@ export function OperatorShell() {
 		);
 		shell.selectSurface("chat");
 	};
+	const runHomeAction = (action: OperatorHomeAction) => {
+		switch (action.surface) {
+			case "application-help":
+				openApplicationHelp({
+					sessionId: action.focus.sessionId,
+				});
+				return;
+			case "approvals":
+				openApprovals({
+					approvalId: action.focus.approvalId,
+					sessionId: action.focus.sessionId,
+				});
+				return;
+			case "artifacts":
+				openArtifacts({
+					reportPath: action.focus.reportPath,
+				});
+				return;
+			case "batch":
+				syncBatchWorkspaceFocus(
+					{},
+					{
+						openSurface: true,
+					},
+				);
+				shell.selectSurface("batch");
+				return;
+			case "chat":
+				openChatConsole({
+					sessionId: action.focus.sessionId,
+				});
+				return;
+			case "onboarding":
+				shell.selectSurface("onboarding");
+				return;
+			case "pipeline":
+				openPipeline({
+					reportNumber: action.focus.reportNumber,
+					section: action.focus.section ?? "all",
+					url: action.focus.url,
+				});
+				return;
+			case "scan":
+				syncScanReviewFocus(
+					{
+						sessionId: action.focus.sessionId,
+						url: action.focus.url,
+					},
+					{
+						openSurface: true,
+					},
+				);
+				shell.selectSurface("scan");
+				return;
+			case "settings":
+				shell.selectSurface("settings");
+				return;
+			case "startup":
+				shell.selectSurface("startup");
+				return;
+			case "tracker":
+				openTracker({
+					entryNumber: action.focus.entryNumber,
+					reportNumber: action.focus.reportNumber,
+				});
+				return;
+			case "workflows":
+				if (
+					action.focus.mode &&
+					SPECIALIST_WORKSPACE_MODE_VALUES.includes(
+						action.focus.mode as SpecialistWorkspaceMode,
+					)
+				) {
+					openSpecialistWorkspaceSurface({
+						mode: action.focus.mode as SpecialistWorkspaceMode,
+						sessionId: action.focus.sessionId,
+					});
+				}
+				shell.selectSurface("workflows");
+				return;
+		}
+	};
 
 	return (
 		<main style={pageStyle}>
@@ -381,6 +472,7 @@ export function OperatorShell() {
 					lastUpdatedAt={shell.state.lastUpdatedAt}
 					onOpenApprovals={openApprovals}
 					onRefresh={() => {
+						home.refresh();
 						shell.refresh();
 						startup.refresh();
 					}}
@@ -402,7 +494,13 @@ export function OperatorShell() {
 						style={surfaceWrapperStyle}
 					>
 						<div style={surfaceCardStyle}>
-							{renderedSurface.id === "startup" ? (
+							{renderedSurface.id === "home" ? (
+								<OperatorHomeSurface
+									onRefresh={home.refresh}
+									onRunAction={runHomeAction}
+									state={home.state}
+								/>
+							) : renderedSurface.id === "startup" ? (
 								renderStartupSurface(startup.state, startup.refresh, () =>
 									shell.selectSurface("onboarding"),
 								)
@@ -455,7 +553,7 @@ export function OperatorShell() {
 								<ReportViewerSurface />
 							) : renderedSurface.id === "onboarding" ? (
 								<OnboardingWizardSurface
-									onOpenChat={() => shell.selectSurface("chat")}
+									onOpenHome={() => shell.selectSurface("home")}
 									onOpenStartup={() => shell.selectSurface("startup")}
 									onRepairApplied={() => {
 										startup.refresh();

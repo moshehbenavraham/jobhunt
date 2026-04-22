@@ -137,6 +137,158 @@ function createReadyShellSummary() {
 	};
 }
 
+function createReadyOperatorHomeSummary() {
+	return {
+		cards: {
+			approvals: {
+				actions: [],
+				latestPendingApprovals: [],
+				message: "No approvals are waiting.",
+				pendingApprovalCount: 0,
+				recentFailureCount: 0,
+				state: "idle",
+			},
+			artifacts: {
+				actions: [],
+				items: [],
+				message:
+					"Recent auto-pipeline artifacts appear in the shared review surfaces.",
+				state: "ready",
+				totalCount: 2,
+			},
+			closeout: {
+				actions: [],
+				message:
+					"Auto-pipeline closeout remains available from the app-owned daily path.",
+				pipeline: {
+					malformedCount: 0,
+					pendingCount: 1,
+					preview: [
+						{
+							company: "Live URL Company",
+							kind: "processed",
+							reportNumber: "302",
+							role: "Live URL Role",
+							score: 4.8,
+							url: "https://example.com/jobs/live-url-role",
+							warningCount: 0,
+						},
+					],
+					processedCount: 2,
+				},
+				state: "ready",
+				tracker: {
+					pendingAdditionCount: 1,
+					preview: [
+						{
+							company: "Live URL Company",
+							entryNumber: 302,
+							reportNumber: "302",
+							role: "Live URL Role",
+							status: "needs-review",
+						},
+					],
+					rowCount: 2,
+				},
+			},
+			liveWork: {
+				actions: [],
+				activeSession: null,
+				activeSessionCount: 0,
+				message: "No live workflow is active.",
+				pendingApprovalCount: 0,
+				recentFailureCount: 0,
+				recentFailures: [],
+				state: "idle",
+			},
+			maintenance: {
+				actions: [],
+				authState: "ready",
+				commands: [
+					{
+						category: "diagnostics",
+						command: "npm run doctor",
+						description: "Validate repo prerequisites.",
+						id: "doctor",
+						label: "Run doctor",
+					},
+				],
+				message:
+					"Auto-pipeline parity now lives under the same app-first home surface as the rest of the operator flow.",
+				operationalStoreStatus: "ready",
+				state: "ready",
+				updateCheck: {
+					changelogExcerpt: null,
+					checkedAt: "2026-04-22T00:30:00.000Z",
+					command: "node scripts/update-system.mjs check",
+					localVersion: "1.5.38",
+					message: "Job-Hunt is up to date (1.5.38).",
+					remoteVersion: "1.5.38",
+					state: "up-to-date",
+				},
+			},
+			readiness: {
+				actions: [],
+				currentSession: {
+					id: "phase06-session06-dashboard-replacement-maintenance-and-cutover",
+					monorepo: true,
+					packagePath: null,
+					phase: 6,
+					source: "state-file",
+					stateFilePath: `${ROOT}/.spec_system/state.json`,
+				},
+				healthStatus: "ok",
+				message:
+					"Bootstrap diagnostics are ready. The operator home is the default daily landing path.",
+				missing: {
+					onboarding: 0,
+					optional: 0,
+					runtime: 0,
+				},
+				startupStatus: "ready",
+				state: "ready",
+			},
+		},
+		currentSession: {
+			id: "phase06-session06-dashboard-replacement-maintenance-and-cutover",
+			monorepo: true,
+			packagePath: null,
+			phase: 6,
+			source: "state-file",
+			stateFilePath: `${ROOT}/.spec_system/state.json`,
+		},
+		generatedAt: "2026-04-22T00:30:00.000Z",
+		health: {
+			agentRuntime: {
+				authPath: `${ROOT}/data/openai-account-auth.json`,
+				message: "Agent runtime ready.",
+				promptState: "ready",
+				status: "ready",
+			},
+			message: "Bootstrap diagnostics are ready.",
+			missing: {
+				onboarding: 0,
+				optional: 0,
+				runtime: 0,
+			},
+			ok: true,
+			operationalStore: {
+				message: "Operational store ready.",
+				status: "ready",
+			},
+			service: "jobhunt-api-scaffold",
+			sessionId: "phase01-session03-agent-runtime-bootstrap",
+			startupStatus: "ready",
+			status: "ok",
+		},
+		message: "Bootstrap diagnostics are ready.",
+		ok: true,
+		service: "jobhunt-api-scaffold",
+		sessionId: "phase01-session03-agent-runtime-bootstrap",
+		status: "ready",
+	};
+}
+
 function createWorkflowOptions() {
 	return [
 		{
@@ -1005,6 +1157,7 @@ async function startFakeApiServer() {
 	};
 	const readyStartupPayload = createReadyStartupPayload();
 	const readyShellSummary = createReadyShellSummary();
+	const readyOperatorHomeSummary = createReadyOperatorHomeSummary();
 
 	const server = createHttpServer(async (request, response) => {
 		if (request.url === "/startup") {
@@ -1020,6 +1173,14 @@ async function startFakeApiServer() {
 				"content-type": "application/json; charset=utf-8",
 			});
 			response.end(JSON.stringify(readyShellSummary, null, 2));
+			return;
+		}
+
+		if ((request.url ?? "").startsWith("/operator-home")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(JSON.stringify(readyOperatorHomeSummary, null, 2));
 			return;
 		}
 
@@ -1400,6 +1561,17 @@ try {
 			.waitFor();
 		await page.getByText("Pending TSV 302-live-url-role.tsv").waitFor();
 		assert.match(page.url(), /trackerReportNumber=302/);
+
+		await page.getByRole("link", { name: /Home/ }).click();
+		await page
+			.getByRole("heading", { name: "App-owned daily landing path" })
+			.waitFor();
+		await page
+			.getByText(
+				"Auto-pipeline parity now lives under the same app-first home surface as the rest of the operator flow.",
+			)
+			.waitFor();
+		assert.match(page.url(), /#home$/);
 
 		fakeApi.setEvaluationResultMode("invalid-payload");
 		const errorPage = await browser.newPage();

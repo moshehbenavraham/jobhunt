@@ -90,7 +90,7 @@ workflow-specific review surfaces.
   requirement to keep repo reads, approvals, and sensitive actions
   backend-owned
 - `.spec_system/PRD/PRD.md`, `.spec_system/PRD/PRD_UX.md`, and
-  `.spec_system/PRD/phase_06/PRD_phase_06.md` for shell, deep-link, and
+  `.spec_system/archive/phases/phase_06/PRD_phase_06.md` for shell, deep-link, and
   specialist parity requirements
 - `apps/api/src/server/specialist-workspace-contract.ts` and
   `apps/api/src/server/specialist-workspace-summary.ts` for the typed payloads,

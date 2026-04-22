@@ -13,6 +13,36 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, "..");
 const STARTUP_SESSION_ID = "phase01-session03-agent-runtime-bootstrap";
 
+function createChecklistItem(input) {
+	return {
+		candidates: input.candidates,
+		canonicalRepoRelativePath: input.path,
+		description: input.description,
+		missingBehavior: input.missingBehavior,
+		owner: "user",
+		surfaceKey: input.surfaceKey,
+	};
+}
+
+function createRepairPreviewItem(input) {
+	return {
+		description: input.description,
+		destination: {
+			canonicalRepoRelativePath: input.path,
+			matchedRepoRelativePath: null,
+			status: "missing",
+			surfaceKey: input.surfaceKey,
+		},
+		ready: true,
+		reason: "ready",
+		source: {
+			repoRelativePath: input.templatePath,
+			status: "found",
+			surfaceKey: input.templateSurfaceKey,
+		},
+	};
+}
+
 function createReadyStartupPayload() {
 	return {
 		appStateRoot: {
@@ -88,6 +118,62 @@ function createReadyStartupPayload() {
 		sessionId: "phase01-session03-agent-runtime-bootstrap",
 		status: "ready",
 		userLayerWrites: "disabled",
+	};
+}
+
+function createMissingOnboardingHealth() {
+	return {
+		agentRuntime: {
+			authPath: `${ROOT}/data/openai-account-auth.json`,
+			message: "Agent runtime ready.",
+			promptState: "ready",
+			status: "ready",
+		},
+		message: "Bootstrap is live, but onboarding files are still missing.",
+		missing: {
+			onboarding: 2,
+			optional: 0,
+			runtime: 0,
+		},
+		ok: false,
+		operationalStore: {
+			message: "Operational store ready.",
+			status: "ready",
+		},
+		service: "jobhunt-api-scaffold",
+		sessionId: STARTUP_SESSION_ID,
+		startupStatus: "missing-prerequisites",
+		status: "degraded",
+	};
+}
+
+function createMissingPrerequisitesStartupPayload() {
+	const base = createReadyStartupPayload();
+
+	return {
+		...base,
+		diagnostics: {
+			...base.diagnostics,
+			onboardingMissing: [
+				createChecklistItem({
+					candidates: ["config/profile.yml"],
+					description: "Profile configuration is missing.",
+					missingBehavior: "onboarding-required",
+					path: "config/profile.yml",
+					surfaceKey: "profileConfig",
+				}),
+				createChecklistItem({
+					candidates: ["profile/cv.md", "cv.md"],
+					description: "Profile CV markdown is missing.",
+					missingBehavior: "onboarding-required",
+					path: "profile/cv.md",
+					surfaceKey: "profileCv",
+				}),
+			],
+		},
+		health: createMissingOnboardingHealth(),
+		message: "Bootstrap is live, but onboarding files are still missing.",
+		status: "missing-prerequisites",
 	};
 }
 
@@ -184,6 +270,17 @@ function createReadyShellSummary() {
 	};
 }
 
+function createMissingPrerequisitesShellSummary() {
+	const base = createReadyShellSummary();
+
+	return {
+		...base,
+		health: createMissingOnboardingHealth(),
+		message: "Bootstrap is live, but onboarding files are still missing.",
+		status: "missing-prerequisites",
+	};
+}
+
 function createRuntimeErrorShellSummary() {
 	return {
 		activity: {
@@ -232,6 +329,361 @@ function createRuntimeErrorShellSummary() {
 		service: "jobhunt-api-scaffold",
 		sessionId: "phase01-session03-agent-runtime-bootstrap",
 		status: "runtime-error",
+	};
+}
+
+function createOperatorHomeAction(input, focus = {}) {
+	return {
+		description: input.description,
+		focus: {
+			approvalId: focus.approvalId ?? null,
+			entryNumber: focus.entryNumber ?? null,
+			mode: focus.mode ?? null,
+			reportPath: focus.reportPath ?? null,
+			reportNumber: focus.reportNumber ?? null,
+			section: focus.section ?? null,
+			sessionId: focus.sessionId ?? null,
+			url: focus.url ?? null,
+		},
+		id: input.id,
+		label: input.label,
+		surface: input.surface,
+	};
+}
+
+function createReadyOperatorHomeSummary() {
+	return {
+		cards: {
+			approvals: {
+				actions: [
+					createOperatorHomeAction(
+						{
+							description: "Open the next approval in the inbox.",
+							id: "open-approvals",
+							label: "Review Approval",
+							surface: "approvals",
+						},
+						{
+							approvalId: "approval-1",
+							sessionId: "session-live",
+						},
+					),
+				],
+				latestPendingApprovals: [
+					{
+						action: "approve-email",
+						approvalId: "approval-1",
+						jobId: "job-live",
+						requestedAt: "2026-04-21T22:49:00.000Z",
+						sessionId: "session-live",
+						title: "Review application email",
+						traceId: "trace-approval-1",
+					},
+				],
+				message: "2 approvals need explicit operator review.",
+				pendingApprovalCount: 2,
+				recentFailureCount: 1,
+				state: "attention-required",
+			},
+			artifacts: {
+				actions: [
+					createOperatorHomeAction(
+						{
+							description: "Open the latest checked-in report artifact.",
+							id: "open-artifacts",
+							label: "Open Artifacts",
+							surface: "artifacts",
+						},
+						{
+							reportPath: "reports/002-beta-solutions-architect-2026-04-22.md",
+						},
+					),
+				],
+				items: [
+					{
+						artifactDate: "2026-04-22T00:00:00.000Z",
+						fileName: "002-beta-solutions-architect-2026-04-22.md",
+						kind: "report",
+						repoRelativePath:
+							"reports/002-beta-solutions-architect-2026-04-22.md",
+						reportNumber: "002",
+					},
+				],
+				message: "Recent checked-in reports and PDFs are ready to review.",
+				state: "ready",
+				totalCount: 3,
+			},
+			closeout: {
+				actions: [
+					createOperatorHomeAction(
+						{
+							description: "Review the next queue item that needs closeout.",
+							id: "open-pipeline",
+							label: "Open Pipeline",
+							surface: "pipeline",
+						},
+						{
+							reportNumber: "020",
+							section: "processed",
+						},
+					),
+					createOperatorHomeAction(
+						{
+							description:
+								"Open the tracker row or staged addition tied to closeout.",
+							id: "open-tracker",
+							label: "Open Tracker",
+							surface: "tracker",
+						},
+						{
+							reportNumber: "020",
+						},
+					),
+				],
+				message:
+					"Close out the strongest queued items before starting new intake.",
+				pipeline: {
+					malformedCount: 1,
+					pendingCount: 2,
+					preview: [
+						{
+							company: "Acme",
+							kind: "pending",
+							reportNumber: null,
+							role: "Staff Engineer",
+							score: null,
+							url: "https://example.com/jobs/acme-staff",
+							warningCount: 0,
+						},
+					],
+					processedCount: 4,
+				},
+				state: "attention-required",
+				tracker: {
+					pendingAdditionCount: 1,
+					preview: [
+						{
+							company: "Future Company",
+							entryNumber: 20,
+							reportNumber: "020",
+							role: "Forward Deployed Engineer",
+							status: "needs-review",
+						},
+					],
+					rowCount: 12,
+				},
+			},
+			liveWork: {
+				actions: [
+					createOperatorHomeAction(
+						{
+							description: "Resume the active workflow in the chat console.",
+							id: "open-chat",
+							label: "Open Chat",
+							surface: "chat",
+						},
+						{
+							sessionId: "session-live",
+						},
+					),
+				],
+				activeSession: {
+					activeJob: {
+						jobId: "job-live",
+						status: "running",
+						updatedAt: "2026-04-21T22:50:00.000Z",
+						waitReason: null,
+					},
+					activeJobId: "job-live",
+					lastHeartbeatAt: "2026-04-21T22:50:00.000Z",
+					pendingApprovalCount: 2,
+					sessionId: "session-live",
+					status: "running",
+					updatedAt: "2026-04-21T22:50:00.000Z",
+					workflow: "single-evaluation",
+				},
+				activeSessionCount: 1,
+				message: "1 live workflow is active and 2 approvals are waiting.",
+				pendingApprovalCount: 2,
+				recentFailureCount: 1,
+				recentFailures: [
+					{
+						failedAt: "2026-04-21T22:48:00.000Z",
+						jobId: "job-failed",
+						message: "Recent shell failure",
+						runId: "run-failed",
+						sessionId: "session-failed",
+						traceId: "trace-failed",
+					},
+				],
+				state: "attention-required",
+			},
+			maintenance: {
+				actions: [
+					createOperatorHomeAction({
+						description:
+							"Open the settings surface for explicit maintenance guidance.",
+						id: "open-settings",
+						label: "Open Settings",
+						surface: "settings",
+					}),
+				],
+				authState: "ready",
+				commands: [
+					{
+						category: "diagnostics",
+						command: "npm run doctor",
+						description: "Validate repo prerequisites.",
+						id: "doctor",
+						label: "Run doctor",
+					},
+					{
+						category: "updates",
+						command: "node scripts/update-system.mjs check",
+						description: "Check for repo-managed updates.",
+						id: "update-check",
+						label: "Check updates",
+					},
+				],
+				message:
+					"App-first runtime status is visible here, while update and auth changes stay explicit in the terminal.",
+				operationalStoreStatus: "ready",
+				state: "ready",
+				updateCheck: {
+					changelogExcerpt: "New settings surface shipped.",
+					checkedAt: "2026-04-22T00:00:00.000Z",
+					command: "node scripts/update-system.mjs check",
+					localVersion: "1.5.38",
+					message: "Job-Hunt update available (1.5.38 -> 1.6.0).",
+					remoteVersion: "1.6.0",
+					state: "update-available",
+				},
+			},
+			readiness: {
+				actions: [],
+				currentSession: {
+					id: "phase06-session06-dashboard-replacement-maintenance-and-cutover",
+					monorepo: true,
+					packagePath: null,
+					phase: 6,
+					source: "state-file",
+					stateFilePath: `${ROOT}/.spec_system/state.json`,
+				},
+				healthStatus: "ok",
+				message:
+					"Bootstrap diagnostics are ready. The operator home is the default daily landing path.",
+				missing: {
+					onboarding: 0,
+					optional: 0,
+					runtime: 0,
+				},
+				startupStatus: "ready",
+				state: "ready",
+			},
+		},
+		currentSession: {
+			id: "phase06-session06-dashboard-replacement-maintenance-and-cutover",
+			monorepo: true,
+			packagePath: null,
+			phase: 6,
+			source: "state-file",
+			stateFilePath: `${ROOT}/.spec_system/state.json`,
+		},
+		generatedAt: "2026-04-22T00:00:00.000Z",
+		health: {
+			agentRuntime: {
+				authPath: `${ROOT}/data/openai-account-auth.json`,
+				message: "Agent runtime ready.",
+				promptState: "ready",
+				status: "ready",
+			},
+			message: "Bootstrap diagnostics are ready.",
+			missing: {
+				onboarding: 0,
+				optional: 0,
+				runtime: 0,
+			},
+			ok: true,
+			operationalStore: {
+				message: "Operational store ready.",
+				status: "ready",
+			},
+			service: "jobhunt-api-scaffold",
+			sessionId: STARTUP_SESSION_ID,
+			startupStatus: "ready",
+			status: "ok",
+		},
+		message: "Bootstrap diagnostics are ready.",
+		ok: true,
+		service: "jobhunt-api-scaffold",
+		sessionId: STARTUP_SESSION_ID,
+		status: "ready",
+	};
+}
+
+function createOnboardingSummary() {
+	const requiredItems = [
+		createChecklistItem({
+			candidates: ["config/profile.yml"],
+			description: "Profile configuration is missing.",
+			missingBehavior: "onboarding-required",
+			path: "config/profile.yml",
+			surfaceKey: "profileConfig",
+		}),
+		createChecklistItem({
+			candidates: ["profile/cv.md", "cv.md"],
+			description: "Profile CV markdown is missing.",
+			missingBehavior: "onboarding-required",
+			path: "profile/cv.md",
+			surfaceKey: "profileCv",
+		}),
+	];
+	const repairItems = [
+		createRepairPreviewItem({
+			description: "Create the starter profile configuration.",
+			path: "config/profile.yml",
+			surfaceKey: "profileConfig",
+			templatePath: "config/profile.example.yml",
+			templateSurfaceKey: "profileConfigTemplate",
+		}),
+		createRepairPreviewItem({
+			description: "Create the starter CV markdown file.",
+			path: "profile/cv.md",
+			surfaceKey: "profileCv",
+			templatePath: "profile/cv.example.md",
+			templateSurfaceKey: "profileCvTemplate",
+		}),
+	];
+
+	return {
+		checklist: {
+			optional: [],
+			required: requiredItems,
+			runtime: [],
+		},
+		currentSession: {
+			id: "phase03-session03-startup-checklist-and-onboarding-wizard",
+			monorepo: true,
+			packagePath: "apps/web",
+			phase: 3,
+			source: "state-file",
+			stateFilePath: `${ROOT}/.spec_system/state.json`,
+		},
+		generatedAt: "2026-04-22T00:00:00.000Z",
+		health: createMissingOnboardingHealth(),
+		message:
+			"2 onboarding prerequisite(s) are missing. 2 can be repaired from checked-in templates before returning to the operator home.",
+		ok: true,
+		repairPreview: {
+			items: repairItems,
+			readyTargets: repairItems.map((item) => item.destination.surfaceKey),
+			repairableCount: repairItems.length,
+			targetCount: repairItems.length,
+			targets: repairItems.map((item) => item.destination.surfaceKey),
+		},
+		service: "jobhunt-api-scaffold",
+		sessionId: STARTUP_SESSION_ID,
+		status: "missing-prerequisites",
 	};
 }
 
@@ -2236,17 +2688,30 @@ async function startFakeApiServer() {
 		sessionDetails: new Map(),
 		shellMode: "ready",
 		settingsUpdateState: "update-available",
+		startupMode: "ready",
 	};
 	const readyStartupPayload = createReadyStartupPayload();
+	const missingStartupPayload = createMissingPrerequisitesStartupPayload();
 	const readyShellSummary = createReadyShellSummary();
+	const missingShellSummary = createMissingPrerequisitesShellSummary();
 	const runtimeErrorSummary = createRuntimeErrorShellSummary();
+	const operatorHomeSummary = createReadyOperatorHomeSummary();
+	const onboardingSummary = createOnboardingSummary();
 
 	const server = createHttpServer(async (request, response) => {
 		if (request.url === "/startup") {
 			response.writeHead(200, {
 				"content-type": "application/json; charset=utf-8",
 			});
-			response.end(JSON.stringify(readyStartupPayload, null, 2));
+			response.end(
+				JSON.stringify(
+					state.startupMode === "missing-prerequisites"
+						? missingStartupPayload
+						: readyStartupPayload,
+					null,
+					2,
+				),
+			);
 			return;
 		}
 
@@ -2254,13 +2719,31 @@ async function startFakeApiServer() {
 			const payload =
 				state.shellMode === "runtime-error"
 					? runtimeErrorSummary
-					: readyShellSummary;
+					: state.shellMode === "missing-prerequisites"
+						? missingShellSummary
+						: readyShellSummary;
 			const statusCode = state.shellMode === "runtime-error" ? 503 : 200;
 
 			response.writeHead(statusCode, {
 				"content-type": "application/json; charset=utf-8",
 			});
 			response.end(JSON.stringify(payload, null, 2));
+			return;
+		}
+
+		if ((request.url ?? "").startsWith("/operator-home")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(JSON.stringify(operatorHomeSummary, null, 2));
+			return;
+		}
+
+		if ((request.url ?? "").startsWith("/onboarding")) {
+			response.writeHead(200, {
+				"content-type": "application/json; charset=utf-8",
+			});
+			response.end(JSON.stringify(onboardingSummary, null, 2));
 			return;
 		}
 
@@ -2540,6 +3023,9 @@ async function startFakeApiServer() {
 		setShellMode(mode) {
 			state.shellMode = mode;
 		},
+		setStartupMode(mode) {
+			state.startupMode = mode;
+		},
 		setSettingsUpdateState(mode) {
 			state.settingsUpdateState = mode;
 		},
@@ -2585,14 +3071,46 @@ try {
 		await page.goto(webUrl, { waitUntil: "networkidle" });
 
 		await page
-			.getByRole("heading", { name: "Job-Hunt control surface" })
+			.getByRole("heading", { name: "App-owned daily landing path" })
 			.waitFor();
+		await page.getByRole("link", { name: /Home/ }).waitFor();
 		await page.getByRole("link", { name: /Startup/ }).waitFor();
 		await page.getByRole("link", { name: /Apply/ }).waitFor();
 		await page.getByRole("link", { name: /Approvals/ }).waitFor();
 		await page.getByRole("link", { name: /Tracker/ }).waitFor();
-		await page.getByText("Review application email").waitFor();
-		await page.getByText("Job-Hunt startup diagnostics").waitFor();
+		await page.getByText("Review application email", { exact: true }).waitFor();
+		await page.getByText("Acme - Staff Engineer").waitFor();
+		await page.getByRole("button", { name: "Review Approval" }).click();
+		await page
+			.getByRole("heading", { name: "Approval inbox and human review flow" })
+			.waitFor();
+		assert.match(page.url(), /approval=/);
+		assert.match(page.url(), /reviewSession=session-live/);
+		assert.match(page.url(), /#approvals$/);
+
+		fakeApi.setShellMode("missing-prerequisites");
+		fakeApi.setStartupMode("missing-prerequisites");
+		await page.goto(`${webUrl}#home`, { waitUntil: "networkidle" });
+		await page
+			.getByRole("heading", { name: "Startup checklist and onboarding wizard" })
+			.waitFor();
+		await page
+			.getByText("config/profile.yml", { exact: true })
+			.first()
+			.waitFor();
+		assert.match(page.url(), /#onboarding$/);
+
+		fakeApi.setShellMode("ready");
+		fakeApi.setStartupMode("ready");
+		await page.goto(webUrl, { waitUntil: "networkidle" });
+		await page
+			.getByRole("heading", { name: "App-owned daily landing path" })
+			.waitFor();
+		await page.getByRole("button", { name: "Open Pipeline" }).click();
+		await page
+			.getByRole("heading", { name: "Pipeline review workspace" })
+			.waitFor();
+		assert.match(page.url(), /#pipeline$/);
 
 		await page.getByRole("link", { name: /Chat/ }).click();
 		await page
@@ -2872,6 +3390,18 @@ try {
 			.getByRole("button", { name: /Refresh operator shell summary/ })
 			.click();
 		await page.getByText("Offline after the last good summary").waitFor();
+
+		await page.getByRole("link", { name: /Home/ }).click();
+		await page
+			.getByRole("heading", { name: "App-owned daily landing path" })
+			.waitFor();
+		await page.route("**/api/operator-home**", async (route) => {
+			await route.abort("failed");
+		});
+		await page.getByRole("button", { name: /Refresh home/ }).click();
+		await page
+			.getByText("Showing the last known operator-home snapshot.")
+			.waitFor();
 	} finally {
 		await browser.close();
 	}

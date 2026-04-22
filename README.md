@@ -5,8 +5,8 @@ repo-owned scripts, and the app surface under `apps/`, including the review
 surfaces for evaluation, reports, pipeline, tracker, and application-help
 workflows.
 
-It also includes a Go-based terminal dashboard for browsing and updating the
-job-search pipeline.
+It also includes a Go-based terminal dashboard as a secondary path for parity
+checks and fallback review.
 
 ## Please Do Not Delete This Line. This is a fork of: https://github.com/santifer/career-ops/
 
@@ -32,11 +32,11 @@ See the [Setup Guide](docs/SETUP.md) for the detailed walkthrough.
 
 `npm run doctor` validates Node.js, installed dependencies, Playwright Chromium, `profile/cv.md`, `config/profile.yml`, and `config/portals.yml`, then shows the current OpenAI account auth state and the next command to run.
 
-After it passes, you have two normal next steps:
+After it passes, the normal next step is the app-owned runtime:
 
+- run `npm run app:validate`, then `npm run app:web:dev` and `npm run app:api:serve`
 - if you want repo-owned OpenAI runtime flows, run `npm run auth:openai -- login` once from the repo root
-- if you want the app surface, run `npm run app:validate`, then `npm run app:web:dev` and `npm run app:api:serve`
-- if you already have a job URL or JD and want the legacy CLI workflow, launch `codex` from the repo root and paste it
+- if you already have a job URL or JD and intentionally want the legacy CLI workflow, launch `codex` from the repo root and paste it
 - if you need discovery first, run `npm run scan`, then review `data/pipeline.md -> ## Shortlist` and start with the top 3 roles
 
 The standard user-layer inputs are:
@@ -59,7 +59,7 @@ The standard user-layer inputs are:
 - `npm run merge` - merge batch tracker additions
 - `npm run pdf` - generate an ATS-friendly PDF
 - `npm run latex` - validate and compile an optional LaTeX / Overleaf CV
-- `npm run dashboard` - build and launch the Go dashboard
+- `npm run dashboard` - build and launch the secondary Go dashboard
 - `npm run app:validate` - run the app workspace checks plus the boot smoke test
 - `npm run app:boot:test` - verify the live API boot surface from the repo root
 - `npm run app:api:serve` - start the long-lived API boot server
@@ -78,10 +78,11 @@ file to Overleaf.
 
 ## App Surface
 
-The app surface under `apps/` is the preferred local runtime path. It now
-covers startup diagnostics, onboarding repair, approval review, settings,
-report viewing, pipeline review, tracker workspace, application-help, and the
-long-lived API boot server instead of only the initial scaffold.
+The app surface under `apps/` is the primary local runtime path. It now covers
+the operator home landing, startup diagnostics, onboarding repair, approval
+review, settings, report viewing, pipeline review, tracker workspace,
+application-help, and the long-lived API boot server instead of only the
+initial scaffold.
 
 - `npm run app:web:dev` - start the React shell with Vite
 - `npm run app:web:build` - build the web scaffold into `apps/web/dist`
@@ -100,7 +101,9 @@ user-layer files under `profile/`, `config/`, `data/`, `reports/`, `output/`,
 The API package exposes the startup, onboarding, approval inbox, settings,
 report-viewer, pipeline-review, tracker-workspace, application-help, and
 workflow bootstrap routes used by the web shell. The web package renders those
-operator surfaces and keeps them read-first against the repo-owned contract.
+operator surfaces and keeps them read-first against the repo-owned contract,
+with the operator home acting as the default daily landing path once startup is
+ready.
 
 `npm run scan` is currently an API-first scanner. It uses
 `tracked_companies`, `title_filter.positive`, and `title_filter.negative` from
@@ -124,9 +127,9 @@ layer files, run `npm run cron:install`. That installs a daily `npm run scan`
 cron entry at `06:00` local host time, calling the checked-in
 `scripts/run-scheduled-scan.sh` runner and logging to `tmp/cron/scan.log`.
 
-To launch the dashboard from the repo root, run `npm run dashboard`. It wraps
-`./scripts/ux.sh`, builds `dashboard/career-dashboard`, and defaults `--path`
-to the repo root so the TUI can read the current tracker and reports
+To launch the secondary dashboard from the repo root, run `npm run dashboard`.
+It wraps `./scripts/ux.sh`, builds `dashboard/career-dashboard`, and defaults
+`--path` to the repo root so the TUI can read the current tracker and reports
 immediately.
 
 ## Repository Layout
@@ -155,6 +158,7 @@ immediately.
 - [Scripts Reference](docs/SCRIPTS.md)
 - [Contributing](CONTRIBUTING.md)
 - [Docs Index](docs/README-docs.md)
+- [Cutover Note](docs/CUTOVER.md)
 - [API Package README](apps/api/README_api.md)
 - [Web Package README](apps/web/README_web.md)
 

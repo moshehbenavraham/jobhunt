@@ -1865,7 +1865,7 @@ try {
 		await page.goto(`${webUrl}#chat`, { waitUntil: "domcontentloaded" });
 
 		await page
-			.getByRole("heading", { name: "Job-Hunt control surface" })
+			.getByRole("heading", { name: "App-first operator home" })
 			.waitFor();
 		await page
 			.getByRole("heading", { name: "Launch a supported workflow" })

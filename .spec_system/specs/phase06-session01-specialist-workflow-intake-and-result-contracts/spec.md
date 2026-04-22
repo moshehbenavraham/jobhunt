@@ -88,7 +88,7 @@ Sessions 03 and 04 layer workflow-specific result contracts on top of it.
   requirement to keep approvals, repo reads, and sensitive actions
   backend-owned
 - `.spec_system/PRD/PRD.md`, `.spec_system/PRD/PRD_UX.md`, and
-  `.spec_system/PRD/phase_06/PRD_phase_06.md` for specialist workspace and
+  `.spec_system/archive/phases/phase_06/PRD_phase_06.md` for specialist workspace and
   Phase 06 parity goals
 - `modes/ofertas.md`, `modes/followup.md`, `modes/patterns.md`,
   `modes/deep.md`, `modes/contacto.md`, `modes/interview-prep.md`,

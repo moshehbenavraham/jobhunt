@@ -57,7 +57,7 @@ family stays aligned with the existing runtime and quick regression coverage.
 | `scripts/test-app-specialist-workspace.mjs`                | Extended specialist workspace smoke coverage                                          |
 | `scripts/test-all.mjs`                                     | Added the new quick-gate checks and coverage wiring                                   |
 | `.spec_system/state.json`                                  | Marked session 04 completed and cleared the active session                            |
-| `.spec_system/PRD/phase_06/PRD_phase_06.md`                | Updated phase 06 tracker status and upcoming sessions                                 |
+| `.spec_system/archive/phases/phase_06/PRD_phase_06.md`     | Updated phase 06 tracker status and upcoming sessions                                 |
 | `.spec_system/PRD/PRD.md`                                  | Updated the master PRD phase 06 closeout snapshot                                     |
 | `package.json`                                             | Bumped the patch version from `1.5.40` to `1.5.41`                                    |
 | `package-lock.json`                                        | Kept the lockfile version aligned with `package.json`                                 |

@@ -84,7 +84,7 @@ browser-side markdown parsing or shell-only script follow-through.
   requirement to keep repo reads, script execution, and specialist review
   state backend-owned
 - `.spec_system/PRD/PRD.md`, `.spec_system/PRD/PRD_UX.md`, and
-  `.spec_system/PRD/phase_06/PRD_phase_06.md` for specialist parity and
+  `.spec_system/archive/phases/phase_06/PRD_phase_06.md` for specialist parity and
   dashboard-replacement sequencing
 - `modes/ofertas.md`, `modes/followup.md`, and `modes/patterns.md` for the
   three planning-oriented workflow contracts

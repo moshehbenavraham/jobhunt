@@ -72,7 +72,7 @@ help, pipeline, and tracker workspaces.
 - `.spec_system/SECURITY-COMPLIANCE.md` for the clean posture and the rule
   that repo reads, approvals, and mutations remain backend-owned.
 - `.spec_system/PRD/PRD.md`, `.spec_system/PRD/PRD_UX.md`, and
-  `.spec_system/PRD/phase_06/PRD_phase_06.md` for specialist parity,
+  `.spec_system/archive/phases/phase_06/PRD_phase_06.md` for specialist parity,
   workspace deep-linking, and cutover sequencing.
 - `apps/web/src/workflows/specialist-workspace-*.ts*` for the existing shared
   workflows shell.

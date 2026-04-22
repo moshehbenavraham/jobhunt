@@ -34,6 +34,7 @@ import type {
 import { createWorkspaceFixture } from "../workspace/test-utils.js";
 import type { JsonValue } from "../workspace/workspace-types.js";
 import { startStartupHttpServer } from "./http-server.js";
+import { createOperatorHomeRoute } from "./routes/operator-home-route.js";
 import { createSettingsRoute } from "./routes/settings-route.js";
 
 async function readJsonResponse(
@@ -1269,6 +1270,362 @@ test("operator-shell route exposes active-work badges and validates bounded quer
 				}
 			).error.code,
 			"invalid-operator-shell-query",
+		);
+	} finally {
+		await handle.close();
+		await services.dispose();
+		await fixture.cleanup();
+	}
+});
+
+test("operator-home route forwards bounded preview limits and validates query input", async () => {
+	const fixture = await createReadyFixture();
+	const services = createApiServiceContainer({
+		agentRuntime: createAgentRuntimeService({
+			authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+			repoRoot: fixture.repoRoot,
+		}),
+		repoRoot: fixture.repoRoot,
+	});
+	let capturedOptions: {
+		approvalLimit?: number;
+		artifactLimit?: number;
+		closeoutLimit?: number;
+	} | null = null;
+	const handle = await startStartupHttpServer({
+		host: "127.0.0.1",
+		port: 0,
+		rateLimitMaxRequests: 20,
+		routes: [
+			createOperatorHomeRoute({
+				createSummary: async (_services, options = {}) => {
+					capturedOptions = options;
+
+					return {
+						cards: {
+							approvals: {
+								actions: [],
+								latestPendingApprovals: [],
+								message: "No approvals waiting.",
+								pendingApprovalCount: 0,
+								recentFailureCount: 0,
+								state: "idle",
+							},
+							artifacts: {
+								actions: [],
+								items: [],
+								message: "No artifacts yet.",
+								state: "idle",
+								totalCount: 0,
+							},
+							closeout: {
+								actions: [],
+								message: "No closeout work waiting.",
+								pipeline: {
+									malformedCount: 0,
+									pendingCount: 0,
+									preview: [],
+									processedCount: 0,
+								},
+								state: "idle",
+								tracker: {
+									pendingAdditionCount: 0,
+									preview: [],
+									rowCount: 0,
+								},
+							},
+							liveWork: {
+								actions: [],
+								activeSession: null,
+								activeSessionCount: 0,
+								message: "No live workflow is running.",
+								pendingApprovalCount: 0,
+								recentFailureCount: 0,
+								recentFailures: [],
+								state: "idle",
+							},
+							maintenance: {
+								actions: [],
+								authState: "ready",
+								commands: [],
+								message: "Maintenance is stable.",
+								operationalStoreStatus: "ready",
+								state: "ready",
+								updateCheck: {
+									changelogExcerpt: null,
+									checkedAt: "2026-04-22T00:00:00.000Z",
+									command: "node scripts/update-system.mjs check",
+									localVersion: "1.5.42",
+									message: "Job-Hunt is up to date (1.5.42).",
+									remoteVersion: "1.5.42",
+									state: "up-to-date",
+								},
+							},
+							readiness: {
+								actions: [],
+								currentSession: {
+									id: STARTUP_SESSION_ID,
+									monorepo: null,
+									packagePath: null,
+									phase: null,
+									source: "fallback",
+									stateFilePath: `${fixture.repoRoot}/.spec_system/state.json`,
+								},
+								healthStatus: "ok",
+								message: "Ready.",
+								missing: {
+									onboarding: 0,
+									optional: 0,
+									runtime: 0,
+								},
+								startupStatus: "ready",
+								state: "ready",
+							},
+						},
+						currentSession: {
+							id: STARTUP_SESSION_ID,
+							monorepo: null,
+							packagePath: null,
+							phase: null,
+							source: "fallback",
+							stateFilePath: `${fixture.repoRoot}/.spec_system/state.json`,
+						},
+						generatedAt: "2026-04-22T00:00:00.000Z",
+						health: {
+							agentRuntime: {
+								authPath: `${fixture.repoRoot}/data/openai-account-auth.json`,
+								message: "Agent runtime ready.",
+								promptState: "ready",
+								status: "ready",
+							},
+							message: "Bootstrap diagnostics are ready.",
+							missing: {
+								onboarding: 0,
+								optional: 0,
+								runtime: 0,
+							},
+							ok: true,
+							operationalStore: {
+								message: "Operational store ready.",
+								status: "ready",
+							},
+							service: STARTUP_SERVICE_NAME,
+							sessionId: STARTUP_SESSION_ID,
+							startupStatus: "ready",
+							status: "ok",
+						},
+						message: "Operator home ready.",
+						ok: true,
+						service: STARTUP_SERVICE_NAME,
+						sessionId: STARTUP_SESSION_ID,
+						status: "ready",
+					};
+				},
+			}),
+		],
+		services,
+	});
+
+	try {
+		const { payload, response } = await readJsonResponse(
+			`${handle.url}/operator-home?approvalLimit=1&artifactLimit=2&closeoutLimit=3`,
+		);
+
+		assert.equal(response.status, 200);
+		assert.equal((payload as { status: string }).status, "ready");
+		assert.deepEqual(capturedOptions, {
+			approvalLimit: 1,
+			artifactLimit: 2,
+			closeoutLimit: 3,
+		});
+		assert.equal(
+			(
+				payload as {
+					cards: { readiness: { state: string } };
+				}
+			).cards.readiness.state,
+			"ready",
+		);
+
+		const { payload: invalidPayload, response: invalidResponse } =
+			await readJsonResponse(`${handle.url}/operator-home?approvalLimit=0`);
+
+		assert.equal(invalidResponse.status, 400);
+		assert.equal(
+			(
+				invalidPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-operator-home-query",
+		);
+	} finally {
+		await handle.close();
+		await services.dispose();
+		await fixture.cleanup();
+	}
+});
+
+test("operator-home route returns degraded card payloads without failing the whole route", async () => {
+	const fixture = await createReadyFixture();
+	const services = createApiServiceContainer({
+		agentRuntime: createAgentRuntimeService({
+			authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+			repoRoot: fixture.repoRoot,
+		}),
+		repoRoot: fixture.repoRoot,
+	});
+	const handle = await startStartupHttpServer({
+		host: "127.0.0.1",
+		port: 0,
+		rateLimitMaxRequests: 20,
+		routes: [
+			createOperatorHomeRoute({
+				createSummary: async () => ({
+					cards: {
+						approvals: {
+							actions: [],
+							latestPendingApprovals: [],
+							message: "Approval summary degraded.",
+							pendingApprovalCount: 0,
+							recentFailureCount: 0,
+							state: "degraded",
+						},
+						artifacts: {
+							actions: [],
+							items: [],
+							message: "Artifact summary degraded.",
+							state: "degraded",
+							totalCount: 0,
+						},
+						closeout: {
+							actions: [],
+							message: "Closeout summary degraded.",
+							pipeline: {
+								malformedCount: 0,
+								pendingCount: 0,
+								preview: [],
+								processedCount: 0,
+							},
+							state: "degraded",
+							tracker: {
+								pendingAdditionCount: 0,
+								preview: [],
+								rowCount: 0,
+							},
+						},
+						liveWork: {
+							actions: [],
+							activeSession: null,
+							activeSessionCount: 0,
+							message: "Live work degraded.",
+							pendingApprovalCount: 0,
+							recentFailureCount: 0,
+							recentFailures: [],
+							state: "degraded",
+						},
+						maintenance: {
+							actions: [],
+							authState: "unavailable",
+							commands: [],
+							message: "Maintenance summary degraded.",
+							operationalStoreStatus: "ready",
+							state: "degraded",
+							updateCheck: {
+								changelogExcerpt: null,
+								checkedAt: "2026-04-22T00:00:00.000Z",
+								command: "node scripts/update-system.mjs check",
+								localVersion: null,
+								message: "Update state unavailable.",
+								remoteVersion: null,
+								state: "error",
+							},
+						},
+						readiness: {
+							actions: [],
+							currentSession: {
+								id: STARTUP_SESSION_ID,
+								monorepo: null,
+								packagePath: null,
+								phase: null,
+								source: "fallback",
+								stateFilePath: `${fixture.repoRoot}/.spec_system/state.json`,
+							},
+							healthStatus: "ok",
+							message: "Ready.",
+							missing: {
+								onboarding: 0,
+								optional: 0,
+								runtime: 0,
+							},
+							startupStatus: "ready",
+							state: "ready",
+						},
+					},
+					currentSession: {
+						id: STARTUP_SESSION_ID,
+						monorepo: null,
+						packagePath: null,
+						phase: null,
+						source: "fallback",
+						stateFilePath: `${fixture.repoRoot}/.spec_system/state.json`,
+					},
+					generatedAt: "2026-04-22T00:00:00.000Z",
+					health: {
+						agentRuntime: {
+							authPath: `${fixture.repoRoot}/data/openai-account-auth.json`,
+							message: "Agent runtime ready.",
+							promptState: "ready",
+							status: "ready",
+						},
+						message: "Bootstrap diagnostics are ready.",
+						missing: {
+							onboarding: 0,
+							optional: 0,
+							runtime: 0,
+						},
+						ok: true,
+						operationalStore: {
+							message: "Operational store ready.",
+							status: "ready",
+						},
+						service: STARTUP_SERVICE_NAME,
+						sessionId: STARTUP_SESSION_ID,
+						startupStatus: "ready",
+						status: "ok",
+					},
+					message: "Operator home degraded.",
+					ok: true,
+					service: STARTUP_SERVICE_NAME,
+					sessionId: STARTUP_SESSION_ID,
+					status: "ready",
+				}),
+			}),
+		],
+		services,
+	});
+
+	try {
+		const { payload, response } = await readJsonResponse(
+			`${handle.url}/operator-home`,
+		);
+
+		assert.equal(response.status, 200);
+		assert.equal(
+			(
+				payload as {
+					cards: { closeout: { state: string } };
+				}
+			).cards.closeout.state,
+			"degraded",
+		);
+		assert.equal(
+			(
+				payload as {
+					cards: { maintenance: { state: string; authState: string } };
+				}
+			).cards.maintenance.authState,
+			"unavailable",
 		);
 	} finally {
 		await handle.close();

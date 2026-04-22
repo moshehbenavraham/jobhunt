@@ -23,9 +23,9 @@ your personal search.
 ## Contributor Workflow
 
 1. Start from `develop` when it exists; otherwise branch from `main`.
-2. Use `codex` from the repo root for the legacy CLI workflow, and use the app
-   surface commands for the local boot path. Keep behavior aligned with
-   `AGENTS.md` plus the checked-in docs and scripts.
+2. Prefer the app surface commands for the local boot path and use `codex`
+   only when you are intentionally exercising the legacy CLI workflow. Keep
+   behavior aligned with `AGENTS.md` plus the checked-in docs and scripts.
 3. Keep commits focused and explain behavior changes in the PR summary.
 4. Update the owning docs, scripts, or templates when the runtime contract
    changes.

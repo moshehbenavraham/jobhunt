@@ -1,7 +1,7 @@
 # Considerations
 
 > Institutional memory for AI assistants. Updated between phases via carryforward.
-> **Line budget**: 600 max | **Last updated**: Phase 05 (2026-04-22)
+> **Line budget**: 600 max | **Last updated**: Phase 06 (2026-04-22)
 
 ---
 
@@ -11,33 +11,22 @@ Items requiring attention in upcoming phases. Review before each session.
 
 ### Technical Debt
 
-<!-- Max 5 items -->
-
-- [P05] **Specialist summary drift**: Scan, batch, and application-help all rely on bounded summary contracts and route-owned actions; keep API payloads, browser parsers, and smoke fixtures aligned.
-- [P05-apps/api] **Markdown parser fragility**: Scan history, batch state, and application-help context still parse repo-owned markdown or sidecar files; fixture and parser updates must stay coordinated.
-- [P05-apps/web] **URL-backed focus sync**: Specialized workspaces depend on query state and cleanup for refresh and re-entry; preserve stale-selection recovery and listener teardown.
-- [P05] **Bounded payload growth**: Keep shortlist, item-matrix, and draft-packet payloads capped so polling stays fast and does not drift toward raw artifact readers.
+- [P06] **Specialist contract drift**: Keep the specialist workspace, tracker-specialist, research-specialist, and operator-home summary shapes aligned with the catalog and smoke fixtures.
+- [P06-apps/api] **Repo path contract stability**: Packet staging under `.jobhunt-app/` and workspace-derived summaries still depend on canonical local paths and selection keys staying stable.
 
 ### External Dependencies
 
-<!-- Max 5 items -->
-
-- [P05] **Smoke suite coverage**: Dedicated smoke scripts now cover scan, batch, and application-help; keep them updated whenever a new surface or handoff path lands.
-- [P05-apps/api] **Repo file contract stability**: The API summaries depend on canonical report, tracker, and draft-packet paths staying stable in the repo-owned file contract.
+- [P06] **Smoke suite coverage**: Update the specialist workspace, shell, settings, onboarding, and cutover smoke scripts whenever copy, routing, or handoff names change.
 
 ### Performance / Security
 
-<!-- Max 5 items -->
-
-- [P05] **Read-only browser boundary**: Keep repo-file access, tracker mutations, and approval-sensitive actions backend-owned; browser surfaces should remain fail-closed parsers over bounded summaries.
-- [P05] **No-submit boundary**: Application-help must stay review-only and never drift into browser-owned submission behavior.
+- [P06] **Read-only browser boundary**: Keep repo reads, packet loading, and approval-sensitive actions backend-owned; browser surfaces should stay bounded parsers over summary payloads.
+- [P06] **Bounded payload growth**: Specialist packets and operator-home summaries must stay compact so polling and revalidation remain fast.
 
 ### Architecture
 
-<!-- Max 5 items -->
-
-- [P05] **Thin browser surfaces**: Continue keeping workflow inference in API contracts instead of React state or ad hoc client parsing.
-- [P05] **Canonical handoff routing**: Chat, report, tracker, scan, batch, and application-help surfaces should continue to share the same backend-owned handoff model.
+- [P06] **URL-backed focus sync**: Refresh and re-entry recovery still depends on query-state cleanup and stale-selection revalidation.
+- [P06] **App-primary cutover consistency**: Settings, onboarding, docs, and dashboard fallback messaging must remain aligned until the secondary dashboard is retired.
 
 ---
 
@@ -47,34 +36,26 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 ### What Worked
 
-<!-- Max 15 items -->
-
-- [P05] **Bounded read models**: One typed summary per specialist surface kept the browser simple and reduced parser drift.
-- [P05] **Strict browser parsing**: Fail-closed payload parsers surfaced contract drift early instead of rendering partial state.
-- [P05] **URL-backed focus state**: Query-string focus survived refresh and re-entry without hidden client state.
-- [P05] **Read-only summary routes**: Keeping repo reads behind API routes preserved the browser trust boundary.
-- [P05] **Route-owned mutations**: Explicit backend actions and duplicate-submit guards kept retries and closeout flows safe.
-- [P05] **Reusable shell handoff paths**: Reusing the same handoff pattern across surfaces kept navigation consistent.
-- [P05-apps/api] **App-owned draft packets**: Staging application-help packets under `.jobhunt-app/` kept review explicit, bounded, and replayable.
-- [P05-apps/web] **Dedicated smoke scripts**: Per-surface smoke harnesses gave reliable regression coverage for the new workflows.
+- [P06] **Bounded specialist contracts**: Dedicated summary contracts kept the web shell thin and prevented browser-side repo inference.
+- [P06-apps/api] **Backend-owned packet normalization**: Staging and loading packets in the API reduced repeated script execution and summary drift.
+- [P06-apps/web] **Family-specific parsers**: Strict tracker-specialist and research-specialist parsers failed closed when payloads were stale or partial.
+- [P06-apps/web] **URL-backed re-entry**: Query-state selection plus stale-selection recovery made refresh and deep links deterministic.
+- [P06] **Dedicated detail routes**: Separate specialist detail routes and the operator-home route fit the shell better than generic, inference-heavy payloads.
+- [P06] **Smoke updates with contract changes**: Updating smoke fixtures and the quick gate in the same change prevented copy and routing regressions.
 
 ### What To Avoid
 
-<!-- Max 10 items -->
-
-- [P05] **Browser guessing from files**: Do not let React infer artifact readiness by reading repo files directly.
-- [P05] **Unbounded polling summaries**: Do not return raw artifact detail when a bounded summary is enough.
-- [P05] **UI-only mutation logic**: Keep scan, batch, tracker, and application-help actions behind backend routes and tools.
-- [P05] **Parallel selection state**: Avoid separate client-owned focus models for specialized review surfaces.
+- [P06] **Browser-side repo parsing**: Do not infer workflow state from raw files or React state when the API can return a bounded summary.
+- [P06] **Generic review payloads**: Mixing specialist families into one undifferentiated review model makes drift harder to detect.
+- [P06] **Stale smoke fixtures**: Keep smoke coverage and copy expectations in lockstep with routing and surface renames.
 
 ### Tool/Library Notes
 
-<!-- Max 5 items -->
-
-- [P05] **`scripts/test-app-scan-review.mjs`**: Use when scan review or shortlist handoff changes.
-- [P05] **`scripts/test-app-batch-workspace.mjs`**: Use when batch supervision, retry, or closeout changes.
-- [P05] **`scripts/test-app-application-help.mjs`**: Use when application-help review, approval, or resume behavior changes.
-- [P05] **`node scripts/test-all.mjs --quick`**: Keep this as the fast regression gate after surface changes.
+- [P06] **`scripts/test-app-specialist-workspace.mjs`**: Use for specialist workspace and review flow changes.
+- [P06] **`scripts/test-app-shell.mjs`**: Use for shell handoffs, deep links, and landing surface changes.
+- [P06] **`scripts/test-app-settings.mjs`**: Use when app-primary messaging or maintenance copy changes.
+- [P06] **`scripts/test-app-onboarding.mjs`**: Use when boot-path, intercept, or recovery copy changes.
+- [P06] **`scripts/test-app-auto-pipeline-parity.mjs`**: Use when cutover parity or home-landing behavior changes.
 
 ---
 
@@ -82,11 +63,12 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 Recently closed items (buffer - rotates out after 2 phases).
 
-| Phase | Item                     | Resolution                                                                                                                              |
-| ----- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| P04   | Smoke suite coverage     | Phase 05 added and wired dedicated scan, batch, and application-help smoke coverage into the quick regression gate.                     |
-| P03   | Bounded polling payloads | Phase 04 added bounded evaluation, report, pipeline, and tracker summaries so browser polling no longer depends on raw artifact detail. |
-| P03   | Interaction race guards  | Phase 04 added duplicate-submit and in-flight action guards, plus backend-owned mutation paths where needed.                            |
-| P03   | UI-only mutation logic   | Phase 04 moved tracker edits and maintenance actions behind API routes and tools instead of browser-owned command logic.                |
+| Phase | Item                      | Resolution                                                                                                             |
+| ----- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| P05   | Specialist summary drift  | Phase 06 added dedicated specialist and operator-home summary contracts plus family-specific review surfaces.          |
+| P05   | Markdown parser fragility | Phase 06 moved narrative context resolution and packet staging into API-owned tools instead of ad hoc browser parsing. |
+| P05   | URL-backed focus sync     | Phase 06 extended stale-selection recovery and revalidation across specialist review surfaces.                         |
+| P05   | Bounded payload growth    | Phase 06 kept specialist packets and operator-home summaries bounded, preserving fast polling.                         |
+| P05   | Smoke suite coverage      | Phase 06 updated specialist, shell, settings, onboarding, and cutover smoke checks alongside the feature work.         |
 
 _Auto-generated by carryforward. Manual edits allowed but may be overwritten._

@@ -9,29 +9,19 @@ import {
 } from "../config/repo-paths.js";
 import { getWorkflowModeRoute } from "../prompt/index.js";
 import {
-	type ApplicationHelpContextMatchState,
-	type ApplicationHelpCoverLetterState,
 	type ApplicationHelpDraftItem,
 	type ApplicationHelpMatchedReportContext,
 	applicationHelpContextMatchStateValues,
 	applicationHelpCoverLetterStateValues,
 } from "../server/application-help-contract.js";
+import { reportViewerLegitimacyValues } from "../server/report-viewer-contract.js";
 import {
-	type ReportViewerLegitimacy,
-	reportViewerLegitimacyValues,
-} from "../server/report-viewer-contract.js";
-import {
-	type DeepCompanyResearchPacket,
-	type InterviewPrepPacket,
-	type LinkedinOutreachPacket,
-	type ProjectReviewPacket,
 	projectReviewVerdictValues,
 	type ResearchSpecialistContextSummary,
 	type ResearchSpecialistExistingPacketSummary,
 	type ResearchSpecialistMode,
 	type ResearchSpecialistPacket,
 	type ResearchSpecialistResolvedContext,
-	type ResearchSpecialistResultStatus,
 	type ResearchSpecialistStoryBankSummary,
 	type ResearchSpecialistWarningCode,
 	type ResearchSpecialistWarningItem,
@@ -41,7 +31,6 @@ import {
 	researchSpecialistResultStatusValues,
 	researchSpecialistStoryBankSourceValues,
 	researchSpecialistWarningCodeValues,
-	type TrainingReviewPacket,
 	trainingReviewVerdictValues,
 } from "../server/research-specialist-contract.js";
 import type { JsonValue } from "../workspace/workspace-types.js";

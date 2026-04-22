@@ -9,6 +9,7 @@ import { createEvaluationResultRoute } from "./evaluation-result-route.js";
 import { createHealthRoute } from "./health-route.js";
 import { createOnboardingRepairRoute } from "./onboarding-repair-route.js";
 import { createOnboardingRoute } from "./onboarding-route.js";
+import { createOperatorHomeRoute } from "./operator-home-route.js";
 import { createOperatorShellRoute } from "./operator-shell-route.js";
 import { createOrchestrationRoute } from "./orchestration-route.js";
 import { createPipelineReviewRoute } from "./pipeline-review-route.js";
@@ -52,6 +53,7 @@ export function createApiRouteRegistry(): ApiRouteDefinition[] {
 		createApprovalResolutionRoute(),
 		createChatConsoleRoute(),
 		createEvaluationResultRoute(),
+		createOperatorHomeRoute(),
 		createOrchestrationRoute(),
 		createOnboardingRoute(),
 		createOnboardingRepairRoute(),

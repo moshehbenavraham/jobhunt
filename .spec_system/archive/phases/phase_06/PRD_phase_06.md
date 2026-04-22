@@ -1,10 +1,10 @@
 # PRD Phase 06: Specialist Workflows, Dashboard Replacement, and Cutover
 
-**Status**: In Progress
+**Status**: Complete
 **Sessions**: 6
 **Estimated Duration**: 8-12 days
 
-**Progress**: 5/6 sessions (83%)
+**Progress**: 6/6 sessions (100%)
 
 ---
 
@@ -35,7 +35,7 @@ boundary.
 | 03      | Offer, Follow-Up, and Pattern Contracts         | Complete    | ~12-25     | 2026-04-22 |
 | 04      | Research and Narrative Specialist Contracts     | Complete    | ~12-25     | 2026-04-22 |
 | 05      | Specialist Review Surfaces                      | Complete    | ~12-25     | 2026-04-22 |
-| 06      | Dashboard Replacement, Maintenance, and Cutover | Not Started | ~12-25     | -          |
+| 06      | Dashboard Replacement, Maintenance, and Cutover | Completed   | ~12-25     | 2026-04-22 |
 
 ---
 
@@ -46,12 +46,15 @@ boundary.
 3. Session 03: Offer, Follow-Up, and Pattern Contracts
 4. Session 04: Research and Narrative Specialist Contracts
 5. Session 05: Specialist Review Surfaces
+6. Session 06: Dashboard Replacement, Maintenance, and Cutover
 
 ---
 
 ## Upcoming Sessions
 
-- Session 06: Dashboard Replacement, Maintenance, and Cutover
+- None. Phase 06 is complete.
+
+Phase 06 complete; archived under `.spec_system/archive/phases/phase_06/`.
 
 ---
 
@@ -134,14 +137,14 @@ instead of building one-off specialist surfaces.
 
 Phase complete when:
 
-- [ ] All 6 sessions completed
-- [ ] Operators can run the remaining specialist workflows from the app
+- [x] All 6 sessions completed
+- [x] Operators can run the remaining specialist workflows from the app
       without dropping back to Codex or shell-driven review
-- [ ] Dashboard-equivalent status, review, and maintenance views exist in the
+- [x] Dashboard-equivalent status, review, and maintenance views exist in the
       app and cover the legacy daily operator path
-- [ ] Settings, update-check, and onboarding surfaces no longer treat `codex`
+- [x] Settings, update-check, and onboarding surfaces no longer treat `codex`
       as the primary single-user entry point
-- [ ] Final parity validation and cutover notes document whether the Go
+- [x] Final parity validation and cutover notes document whether the Go
       dashboard can be retired or kept as a secondary surface
 
 ---
