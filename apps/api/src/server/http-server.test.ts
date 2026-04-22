@@ -5312,6 +5312,519 @@ test("batch-supervisor routes cover draft summaries, retry enqueue, runtime over
 	}
 });
 
+test("application-help route covers draft-ready, approval-paused, rejected, resumed, completed, latest fallback, and invalid query states", async () => {
+	const fixture = await createReadyFixture();
+	const authFixture = await createAgentRuntimeAuthFixture();
+	const backend = await startFakeCodexBackend();
+	const store = await createOperationalStore({ repoRoot: fixture.repoRoot });
+	await store.close();
+	await authFixture.setReady({ accountId: "acct-http-application-help" });
+	const services = createApiServiceContainer({
+		agentRuntime: createAgentRuntimeService({
+			authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+			env: {
+				JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+				JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+				JOBHUNT_API_OPENAI_ORIGINATOR: "jobhunt-http-application-help-test",
+			},
+			repoRoot: fixture.repoRoot,
+		}),
+		repoRoot: fixture.repoRoot,
+	});
+	const runtimeStore = await services.operationalStore.getStore();
+
+	const saveApplicationHelpSession = async (input: {
+		activeJobId?: string | null;
+		sessionId: string;
+		status: RuntimeSessionStatus;
+		timestamp: string;
+	}) => {
+		await runtimeStore.sessions.save({
+			activeJobId: input.activeJobId ?? null,
+			context: {
+				applicationHelp: {
+					company: "HTTP Context Co",
+					reportNumber: "041",
+					role: "Applied AI Engineer",
+				},
+			},
+			createdAt: input.timestamp,
+			lastHeartbeatAt: input.timestamp,
+			runnerId:
+				input.status === "pending" || input.activeJobId === null
+					? null
+					: "runner-http-application-help",
+			sessionId: input.sessionId,
+			status: input.status,
+			updatedAt: input.timestamp,
+			workflow: "application-help",
+		});
+	};
+
+	const saveApplicationHelpJob = async (input: {
+		error?: JsonValue | null;
+		jobId: string;
+		sessionId: string;
+		status: RuntimeJobStatus;
+		timestamp: string;
+		waitApprovalId?: string | null;
+		waitReason?: RuntimeJobWaitReason | null;
+	}) => {
+		const isActive = input.status === "running" || input.status === "waiting";
+
+		await runtimeStore.jobs.save({
+			attempt: 1,
+			claimOwnerId: isActive ? "runner-http-application-help" : null,
+			claimToken: isActive ? `claim-${input.jobId}` : null,
+			completedAt:
+				input.status === "completed" ||
+				input.status === "failed" ||
+				input.status === "cancelled"
+					? input.timestamp
+					: null,
+			createdAt: input.timestamp,
+			currentRunId: `${input.jobId}-run`,
+			error: input.error ?? null,
+			jobId: input.jobId,
+			jobType: "application-help",
+			lastHeartbeatAt: isActive ? input.timestamp : null,
+			leaseExpiresAt: input.status === "running" ? input.timestamp : null,
+			maxAttempts: 3,
+			nextAttemptAt: null,
+			payload: {
+				reportNumber: "041",
+			},
+			result: null,
+			retryBackoffMs: 1_000,
+			sessionId: input.sessionId,
+			startedAt:
+				input.status === "pending" || input.status === "queued"
+					? null
+					: input.timestamp,
+			status: input.status,
+			updatedAt: input.timestamp,
+			waitApprovalId: input.waitApprovalId ?? null,
+			waitReason: input.waitReason ?? null,
+		});
+	};
+
+	const saveApplicationHelpApproval = async (input: {
+		approvalId: string;
+		jobId: string;
+		message?: string;
+		sessionId: string;
+		status: "approved" | "pending" | "rejected";
+		timestamp: string;
+	}) => {
+		await runtimeStore.approvals.save({
+			approvalId: input.approvalId,
+			jobId: input.jobId,
+			request: {
+				action: "review-application-help-draft",
+				title: "Review application-help draft",
+			},
+			requestedAt: input.timestamp,
+			resolvedAt: input.status === "pending" ? null : input.timestamp,
+			response:
+				input.status === "pending"
+					? null
+					: {
+							message:
+								input.message ??
+								(input.status === "approved"
+									? "Approved"
+									: "Revise the draft answers."),
+						},
+			sessionId: input.sessionId,
+			status: input.status,
+			traceId: `${input.approvalId}-trace`,
+			updatedAt: input.timestamp,
+		});
+	};
+
+	const stageDraftPacket = async (input: {
+		reviewNotes: string;
+		sessionId: string;
+	}) => {
+		const toolService = await services.tools.getService();
+
+		await toolService.execute({
+			correlation: {
+				jobId: `tool-job-${input.sessionId}`,
+				requestId: `tool-request-${input.sessionId}`,
+				sessionId: `tool-session-${input.sessionId}`,
+				traceId: `tool-trace-${input.sessionId}`,
+			},
+			input: {
+				company: "HTTP Context Co",
+				items: [
+					{
+						answer: "Draft answer for the HTTP route test.",
+						question: "Why this role?",
+					},
+				],
+				matchedContext: null,
+				reviewNotes: input.reviewNotes,
+				role: "Applied AI Engineer",
+				sessionId: input.sessionId,
+				warnings: [],
+			},
+			toolName: "stage-application-help-draft",
+		});
+	};
+
+	await writeRepoArtifact(
+		fixture.repoRoot,
+		"reports/041-http-context-co-2026-04-22.md",
+		[
+			"# Evaluation: HTTP Context Co -- Applied AI Engineer",
+			"",
+			"**Date:** 2026-04-22",
+			"**URL:** https://example.com/jobs/http-context-co",
+			"**Score:** 4.6/5",
+			"**Legitimacy:** High Confidence",
+			"**PDF:** output/cv-http-context-co-2026-04-22.pdf",
+			"",
+			"---",
+			"",
+			"## H) Draft Application Answers",
+			"",
+			"No cover-letter field was detected on the application page.",
+			"",
+			"### 1. Why this role?",
+			"",
+			"Because it matches agentic delivery work.",
+			"",
+		].join("\n"),
+	);
+	await writeRepoArtifact(
+		fixture.repoRoot,
+		"output/cv-http-context-co-2026-04-22.pdf",
+		"pdf\n",
+	);
+
+	await saveApplicationHelpSession({
+		sessionId: "app-help-ready-http",
+		status: "waiting",
+		timestamp: "2026-04-22T10:00:00.000Z",
+	});
+	await saveApplicationHelpSession({
+		activeJobId: "job-app-help-paused-http",
+		sessionId: "app-help-paused-http",
+		status: "waiting",
+		timestamp: "2026-04-22T10:05:00.000Z",
+	});
+	await saveApplicationHelpJob({
+		jobId: "job-app-help-paused-http",
+		sessionId: "app-help-paused-http",
+		status: "waiting",
+		timestamp: "2026-04-22T10:05:00.000Z",
+		waitApprovalId: "approval-app-help-paused-http",
+		waitReason: "approval",
+	});
+	await saveApplicationHelpApproval({
+		approvalId: "approval-app-help-paused-http",
+		jobId: "job-app-help-paused-http",
+		sessionId: "app-help-paused-http",
+		status: "pending",
+		timestamp: "2026-04-22T10:05:00.000Z",
+	});
+
+	await saveApplicationHelpSession({
+		activeJobId: "job-app-help-rejected-http",
+		sessionId: "app-help-rejected-http",
+		status: "failed",
+		timestamp: "2026-04-22T10:10:00.000Z",
+	});
+	await saveApplicationHelpJob({
+		error: {
+			message: "Draft rejected.",
+		},
+		jobId: "job-app-help-rejected-http",
+		sessionId: "app-help-rejected-http",
+		status: "failed",
+		timestamp: "2026-04-22T10:10:00.000Z",
+	});
+	await saveApplicationHelpApproval({
+		approvalId: "approval-app-help-rejected-http",
+		jobId: "job-app-help-rejected-http",
+		message: "Revise the proof points.",
+		sessionId: "app-help-rejected-http",
+		status: "rejected",
+		timestamp: "2026-04-22T10:10:00.000Z",
+	});
+
+	await saveApplicationHelpSession({
+		activeJobId: "job-app-help-resumed-http",
+		sessionId: "app-help-resumed-http",
+		status: "running",
+		timestamp: "2026-04-22T10:15:00.000Z",
+	});
+	await saveApplicationHelpJob({
+		jobId: "job-app-help-resumed-http",
+		sessionId: "app-help-resumed-http",
+		status: "running",
+		timestamp: "2026-04-22T10:15:00.000Z",
+	});
+
+	await saveApplicationHelpSession({
+		activeJobId: "job-app-help-completed-http",
+		sessionId: "app-help-completed-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:20:00.000Z",
+	});
+	await saveApplicationHelpJob({
+		jobId: "job-app-help-completed-http",
+		sessionId: "app-help-completed-http",
+		status: "completed",
+		timestamp: "2026-04-22T10:20:00.000Z",
+	});
+
+	await stageDraftPacket({
+		reviewNotes: "Ready draft.",
+		sessionId: "app-help-ready-http",
+	});
+	await stageDraftPacket({
+		reviewNotes: "Waiting on approval.",
+		sessionId: "app-help-paused-http",
+	});
+	await stageDraftPacket({
+		reviewNotes: "Rejected revision.",
+		sessionId: "app-help-rejected-http",
+	});
+	await stageDraftPacket({
+		reviewNotes: "Resumed run.",
+		sessionId: "app-help-resumed-http",
+	});
+	await stageDraftPacket({
+		reviewNotes: "Completed run.",
+		sessionId: "app-help-completed-http",
+	});
+
+	const handle = await startStartupHttpServer({
+		host: "127.0.0.1",
+		port: 0,
+		rateLimitMaxRequests: 20,
+		services,
+	});
+
+	try {
+		const { payload: readyPayload, response: readyResponse } =
+			await readJsonResponse(
+				`${handle.url}/application-help?sessionId=app-help-ready-http`,
+			);
+
+		assert.equal(readyResponse.status, 200);
+		assert.equal((readyPayload as { status: string }).status, "ready");
+		assert.equal(
+			(
+				readyPayload as {
+					selected: {
+						origin: string;
+						state: string;
+						summary: {
+							state: string;
+							reportContext: { reportRepoRelativePath: string };
+						};
+					};
+				}
+			).selected.origin,
+			"session-id",
+		);
+		assert.equal(
+			(
+				readyPayload as {
+					selected: {
+						origin: string;
+						state: string;
+						summary: {
+							state: string;
+							reportContext: { reportRepoRelativePath: string };
+						};
+					};
+				}
+			).selected.summary.state,
+			"draft-ready",
+		);
+		assert.equal(
+			(
+				readyPayload as {
+					selected: {
+						summary: {
+							reportContext: { reportRepoRelativePath: string };
+						};
+					};
+				}
+			).selected.summary.reportContext.reportRepoRelativePath,
+			"reports/041-http-context-co-2026-04-22.md",
+		);
+
+		const { payload: pausedPayload } = await readJsonResponse(
+			`${handle.url}/application-help?sessionId=app-help-paused-http`,
+		);
+		assert.equal(
+			(
+				pausedPayload as {
+					selected: {
+						summary: {
+							approval: { status: string };
+							state: string;
+						};
+					};
+				}
+			).selected.summary.state,
+			"approval-paused",
+		);
+		assert.equal(
+			(
+				pausedPayload as {
+					selected: {
+						summary: {
+							approval: { status: string };
+							state: string;
+						};
+					};
+				}
+			).selected.summary.approval.status,
+			"pending",
+		);
+
+		const { payload: rejectedPayload } = await readJsonResponse(
+			`${handle.url}/application-help?sessionId=app-help-rejected-http`,
+		);
+		assert.equal(
+			(
+				rejectedPayload as {
+					selected: {
+						summary: {
+							failure: { message: string };
+							state: string;
+						};
+					};
+				}
+			).selected.summary.state,
+			"rejected",
+		);
+		assert.equal(
+			(
+				rejectedPayload as {
+					selected: {
+						summary: {
+							failure: { message: string };
+							state: string;
+						};
+					};
+				}
+			).selected.summary.failure.message,
+			"Revise the proof points.",
+		);
+
+		const { payload: resumedPayload } = await readJsonResponse(
+			`${handle.url}/application-help?sessionId=app-help-resumed-http`,
+		);
+		assert.equal(
+			(
+				resumedPayload as {
+					selected: {
+						summary: {
+							job: { status: string };
+							state: string;
+						};
+					};
+				}
+			).selected.summary.state,
+			"resumed",
+		);
+		assert.equal(
+			(
+				resumedPayload as {
+					selected: {
+						summary: {
+							job: { status: string };
+							state: string;
+						};
+					};
+				}
+			).selected.summary.job.status,
+			"running",
+		);
+
+		const { payload: completedPayload } = await readJsonResponse(
+			`${handle.url}/application-help?sessionId=app-help-completed-http`,
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					selected: {
+						summary: {
+							draftPacket: { reviewNotes: string };
+							state: string;
+						};
+					};
+				}
+			).selected.summary.state,
+			"completed",
+		);
+		assert.equal(
+			(
+				completedPayload as {
+					selected: {
+						summary: {
+							draftPacket: { reviewNotes: string };
+							state: string;
+						};
+					};
+				}
+			).selected.summary.draftPacket.reviewNotes,
+			"Completed run.",
+		);
+
+		const { payload: latestPayload } = await readJsonResponse(
+			`${handle.url}/application-help`,
+		);
+		assert.equal(
+			(
+				latestPayload as {
+					selected: {
+						origin: string;
+						summary: { session: { sessionId: string } };
+					};
+				}
+			).selected.origin,
+			"latest",
+		);
+		assert.equal(
+			(
+				latestPayload as {
+					selected: {
+						origin: string;
+						summary: { session: { sessionId: string } };
+					};
+				}
+			).selected.summary.session.sessionId,
+			"app-help-completed-http",
+		);
+
+		const { payload: invalidPayload, response: invalidResponse } =
+			await readJsonResponse(`${handle.url}/application-help?sessionId=%20`);
+		assert.equal(invalidResponse.status, 400);
+		assert.equal(
+			(
+				invalidPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-application-help-query",
+		);
+	} finally {
+		await handle.close();
+		await services.dispose();
+		await backend.close();
+		await authFixture.cleanup();
+		await fixture.cleanup();
+	}
+});
+
 test("orchestration route returns auth-blocked launch handoffs and explicit missing-session resume envelopes", async () => {
 	const fixture = await createReadyFixture();
 	const services = createApiServiceContainer({

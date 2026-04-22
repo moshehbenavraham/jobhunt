@@ -1,4 +1,5 @@
 import type { ApiRouteDefinition } from "../route-contract.js";
+import { createApplicationHelpRoute } from "./application-help-route.js";
 import { createApprovalInboxRoute } from "./approval-inbox-route.js";
 import { createApprovalResolutionRoute } from "./approval-resolution-route.js";
 import { createBatchSupervisorActionRoute } from "./batch-supervisor-action-route.js";
@@ -42,6 +43,7 @@ function assertUniqueRouteSignatures(
 export function createApiRouteRegistry(): ApiRouteDefinition[] {
 	const routes = [
 		createHealthRoute(),
+		createApplicationHelpRoute(),
 		createApprovalInboxRoute(),
 		createApprovalResolutionRoute(),
 		createChatConsoleRoute(),

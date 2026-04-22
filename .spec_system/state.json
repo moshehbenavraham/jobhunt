@@ -171,10 +171,26 @@
     {
       "id": "phase05-session04-batch-jobs-workspace-and-run-detail",
       "package": "apps/web"
+    },
+    {
+      "id": "phase05-session05-application-help-draft-contract",
+      "package": "apps/api"
     }
   ],
   "current_session": null,
   "next_session_history": [
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session05-application-help-draft-contract",
+      "package": "apps/api",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-22",
+      "session": "phase05-session05-application-help-draft-contract",
+      "package": "apps/api",
+      "status": "planned"
+    },
     {
       "date": "2026-04-22",
       "session": "phase05-session04-batch-jobs-workspace-and-run-detail",
