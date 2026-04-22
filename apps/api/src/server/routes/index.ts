@@ -1,6 +1,8 @@
 import type { ApiRouteDefinition } from "../route-contract.js";
 import { createApprovalInboxRoute } from "./approval-inbox-route.js";
 import { createApprovalResolutionRoute } from "./approval-resolution-route.js";
+import { createBatchSupervisorActionRoute } from "./batch-supervisor-action-route.js";
+import { createBatchSupervisorRoute } from "./batch-supervisor-route.js";
 import { createChatConsoleRoute } from "./chat-console-route.js";
 import { createEvaluationResultRoute } from "./evaluation-result-route.js";
 import { createHealthRoute } from "./health-route.js";
@@ -48,6 +50,8 @@ export function createApiRouteRegistry(): ApiRouteDefinition[] {
 		createOnboardingRoute(),
 		createOnboardingRepairRoute(),
 		createOperatorShellRoute(),
+		createBatchSupervisorRoute(),
+		createBatchSupervisorActionRoute(),
 		createPipelineReviewRoute(),
 		createScanReviewRoute(),
 		createScanReviewActionRoute(),

@@ -4,7 +4,7 @@
 **Sessions**: 6
 **Estimated Duration**: 7-10 days
 
-**Progress**: 2/6 sessions (33%)
+**Progress**: 3/6 sessions (50%)
 
 ---
 
@@ -31,7 +31,7 @@ must remain server-owned and fail closed.
 | ------- | ------------------------------------- | ----------- | ---------- | ---------- |
 | 01      | Scan Shortlist Contract               | Completed   | ~12-25     | 2026-04-22 |
 | 02      | Scan Review Workspace                 | Completed   | ~12-25     | 2026-04-22 |
-| 03      | Batch Supervisor Contract             | Not Started | ~12-25     | -          |
+| 03      | Batch Supervisor Contract             | Completed   | ~12-25     | 2026-04-22 |
 | 04      | Batch Jobs Workspace and Run Detail   | Not Started | ~12-25     | -          |
 | 05      | Application-Help Draft Contract       | Not Started | ~12-25     | -          |
 | 06      | Application-Help Review and Approvals | Not Started | ~12-25     | -          |
@@ -42,12 +42,13 @@ must remain server-owned and fail closed.
 
 1. Session 01: Scan Shortlist Contract
 2. Session 02: Scan Review Workspace
+3. Session 03: Batch Supervisor Contract
 
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Batch Supervisor Contract
+- Session 04: Batch Jobs Workspace and Run Detail
 
 ---
 

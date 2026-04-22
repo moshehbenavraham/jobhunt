@@ -788,7 +788,7 @@ multiple 2-4 hour sessions (12-25 tasks each).
 | 02    | Typed Tools and Agent Orchestration                      | 5        | Complete    |
 | 03    | Chat, Onboarding, and Approvals UX                       | 5        | Complete    |
 | 04    | Evaluation, Artifacts, and Tracker Parity                | 6        | Complete    |
-| 05    | Scan, Batch, and Application-Help Parity                 | 6        | Not Started |
+| 05    | Scan, Batch, and Application-Help Parity                 | 6        | In Progress |
 | 06    | Specialist Workflows, Dashboard Replacement, and Cutover | 4-6      | Not Started |
 
 ## Phase 00: Foundation and Repo Contract
@@ -891,11 +891,16 @@ Progress: 6/6 sessions complete.
 
 ### Phase 05: Scan, Batch, and Application-Help Parity
 
+- Completed Session 01: scan shortlist contract in `apps/api`
+- Completed Session 02: scan review workspace in `apps/web`
+- Completed Session 03: batch supervisor contract in `apps/api`
 - Implement scan flows and shortlist review
 - Replace batch runner UI and orchestration
 - Support application-help flows and approval checkpoints
 - Add job-level failure, warning, retry, and resume visibility
 - Planned phase artifacts live under `.spec_system/PRD/phase_05/`.
+
+Progress: 3/6 sessions complete.
 
 ### Phase 06: Specialist Workflows, Dashboard Replacement, and Cutover
 

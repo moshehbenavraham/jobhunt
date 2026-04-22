@@ -447,6 +447,66 @@ async function saveScanJob(
 	});
 }
 
+async function saveBatchJob(
+	store: Awaited<ReturnType<typeof createOperationalStore>>,
+	input: {
+		completedAt?: string | null;
+		createdAt?: string;
+		error?: JsonValue | null;
+		jobId: string;
+		payload?: JsonValue;
+		result?: JsonValue | null;
+		sessionId: string;
+		startedAt?: string | null;
+		status: RuntimeJobStatus;
+		updatedAt: string;
+		waitApprovalId?: string | null;
+		waitReason?: RuntimeJobWaitReason | null;
+	},
+): Promise<void> {
+	const isActive = input.status === "running" || input.status === "waiting";
+
+	await store.jobs.save({
+		attempt: 1,
+		claimOwnerId: isActive ? "runner-batch-http" : null,
+		claimToken: isActive ? `claim-${input.jobId}` : null,
+		completedAt:
+			input.completedAt ??
+			(input.status === "completed" || input.status === "failed"
+				? input.updatedAt
+				: null),
+		createdAt: input.createdAt ?? input.updatedAt,
+		currentRunId: `${input.jobId}-run`,
+		error: input.error ?? null,
+		jobId: input.jobId,
+		jobType: "batch-evaluation",
+		lastHeartbeatAt: isActive ? input.updatedAt : null,
+		leaseExpiresAt: input.status === "running" ? input.updatedAt : null,
+		maxAttempts: 3,
+		nextAttemptAt: null,
+		payload: input.payload ?? {
+			dryRun: false,
+			maxRetries: 2,
+			minScore: 0,
+			mode: "run-pending",
+			parallel: 1,
+			startFromId: 0,
+		},
+		result: input.result ?? null,
+		retryBackoffMs: 1_000,
+		sessionId: input.sessionId,
+		startedAt:
+			input.startedAt ??
+			(input.status === "pending" || input.status === "queued"
+				? null
+				: (input.createdAt ?? input.updatedAt)),
+		status: input.status,
+		updatedAt: input.updatedAt,
+		waitApprovalId: input.waitApprovalId ?? null,
+		waitReason: input.waitReason ?? null,
+	});
+}
+
 async function saveEvaluationCheckpoint(
 	store: Awaited<ReturnType<typeof createOperationalStore>>,
 	input: {
@@ -4693,6 +4753,555 @@ test("tracker-workspace routes cover missing tracker data, report-number focus, 
 				}
 			).error.code,
 			"invalid-tracker-workspace-query",
+		);
+	} finally {
+		await handle.close();
+		await services.dispose();
+		await backend.close();
+		await authFixture.cleanup();
+		await fixture.cleanup();
+	}
+});
+
+test("batch-supervisor routes cover draft summaries, retry enqueue, runtime overlays, verify warnings, and invalid input", async () => {
+	const fixture = await createReadyFixture();
+	const authFixture = await createAgentRuntimeAuthFixture();
+	const backend = await startFakeCodexBackend();
+	const storeProbe = await createOperationalStore({
+		repoRoot: fixture.repoRoot,
+	});
+	await storeProbe.close();
+	await authFixture.setReady({ accountId: "acct-http-batch-supervisor" });
+	const services = createApiServiceContainer({
+		agentRuntime: createAgentRuntimeService({
+			authModuleImportPath: getRepoOpenAIAccountModuleImportPath(),
+			env: {
+				JOBHUNT_API_OPENAI_AUTH_PATH: authFixture.authPath,
+				JOBHUNT_API_OPENAI_BASE_URL: `${backend.url}/backend-api`,
+				JOBHUNT_API_OPENAI_ORIGINATOR: "jobhunt-http-batch-supervisor-test",
+			},
+			repoRoot: fixture.repoRoot,
+		}),
+		repoRoot: fixture.repoRoot,
+	});
+	const handle = await startStartupHttpServer({
+		host: "127.0.0.1",
+		port: 0,
+		rateLimitMaxRequests: 30,
+		services,
+	});
+	const store = await services.operationalStore.getStore();
+
+	try {
+		const { payload: emptyPayload, response: emptyResponse } =
+			await readJsonResponse(`${handle.url}/batch-supervisor`);
+
+		assert.equal(emptyResponse.status, 200);
+		assert.equal(
+			(
+				emptyPayload as {
+					draft: { available: boolean };
+					run: { state: string };
+					selectedDetail: { state: string };
+				}
+			).draft.available,
+			false,
+		);
+		assert.equal(
+			(
+				emptyPayload as {
+					draft: { available: boolean };
+					run: { state: string };
+					selectedDetail: { state: string };
+				}
+			).run.state,
+			"idle",
+		);
+		assert.equal(
+			(
+				emptyPayload as {
+					draft: { available: boolean };
+					run: { state: string };
+					selectedDetail: { state: string };
+				}
+			).selectedDetail.state,
+			"empty",
+		);
+
+		await writeRepoArtifact(
+			fixture.repoRoot,
+			"batch/batch-input.tsv",
+			[
+				"id\turl\tsource\tnotes",
+				"1\thttps://example.com/jobs/acme\tscan\tretryable infrastructure failure",
+				"2\thttps://example.com/jobs/beta\tscan\tpartial result for review",
+				"3\thttps://example.com/jobs/gamma\tscan\tpending candidate",
+				"",
+			].join("\n"),
+		);
+		await writeRepoArtifact(
+			fixture.repoRoot,
+			"batch/batch-state.tsv",
+			[
+				"id\turl\tstatus\tstarted_at\tcompleted_at\treport_num\tscore\terror\tretries",
+				"1\thttps://example.com/jobs/acme\tfailed\t2026-04-22T09:00:00.000Z\t2026-04-22T09:02:00.000Z\t001\t-\tinfrastructure: worker timeout\t1",
+				"2\thttps://example.com/jobs/beta\tpartial\t2026-04-22T09:03:00.000Z\t2026-04-22T09:06:00.000Z\t002\t4.1\twarnings: tracker-not-written\t0",
+				"",
+			].join("\n"),
+		);
+		await writeRepoArtifact(
+			fixture.repoRoot,
+			"batch/logs/002-2.result.json",
+			JSON.stringify(
+				{
+					company: "Beta",
+					error: null,
+					id: "2",
+					legitimacy: "Proceed with Caution",
+					pdf: null,
+					report: "reports/002-beta-solutions-architect.md",
+					report_num: "002",
+					role: "Solutions Architect",
+					score: 4.1,
+					status: "partial",
+					tracker: null,
+					warnings: ["tracker-not-written"],
+				},
+				null,
+				2,
+			),
+		);
+		await writeRepoArtifact(
+			fixture.repoRoot,
+			"reports/002-beta-solutions-architect.md",
+			"# Beta report\n",
+		);
+		await writeRepoArtifact(
+			fixture.repoRoot,
+			"batch/tracker-additions/8-http-ready.tsv",
+			"8\t2026-04-22\tReady Co\tPlatform Engineer\tEvaluated\t4.5/5\t\t[008](reports/008-ready.md)\tready\n",
+		);
+		await writeRepoArtifact(
+			fixture.repoRoot,
+			"scripts/verify-pipeline.mjs",
+			"process.stdout.write('[WARN] pending TSVs remain\\n');\n",
+		);
+
+		const { payload: summaryPayload, response: summaryResponse } =
+			await readJsonResponse(`${handle.url}/batch-supervisor?itemId=2`);
+
+		assert.equal(summaryResponse.status, 200);
+		assert.equal(
+			(
+				summaryPayload as {
+					draft: { available: boolean; counts: { retryableFailed: number } };
+					selectedDetail: {
+						row: {
+							artifacts: { report: { exists: boolean } };
+							status: string;
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+					actions: Array<{ action: string; available: boolean }>;
+				}
+			).draft.available,
+			true,
+		);
+		assert.equal(
+			(
+				summaryPayload as {
+					draft: { available: boolean; counts: { retryableFailed: number } };
+				}
+			).draft.counts.retryableFailed,
+			1,
+		);
+		assert.equal(
+			(
+				summaryPayload as {
+					selectedDetail: {
+						row: {
+							artifacts: { report: { exists: boolean } };
+							status: string;
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selectedDetail.row?.status,
+			"partial",
+		);
+		assert.equal(
+			(
+				summaryPayload as {
+					selectedDetail: {
+						row: {
+							artifacts: { report: { exists: boolean } };
+							status: string;
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selectedDetail.row?.artifacts.report.exists,
+			true,
+		);
+		assert.ok(
+			(
+				summaryPayload as {
+					selectedDetail: {
+						row: {
+							artifacts: { report: { exists: boolean } };
+							status: string;
+							warnings: Array<{ code: string }>;
+						} | null;
+					};
+				}
+			).selectedDetail.row?.warnings.some(
+				(warning) => warning.code === "partial-result",
+			),
+		);
+		assert.equal(
+			(
+				summaryPayload as {
+					actions: Array<{ action: string; available: boolean }>;
+				}
+			).actions.find((action) => action.action === "retry-failed")?.available,
+			true,
+		);
+
+		const { payload: retryPayload, response: retryResponse } =
+			await readJsonResponse(`${handle.url}/batch-supervisor/action`, {
+				body: JSON.stringify({
+					action: "retry-failed",
+					itemId: 1,
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			});
+
+		assert.equal(retryResponse.status, 200);
+		assert.equal(
+			(
+				retryPayload as {
+					actionResult: {
+						action: string;
+						jobId: string | null;
+						requestStatus: string;
+						revalidation: { nextPollMs: number | null };
+					};
+				}
+			).actionResult.action,
+			"retry-failed",
+		);
+		assert.equal(
+			(
+				retryPayload as {
+					actionResult: {
+						action: string;
+						jobId: string | null;
+						requestStatus: string;
+						revalidation: { nextPollMs: number | null };
+					};
+				}
+			).actionResult.requestStatus,
+			"accepted",
+		);
+		assert.equal(
+			(
+				retryPayload as {
+					actionResult: {
+						action: string;
+						jobId: string | null;
+						requestStatus: string;
+						revalidation: { nextPollMs: number | null };
+					};
+				}
+			).actionResult.revalidation.nextPollMs,
+			2000,
+		);
+
+		const queuedJobId = (
+			retryPayload as {
+				actionResult: {
+					jobId: string | null;
+				};
+			}
+		).actionResult.jobId;
+		assert.ok(queuedJobId);
+
+		const { payload: queuedPayload } = await readJsonResponse(
+			`${handle.url}/batch-supervisor`,
+		);
+
+		assert.equal(
+			(
+				queuedPayload as {
+					run: { state: string };
+				}
+			).run.state,
+			"queued",
+		);
+
+		await saveEvaluationSession(store, {
+			activeJobId: queuedJobId,
+			context: {
+				workflow: "batch-evaluation",
+			},
+			sessionId: "batch-supervisor-session",
+			status: "running",
+			updatedAt: "2026-04-22T10:10:00.000Z",
+			workflow: "batch-evaluation",
+		});
+		await saveBatchJob(store, {
+			jobId: queuedJobId as string,
+			payload: {
+				dryRun: false,
+				maxRetries: 2,
+				minScore: 0,
+				mode: "retry-failed",
+				parallel: 1,
+				startFromId: 0,
+			},
+			sessionId: "batch-supervisor-session",
+			status: "running",
+			updatedAt: "2026-04-22T10:10:00.000Z",
+		});
+
+		const { payload: runningPayload } = await readJsonResponse(
+			`${handle.url}/batch-supervisor`,
+		);
+
+		assert.equal(
+			(
+				runningPayload as {
+					run: { state: string };
+				}
+			).run.state,
+			"running",
+		);
+
+		await saveEvaluationSession(store, {
+			activeJobId: queuedJobId,
+			context: {
+				workflow: "batch-evaluation",
+			},
+			sessionId: "batch-supervisor-session",
+			status: "waiting",
+			updatedAt: "2026-04-22T10:12:00.000Z",
+			workflow: "batch-evaluation",
+		});
+		await saveBatchJob(store, {
+			jobId: queuedJobId as string,
+			payload: {
+				dryRun: false,
+				maxRetries: 2,
+				minScore: 0,
+				mode: "retry-failed",
+				parallel: 1,
+				startFromId: 0,
+			},
+			sessionId: "batch-supervisor-session",
+			status: "waiting",
+			updatedAt: "2026-04-22T10:12:00.000Z",
+			waitApprovalId: "approval-batch-http-1",
+			waitReason: "approval",
+		});
+		await store.approvals.save({
+			approvalId: "approval-batch-http-1",
+			jobId: queuedJobId,
+			request: {
+				action: "approval-review",
+			},
+			requestedAt: "2026-04-22T10:12:00.000Z",
+			resolvedAt: null,
+			response: null,
+			sessionId: "batch-supervisor-session",
+			status: "pending",
+			traceId: "trace-batch-http-1",
+			updatedAt: "2026-04-22T10:12:00.000Z",
+		});
+		await store.runMetadata.saveCheckpoint({
+			checkpoint: {
+				completedSteps: ["batch-item-1"],
+				cursor: "1",
+				updatedAt: "2026-04-22T10:12:00.000Z",
+				value: {
+					items: [
+						{
+							id: 1,
+							reportNumber: "001",
+							status: "retryable-failed",
+						},
+					],
+				},
+			},
+			jobId: queuedJobId,
+			runId: `${queuedJobId}-run`,
+			sessionId: "batch-supervisor-session",
+		});
+
+		const { payload: pausedPayload } = await readJsonResponse(
+			`${handle.url}/batch-supervisor?itemId=2&status=pending`,
+		);
+
+		assert.equal(
+			(
+				pausedPayload as {
+					run: { approvalId: string | null; state: string };
+					selectedDetail: {
+						row: { warnings: Array<{ code: string }> } | null;
+					};
+				}
+			).run.state,
+			"approval-paused",
+		);
+		assert.equal(
+			(
+				pausedPayload as {
+					run: { approvalId: string | null; state: string };
+					selectedDetail: {
+						row: { warnings: Array<{ code: string }> } | null;
+					};
+				}
+			).run.approvalId,
+			"approval-batch-http-1",
+		);
+		assert.ok(
+			(
+				pausedPayload as {
+					selectedDetail: {
+						row: { warnings: Array<{ code: string }> } | null;
+					};
+				}
+			).selectedDetail.row?.warnings.some(
+				(warning) => warning.code === "stale-selection",
+			),
+		);
+
+		await saveEvaluationSession(store, {
+			activeJobId: null,
+			context: {
+				workflow: "batch-evaluation",
+			},
+			lastHeartbeatAt: "2026-04-22T10:15:00.000Z",
+			sessionId: "batch-supervisor-session",
+			status: "completed",
+			updatedAt: "2026-04-22T10:15:00.000Z",
+			workflow: "batch-evaluation",
+		});
+		await saveBatchJob(store, {
+			jobId: queuedJobId as string,
+			payload: {
+				dryRun: false,
+				maxRetries: 2,
+				minScore: 0,
+				mode: "retry-failed",
+				parallel: 1,
+				startFromId: 0,
+			},
+			result: {
+				counts: {
+					completed: 0,
+					failed: 0,
+					partial: 1,
+					pending: 1,
+					retryableFailed: 1,
+					skipped: 0,
+					total: 3,
+				},
+				dryRun: false,
+				items: [],
+				warnings: [],
+				workflow: "batch-evaluation",
+			},
+			sessionId: "batch-supervisor-session",
+			status: "completed",
+			updatedAt: "2026-04-22T10:15:00.000Z",
+		});
+
+		const { payload: verifyPayload, response: verifyResponse } =
+			await readJsonResponse(`${handle.url}/batch-supervisor/action`, {
+				body: JSON.stringify({
+					action: "verify-tracker-pipeline",
+					itemId: 2,
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			});
+
+		assert.equal(verifyResponse.status, 200);
+		assert.equal(
+			(
+				verifyPayload as {
+					actionResult: {
+						action: string;
+						requestStatus: string;
+						warnings: Array<{ code: string }>;
+					};
+				}
+			).actionResult.action,
+			"verify-tracker-pipeline",
+		);
+		assert.equal(
+			(
+				verifyPayload as {
+					actionResult: {
+						action: string;
+						requestStatus: string;
+						warnings: Array<{ code: string }>;
+					};
+				}
+			).actionResult.requestStatus,
+			"completed",
+		);
+		assert.equal(
+			(
+				verifyPayload as {
+					actionResult: {
+						action: string;
+						requestStatus: string;
+						warnings: Array<{ code: string }>;
+					};
+				}
+			).actionResult.warnings[0]?.code,
+			"tracker-verify-warning",
+		);
+
+		const { payload: invalidQueryPayload, response: invalidQueryResponse } =
+			await readJsonResponse(`${handle.url}/batch-supervisor?limit=0`);
+
+		assert.equal(invalidQueryResponse.status, 400);
+		assert.equal(
+			(
+				invalidQueryPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-batch-supervisor-query",
+		);
+
+		const { payload: invalidActionPayload, response: invalidActionResponse } =
+			await readJsonResponse(`${handle.url}/batch-supervisor/action`, {
+				body: JSON.stringify({
+					action: "retry-failed",
+					startFromId: -1,
+				}),
+				headers: {
+					"content-type": "application/json",
+				},
+				method: "POST",
+			});
+
+		assert.equal(invalidActionResponse.status, 400);
+		assert.equal(
+			(
+				invalidActionPayload as {
+					error: { code: string };
+				}
+			).error.code,
+			"invalid-batch-supervisor-action",
 		);
 	} finally {
 		await handle.close();
