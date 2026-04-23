@@ -3,7 +3,7 @@ export const DEFAULT_BOOT_PORT = 5172;
 export const DEFAULT_DIAGNOSTICS_TIMEOUT_MS = 5000;
 export const DEFAULT_REQUEST_TIMEOUT_MS = 5000;
 export const DEFAULT_KEEP_ALIVE_TIMEOUT_MS = 2000;
-export const DEFAULT_RATE_LIMIT_MAX_REQUESTS = 5;
+export const DEFAULT_RATE_LIMIT_MAX_REQUESTS = 20;
 export const DEFAULT_RATE_LIMIT_WINDOW_MS = 10_000;
 
 export type ApiRuntimeConfig = {

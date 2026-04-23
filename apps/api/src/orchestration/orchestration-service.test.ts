@@ -5,6 +5,10 @@ import {
 	type AgentRuntimeBootstrap,
 	AgentRuntimeBootstrapError,
 } from "../agent-runtime/index.js";
+import type {
+	DurableJobEnqueueRequest,
+	DurableJobRunnerService,
+} from "../job-runner/index.js";
 import {
 	getWorkflowModeRoute,
 	type PromptSourceKey,
@@ -139,6 +143,88 @@ function createAuthRequiredError() {
 	);
 }
 
+function createJobRunnerStub(input: {
+	enqueuedRequests: DurableJobEnqueueRequest[];
+	store: Awaited<ReturnType<typeof createOperationalStore>>;
+	timestamp: string;
+}): DurableJobRunnerService {
+	return {
+		async close() {},
+		async drainOnce() {
+			return {
+				claimedJobIds: [],
+				completedJobIds: [],
+				recoveredJobIds: [],
+				scannedAt: input.timestamp,
+				waitingJobIds: [],
+			};
+		},
+		async enqueue(request) {
+			input.enqueuedRequests.push(request);
+
+			const existingSession = await input.store.sessions.getById(
+				request.session.sessionId,
+			);
+			await input.store.sessions.save({
+				...(existingSession ?? {
+					createdAt: input.timestamp,
+					lastHeartbeatAt: null,
+					runnerId: null,
+					sessionId: request.session.sessionId,
+				}),
+				activeJobId: request.jobId,
+				context: request.session.context,
+				status: "pending",
+				updatedAt: input.timestamp,
+				workflow: request.session.workflow,
+			});
+			const job = await input.store.jobs.save({
+				attempt: 0,
+				claimOwnerId: null,
+				claimToken: null,
+				completedAt: null,
+				createdAt: input.timestamp,
+				currentRunId: request.currentRunId ?? request.jobId,
+				error: null,
+				jobId: request.jobId,
+				jobType: request.jobType,
+				lastHeartbeatAt: null,
+				leaseExpiresAt: null,
+				maxAttempts: request.retryPolicy?.maxAttempts ?? 3,
+				nextAttemptAt: null,
+				payload: request.payload,
+				result: null,
+				retryBackoffMs: request.retryPolicy?.backoffMs ?? 1_000,
+				sessionId: request.session.sessionId,
+				startedAt: null,
+				status: "queued",
+				updatedAt: input.timestamp,
+				waitApprovalId: null,
+				waitReason: null,
+			});
+			const runMetadata = await input.store.runMetadata.save({
+				createdAt: input.timestamp,
+				jobId: job.jobId,
+				metadata: {
+					checkpoint: null,
+				},
+				runId: job.currentRunId,
+				sessionId: job.sessionId,
+				updatedAt: input.timestamp,
+			});
+
+			return {
+				job,
+				runMetadata,
+			};
+		},
+		getRecoverySummary() {
+			return null;
+		},
+		async start() {},
+	};
+}
+
 async function createServiceHarness(workflow: WorkflowIntent) {
 	const fixture = await createWorkspaceFixture();
 	const store = await createOperationalStore({
@@ -242,6 +328,64 @@ test("orchestration service sanitizes evaluation launch context before persistin
 			kind: "raw-jd",
 			promptRedacted: true,
 		});
+	} finally {
+		await harness.cleanup();
+	}
+});
+
+test("orchestration service enqueues durable evaluation jobs for ready launches with input", async () => {
+	const harness = await createServiceHarness("single-evaluation");
+	const closeState = {
+		count: 0,
+	};
+	const enqueuedRequests: DurableJobEnqueueRequest[] = [];
+	const service = createOrchestrationService({
+		bootstrapWorkflow: async (workflow) =>
+			createReadyBootstrap(workflow, closeState),
+		getJobRunner: async () =>
+			createJobRunnerStub({
+				enqueuedRequests,
+				store: harness.store,
+				timestamp: "2026-04-21T12:45:00.000Z",
+			}),
+		getStore: async () => harness.store,
+		getToolRegistry: () => createRegistryForWorkflow("single-evaluation"),
+		now: () => Date.parse("2026-04-21T12:45:00.000Z"),
+	});
+
+	try {
+		const result = await service.orchestrate({
+			context: {
+				promptText: "https://example.com/jobs/platform-lead#apply",
+			},
+			kind: "launch",
+			sessionId: "session-evaluation-job",
+			workflow: "single-evaluation",
+		});
+		const storedSession = await harness.store.sessions.getById(
+			"session-evaluation-job",
+		);
+
+		assert.equal(result.runtime.status, "ready");
+		assert.equal(result.job?.jobType, "single-evaluation");
+		assert.equal(result.job?.status, "queued");
+		assert.equal(result.session?.activeJobId, result.job?.jobId);
+		assert.equal(storedSession?.activeJobId, result.job?.jobId);
+		assert.equal(enqueuedRequests.length, 1);
+		assert.equal(enqueuedRequests[0]?.jobType, "single-evaluation");
+		assert.deepEqual(enqueuedRequests[0]?.payload, {
+			input: {
+				canonicalUrl: "https://example.com/jobs/platform-lead",
+				host: "example.com",
+				kind: "job-url",
+			},
+			workflow: "single-evaluation",
+		});
+		assert.match(
+			enqueuedRequests[0]?.jobId ?? "",
+			/^single-evaluation:session-evaluation-job:[a-f0-9]{16}$/,
+		);
+		assert.equal(closeState.count, 1);
 	} finally {
 		await harness.cleanup();
 	}

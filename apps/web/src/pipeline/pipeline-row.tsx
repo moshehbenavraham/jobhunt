@@ -50,6 +50,15 @@ const companyStyle: CSSProperties = {
 	whiteSpace: "nowrap",
 };
 
+const sourceStyle: CSSProperties = {
+	color: "var(--jh-color-text-muted)",
+	fontSize: "var(--jh-text-caption-size)",
+	margin: "0.1rem 0 0",
+	overflow: "hidden",
+	textOverflow: "ellipsis",
+	whiteSpace: "nowrap",
+};
+
 const badgeRowStyle: CSSProperties = {
 	alignItems: "center",
 	display: "flex",
@@ -189,6 +198,7 @@ export function PipelineRow({ onSelect, row }: PipelineRowProps) {
 				<div style={{ minWidth: 0 }}>
 					<p style={roleStyle}>{row.role ?? row.url}</p>
 					<p style={companyStyle}>{row.company ?? "Unknown company"}</p>
+					{row.role ? <p style={sourceStyle}>{row.url}</p> : null}
 				</div>
 				<span style={scoreChipStyle(row.score)}>{formatScore(row.score)}</span>
 			</div>

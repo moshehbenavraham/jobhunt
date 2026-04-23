@@ -216,6 +216,7 @@ export function RecentSessionList({
 					const isResuming =
 						pendingAction?.kind === "resume" &&
 						pendingAction.sessionId === session.sessionId;
+					const canResume = session.resumeAllowed && session.job !== null;
 
 					return (
 						<article
@@ -328,18 +329,14 @@ export function RecentSessionList({
 									{isSelected ? "Selected" : "Select"}
 								</button>
 								<button
-									disabled={
-										isBusy || !session.resumeAllowed || pendingAction !== null
-									}
+									disabled={isBusy || !canResume || pendingAction !== null}
 									onClick={() => onResume(session.sessionId)}
 									style={{
 										...buttonStyle,
 										background: "var(--jh-color-amber)",
 										color: "var(--jh-color-ink)",
 										opacity:
-											isBusy || !session.resumeAllowed || pendingAction !== null
-												? 0.65
-												: 1,
+											isBusy || !canResume || pendingAction !== null ? 0.65 : 1,
 									}}
 									type="button"
 								>

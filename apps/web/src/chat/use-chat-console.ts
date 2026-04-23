@@ -462,6 +462,7 @@ export function useChatConsole(): {
 						sessionId: nextSelectedSessionId,
 					},
 					{
+						notify: false,
 						replace: reason !== "select",
 					},
 				);
@@ -563,6 +564,7 @@ export function useChatConsole(): {
 					sessionId: nextSelectedSessionId,
 				},
 				{
+					notify: false,
 					replace: false,
 				},
 			);
@@ -583,6 +585,10 @@ export function useChatConsole(): {
 
 	const handleFocusChange = useEffectEvent(() => {
 		const nextSelectedSessionId = readChatConsoleSessionIdFromUrl();
+
+		if (state.selectedSessionId === nextSelectedSessionId) {
+			return;
+		}
 
 		startTransition(() => {
 			setState((previous) =>
@@ -707,6 +713,7 @@ export function useChatConsole(): {
 					sessionId,
 				},
 				{
+					notify: false,
 					replace: false,
 				},
 			);

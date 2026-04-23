@@ -87,6 +87,7 @@ export function syncChatConsoleSessionFocus(
 		sessionId: string | null;
 	},
 	options: {
+		notify?: boolean;
 		openSurface?: boolean;
 		replace?: boolean;
 	} = {},
@@ -115,7 +116,7 @@ export function syncChatConsoleSessionFocus(
 		}
 	}
 
-	if (didChange) {
+	if (didChange && options.notify !== false) {
 		window.dispatchEvent(new Event(CHAT_CONSOLE_FOCUS_EVENT));
 	}
 }

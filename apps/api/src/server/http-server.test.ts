@@ -1936,6 +1936,25 @@ test("chat-console route reports workflow support and selected-session detail wi
 		jobId: "job-chat-console",
 		sessionId: "session-chat-console",
 	});
+	await runtimeStore.sessions.save({
+		activeJobId: null,
+		context: {
+			orchestration: {
+				lastRouteStatus: "ready",
+				missingCapabilities: [],
+				requestKind: "launch",
+				specialistId: "evaluation-specialist",
+				workflow: "single-evaluation",
+			},
+		},
+		createdAt: "2026-04-21T07:00:00.000Z",
+		lastHeartbeatAt: null,
+		runnerId: null,
+		sessionId: "session-empty-chat-console",
+		status: "pending",
+		updatedAt: "2026-04-21T07:00:00.000Z",
+		workflow: "single-evaluation",
+	});
 	const approvalRuntime = await services.approvalRuntime.getService();
 	const observability = await services.observability.getService();
 	await approvalRuntime.createApproval({
@@ -2000,6 +2019,21 @@ test("chat-console route reports workflow support and selected-session detail wi
 			).recentSessions[0]?.sessionId,
 			"session-chat-console",
 		);
+		const emptySession = (
+			payload as {
+				recentSessions: Array<{
+					job: unknown | null;
+					resumeAllowed: boolean;
+					sessionId: string;
+					state: string;
+				}>;
+			}
+		).recentSessions.find(
+			(session) => session.sessionId === "session-empty-chat-console",
+		);
+		assert.equal(emptySession?.state, "ready");
+		assert.equal(emptySession?.resumeAllowed, false);
+		assert.equal(emptySession?.job, null);
 		assert.equal(
 			(
 				payload as {
@@ -2118,6 +2152,12 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 		sessionId: "session-eval-pending",
 		status: "queued",
 		updatedAt: "2026-04-21T09:00:00.000Z",
+	});
+	await saveEvaluationSession(runtimeStore, {
+		sessionId: "session-eval-empty",
+		status: "pending",
+		updatedAt: "2026-04-21T09:05:00.000Z",
+		workflow: "single-evaluation",
 	});
 
 	await saveEvaluationSession(runtimeStore, {
@@ -2290,6 +2330,63 @@ test("evaluation-result route reports pending, running, approval-paused, failed,
 				}
 			).summary.job.status,
 			"queued",
+		);
+
+		const { payload: emptySessionPayload } = await readJsonResponse(
+			`${handle.url}/evaluation-result?sessionId=session-eval-empty`,
+		);
+
+		assert.equal(
+			(
+				emptySessionPayload as {
+					summary: {
+						artifacts: { report: { state: string } };
+						handoff: { resumeAllowed: boolean; state: string };
+						job: unknown | null;
+						state: string;
+					};
+				}
+			).summary.state,
+			"empty",
+		);
+		assert.equal(
+			(
+				emptySessionPayload as {
+					summary: {
+						artifacts: { report: { state: string } };
+						handoff: { resumeAllowed: boolean; state: string };
+						job: unknown | null;
+						state: string;
+					};
+				}
+			).summary.job,
+			null,
+		);
+		assert.equal(
+			(
+				emptySessionPayload as {
+					summary: {
+						artifacts: { report: { state: string } };
+						handoff: { resumeAllowed: boolean; state: string };
+						job: unknown | null;
+						state: string;
+					};
+				}
+			).summary.handoff.resumeAllowed,
+			false,
+		);
+		assert.equal(
+			(
+				emptySessionPayload as {
+					summary: {
+						artifacts: { report: { state: string } };
+						handoff: { resumeAllowed: boolean; state: string };
+						job: unknown | null;
+						state: string;
+					};
+				}
+			).summary.artifacts.report.state,
+			"missing",
 		);
 
 		const { payload: runningPayload } = await readJsonResponse(
@@ -8644,7 +8741,7 @@ test("startup server rate limits burst traffic per client", async () => {
 		let lastResponse: Response | undefined;
 		let lastPayload: unknown;
 
-		for (let requestIndex = 0; requestIndex < 6; requestIndex += 1) {
+		for (let requestIndex = 0; requestIndex < 21; requestIndex += 1) {
 			const response = await fetch(`${handle.url}/health`);
 			lastResponse = response;
 			lastPayload = await response.json();
@@ -8661,7 +8758,7 @@ test("startup server rate limits burst traffic per client", async () => {
 			/Too many requests/i,
 		);
 		assert.equal(lastResponse.headers.get("retry-after") !== null, true);
-		assert.equal(lastResponse.headers.get("x-ratelimit-limit"), "5");
+		assert.equal(lastResponse.headers.get("x-ratelimit-limit"), "20");
 		assert.equal(lastResponse.headers.get("x-ratelimit-remaining"), "0");
 	} finally {
 		await handle.close();

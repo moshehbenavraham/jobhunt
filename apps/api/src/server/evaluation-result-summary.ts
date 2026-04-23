@@ -552,7 +552,7 @@ function resolveBaseState(input: {
 	session: RuntimeSessionRecord;
 }): Extract<
 	EvaluationResultState,
-	"approval-paused" | "completed" | "failed" | "pending" | "running"
+	"approval-paused" | "completed" | "empty" | "failed" | "pending" | "running"
 > {
 	if (
 		input.approval?.status === "pending" ||
@@ -569,20 +569,15 @@ function resolveBaseState(input: {
 		return "failed";
 	}
 
-	if (
-		input.job?.status === "pending" ||
-		input.job?.status === "queued" ||
-		input.session.status === "pending"
-	) {
+	if (!input.job) {
+		return "empty";
+	}
+
+	if (input.job?.status === "pending" || input.job?.status === "queued") {
 		return "pending";
 	}
 
-	if (
-		input.job?.status === "running" ||
-		input.job?.status === "waiting" ||
-		input.session.status === "running" ||
-		input.session.status === "waiting"
-	) {
+	if (input.job?.status === "running" || input.job?.status === "waiting") {
 		return "running";
 	}
 
@@ -618,6 +613,7 @@ function resolveSummaryState(input: {
 
 function createHandoffSummary(input: {
 	approval: RuntimeApprovalRecord | null;
+	job: RuntimeJobRecord | null;
 	state: EvaluationResultState;
 }): EvaluationResultHandoffSummary {
 	if (input.approval?.status === "pending") {
@@ -636,15 +632,21 @@ function createHandoffSummary(input: {
 	}
 
 	if (input.approval?.status === "rejected" || input.state === "failed") {
+		const resumeAllowed = input.job !== null;
+
 		return {
 			approval: input.approval ? toApprovalSummary(input.approval) : null,
 			approvalStatus: input.approval?.status ?? "none",
 			message:
 				input.approval?.status === "rejected"
-					? "The latest approval was rejected. The shared resume path can inspect this session."
-					: "The shared resume path can inspect this failed session.",
-			resumeAllowed: true,
-			state: "resume-ready",
+					? resumeAllowed
+						? "The latest approval was rejected. The shared resume path can inspect this session."
+						: "The latest approval was rejected, but no backing workflow job is attached."
+					: resumeAllowed
+						? "The shared resume path can inspect this failed session."
+						: "This session failed without a backing workflow job.",
+			resumeAllowed,
+			state: resumeAllowed ? "resume-ready" : "none",
 		};
 	}
 
@@ -720,7 +722,9 @@ function resolveSummaryMessage(input: {
 		case "degraded":
 			return "Evaluation result summary is ready with warnings or missing artifacts.";
 		case "empty":
-			return "No evaluation sessions have been recorded yet.";
+			return input.session
+				? `Evaluation session ${input.session.sessionId} has no backing workflow job yet.`
+				: "No evaluation sessions have been recorded yet.";
 		case "failed":
 			return (
 				input.failure?.message ??
@@ -851,13 +855,11 @@ async function buildSessionSummary(
 		checkpoint?.value ?? null,
 	]);
 	const inFlight =
-		session.status === "pending" ||
-		session.status === "running" ||
-		session.status === "waiting" ||
-		job?.status === "pending" ||
-		job?.status === "queued" ||
-		job?.status === "running" ||
-		job?.status === "waiting";
+		job !== null &&
+		(job.status === "pending" ||
+			job.status === "queued" ||
+			job.status === "running" ||
+			job.status === "waiting");
 	const artifacts = {
 		pdf: createArtifactSummary({
 			inFlight,
@@ -891,6 +893,7 @@ async function buildSessionSummary(
 	});
 	const handoff = createHandoffSummary({
 		approval,
+		job,
 		state,
 	});
 	const reviewEnvelope = await createEvaluationReviewEnvelope({
