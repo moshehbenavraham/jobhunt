@@ -1,7 +1,7 @@
 # Considerations
 
 > Institutional memory for AI assistants. Updated between phases via carryforward.
-> **Line budget**: 600 max | **Last updated**: Phase 01 (2026-04-23)
+> **Line budget**: 600 max | **Last updated**: Phase 02 (2026-04-23)
 
 ---
 
@@ -13,10 +13,10 @@ Items requiring attention in upcoming phases. Review before each session.
 
 <!-- Max 5 items -->
 
-- [P01-apps/web] **Hex/RGB values in non-shell components**: operator-home-surface.tsx and other surface files still contain inline hex color values not yet migrated to design tokens. Phase 02 color migration needed.
-- [P01-apps/web] **Uppercase label letter-spacing not tokenized**: 0.08em letter-spacing for uppercase labels is hardcoded inline in multiple components. Should be tokenized when the full component typography audit happens.
-- [P01-apps/web] **operator-shell.tsx is dead code**: Preserved as a thin RouterProvider wrapper for backwards compatibility. Can be deleted once all imports are confirmed clean.
-- [P01-apps/web] **Pre-existing banned-term violations**: check-app-ui-copy.mjs found violations in application-help, approvals, batch, and boot files that are outside Phase 01 scope. Must be cleaned in Phase 02.
+- [P02-apps/web] **4 intentional hex values without tokens**: #93c5fd (info border), #7f1d1d (deep error text), #ffffff (row default), rgba(15,23,42,0.06) (subtle selection) have no exact token match. Create tokens if reuse grows beyond 2 files.
+- [P02-apps/web] **rgba() values in shared style modules**: tracker-styles.ts and scan-styles.ts contain 3 rgba() values for subtle-button bg and input border. These are centralized but not tokenized.
+- [P01-apps/web] **Uppercase label letter-spacing not tokenized**: 0.08em letter-spacing for uppercase labels is hardcoded inline. Should be tokenized during a full component typography audit.
+- [P01-apps/web] **operator-shell.tsx is dead code**: Preserved as a thin RouterProvider wrapper. Can be deleted once all imports are confirmed clean.
 
 ### External Dependencies
 
@@ -34,9 +34,9 @@ Items requiring attention in upcoming phases. Review before each session.
 
 <!-- Max 5 items -->
 
-- [P01-apps/web] **Outlet context vs ShellContext split**: Navigation callbacks live in ShellContext (stable, all pages). State hooks (home, startup, shell) live in outlet context (page-specific). Maintain this separation in Phase 02.
+- [P02-apps/web] **Evidence rail has no dynamic content injection**: Root-layout EvidenceRail renders statically. Surfaces that need detail panels use inline two-zone layouts instead. If a future phase needs shell-level evidence rail content from child pages, a context or children-prop bridge must be built.
+- [P01-apps/web] **Outlet context vs ShellContext split**: Navigation callbacks live in ShellContext (stable, all pages). State hooks (home, startup, shell) live in outlet context (page-specific). Maintain this separation.
 - [P01-apps/web] **CSS classes for layout, inline styles for component visuals**: Grid layout and media queries use CSS classes in layout.css. Component-specific visual properties use inline CSSProperties with token references. Do not mix these concerns.
-- [P01-apps/web] **Static command registry**: Command palette uses a static registry of 16 commands (13 surfaces + 3 actions). Phase 02 should add context-aware commands, but keep the registry pattern.
 
 ---
 
@@ -52,15 +52,17 @@ Proven patterns and anti-patterns. Reference during implementation.
 - [P00-P06] **Typed backend tool contracts**: Gave the frontend reliable API surface.
 - [P00-P06] **Spec-driven session workflow**: Caught code and behavioral regressions.
 - [P00-P06] **SQLite operational store**: Kept data local-first.
-- [P00-P06] **Approval flow contract**: Well-defined and API-clean.
-- [P01-apps/web] **Design tokens as single source of truth**: Replacing ~75 inline hex values across 3 shell components with CSS custom properties made the palette change atomic and auditable.
-- [P01-apps/web] **Flat shell background over gradient**: Single mineral-paper token replaced a 3-stop radial gradient, giving a cleaner identity.
-- [P01-apps/web] **CSS Grid for three-zone layout**: More predictable than flexbox-wrap for the rail/canvas/evidence composition. Media queries handle responsive transitions cleanly.
-- [P01-apps/web] **minmax(0, 1fr) for center canvas**: Prevents grid blowout from long content at the 1200px breakpoint boundary.
-- [P01-apps/web] **Drawer state co-located with breakpoint detection**: useResponsiveLayout hook handles both breakpoints and drawer open/close, enabling auto-close on viewport change without external coordination.
+- [P01-apps/web] **Design tokens as single source of truth**: Replacing inline hex values with CSS custom properties made palette changes atomic and auditable.
+- [P01-apps/web] **CSS Grid for three-zone layout**: More predictable than flexbox-wrap for rail/canvas/evidence composition.
+- [P01-apps/web] **Drawer state co-located with breakpoint detection**: useResponsiveLayout hook handles breakpoints and drawer open/close without external coordination.
 - [P01-apps/web] **React Router Outlet context for state, ShellContext for callbacks**: Clean separation that scales as more pages are added.
-- [P01-apps/web] **Legacy hash URL redirect loader**: Graceful migration for existing bookmarks without breaking new routing.
-- [P01-apps/web] **Sculpt-UI design briefs before implementation**: Session 04 design brief for responsive layout produced a coherent mobile/tablet/desktop strategy aligned with the mineral-paper aesthetic.
+- [P01-apps/web] **Sculpt-UI design briefs before implementation**: Produced coherent visual strategies aligned with mineral-paper aesthetic.
+- [P02-apps/web] **Compact inline pill rows over nested card sections**: Replaced verbose 6-section artifact rail with single-row pill layout. Dramatically improved scannability.
+- [P02-apps/web] **Component extraction from monolithic surfaces**: tracker-workspace reduced from ~1100 to ~235 lines by extracting filter bar, row list, detail pane. Easier to maintain and test.
+- [P02-apps/web] **Two-zone inline detail for surfaces without shell-level rail injection**: Pipeline, tracker, and scan surfaces render their own detail panels in a responsive two-column grid, avoiding shell-layer refactoring.
+- [P02-apps/web] **requestIdRef concurrency pattern**: Counter-based stale response prevention in useRunDetail hook. Simple, effective, no external dependencies.
+- [P02-apps/web] **Shared style modules (tracker-styles.ts, scan-styles.ts)**: Centralizing CSSProperties objects per domain kept components clean while maintaining token usage.
+- [P02-apps/web] **Iterative banned-terms script improvement**: Improving heuristics each session (allowlisting property chains, arrow functions) reduced false positives from 141 to 0 without weakening the check.
 
 ### What to Avoid
 
@@ -69,19 +71,20 @@ Proven patterns and anti-patterns. Reference during implementation.
 - [P00-P06] **AI-generated explanatory prose instead of operator-grade terse copy**: Always write for a stressed operator doing triage.
 - [P00-P06] **Validating UI sessions only on code/tests without visual review**: Screenshot review against PRD is mandatory.
 - [P00-P06] **Generic glassmorphism / SaaS dashboard aesthetics**: Backdrop-filter and gradients dilute the mineral-paper palette identity.
-- [P00-P06] **Auto-fit card grids as default layout solution**: Explicit column counts (repeat(N, 1fr)) are more intentional.
-- [P00-P06] **Inline style objects duplicated across components**: Use shared tokens.
+- [P00-P06] **Inline style objects duplicated across components**: Use shared tokens or shared style modules.
 - [P00-P06] **Skipping sculpt-ui design briefs**: Causes visual drift across sessions.
-- [P00-P06] **Treating validation as done when code compiles**: UX translation fidelity must be verified.
-- [P01-apps/web] **Conditional rendering for grid layout hiding**: CSS class + media query hiding is more reliable for grid column assignment. Use conditional rendering only when the rendering context differs significantly (e.g., inline vs drawer evidence rail).
+- [P01-apps/web] **Conditional rendering for grid layout hiding**: CSS class + media query hiding is more reliable for grid column assignment.
+- [P02-apps/web] **Creating single-use tokens for every color variant**: 4 hex values were intentionally kept without tokens to avoid token bloat. Only tokenize if reuse grows.
+- [P02-apps/web] **Piping detail content into shell-level evidence rail without architecture support**: Adding outlet context injection requires shell refactoring. Use inline two-zone layouts instead until a proper bridge is built.
 
 ### Tool/Library Notes
 
 <!-- Max 5 items -->
 
-- [P01-apps/web] **React Router v7**: Installed in Phase 01. createBrowserRouter with Outlet-based layouts. No issues.
+- [P01-apps/web] **React Router v7**: createBrowserRouter with Outlet-based layouts. No issues.
 - [P01-apps/web] **CSS custom properties over CSS-in-JS**: Simpler, faster, debuggable. Token layer is ~200 lines of :root declarations.
-- [P01-apps/web] **Google Fonts display=swap**: Prevents FOIT. Combined with preconnect hints for early discovery.
+- [P02-apps/web] **vitest**: Added as devDependency in apps/web for unit testing (extract-sections). Lightweight, Vite-native, fast.
+- [P02-apps/web] **IntersectionObserver for TOC**: Used in report-toc.tsx for active section tracking. Remember to disconnect on unmount.
 
 ---
 
@@ -89,18 +92,18 @@ Proven patterns and anti-patterns. Reference during implementation.
 
 Recently closed items (buffer -- rotates out after 2 phases).
 
-| Phase  | Item                                    | Resolution                                                                                         |
-| ------ | --------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| P01    | Inline color values in shell components | Replaced ~75 hex values with CSS custom property tokens in sessions 01-02                          |
-| P01    | No design token layer                   | Created tokens.css with color, spacing, radius, border, shadow, font, and typographic scale tokens |
-| P01    | Generic responsive collapse             | Three-zone CSS Grid layout with intentional tablet/mobile breakpoints (session 03-04)              |
-| P01    | No real router / hash routing           | React Router v7 with 13 deep-linkable routes, legacy hash redirect loader (session 05)             |
-| P01    | Internal jargon in UI strings           | Banned-terms check script + full copy rewrite across shell components (session 06)                 |
-| P01    | Missing command palette                 | Command palette with Cmd/Ctrl+K, fuzzy search, 16 commands, ARIA roles (session 06)                |
-| P01    | No right evidence rail                  | Persistent evidence rail on desktop, slide-over drawer on tablet/mobile (sessions 03-04)           |
-| P01    | Font loading strategy missing           | Google Fonts CDN with preconnect + display=swap for Space Grotesk + IBM Plex (session 02)          |
-| P01    | sculpt-ui not enforced                  | Design brief created for session 04; convention now requires sculpt-ui before every UI session     |
-| P00-06 | Full backend + frontend build           | Completed; backend stable, frontend UX recovered in Phase 01                                       |
+| Phase | Item                                    | Resolution                                                                                            |
+| ----- | --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| P02   | Hex/RGB values in non-shell components  | All surfaces migrated to design tokens across sessions 01-07. 4 intentional exceptions documented.    |
+| P02   | Pre-existing banned-term violations     | Reduced from 141 to 0 across 7 sessions. Script heuristics improved iteratively.                      |
+| P02   | No deep-link routes for detail pages    | Added /runs/:runId, /reports/:reportId, /workflows/:workflowId, /batch/:batchId, /scan/:scanId routes |
+| P02   | Static command palette                  | Extended with context-aware commands (forSurface filtering) and surface-change reset                  |
+| P01   | Inline color values in shell components | Replaced ~75 hex values with CSS custom property tokens in sessions 01-02                             |
+| P01   | No design token layer                   | Created tokens.css with color, spacing, radius, border, shadow, font, and typographic scale tokens    |
+| P01   | Generic responsive collapse             | Three-zone CSS Grid layout with intentional tablet/mobile breakpoints                                 |
+| P01   | No real router / hash routing           | React Router v7 with 13 deep-linkable routes, legacy hash redirect loader                             |
+| P01   | Internal jargon in UI strings           | Banned-terms check script + full copy rewrite across shell components                                 |
+| P01   | Missing command palette                 | Command palette with Cmd/Ctrl+K, fuzzy search, 16 commands, ARIA roles                                |
 
 ---
 

@@ -2131,7 +2131,7 @@ try {
 				name: "Applications",
 			})
 			.waitFor();
-		await page.getByText("Showing tracker row for report #101.").waitFor();
+		await page.getByText("Auto-focused from report #101").waitFor();
 		assert.match(page.url(), /\/tracker/);
 		await page.goto(`${webUrl}/evaluate?session=session-completed`, {
 			waitUntil: "networkidle",
@@ -2152,10 +2152,9 @@ try {
 			.getByText("Manual legitimacy review required.")
 			.waitFor();
 		await completedRail.getByText("PDF generation is incomplete.").waitFor();
+		await completedRail.getByText("Live job URL").waitFor();
 		await completedRail
-			.getByText(
-				"Launched from live job URL https://example.com/jobs/degraded.",
-			)
+			.getByText("https://example.com/jobs/degraded")
 			.waitFor();
 		await completedRail.getByText("needs-review").first().waitFor();
 		await completedRail.getByText("manual review").first().waitFor();

@@ -1063,7 +1063,10 @@ try {
 		const page = await browser.newPage();
 		await page.goto(`${webUrl}#scan`, { waitUntil: "networkidle" });
 		await page.getByRole("heading", { name: "Scan review" }).waitFor();
-		await page.getByText("Applied AI Engineer").waitFor();
+		await page
+			.getByRole("button", { name: /Applied AI Engineer/ })
+			.first()
+			.waitFor();
 		await page.getByText("duplicate-heavy").waitFor();
 		await page.getByRole("button", { name: /Applied AI Engineer/ }).click();
 		await page.getByRole("button", { name: "Ignore role" }).click();
@@ -1093,18 +1096,20 @@ try {
 		await page
 			.getByRole("button", { name: /Forward Deployed Engineer/ })
 			.click();
-		await page.getByRole("button", { name: "Seed batch evaluation" }).click();
+		await page.getByRole("button", { name: "Add to batch" }).click();
 		await page.getByRole("heading", { name: "Evaluation console" }).waitFor();
 		assert.match(page.url(), /\/evaluate/);
 
 		fakeApi.setScanMode("empty");
 		await page.goto(`${webUrl}#scan`, { waitUntil: "networkidle" });
-		await page.getByText("No candidates in this view").waitFor();
+		await page.getByText("No candidates").first().waitFor();
 
 		fakeApi.setScanMode("slow");
 		const loadingPage = await browser.newPage();
 		await loadingPage.goto(`${webUrl}#scan`);
-		await loadingPage.getByText("Loading scan workspace").waitFor();
+		await loadingPage
+			.getByRole("heading", { name: "Loading candidates" })
+			.waitFor();
 		await loadingPage.getByRole("heading", { name: "Scan review" }).waitFor();
 		await loadingPage.getByText("Forward Deployed Engineer").waitFor();
 		await loadingPage.close();
@@ -1114,15 +1119,17 @@ try {
 		await page.route("**/api/scan-review*", async (route) => {
 			await route.abort("failed");
 		});
-		await page.getByRole("button", { name: "Refresh scan review" }).click();
-		await page.getByText("Showing the last scan snapshot").waitFor();
+		await page.getByRole("button", { name: "Refresh scan data" }).click();
+		await page.getByText("Showing last snapshot").waitFor();
 		await page.unroute("**/api/scan-review*");
 
 		fakeApi.setScanMode("error");
 		const errorPage = await browser.newPage();
 		await errorPage.goto(`${webUrl}#scan`, { waitUntil: "networkidle" });
-		await errorPage.getByText("Scan workspace warning").waitFor();
-		await errorPage.getByText("Scan workspace unavailable").waitFor();
+		await errorPage.getByText("Warning").first().waitFor();
+		await errorPage
+			.getByText("Scan review failed before a summary could load.")
+			.waitFor();
 		await errorPage.close();
 	} finally {
 		await browser.close();

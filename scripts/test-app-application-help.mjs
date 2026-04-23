@@ -1060,7 +1060,7 @@ try {
 			.waitFor();
 		await page
 			.getByText(
-				"Application-help summary endpoint is unavailable. Start the local API server and try again.",
+				"Application help summary is unavailable. Start the local API server and try again.",
 				{ exact: true },
 			)
 			.waitFor();

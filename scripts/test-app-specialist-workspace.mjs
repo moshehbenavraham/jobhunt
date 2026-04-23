@@ -2419,9 +2419,7 @@ try {
 			.click();
 		await page.getByText("Showing the last workflows snapshot").waitFor();
 		await page
-			.getByText(
-				"Could not reach the specialist workspace summary endpoint right now.",
-			)
+			.getByText("Could not reach the specialist workspace right now.")
 			.waitFor();
 	} finally {
 		await browser.close();

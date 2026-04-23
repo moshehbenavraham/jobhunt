@@ -804,9 +804,9 @@ try {
 		await page.waitForURL(/\/artifacts/);
 		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page
-			.getByRole("heading", { name: "Evaluation: HTTP Co -- Latest Role" })
+			.getByText("Evaluation: HTTP Co -- Latest Role", { exact: true })
 			.waitFor();
-		await page.getByLabel("Selected report markdown").waitFor();
+		await page.getByLabel("Report content").waitFor();
 		await page.getByText("Latest report body.").waitFor();
 
 		await page.getByRole("button", { name: "Show PDFs" }).click();
@@ -815,7 +815,7 @@ try {
 			.first()
 			.waitFor();
 		await page
-			.getByText("PDF review stays read-only in the workspace for now.", {
+			.getByText("PDF available at the path above.", {
 				exact: false,
 			})
 			.first()
@@ -824,11 +824,11 @@ try {
 		await page.getByRole("button", { name: "Show Reports" }).click();
 		await page
 			.getByRole("button", {
-				name: "Open report reports/022-http-latest-2026-04-23.md",
+				name: "Open report 022-http-latest-2026-04-23.md",
 			})
 			.click();
 		await page
-			.getByRole("heading", { name: "Evaluation: HTTP Co -- Latest Role" })
+			.getByText("Evaluation: HTTP Co -- Latest Role", { exact: true })
 			.waitFor();
 		assert.match(page.url(), /report=reports%2F022-http-latest-2026-04-23\.md/);
 
@@ -840,26 +840,30 @@ try {
 		await page.goto(staleUrl.toString(), {
 			waitUntil: "networkidle",
 		});
-		await page.getByText("Selected report is stale").waitFor();
+		await page.getByText("Report unavailable").waitFor();
 		await page
 			.getByText("reports/099-http-missing-2026-04-22.md")
 			.first()
 			.waitFor();
 		await page
-			.getByRole("button", { name: "Follow the latest report" })
+			.getByRole("button", { name: "Show the latest report instead" })
 			.click();
 		await page
-			.getByRole("heading", { name: "Evaluation: HTTP Co -- Latest Role" })
+			.getByText("Evaluation: HTTP Co -- Latest Role", { exact: true })
 			.waitFor();
 		assert.equal(page.url().includes("report="), false);
 
 		fakeApi.setReportViewerMode("offline");
-		await page.getByRole("button", { name: "Refresh artifact review" }).click();
-		await page.getByText("Showing the last artifact snapshot").waitFor();
+		await page.getByRole("button", { name: "Refresh reports" }).click();
+		await page.getByText("Showing last available snapshot").waitFor();
 		await page
 			.getByText("Report-viewer refresh is temporarily unavailable.")
 			.waitFor();
-		await page.getByText("Latest report body.").waitFor();
+		await page
+			.getByText(
+				"Server unreachable. Showing last available content if cached.",
+			)
+			.waitFor();
 	} finally {
 		await browser.close();
 	}

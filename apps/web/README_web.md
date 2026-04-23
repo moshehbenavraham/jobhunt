@@ -1,12 +1,14 @@
 # Web
 
 The web package owns the local operator shell for Job-Hunt. It renders
-startup state from the API boot surface and keeps onboarding, approval,
-settings, application-help, and readiness signals visible in the browser.
+startup state from the API boot surface and provides evaluation, report
+viewing, pipeline review, tracker workspace, scan review, batch workspace,
+specialist workspace, approval inbox, onboarding, settings, and
+application-help surfaces in the browser.
 
 The shell uses a design token system (mineral paper palette, Space Grotesk /
 IBM Plex typography), a CSS Grid three-zone layout, React Router for
-deep-linkable navigation, and a Cmd/Ctrl+K command palette.
+deep-linkable navigation, and a context-aware Cmd/Ctrl+K command palette.
 
 ## Quick Start
 
@@ -19,8 +21,9 @@ npm run check
 ## What Lives Here
 
 - `src/main.tsx` - React entrypoint, mounts `RouterProvider`
-- `src/routes.tsx` - route tree with 13 surface routes, legacy hash redirect,
-  and catch-all 404
+- `src/routes.tsx` - route tree with 18 routes (13 base surfaces plus detail
+  routes for runs, reports, workflows, batches, and scans), legacy hash
+  redirect, and catch-all 404
 - `src/styles/` - design token layer
   - `tokens.css` - color palette, spacing, radius, shadow, typography scale,
     font families, breakpoints, and responsive layout tokens
@@ -43,12 +46,26 @@ npm run check
   - `status-strip.tsx` - top-level status cards
   - `surface-placeholder.tsx` - placeholder content for unbuilt surfaces
   - `shell-types.ts` - surface definitions, path mappings, and type contracts
-- `src/pages/` - 14 route page components (thin wrappers around surface
-  components with router-aware props)
+- `src/pages/` - 19 route page components (thin wrappers around surface
+  components with router-aware props, including detail pages for runs,
+  reports, workflows, batches, and scans)
 - `src/boot/` - client, hook, and view helpers for startup diagnostics
 - `src/onboarding/` - onboarding summary, repair, and checklist views
 - `src/approvals/` - approval inbox views and mutation helpers
 - `src/settings/` - settings, maintenance, and update-check views
+- `src/chat/` - evaluation console, run status, timeline, artifact rail, and
+  run detail types and hooks
+- `src/reports/` - report viewer with metadata rail, reading column, TOC with
+  IntersectionObserver active tracking, action shelf, and section extraction
+- `src/pipeline/` - pipeline review with dense rows, sticky filters, shortlist
+  overview, context detail, and empty states
+- `src/tracker/` - tracker workspace with filter bar, row list, detail pane,
+  and shared style module
+- `src/scan/` - scan review with dense candidate rows, action shelf, and
+  shared style module
+- `src/batch/` - batch workspace with item matrix, run panel, and detail rail
+- `src/workflows/` - specialist workspace with launch panel, state panel,
+  detail and review rails
 - `src/application-help/` - draft review, context, and approval-aware views
 - `src/App.tsx` - legacy wrapper (RouterProvider passthrough)
 - `vite.config.ts` - local dev server and `/api` proxy wiring

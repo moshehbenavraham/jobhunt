@@ -807,9 +807,7 @@ try {
 			"profileCv",
 		]);
 
-		await page
-			.getByRole("button", { name: "Open the operator home surface" })
-			.click();
+		await page.getByRole("button", { name: "Open the operator home" }).click();
 		await page.getByRole("heading", { name: "Daily overview" }).waitFor();
 		await page.getByText("Authentication is still required.").first().waitFor();
 		assert.ok(

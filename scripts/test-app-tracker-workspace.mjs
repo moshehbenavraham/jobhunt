@@ -907,10 +907,7 @@ try {
 
 	try {
 		const page = await browser.newPage();
-		const selectedDetailPanel = page
-			.locator("section")
-			.filter({ has: page.getByRole("heading", { name: "Selected detail" }) })
-			.last();
+		const selectedDetailPanel = page.getByLabel("Selected row detail");
 		await page.goto(`${webUrl}/tracker`, { waitUntil: "networkidle" });
 
 		await page
@@ -919,12 +916,12 @@ try {
 			})
 			.waitFor();
 		await page
-			.getByText("1 pending tracker TSV addition is waiting to merge.", {
-				exact: true,
-			})
+			.getByText("1 pending tracker TSV addition is waiting to merge.")
 			.waitFor();
-		await page.getByRole("button", { name: /Select tracker row 19/ }).click();
-		await page.getByText("Showing selected tracker row #19.").waitFor();
+		await page
+			.getByRole("button", { name: /Cohere - Applied AI Engineer/ })
+			.click();
+		await page.getByText("#19 Cohere").waitFor();
 		await page
 			.getByText(
 				"Strongest current agentic-workflows fit in the queue; remote-flexible and worth prioritizing.",
@@ -932,9 +929,9 @@ try {
 			)
 			.waitFor();
 
-		await page.getByLabel("Select tracker status").selectOption("Interview");
+		await page.getByLabel("Select status").selectOption("Interview");
 		await page.getByRole("button", { name: /^Update status$/ }).click();
-		await page.getByText("Tracker action feedback").waitFor();
+		await page.getByText("Action result").waitFor();
 		await page.getByText("updated to Interview").waitFor();
 		await selectedDetailPanel
 			.getByText("2026-04-22 | Interview | 4.4 / 5", { exact: true })
@@ -946,7 +943,7 @@ try {
 		await page.getByRole("button", { name: /Normalize dry run/ }).click();
 		await page.getByText("Tracker status normalization completed.").waitFor();
 
-		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page.getByRole("button", { name: /^Open report$/ }).click();
 		await page.waitForURL(/\/artifacts/);
 		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page
@@ -960,21 +957,19 @@ try {
 				name: "Applications",
 			})
 			.waitFor();
-		await page.getByText("Auto-pipeline closeout focus").waitFor();
+		await page.getByText("Auto-focused from report #020").waitFor();
+		await page.getByText("Staged addition: 20-future-company.tsv").waitFor();
 		await page
-			.getByText(
-				"Showing staged tracker addition for report #020. Merge tracker additions to create the canonical row.",
-			)
+			.getByText("This entry has not been merged yet. Review before merging.")
 			.waitFor();
-		await page.getByText("Pending TSV 20-future-company.tsv").waitFor();
-		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page.getByRole("button", { name: /^Open report$/ }).click();
 		await page.waitForURL(/\/artifacts/);
 		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 
 		fakeApi.setTrackerMode("slow");
 		const loadingPage = await browser.newPage();
 		await loadingPage.goto(`${webUrl}/tracker`);
-		await loadingPage.getByText("Loading tracker workspace").waitFor();
+		await loadingPage.getByText("Loading applications").waitFor();
 		await loadingPage
 			.getByRole("heading", {
 				name: "Applications",
@@ -995,7 +990,9 @@ try {
 		fakeApi.setTrackerMode("error");
 		const errorPage = await browser.newPage();
 		await errorPage.goto(`${webUrl}/tracker`, { waitUntil: "networkidle" });
-		await errorPage.getByText("Tracker workspace unavailable").waitFor();
+		await errorPage
+			.getByText("Tracker workspace failed before a summary could load.")
+			.waitFor();
 		await errorPage.close();
 
 		fakeApi.reset();
@@ -1011,8 +1008,8 @@ try {
 		await page.route("**/tracker-workspace*", async (route) => {
 			await route.abort("failed");
 		});
-		await page.getByLabel("Refresh tracker workspace").click();
-		await page.getByText("Showing the last tracker snapshot").waitFor();
+		await page.getByLabel("Refresh tracker").click();
+		await page.getByText("The API is offline. Showing cached data.").waitFor();
 		await page
 			.getByText(
 				"Tracker-workspace summary endpoint is unavailable. Start the local API server and try again.",

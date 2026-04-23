@@ -148,6 +148,7 @@ These terms must never appear in user-visible UI strings:
 | Bundler       | Vite                             | `vite.config.ts`                                            |
 | Database      | SQLite (better-sqlite3)          | `apps/api`                                                  |
 | Observability | pino (api), browser logger (web) | `apps/api/src/logger.ts`, `apps/web/src/logger.ts`, `logs/` |
+| Git Hooks     | husky + lint-staged              | `.husky/pre-commit`, `.lintstagedrc.mjs`                    |
 | Copy Check    | `scripts/check-app-ui-copy.mjs`  | CI + validate                                               |
 
 ## CI/CD
@@ -191,10 +192,10 @@ Platform notes:
 
 ## Workspace Structure
 
-| Package | Path     | Stack            | Formatter | Linter | Types | Testing   | Observability  |
-| ------- | -------- | ---------------- | --------- | ------ | ----- | --------- | -------------- |
-| web     | apps/web | TypeScript React | Prettier  | ESLint | tsc   | -         | browser logger |
-| api     | apps/api | TypeScript Node  | Prettier  | ESLint | tsc   | node:test | pino           |
+| Package | Path     | Stack            | Formatter | Linter | Types | Testing   | Observability  | Git Hooks           |
+| ------- | -------- | ---------------- | --------- | ------ | ----- | --------- | -------------- | ------------------- |
+| web     | apps/web | TypeScript React | Prettier  | ESLint | tsc   | -         | browser logger | husky + lint-staged |
+| api     | apps/api | TypeScript Node  | Prettier  | ESLint | tsc   | node:test | pino           | husky + lint-staged |
 
 ### Cross-Package Rules
 

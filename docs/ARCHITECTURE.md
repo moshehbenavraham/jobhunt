@@ -14,18 +14,21 @@ Repo instructions and scripts
      -> apps/api/src/server/index.ts
      -> apps/web/src/main.tsx          (React + RouterProvider entry)
      -> apps/web/src/shell/root-layout.tsx  (three-zone shell chrome)
-     -> apps/web/src/routes.tsx         (route tree, 13 surfaces + 404)
+     -> apps/web/src/routes.tsx         (route tree, 18 routes + 404)
      -> apps/web/src/styles/            (tokens.css, base.css, layout.css)
   -> reports / output / data / tracker files
   -> .jobhunt-app/ (app-owned runtime state only)
 ```
 
 Job-Hunt is a local-first repo that keeps its durable business data in checked-
-in files and its operational app state in `.jobhunt-app/`. The app surface now
-covers startup diagnostics, onboarding repair, approval review, settings,
-report viewing, pipeline review, tracker workspace, application-help, and
-workflow bootstrapping through explicit packages, diagnostics, and boot
-surfaces.
+in files and its operational app state in `.jobhunt-app/`. The app surface
+covers startup diagnostics, onboarding repair, evaluation console, report
+viewing, pipeline review, tracker workspace, scan review, batch workspace,
+specialist workspace, approval inbox, settings, application-help, and workflow
+bootstrapping through explicit packages, diagnostics, and boot surfaces. All
+operator surfaces use the design token layer and three-zone layout from Phase
+01, with dense rows, context rails, and deep-linkable detail routes added in
+Phase 02.
 
 ## Main Components
 
@@ -48,8 +51,9 @@ surfaces.
   - **Three-zone layout** (left navigation rail, center canvas, right evidence
     rail) composed via CSS Grid in `layout.css` with responsive breakpoints
     for desktop (>= 1200px), tablet (768-1199px), and mobile (< 768px).
-  - **React Router** (`src/routes.tsx`) with 13 deep-linkable surface routes,
-    legacy hash-URL redirect, and a catch-all 404 page.
+  - **React Router** (`src/routes.tsx`) with 18 deep-linkable routes (13
+    base surfaces plus detail routes for runs, reports, workflows, batches,
+    and scans), legacy hash-URL redirect, and a catch-all 404 page.
   - **Shell chrome** (`src/shell/root-layout.tsx`) using `<Outlet />` for
     the center canvas, `ShellContext` for cross-surface navigation callbacks,
     and `useResponsiveLayout` for breakpoint-driven drawer and bottom-nav
@@ -58,15 +62,22 @@ surfaces.
     with fuzzy search, keyboard navigation, and ARIA-compliant dialog roles.
   - **Responsive components**: `Drawer`, `BottomNav`, and `EvidenceRail`
     adapting across desktop, tablet, and mobile breakpoints.
-  - **14 page components** (`src/pages/`) wrapping existing surface components
-    with router-aware props via outlet context and shell context.
+  - **19 page components** (`src/pages/`) wrapping surface components with
+    router-aware props via outlet context and shell context, including detail
+    pages for runs, reports, workflows, batches, and scans.
 - Package-level docs live in `apps/api/README_api.md` and
   `apps/web/README_web.md`.
 - `scripts/test-app-bootstrap.mjs` verifies the live app boot contract from the
   repo root.
 - `scripts/test-app-chat-console.mjs`, `scripts/test-app-report-viewer.mjs`,
   `scripts/test-app-pipeline-review.mjs`,
-  `scripts/test-app-tracker-workspace.mjs`, and
+  `scripts/test-app-tracker-workspace.mjs`,
+  `scripts/test-app-scan-review.mjs`, `scripts/test-app-batch-workspace.mjs`,
+  `scripts/test-app-specialist-workspace.mjs`,
+  `scripts/test-app-approval-inbox.mjs`,
+  `scripts/test-app-application-help.mjs`,
+  `scripts/test-app-settings.mjs`, `scripts/test-app-onboarding.mjs`,
+  `scripts/test-app-shell.mjs`, and
   `scripts/test-app-auto-pipeline-parity.mjs` keep the shell surfaces
   aligned with the repo gate.
 - `scripts/check-app-ui-copy.mjs` enforces a banned-terms list to prevent
@@ -159,6 +170,14 @@ exhausted.
 | `scripts/test-app-report-viewer.mjs`        | Report viewer smoke test                  |
 | `scripts/test-app-pipeline-review.mjs`      | Pipeline review smoke test                |
 | `scripts/test-app-tracker-workspace.mjs`    | Tracker workspace smoke test              |
+| `scripts/test-app-scan-review.mjs`          | Scan review smoke test                    |
+| `scripts/test-app-batch-workspace.mjs`      | Batch workspace smoke test                |
+| `scripts/test-app-specialist-workspace.mjs` | Specialist workspace smoke test           |
+| `scripts/test-app-approval-inbox.mjs`       | Approval inbox smoke test                 |
+| `scripts/test-app-application-help.mjs`     | Application help smoke test               |
+| `scripts/test-app-settings.mjs`             | Settings surface smoke test               |
+| `scripts/test-app-onboarding.mjs`           | Onboarding surface smoke test             |
+| `scripts/test-app-shell.mjs`                | Shell chrome smoke test                   |
 | `scripts/test-app-auto-pipeline-parity.mjs` | Auto-pipeline parity smoke test           |
 | `node scripts/test-all.mjs --quick`         | Baseline quick regression gate            |
 | `scripts/verify-pipeline.mjs`               | Check tracker integrity                   |

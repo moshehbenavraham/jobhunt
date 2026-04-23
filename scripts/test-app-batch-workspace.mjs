@@ -1107,7 +1107,7 @@ try {
 		await page.getByText("Showing the last batch snapshot").waitFor();
 		await page
 			.getByText(
-				"Batch-workspace summary endpoint is unavailable. Start the local API server and try again.",
+				"Batch workspace summary is unavailable. Start the local API server and try again.",
 				{ exact: true },
 			)
 			.waitFor();

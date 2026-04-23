@@ -1211,7 +1211,7 @@ try {
 		await page.getByText("Approval resolved as rejected.").first().waitFor();
 		await page.getByText("resume-ready").first().waitFor();
 
-		await clickEnabledButton(page, "Resume session session-live");
+		await clickEnabledButton(page, "Resume run session-live");
 		await page.getByText("Run handoff is active.").first().waitFor();
 		await page.getByRole("heading", { name: "No pending approvals" }).waitFor();
 

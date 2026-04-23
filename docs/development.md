@@ -24,8 +24,9 @@ node scripts/test-all.mjs --quick
 - Update the relevant docs when scripts or workflows change.
 - Use the existing scripts instead of adding duplicate workflows.
 - Use `npm run app:web:dev` and `npm run app:api:serve` when working on the
-  app surfaces for startup, onboarding, approvals, settings, reports,
-  pipeline review, tracker workspace, and application-help.
+  app surfaces for startup, onboarding, evaluation, approvals, settings,
+  reports, pipeline review, tracker workspace, scan review, batch workspace,
+  specialist workspace, and application-help.
 - Keep the API route contract and the web shell in sync when adding a new
   operator surface.
 

@@ -2,23 +2,17 @@
 
 **Date:** 2026-04-23
 **Project:** Job-Hunt
-**Audit Mode:** Phase-Focused (Phase 01 -- Rebuild Foundation and Shell)
-**Phase Sessions Audited:** 6 of 6 complete
-
----
+**Audit Mode:** Phase-Focused (Phase 02 just completed)
 
 ## Summary
 
-Phase 01 delivered the design token layer, typography, three-zone CSS Grid
-layout, responsive breakpoints with drawers and bottom nav, React Router with
-13 deep-linkable routes, and Cmd/Ctrl+K command palette -- all in `apps/web`.
+Phase 02 ("Rebuild Workbench and Review Surfaces") completed all 7 sessions
+with 144/144 tasks done. This audit focused on documentation changes driven
+by Phase 02 work while verifying all standard files exist.
 
-Documentation was audited against the 6 session implementation-notes.md files
-to bring docs current with the implemented state.
+## Documentation Coverage
 
----
-
-## Root Files
+### Root Files
 
 | File            | Required | Found | Status  |
 | --------------- | -------- | ----- | ------- |
@@ -26,85 +20,82 @@ to bring docs current with the implemented state.
 | CONTRIBUTING.md | Yes      | Yes   | Current |
 | LICENSE         | Yes      | Yes   | Current |
 
-## /docs/ Files
+### /docs/ Directory
 
-| File             | Required | Found | Status            |
-| ---------------- | -------- | ----- | ----------------- |
-| ARCHITECTURE.md  | Yes      | Yes   | Updated           |
-| onboarding.md    | Yes      | Yes   | Current           |
-| development.md   | Yes      | Yes   | Current           |
-| environments.md  | Yes      | Yes   | Current           |
-| deployment.md    | Yes      | Yes   | Current           |
-| SCRIPTS.md       | No       | Yes   | Current (skipped) |
-| DATA_CONTRACT.md | No       | Yes   | Current (skipped) |
-| SETUP.md         | No       | Yes   | Current (skipped) |
-| PRD_UX.md        | No       | Yes   | Current (skipped) |
-| README-docs.md   | No       | Yes   | Current (skipped) |
+| File            | Required | Found | Status  |
+| --------------- | -------- | ----- | ------- |
+| ARCHITECTURE.md | Yes      | Yes   | Updated |
+| CODEOWNERS      | Yes      | Yes   | Current |
+| onboarding.md   | Yes      | Yes   | Updated |
+| development.md  | Yes      | Yes   | Updated |
+| environments.md | Yes      | Yes   | Current |
+| deployment.md   | Yes      | Yes   | Current |
 
-## ADRs
+### Architecture Decision Records
 
-| File                                        | Status  |
-| ------------------------------------------- | ------- |
-| docs/adr/0000-template.md                   | Created |
-| docs/adr/0001-design-token-system.md        | Created |
-| docs/adr/0002-three-zone-css-grid-layout.md | Created |
-| docs/adr/0003-react-router-deep-linking.md  | Created |
+| File                                                       | Status  |
+| ---------------------------------------------------------- | ------- |
+| docs/adr/0000-template.md                                  | Current |
+| docs/adr/0001-design-token-system.md                       | Current |
+| docs/adr/0002-three-zone-css-grid-layout.md                | Current |
+| docs/adr/0003-react-router-deep-linking.md                 | Updated |
+| docs/adr/0004-surface-decomposition-and-token-migration.md | Created |
 
-## Package READMEs
+### Package READMEs
 
 | File                   | Required | Found | Status  |
 | ---------------------- | -------- | ----- | ------- |
 | apps/web/README_web.md | Yes      | Yes   | Updated |
 | apps/api/README_api.md | Yes      | Yes   | Current |
 
----
+### Supplementary Directories
+
+| Directory      | Found | Status                      |
+| -------------- | ----- | --------------------------- |
+| docs/adr/      | Yes   | 5 files (template + 4 ADRs) |
+| docs/runbooks/ | Yes   | 1 file (README_runbooks.md) |
+| docs/api/      | Yes   | 1 file (README_api.md)      |
 
 ## Files Created
 
-1. `docs/adr/0000-template.md` -- ADR template
-2. `docs/adr/0001-design-token-system.md` -- CSS custom property token decision
-3. `docs/adr/0002-three-zone-css-grid-layout.md` -- grid layout decision
-4. `docs/adr/0003-react-router-deep-linking.md` -- React Router decision
+| File                                                       | Reason                             |
+| ---------------------------------------------------------- | ---------------------------------- |
+| docs/adr/0004-surface-decomposition-and-token-migration.md | Phase 02 architectural pattern ADR |
 
 ## Files Updated
 
-1. `README.md` -- added apps/ to repo layout, expanded tech stack with
-   TypeScript React, Vite, CSS custom properties, React Router
-2. `docs/ARCHITECTURE.md` -- updated system overview to reflect root-layout.tsx,
-   routes.tsx, and styles/ directory; expanded app surface section with design
-   tokens, three-zone layout, router, command palette, responsive components,
-   and banned-terms script; updated boot surface entry from App.tsx to main.tsx
-   - RouterProvider
-3. `apps/web/README_web.md` -- rewrote "What Lives Here" section with full
-   directory listing including styles/, shell/ components, pages/, routes.tsx,
-   command palette, and responsive layout; added design system intro paragraph
+| File                                       | Changes                                                                                                                                                      |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| README.md                                  | Route count 13 -> 18, app surface description expanded with Phase 02 surfaces                                                                                |
+| docs/ARCHITECTURE.md                       | Route count 13 -> 18, page component count 14 -> 19, overview expanded with Phase 02 surfaces, integrity table expanded with 8 new smoke test scripts        |
+| docs/adr/0003-react-router-deep-linking.md | Updated consequences to reflect 5 implemented detail routes (no longer stubs)                                                                                |
+| apps/web/README_web.md                     | Route count 13 -> 18, page count 14 -> 19, surface list expanded, added 7 source directories for Phase 02 components, command palette noted as context-aware |
+| docs/onboarding.md                         | Surface list expanded with evaluation, scan, batch, specialist                                                                                               |
+| docs/development.md                        | Surface list expanded with evaluation, scan, batch, specialist                                                                                               |
 
-## Files Verified as Current (No Changes Needed)
+## Files Verified (No Changes Needed)
 
-1. `CONTRIBUTING.md`
-2. `LICENSE`
-3. `docs/onboarding.md`
-4. `docs/development.md`
-5. `docs/environments.md`
-6. `docs/deployment.md`
-7. `apps/api/README_api.md`
+- CONTRIBUTING.md
+- LICENSE
+- docs/environments.md
+- docs/deployment.md
+- docs/CODEOWNERS
+- docs/adr/0000-template.md
+- docs/adr/0001-design-token-system.md
+- docs/adr/0002-three-zone-css-grid-layout.md
+- apps/api/README_api.md
+- docs/runbooks/README_runbooks.md
+- docs/api/README_api.md
 
-## Remaining Gaps
+## Quality Checks
 
-- `docs/runbooks/incident-response.md` does not exist. Not urgent for a local-
-  first repo, but should be created if production hosting is added.
-- `docs/CODEOWNERS` does not exist. Recommended for multi-contributor repos.
-- Phase 02 surfaces (evaluation console, report viewer, pipeline, tracker,
-  scan, batch) will need documentation updates when implemented.
+- ASCII-only: All updated files pass (no non-ASCII characters)
+- No stale TODO placeholders in any updated file
+- All referenced paths exist in the codebase
+- Route counts verified against apps/web/src/routes.tsx (18 routes)
+- Page component count verified against apps/web/src/pages/ (19 files)
 
----
+## Remaining Gaps Requiring Human Input
 
-## Next Action
-
-PRD.md defines Phase 02 (Rebuild Workbench and Review Surfaces) as the next
-unfinished phase.
-
-Recommended sequence:
-
-1. Manual testing and LLM audit of Phase 01 deliverables (highly recommended)
-2. `phasebuild` to create Phase 02 structure
+None. All standard documentation files exist, are current, and reflect the
+completed Phase 02 state.

@@ -78,11 +78,12 @@ file to Overleaf.
 
 ## App Surface
 
-The app surface under `apps/` is the primary local runtime path. It now covers
+The app surface under `apps/` is the primary local runtime path. It covers
 the operator home landing, startup diagnostics, onboarding repair, approval
-review, settings, report viewing, pipeline review, tracker workspace,
-application-help, and the long-lived API boot server instead of only the
-initial scaffold.
+review, settings, report viewing, pipeline review, tracker workspace, scan
+review, batch workspace, specialist workspace, application-help, deep-link
+detail pages for runs, reports, workflows, batches, and scans, and the
+long-lived API boot server.
 
 - `npm run app:web:dev` - start the React shell with Vite
 - `npm run app:web:build` - build the web scaffold into `apps/web/dist`
@@ -174,7 +175,7 @@ Each significant folder has a `README_<folder-name>.md` with its own documentati
 - TypeScript React (Vite) - operator web shell (`apps/web`)
 - TypeScript Node - API boot server and runtime (`apps/api`)
 - CSS custom properties - design token system (mineral paper palette, Space Grotesk / IBM Plex typography)
-- React Router - deep-linkable navigation with 13 operator routes
+- React Router - deep-linkable navigation with 18 operator routes
 - Node.js - core scripts and pipelines
 - Go - dashboard TUI
 - Playwright - posting checks and PDF rendering

@@ -18,17 +18,18 @@ sharing, and bookmark support.
 
 ## Decision
 
-Option 2. A `createBrowserRouter` route tree in `src/routes.tsx` maps all 13
+Option 2. A `createBrowserRouter` route tree in `src/routes.tsx` maps all
 surfaces to clean URL paths. A root layout component (`root-layout.tsx`)
 provides shell chrome around the router `<Outlet />`. Cross-surface navigation
 uses `useNavigate()` via `ShellContext`.
 
 ## Consequences
 
-- All 13 operator surfaces are deep-linkable and bookmarkable.
+- All operator surfaces are deep-linkable and bookmarkable.
 - Browser back/forward navigation works natively.
 - Legacy `#surface-id` bookmarks are redirected by a route loader.
 - `App.tsx` and `operator-shell.tsx` become thin wrappers for backward
   compatibility.
-- Future Phase 02 routes (`/runs/:runId`, `/reports/:reportId`) have stub
-  redirects ready for implementation.
+- Phase 02 added 5 detail routes (`/runs/:runId`, `/reports/:reportId`,
+  `/workflows/:workflowId`, `/batch/:batchId`, `/scan/:scanId`) bringing
+  the total to 18 routes.

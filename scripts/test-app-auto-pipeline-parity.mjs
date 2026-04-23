@@ -1446,9 +1446,7 @@ try {
 		await page.getByText("session-live-url").first().waitFor();
 		await page
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
-			.getByText(
-				"Launched from raw job-description text. Prompt text is redacted from stored session context.",
-			)
+			.getByText("Raw JD text")
 			.waitFor();
 		await page
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
@@ -1482,8 +1480,7 @@ try {
 				name: "Applications",
 			})
 			.waitFor();
-		await page.getByText("Auto-pipeline closeout focus").waitFor();
-		await page.getByText("Showing tracker row for report #301.").waitFor();
+		await page.getByText("Auto-focused from report #301").waitFor();
 		assert.match(page.url(), /\/tracker/);
 
 		await page.goto(`${webUrl}/evaluate?session=session-live-url`, {
@@ -1492,11 +1489,7 @@ try {
 		const liveRail = page.locator(
 			'section[aria-labelledby="evaluation-artifact-rail-title"]',
 		);
-		await liveRail
-			.getByText(
-				"Launched from live job URL https://example.com/jobs/live-url-role.",
-			)
-			.waitFor();
+		await liveRail.getByText("Live job URL").waitFor();
 		await liveRail
 			.getByText("https://example.com/jobs/live-url-role")
 			.first()
@@ -1560,9 +1553,7 @@ try {
 		});
 		await offlinePage
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
-			.getByText(
-				"Launched from live job URL https://example.com/jobs/live-url-role.",
-			)
+			.getByText("Live job URL")
 			.waitFor();
 		await offlinePage.route("**/api/evaluation-result*", async (route) => {
 			await route.abort("failed");

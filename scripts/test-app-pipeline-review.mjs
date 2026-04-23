@@ -839,22 +839,18 @@ try {
 		await page.getByText("Current strongest lane: Forward Deployed.").waitFor();
 		await page.getByText("Forward Deployed Engineer").first().waitFor();
 		await page
-			.getByText(
-				"Select a pending or processed queue row to inspect its report, PDF, legitimacy, and warning context.",
-			)
+			.getByText("Select a row to inspect its report, score, and warnings.")
 			.waitFor();
 
 		await page.getByRole("button", { name: "Show Processed" }).click();
 		await page.getByRole("button", { name: "Sort by Score" }).click();
 		await page.getByText("AI Deployment Lead").waitFor();
 
-		await page.getByRole("button", { name: "Review queue row 023" }).click();
+		await page.getByRole("button", { name: "Queue row 023" }).click();
 		await page.getByText("Legitimacy is marked Suspicious.").waitFor();
-		await page.getByText("Report header snapshot").waitFor();
+		await page.getByText("Report header").waitFor();
 
-		await page
-			.getByRole("button", { name: "Open report viewer from pipeline detail" })
-			.click();
+		await page.getByRole("button", { name: "Open report viewer" }).click();
 		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		assert.match(page.url(), /\/artifacts$/);
 
@@ -864,10 +860,12 @@ try {
 				waitUntil: "networkidle",
 			},
 		);
-		await page.getByText("Clear stale selection").waitFor();
+		await page
+			.getByText("The selected row is no longer in the current view")
+			.waitFor();
 
 		fakeApi.setPipelineMode("offline");
-		await page.getByRole("button", { name: "Refresh pipeline review" }).click();
+		await page.getByRole("button", { name: "Refresh queue overview" }).click();
 		await page.getByText("Showing the last queue snapshot").waitFor();
 	} finally {
 		await browser.close();

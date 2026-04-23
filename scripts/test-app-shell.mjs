@@ -3278,11 +3278,9 @@ try {
 			})
 			.waitFor();
 		await page
-			.getByText("1 pending tracker TSV addition is waiting to merge.", {
-				exact: true,
-			})
+			.getByText("1 pending tracker TSV addition is waiting to merge.")
 			.waitFor();
-		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page.getByRole("button", { name: /^Open report$/ }).click();
 		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page.getByText("Tracker handoff report body.").waitFor();
 		assert.match(page.url(), /\/artifacts/);
@@ -3294,15 +3292,12 @@ try {
 				name: "Applications",
 			})
 			.waitFor();
-		await page.getByText("Auto-pipeline closeout focus").waitFor();
+		await page.getByText("Auto-focused from report #020").waitFor();
+		await page.getByText("Staged addition: 20-future-company.tsv").waitFor();
 		await page
-			.getByText(
-				"Showing staged tracker addition for report #020. Merge tracker additions to create the canonical row.",
-			)
+			.getByText("This entry has not been merged yet. Review before merging.")
 			.waitFor();
-		await page.getByText("Pending TSV 20-future-company.tsv").waitFor();
-		await page.getByText("This closeout has not been merged into").waitFor();
-		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page.getByRole("button", { name: /^Open report$/ }).click();
 		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		assert.match(page.url(), /\/artifacts/);
 		await page
