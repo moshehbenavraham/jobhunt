@@ -62,6 +62,13 @@
   }
 }
 
+/* Pipeline two-zone: queue list + context detail side by side on desktop */
+@media (min-width: 1200px) {
+  .jh-pipeline-two-zone {
+    grid-template-columns: minmax(0, 1fr) var(--jh-zone-evidence-rail-width);
+  }
+}
+
 /* Mobile: single-column with bottom nav padding (< 768px) */
 @media (max-width: 767px) {
   .jh-shell-frame {

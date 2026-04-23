@@ -146,6 +146,56 @@
   --jh-color-report-toc-active-bg: rgba(44, 99, 255, 0.08);
   --jh-color-report-section-border: var(--jh-color-stone);
 
+  /* Pipeline queue state tones */
+  --jh-color-pipeline-pending-bg: var(--jh-color-status-pending-bg);
+  --jh-color-pipeline-pending-fg: var(--jh-color-status-pending-fg);
+  --jh-color-pipeline-processed-bg: var(--jh-color-status-completed-bg);
+  --jh-color-pipeline-processed-fg: var(--jh-color-status-completed-fg);
+  --jh-color-pipeline-malformed-bg: var(--jh-color-status-warning-bg);
+  --jh-color-pipeline-malformed-fg: var(--jh-color-severity-warn-fg);
+
+  /* Pipeline row and selection */
+  --jh-color-pipeline-row-bg: rgba(248, 250, 252, 0.9);
+  --jh-color-pipeline-row-border: var(--jh-color-surface-border);
+  --jh-color-pipeline-row-selected-bg: rgba(219, 234, 254, 0.7);
+  --jh-color-pipeline-row-selected-border: rgba(37, 99, 235, 0.35);
+
+  /* Pipeline shortlist card */
+  --jh-color-pipeline-card-bg: rgba(248, 250, 252, 0.9);
+  --jh-color-pipeline-card-border: var(--jh-color-surface-border);
+
+  /* Pipeline campaign guidance */
+  --jh-color-pipeline-guidance-bg: var(--jh-color-status-warning-bg);
+  --jh-color-pipeline-guidance-border: var(--jh-color-status-warning-border);
+
+  /* Pipeline warning tones */
+  --jh-color-pipeline-warn-low-score-bg: #ffedd5;
+  --jh-color-pipeline-warn-low-score-fg: #9a3412;
+  --jh-color-pipeline-warn-suspicious-bg: #fee2e2;
+  --jh-color-pipeline-warn-suspicious-fg: #991b1b;
+  --jh-color-pipeline-warn-caution-bg: #fef3c7;
+  --jh-color-pipeline-warn-caution-fg: #92400e;
+
+  /* Pipeline legitimacy tones */
+  --jh-color-pipeline-legit-high-bg: var(--jh-color-status-ready-bg);
+  --jh-color-pipeline-legit-high-fg: var(--jh-color-status-ready-fg);
+  --jh-color-pipeline-legit-caution-bg: var(
+    --jh-color-pipeline-warn-caution-bg
+  );
+  --jh-color-pipeline-legit-caution-fg: var(
+    --jh-color-pipeline-warn-caution-fg
+  );
+  --jh-color-pipeline-legit-suspicious-bg: var(
+    --jh-color-pipeline-warn-suspicious-bg
+  );
+  --jh-color-pipeline-legit-suspicious-fg: var(
+    --jh-color-pipeline-warn-suspicious-fg
+  );
+
+  /* Pipeline stale selection */
+  --jh-color-pipeline-stale-bg: var(--jh-color-pipeline-warn-low-score-bg);
+  --jh-color-pipeline-stale-border: var(--jh-color-status-warning-border);
+
   /* Badge tones */
   --jh-color-badge-attention-bg: #fde68a;
   --jh-color-badge-attention-fg: #7c2d12;

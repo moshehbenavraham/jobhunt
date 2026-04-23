@@ -4,7 +4,7 @@
 **Sessions**: 7
 **Estimated Duration**: 14-28 days
 
-**Progress**: 3/7 sessions (43%)
+**Progress**: 4/7 sessions (57%)
 
 ---
 
@@ -28,7 +28,7 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
 | 01      | Evaluation Console and Run Flow         | Complete    | 20         | 2026-04-23 |
 | 02      | Artifact Handoff and Evidence Rail      | Complete    | 20         | 2026-04-23 |
 | 03      | Report Viewer                           | Complete    | 20         | 2026-04-23 |
-| 04      | Pipeline Review                         | Not Started | ~18        | -          |
+| 04      | Pipeline Review                         | Complete    | 20         | 2026-04-23 |
 | 05      | Tracker and Scan Surfaces               | Not Started | ~20        | -          |
 | 06      | Batch and Specialist Surfaces           | Not Started | ~20        | -          |
 | 07      | Deep Linking, Approvals, and Guardrails | Not Started | ~18        | -          |
@@ -61,11 +61,22 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
   - 3-tier responsive layout (mobile/desktop/wide)
   - 20/20 tasks, 8/8 tests, TS 0 errors, Vite build clean (153 modules)
 
+- **Session 04: Pipeline Review** -- completed 2026-04-23
+  - Pipeline surface rebuilt as composition of 5 extracted components (row, filters, detail, shortlist, empty state)
+  - Dense hybrid rows with score chip, status pill, legitimacy badge, warning count
+  - Sticky filter bar with section toggles (all/pending/processed) and sort controls (company/queue/score)
+  - Pagination controls with count badges
+  - Two-zone responsive layout (queue + evidence rail detail on desktop)
+  - Shortlist overview with metric cards, campaign guidance, top roles
+  - Full token migration (28 pipeline tokens, zero inline hex/RGB)
+  - All banned terms purged, refreshing indicator with duplicate-trigger prevention
+  - 20/20 tasks, TS 0 errors, Vite build clean (158 modules)
+
 ---
 
 ## Upcoming Sessions
 
-- Session 04: Pipeline Review
+- Session 05: Tracker and Scan Surfaces
 
 ---
 
