@@ -354,7 +354,7 @@ export function NavigationRail({
 						marginBottom: "0.35rem",
 					}}
 				>
-					Operator navigation
+					Navigation
 				</h2>
 				<p
 					style={{
@@ -363,9 +363,7 @@ export function NavigationRail({
 						marginTop: 0,
 					}}
 				>
-					One stable frame for the operator home, startup, chat, specialist
-					workflows, scan review, batch supervision, application-help review,
-					queue review, tracker closeout, and settings.
+					Jump to any area. Press Ctrl+K to search.
 				</p>
 			</div>
 
@@ -443,13 +441,13 @@ export function NavigationRail({
 							marginTop: 0,
 						}}
 					>
-						Active build
+						Current context
 					</p>
 					<p style={{ margin: 0 }}>
 						<strong>{summary.currentSession.id}</strong>
 					</p>
 					<p style={{ color: "var(--jh-color-nav-muted)", marginBottom: 0 }}>
-						{summary.currentSession.packagePath ?? "Cross-cutting"}
+						{summary.currentSession.packagePath ?? "All packages"}
 					</p>
 				</section>
 			) : null}

@@ -26,104 +26,91 @@ export type ShellSurfaceDefinition = {
 
 export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 	{
-		description:
-			"Readiness overview, approvals, closeout, artifacts, and maintenance guidance.",
+		description: "Daily overview with readiness, approvals, and next steps.",
 		id: "home",
 		label: "Home",
 		owner: "S06",
 		path: "/",
 	},
 	{
-		description:
-			"Read the startup diagnostics and keep workspace readiness visible.",
+		description: "Workspace diagnostics and readiness checks.",
 		id: "startup",
 		label: "Startup",
 		owner: "S01",
 		path: "/startup",
 	},
 	{
-		description:
-			"Chat console and run-resume workflow without rebuilding shell chrome.",
+		description: "Start or resume a job evaluation.",
 		id: "chat",
 		label: "Chat",
 		owner: "S02",
 		path: "/evaluate",
 	},
 	{
-		description:
-			"Launch, resume, and inspect specialist workflows from one shared workspace.",
+		description: "Launch, resume, or inspect specialist workflows.",
 		id: "workflows",
 		label: "Workflows",
 		owner: "P06",
 		path: "/workflows",
 	},
 	{
-		description:
-			"Launch scan runs, review shortlist candidates, and hand selected roles into evaluation or batch flow.",
+		description: "Run scans and review shortlisted roles.",
 		id: "scan",
 		label: "Scan",
 		owner: "P05",
 		path: "/scan",
 	},
 	{
-		description:
-			"Supervise batch draft state, run progress, retry paths, and closeout handoffs from one bounded workspace.",
+		description: "Supervise batch runs and review results.",
 		id: "batch",
 		label: "Batch",
 		owner: "P05",
 		path: "/batch",
 	},
 	{
-		description:
-			"Review staged application-help drafts, approval pauses, and artifact handoffs.",
+		description: "Review application drafts and approval pauses.",
 		id: "application-help",
 		label: "Apply",
 		owner: "P05",
 		path: "/apply",
 	},
 	{
-		description:
-			"Review shortlist context plus pending and processed queue rows with bounded detail and report handoff.",
+		description: "Review pending and processed queue rows.",
 		id: "pipeline",
 		label: "Pipeline",
 		owner: "P04",
 		path: "/pipeline",
 	},
 	{
-		description:
-			"Review tracker rows, pending TSV additions, and maintenance actions inside one bounded workspace.",
+		description: "Review tracker rows and pending additions.",
 		id: "tracker",
 		label: "Tracker",
 		owner: "P04",
 		path: "/tracker",
 	},
 	{
-		description:
-			"Review checked-in reports and browse recent report or PDF artifacts in read-only mode.",
+		description: "Browse reports and PDF outputs.",
 		id: "artifacts",
 		label: "Artifacts",
 		owner: "P04",
 		path: "/artifacts",
 	},
 	{
-		description:
-			"Guide prerequisite repair and first-run setup when onboarding files are missing.",
+		description: "Fix missing files and finish first-run setup.",
 		id: "onboarding",
 		label: "Onboarding",
 		owner: "S03",
 		path: "/onboarding",
 	},
 	{
-		description:
-			"Review human decisions with a stable inbox and shared runtime context.",
+		description: "Review and act on pending approval requests.",
 		id: "approvals",
 		label: "Approvals",
 		owner: "S04",
 		path: "/approvals",
 	},
 	{
-		description:
-			"Maintenance, auth, and environment review in one stable workspace.",
+		description: "Auth, environment, and maintenance controls.",
 		id: "settings",
 		label: "Settings",
 		owner: "S05",

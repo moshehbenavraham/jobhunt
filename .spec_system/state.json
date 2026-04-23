@@ -26,7 +26,7 @@
     "1": {
       "name": "Rebuild Foundation and Shell",
       "description": "Replace visual foundation and shell composition with PRD-aligned design tokens, typography, three-zone layout, real router, and command palette",
-      "status": "in_progress",
+      "status": "complete",
       "session_count": 6
     },
     "2": {
@@ -51,6 +51,10 @@
     },
     {
       "id": "phase01-session05-router-and-deep-linking",
+      "package": "apps/web"
+    },
+    {
+      "id": "phase01-session06-command-palette-and-operator-copy",
       "package": "apps/web"
     }
   ],
@@ -136,6 +140,24 @@
     {
       "date": "2026-04-23",
       "session": "phase01-session05-router-and-deep-linking",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session06-command-palette-and-operator-copy",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session06-command-palette-and-operator-copy",
+      "package": "apps/web",
+      "status": "validated"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session06-command-palette-and-operator-copy",
       "package": "apps/web",
       "status": "completed"
     }

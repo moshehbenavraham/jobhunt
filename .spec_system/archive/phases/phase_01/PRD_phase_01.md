@@ -1,72 +1,77 @@
-# PRD Phase 01: Backend Runtime and Job Infrastructure
+# PRD Phase 01: Rebuild Foundation and Shell
 
 **Status**: Complete
-**Sessions**: 5
-**Estimated Duration**: 4-6 days
+**Sessions**: 6
+**Estimated Duration**: 12-24 days
 
-**Progress**: 5/5 sessions (100%)
+**Progress**: 6/6 sessions (100%)
+**Completed**: 2026-04-23
 
 ---
 
 ## Overview
 
-Build the first real backend runtime for the local app so later phases can run
-typed tools and user-facing workflows on top of stable infrastructure. This
-phase turns the Phase 00 scaffold into an explicit Node.js and TypeScript API
-with app-owned operational state, resumable jobs, approval pause points, and
-structured observability.
+Replace the visual foundation and shell composition so the app reads as an
+intentional operator workbench rather than a generic AI dashboard. This phase
+introduces design tokens, PRD-defined typography, the three-zone layout, a real
+router for deep-linkable navigation, and a command palette. Nothing ships to
+users until the shell reads as distinctive and aligned with PRD_UX.md.
 
-The goal is not workflow parity yet. The goal is to make long-running work
-start, persist, resume, and fail in a controlled way while preserving the
-repo-owned data contract and the checked-in prompt and workspace rules.
+Maps to **Phase B** of the recovery plan and covers Workstreams 1, 2, and 5:
+`docs/ongoing-projects/2026-04-23-app-ux-recovery-plan.md`
 
 ---
 
 ## Progress Tracker
 
-| Session | Name | Status | Est. Tasks | Validated |
-|---------|------|--------|------------|-----------|
-| 01 | API Service Runtime | Completed | ~14 | 2026-04-21 |
-| 02 | SQLite Operational Store | Completed | ~15 | 2026-04-21 |
-| 03 | Agent Runtime Bootstrap | Completed | ~14 | 2026-04-21 |
-| 04 | Durable Job Runner | Completed | ~16 | 2026-04-21 |
-| 05 | Approval and Observability Contract | Completed | ~13 | 2026-04-21 |
+| Session | Name                                | Status      | Est. Tasks | Validated  |
+| ------- | ----------------------------------- | ----------- | ---------- | ---------- |
+| 01      | Design Token Layer                  | Complete    | 20         | 2026-04-23 |
+| 02      | Typography and Base Styles          | Complete    | 18         | 2026-04-23 |
+| 03      | Three-Zone Shell Layout             | Complete    | 20         | 2026-04-23 |
+| 04      | Responsive Layout and Mobile        | Complete    | 20         | 2026-04-23 |
+| 05      | Router and Deep-Linkable Navigation | Complete    | 20         | 2026-04-23 |
+| 06      | Command Palette and Operator Copy   | Not Started | ~18        | -          |
 
 ---
 
 ## Completed Sessions
 
-- Session 01: API Service Runtime - Completed 2026-04-21
-- Session 02: SQLite Operational Store - Completed 2026-04-21
-- Session 03: Agent Runtime Bootstrap - Completed 2026-04-21
-- Session 04: Durable Job Runner - Completed 2026-04-21
-- Session 05: Approval and Observability Contract - Completed 2026-04-21
+- Session 01: Design Token Layer (2026-04-23) -- 20 tasks, apps/web
+- Session 02: Typography and Base Styles (2026-04-23) -- 18 tasks, apps/web
+- Session 03: Three-Zone Shell Layout (2026-04-23) -- 20 tasks, apps/web
+- Session 04: Responsive Layout and Mobile (2026-04-23) -- 20 tasks, apps/web
+- Session 05: Router and Deep-Linkable Navigation (2026-04-23) -- 20 tasks, apps/web
+- Session 06: Command Palette and Operator Copy (2026-04-23) -- 20 tasks, apps/web
 
 ---
 
 ## Upcoming Sessions
 
-- Phase 01 complete; archived under `.spec_system/archive/phases/phase_01/`
+None -- Phase 01 complete.
 
 ---
 
 ## Objectives
 
-1. Establish the local API runtime and shared backend service boundaries in
-   `apps/api`.
-2. Persist sessions, jobs, approvals, and resume metadata in SQLite without
-   moving domain artifacts out of repo files.
-3. Make long-running app work start, pause, resume, and fail with structured
-   logs and traces.
+1. Introduce design token layer (tokens.css, base.css, layout.css) with the PRD
+   palette (mineral paper, deep ink, disciplined cobalt, restrained status colors)
+2. Load PRD-defined typography (Space Grotesk, IBM Plex Sans, IBM Plex Mono)
+3. Move all inline style values to shared CSS custom properties
+4. Rework operator shell into a true three-zone layout (left rail, center canvas,
+   right evidence rail)
+5. Add tablet and mobile-specific layout behavior
+6. Adopt a real router for app-owned deep-linkable navigation
+7. Add command palette with Cmd/Ctrl+K
+8. Replace section intros with concise operator-focused copy
 
 ---
 
 ## Prerequisites
 
-- Phase 00 completed and archived
-- Workspace adapter, prompt contract, and startup diagnostics from Phase 00
-  treated as canonical
-- Repo-owned OpenAI account auth and validation scripts available for reuse
+- Phase 00 completed: banned-terms check in CI, internal jargon stripped, spec
+  workflow updated with UX fidelity gates
+- sculpt-ui design brief required before each session's implementation
 
 ---
 
@@ -74,44 +79,38 @@ repo-owned data contract and the checked-in prompt and workspace rules.
 
 ### Architecture
 
-Phase 01 should keep the runtime centered in `apps/api`. The package needs a
-real API process, a small service container, SQLite-backed operational state,
-agent-runtime bootstrap code, a background job runner, approval state
-transitions, and structured diagnostics. The backend must continue to rely on
-the checked-in workspace adapter and prompt-loading contract instead of
-duplicating repo logic in new runtime-only helpers.
+- Token layer uses CSS custom properties exclusively -- no CSS-in-JS runtime
+- Three-zone layout is a CSS Grid composition, not nested flexbox auto-fit
+- Router replaces current hash/query syncing with proper client-side routing
+- Command palette is a standalone module with its own keyboard event model
 
 ### Technologies
 
-- Node.js and TypeScript in `apps/api` for the local API and runtime services
-- SQLite under `.jobhunt-app/` for app-owned sessions, jobs, approvals, and
-  run metadata
-- Repo-owned OpenAI account auth from `scripts/lib/openai-account-auth/`
-- Existing workspace adapter and prompt-loading modules from Phase 00
-- Repo validation commands such as `npm run doctor` and
-  `node scripts/test-all.mjs --quick`
+- CSS custom properties for design tokens (tokens.css)
+- Space Grotesk / IBM Plex Sans / IBM Plex Mono via self-hosted or CDN
+- React Router for deep-linkable navigation
+- Vite + React (existing stack in apps/web)
 
 ### Risks
 
-- Runtime drift: new API services can fork behavior if they bypass registry and
-  prompt contracts from Phase 00
-- Persistence coupling: schema or repository shortcuts can make resume and
-  approval semantics brittle later
-- Recovery gaps: long-running jobs need enough durable state to resume cleanly
-  without repeating side effects
+- Font loading latency: Mitigate with font-display: swap plus preload links
+- Token migration scope: Many components have inline styles that need replacement;
+  session 01 establishes tokens, later sessions migrate incrementally
+- Router migration: Changing navigation model touches every surface entry point;
+  session 05 must be carefully scoped to avoid breaking active surfaces
 
 ### Relevant Considerations
 
-- [P00-apps/api] **Workspace registry coupling**: runtime services should keep
-  repo reads and writes behind registry-driven helpers instead of ad hoc path
-  checks
-- [P00] **Repo-bound startup freshness**: API startup and background workers
-  must keep required-file checks aligned with the live repo contract
-- [P00] **Read-first boot surface**: diagnostics and health paths must remain
-  metadata-only and avoid hidden writes
-- [P00] **Registry-first contracts**: routing, prompt composition, and
-  workspace ownership should reuse checked-in registries rather than duplicate
-  path logic
+- [P00] **Inline style objects with repeated ad hoc color values**: tokens.css
+  replaces all of these in sessions 01-02
+- [P00] **Generic responsive collapse instead of intentional three-zone
+  composition**: session 03 addresses directly
+- [P00] **No real router**: session 05 introduces React Router
+- [P00] **sculpt-ui was not enforced during Phases 03-06**: every session in
+  this phase must go through sculpt-ui design brief first
+- [P00] **Avoid generic glassmorphism / SaaS dashboard aesthetics**: the PRD
+  palette (mineral paper, deep ink, cobalt accent) is enforced via tokens
+- [P00] **Font loading strategy needed**: session 02 implements preloading
 
 ---
 
@@ -119,15 +118,20 @@ duplicating repo logic in new runtime-only helpers.
 
 Phase complete when:
 
-- [x] All 5 sessions completed
-- [x] The local API can boot with structured health and startup diagnostics
-- [x] SQLite persists sessions, jobs, approvals, and resume metadata under
-      `.jobhunt-app/`
-- [x] Background jobs can start, persist, resume, and fail in a structured way
-- [x] Repo-owned OpenAI account auth and runtime bootstrap work without
-      `OPENAI_API_KEY`-only assumptions
-- [x] Logs and traces make job and approval failures inspectable without
-      stdout scraping
+- [x] All 6 sessions completed and validated
+- [ ] Design token layer exists and all visual values flow through CSS custom
+      properties (no inline ad hoc colors, spacing, or typography)
+- [ ] PRD typography (Space Grotesk, IBM Plex Sans, IBM Plex Mono) loads
+      without visible FOIT/FOUT
+- [ ] Desktop shell has three distinct visible work zones (left rail, center
+      canvas, right evidence rail)
+- [ ] Tablet layout uses collapsed rail and detail drawer
+- [ ] Mobile layout is review-first and legible
+- [ ] App uses a real router with deep-linkable URLs
+- [ ] Cmd/Ctrl+K opens a working command palette
+- [ ] All section intros use terse operator copy, no engineering prose
+- [ ] Static screenshot of the shell reads as intentional and distinctive
+- [ ] banned-terms check passes on all user-visible strings
 
 ---
 
@@ -135,8 +139,8 @@ Phase complete when:
 
 ### Depends On
 
-- Phase 00: Foundation and Repo Contract
+- Phase 00: Stop the Bleeding (quality gates, jargon removal, workflow updates)
 
 ### Enables
 
-- Phase 02: Typed Tools and Agent Orchestration
+- Phase 02: Rebuild Workbench and Review Surfaces (builds on foundation and shell)

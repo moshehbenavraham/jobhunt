@@ -14,6 +14,7 @@ import { openSpecialistWorkspaceSurface } from "../workflows/specialist-workspac
 import type { SpecialistWorkspaceMode } from "../workflows/specialist-workspace-types";
 import { SPECIALIST_WORKSPACE_MODE_VALUES } from "../workflows/specialist-workspace-types";
 import { BottomNav } from "./bottom-nav";
+import { CommandPalette } from "./command-palette";
 import { Drawer } from "./drawer";
 import { EvidenceRail } from "./evidence-rail";
 import { NavigationRail } from "./navigation-rail";
@@ -22,6 +23,7 @@ import type { ShellCallbacks } from "./shell-context";
 import { ShellContextProvider } from "./shell-context";
 import { pathFromSurfaceId, surfaceIdFromPath } from "./shell-types";
 import { StatusStrip } from "./status-strip";
+import { useCommandPalette } from "./use-command-palette";
 import { useOperatorHome } from "./use-operator-home";
 import { useOperatorShell } from "./use-operator-shell";
 import { useResponsiveLayout } from "./use-responsive-layout";
@@ -96,6 +98,7 @@ export function RootLayout() {
 	const startup = useStartupDiagnostics();
 	const shell = useOperatorShell();
 	const responsive = useResponsiveLayout();
+	const palette = useCommandPalette((path) => navigate(path));
 
 	const currentSurface = surfaceIdFromPath(location.pathname) ?? "home";
 
@@ -329,6 +332,7 @@ export function RootLayout() {
 	return (
 		<ShellContextProvider value={shellCallbacks}>
 			<main style={pageStyle}>
+				<CommandPalette actions={palette.actions} state={palette.state} />
 				<div className="jh-shell-frame">
 					<StatusStrip
 						error={shell.state.error}

@@ -158,23 +158,23 @@ function getFallbackCopy(status: OperatorHomeState["status"]): {
 	switch (status) {
 		case "loading":
 			return {
-				body: "Composing readiness, live work, closeout, artifacts, and maintenance from the local API.",
-				title: "Loading operator home",
+				body: "Gathering readiness, live work, and next steps.",
+				title: "Loading home",
 			};
 		case "offline":
 			return {
-				body: "The operator-home route is offline. Start `npm run app:api:serve` and refresh.",
-				title: "Operator home offline",
+				body: "The API is offline. Start it with `npm run app:api:serve` and refresh.",
+				title: "Home offline",
 			};
 		case "error":
 			return {
-				body: "The latest operator-home request failed before a summary could render.",
-				title: "Operator home error",
+				body: "The last request failed. Try refreshing.",
+				title: "Home error",
 			};
 		default:
 			return {
-				body: "Open the home surface to request the first operator-home payload.",
-				title: "Waiting for operator home",
+				body: "Refresh to load the latest overview.",
+				title: "Waiting for data",
 			};
 	}
 }
@@ -242,7 +242,7 @@ export function OperatorHomeSurface({
 								textTransform: "uppercase",
 							}}
 						>
-							Operator home
+							Home
 						</p>
 						<h2
 							ref={headingRef}
@@ -312,7 +312,7 @@ export function OperatorHomeSurface({
 								textTransform: "uppercase",
 							}}
 						>
-							Operator home
+							Home
 						</p>
 						<h2
 							id="operator-home-title"
@@ -320,17 +320,13 @@ export function OperatorHomeSurface({
 							style={{ marginBottom: "0.35rem", marginTop: 0 }}
 							tabIndex={-1}
 						>
-							App-owned daily landing path
+							Daily overview
 						</h2>
 						<p style={{ color: "#475569", marginBottom: "0.35rem" }}>
 							{state.data.message}
 						</p>
 						<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-							Phase{" "}
-							{state.data.currentSession.phase !== null
-								? state.data.currentSession.phase.toString().padStart(2, "0")
-								: "--"}{" "}
-							| Session `{state.data.currentSession.id}` | Refreshed{" "}
+							{state.data.currentSession.id} | Refreshed{" "}
 							{formatTimestamp(state.lastUpdatedAt)}
 						</p>
 					</div>
@@ -377,12 +373,12 @@ export function OperatorHomeSurface({
 							}}
 						>
 							{state.status === "offline"
-								? "Showing the last known operator-home snapshot."
-								: "Showing the last good operator-home snapshot after an error."}
+								? "Showing the last known snapshot."
+								: "Showing the last good snapshot after an error."}
 						</p>
 						<p style={{ marginBottom: 0, marginTop: 0 }}>
 							{state.error?.message ??
-								"The current operator-home fetch did not finish cleanly."}
+								"The latest refresh did not finish cleanly."}
 						</p>
 					</section>
 				) : null}

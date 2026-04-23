@@ -27,127 +27,127 @@ function getPlaceholderBody(
 	switch (surface.id) {
 		case "home":
 			return {
-				body: "Operator home is now a real surface and should not render through the generic placeholder.",
+				body: "Home is a dedicated area and does not use this placeholder.",
 				highlights: [],
-				title: "Operator home",
+				title: "Home",
 			};
 		case "chat":
 			return {
-				body: "The shell already tracks runtime activity and current session context. Session 02 will attach the live chat console and resume controls inside this frame.",
+				body: "This area will host the live evaluation console and resume controls. Runtime activity is already tracked.",
 				highlights: [
 					summary?.activity.activeSession
 						? `Active workflow: ${summary.activity.activeSession.workflow}`
-						: "No runtime session is active yet.",
-					`${summary?.activity.recentFailureCount ?? 0} recent failures are already visible to the shell.`,
-					"No transcript or submit actions are enabled in Session 01.",
+						: "No active workflow right now.",
+					`${summary?.activity.recentFailureCount ?? 0} recent interrupted runs.`,
+					"Evaluation controls are not yet available here.",
 				],
-				title: "Chat console lands in Session 02",
+				title: "Evaluation console -- coming soon",
 			};
 		case "artifacts":
 			return {
-				body: "Phase 04 adds the dedicated artifact review surface here. The placeholder keeps the shell registry exhaustive until the real report viewer is mounted.",
+				body: "This area will show reports and PDFs once the viewer is ready. All artifacts stay read-only.",
 				highlights: [
-					"Report review stays read-only and backend-owned.",
-					"Recent report and PDF browsing will land without widening filesystem access in the browser.",
-					"Chat handoff can target this surface once the report viewer is wired.",
+					"Reports stay read-only and backend-managed.",
+					"PDF browsing will land without extra file access.",
+					"Evaluations can link here once the viewer is wired.",
 				],
-				title: "Artifact review lands in Phase 04",
+				title: "Report viewer -- coming soon",
 			};
 		case "scan":
 			return {
-				body: "Phase 05 adds the dedicated scan workspace here. The placeholder keeps the shell registry exhaustive until shortlist review and launch handoffs are mounted.",
+				body: "This area will host shortlist review and scan launch controls. Scan results are backend-managed.",
 				highlights: [
-					"Scan review stays bounded by the backend-owned shortlist summary route.",
-					"Ignore, restore, evaluate, and batch-seed actions continue to flow through backend routes instead of browser-owned file writes.",
-					"Selected scan candidates will hand off into chat rather than inventing a separate browser workflow launcher.",
+					"Shortlist review is backend-managed.",
+					"Ignore, restore, and evaluate actions go through the backend.",
+					"Selected candidates hand off into evaluation.",
 				],
-				title: "Scan workspace lands in Phase 05",
+				title: "Scan workspace -- coming soon",
 			};
 		case "workflows":
 			return {
-				body: "Phase 06 adds the shared specialist workflows workspace here. The placeholder keeps the shell registry exhaustive until catalog review, launch or resume controls, and detail handoffs are mounted.",
+				body: "This area will host the specialist workflow catalog, launch and resume controls, and detail handoffs.",
 				highlights: [
-					"Specialist workflow review stays bounded by the backend-owned workspace summary route.",
-					"Launch and resume continue through the specialist workspace action route instead of browser-owned repo reads.",
-					"Dedicated detail, approvals, and chat handoffs remain explicit so the browser stays fail-closed.",
+					"Workflow review is backend-managed.",
+					"Launch and resume go through the backend.",
+					"Detail and approval handoffs stay explicit.",
 				],
-				title: "Workflows workspace lands in Phase 06",
+				title: "Workflows workspace -- coming soon",
 			};
 		case "batch":
 			return {
-				body: "Phase 05 adds the dedicated batch workspace here. The placeholder keeps the shell registry exhaustive until bounded run supervision and closeout handoffs are mounted.",
+				body: "This area will host batch run supervision and closeout handoffs. Batch data is backend-managed.",
 				highlights: [
-					"Batch review stays bounded by the backend-owned batch-supervisor summary route.",
-					"Resume, retry, merge, and verify controls continue to flow through backend routes instead of browser-owned repo mutations.",
-					"Selected batch items will hand off into report, tracker, approvals, and chat surfaces instead of creating parallel review paths.",
+					"Batch review is backend-managed.",
+					"Resume, retry, merge, and verify go through the backend.",
+					"Results hand off into reports, tracker, and approvals.",
 				],
-				title: "Batch workspace lands in Phase 05",
+				title: "Batch workspace -- coming soon",
 			};
 		case "application-help":
 			return {
-				body: "Phase 05 adds the dedicated application-help workspace here. The placeholder keeps the shell registry exhaustive until draft review, approval handoffs, and resumable launch controls are mounted.",
+				body: "This area will host application draft review, approval handoffs, and resumable launch controls.",
 				highlights: [
-					"Application-help review stays bounded by the backend-owned summary route instead of raw draft files.",
-					"Launch and resume continue through the existing chat orchestration path instead of a second browser-owned runner.",
-					"Approval, artifact, and chat handoffs stay explicit so the no-submit boundary remains visible in the shell.",
+					"Draft review is backend-managed.",
+					"Launch and resume go through evaluation orchestration.",
+					"Approval and artifact handoffs stay explicit.",
 				],
-				title: "Application-help workspace lands in Phase 05",
+				title: "Application help -- coming soon",
 			};
 		case "tracker":
 			return {
-				body: "Phase 04 adds the dedicated tracker workspace here. The placeholder keeps the shell registry exhaustive until the tracker review and integrity controls are mounted.",
+				body: "This area will host tracker review and integrity controls. Tracker data follows the markdown format.",
 				highlights: [
-					"Tracker review stays backend-owned and preserves the markdown tracker contract.",
-					"Canonical status updates and maintenance actions will reuse allowlisted tools instead of browser-side file writes.",
-					"Report handoff will stay inside the existing artifact viewer surface.",
+					"Tracker review is backend-managed.",
+					"Status updates use allowlisted tools.",
+					"Report links open in the report viewer.",
 				],
-				title: "Tracker workspace lands in Phase 04",
+				title: "Tracker workspace -- coming soon",
 			};
 		case "pipeline":
 			return {
-				body: "Phase 04 adds the dedicated pipeline review workspace here. The placeholder keeps the shell registry exhaustive until the real queue surface is mounted.",
+				body: "This area will host queue review with filters, row selection, and shortlist context.",
 				highlights: [
-					"Pipeline review stays read-only and backend-owned.",
-					"Queue filters, row selection, and shortlist context will land without exposing raw markdown parsing to the browser.",
-					"Evaluation closeout can hand off here once the queue workspace is wired.",
+					"Queue review stays read-only and backend-managed.",
+					"Filters and selection land without raw markdown parsing.",
+					"Evaluation closeout can hand off here.",
 				],
-				title: "Pipeline review lands in Phase 04",
+				title: "Pipeline review -- coming soon",
 			};
 		case "onboarding":
 			return {
-				body: "Session 03 owns the onboarding wizard. This placeholder keeps the future surface stable while the shell already exposes startup readiness and missing-file counts.",
+				body: "This area guides first-run setup and prerequisite repair. Readiness and missing-file counts are already tracked.",
 				highlights: [
-					`${summary?.health.missing.onboarding ?? 0} required onboarding files are still missing.`,
-					`${summary?.health.missing.optional ?? 0} optional surfaces are absent from the repo summary.`,
-					"Repair actions remain read-only in Session 01.",
+					`${summary?.health.missing.onboarding ?? 0} required files still missing.`,
+					`${summary?.health.missing.optional ?? 0} optional items absent.`,
+					"Repair actions are not yet available here.",
 				],
-				title: "Onboarding wizard lands in Session 03",
+				title: "Onboarding wizard -- coming soon",
 			};
 		case "approvals":
 			return {
-				body: "Session 04 will turn this surface into the approval inbox. The shell already knows the pending count and can show the latest queued request without exposing raw store rows.",
+				body: "This area will become the approval inbox. Pending counts and latest requests are already tracked.",
 				highlights: [
-					`${summary?.activity.pendingApprovalCount ?? 0} approvals are pending right now.`,
+					`${summary?.activity.pendingApprovalCount ?? 0} approvals pending right now.`,
 					summary?.activity.latestPendingApprovals[0]
-						? `Latest approval: ${summary.activity.latestPendingApprovals[0].title}`
-						: "No approvals are waiting at the moment.",
-					"Approve and reject actions stay disabled until Session 04.",
+						? `Latest: ${summary.activity.latestPendingApprovals[0].title}`
+						: "No approvals waiting.",
+					"Approve and reject actions are not yet available here.",
 				],
-				title: "Approval inbox lands in Session 04",
+				title: "Approval inbox -- coming soon",
 			};
 		case "settings":
 			return {
-				body: "Session 05 will add auth and maintenance controls here. For now the shell keeps package, current spec-session, and store health context visible so settings work has a stable home.",
+				body: "This area will host auth and maintenance controls. Environment health is already tracked.",
 				highlights: [
-					`Package scope: ${summary?.currentSession.packagePath ?? "cross-cutting"}`,
-					`Store status: ${summary?.health.operationalStore.status ?? "unknown"}`,
-					`Agent runtime: ${summary?.health.agentRuntime.status ?? "unknown"}`,
+					`Package scope: ${summary?.currentSession.packagePath ?? "all packages"}`,
+					`Store: ${summary?.health.operationalStore.status ?? "unknown"}`,
+					`Runtime: ${summary?.health.agentRuntime.status ?? "unknown"}`,
 				],
-				title: "Settings surface lands in Session 05",
+				title: "Settings -- coming soon",
 			};
 		case "startup":
 			return {
-				body: "Startup is the one fully populated surface in Session 01 and should not render through the generic placeholder.",
+				body: "Startup diagnostics are a dedicated area and do not use this placeholder.",
 				highlights: [],
 				title: "Startup",
 			};

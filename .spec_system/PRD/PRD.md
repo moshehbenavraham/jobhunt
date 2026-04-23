@@ -42,11 +42,11 @@ Replace the current web UX with an operator-grade workbench that:
 
 ## Phases
 
-| Phase | Name                                  | Sessions   | Status            |
-| ----- | ------------------------------------- | ---------- | ----------------- |
-| 00    | Stop the Bleeding                     | 0 (triage) | Complete          |
-| 01    | Rebuild Foundation and Shell          | 6          | In Progress (5/6) |
-| 02    | Rebuild Workbench and Review Surfaces | TBD        | Not Started       |
+| Phase | Name                                  | Sessions   | Status      |
+| ----- | ------------------------------------- | ---------- | ----------- |
+| 00    | Stop the Bleeding                     | 0 (triage) | Complete    |
+| 01    | Rebuild Foundation and Shell          | 6          | Complete    |
+| 02    | Rebuild Workbench and Review Surfaces | TBD        | Not Started |
 
 ## Phase 00: Stop the Bleeding
 
