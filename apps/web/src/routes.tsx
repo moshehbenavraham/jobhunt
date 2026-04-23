@@ -8,6 +8,7 @@ import { HomePage } from "./pages/home-page";
 import { NotFoundPage } from "./pages/not-found-page";
 import { OnboardingPage } from "./pages/onboarding-page";
 import { PipelinePage } from "./pages/pipeline-page";
+import { RunDetailPage } from "./pages/run-detail-page";
 import { ScanPage } from "./pages/scan-page";
 import { SettingsPage } from "./pages/settings-page";
 import { StartupPage } from "./pages/startup-page";
@@ -73,10 +74,7 @@ export const router = createBrowserRouter([
 			{ path: "onboarding", Component: OnboardingPage },
 			{ path: "approvals", Component: ApprovalsPage },
 			{ path: "settings", Component: SettingsPage },
-			{
-				path: "runs/:runId",
-				element: <Navigate to="/" replace />,
-			},
+			{ path: "runs/:runId", Component: RunDetailPage },
 			{
 				path: "reports/:reportId",
 				element: <Navigate to="/artifacts" replace />,

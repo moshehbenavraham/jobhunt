@@ -291,3 +291,16 @@ export async function fetchEvaluationResultSummary(
 
 	throw lastError;
 }
+
+export async function fetchRunDetail(
+	runId: string,
+	options: {
+		signal?: AbortSignal;
+		timeoutMs?: number;
+	} = {},
+): Promise<EvaluationResultSummaryPayload> {
+	return fetchEvaluationResultSummary({
+		...options,
+		sessionId: runId,
+	});
+}

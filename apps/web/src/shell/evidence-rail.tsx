@@ -1,6 +1,7 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 type EvidenceRailProps = {
+	children?: ReactNode;
 	className?: string;
 	inline?: boolean;
 };
@@ -25,7 +26,7 @@ const emptyStateStyle: CSSProperties = {
 	textAlign: "center" as const,
 };
 
-function EvidenceRailContent() {
+function EvidenceRailEmpty() {
 	return (
 		<>
 			<div>
@@ -59,13 +60,15 @@ function EvidenceRailContent() {
 	);
 }
 
-export function EvidenceRail({ className, inline = true }: EvidenceRailProps) {
+export function EvidenceRail({
+	children,
+	className,
+	inline = true,
+}: EvidenceRailProps) {
+	const content = children ?? <EvidenceRailEmpty />;
+
 	if (!inline) {
-		return (
-			<div style={drawerContentStyle}>
-				<EvidenceRailContent />
-			</div>
-		);
+		return <div style={drawerContentStyle}>{content}</div>;
 	}
 
 	return (
@@ -74,7 +77,7 @@ export function EvidenceRail({ className, inline = true }: EvidenceRailProps) {
 			className={className}
 			style={railStyle}
 		>
-			<EvidenceRailContent />
+			{content}
 		</aside>
 	);
 }

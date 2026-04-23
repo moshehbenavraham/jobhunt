@@ -4,7 +4,7 @@
 **Sessions**: 7
 **Estimated Duration**: 14-28 days
 
-**Progress**: 1/7 sessions (14%)
+**Progress**: 2/7 sessions (29%)
 
 ---
 
@@ -26,7 +26,7 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
 | Session | Name                                    | Status      | Est. Tasks | Validated  |
 | ------- | --------------------------------------- | ----------- | ---------- | ---------- |
 | 01      | Evaluation Console and Run Flow         | Complete    | 20         | 2026-04-23 |
-| 02      | Artifact Handoff and Evidence Rail      | Not Started | ~20        | -          |
+| 02      | Artifact Handoff and Evidence Rail      | Complete    | 20         | 2026-04-23 |
 | 03      | Report Viewer                           | Not Started | ~18        | -          |
 | 04      | Pipeline Review                         | Not Started | ~18        | -          |
 | 05      | Tracker and Scan Surfaces               | Not Started | ~20        | -          |
@@ -43,11 +43,19 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
   - Copy purge: all banned terms removed from evaluation console
   - 20/20 tasks, 209/209 tests passing, Vite build clean
 
+- **Session 02: Artifact Handoff and Evidence Rail** -- completed 2026-04-23
+  - Compact artifact packet rebuild (score chip, status pills, compact summary, button row)
+  - Real /runs/:runId route with Run Detail page (timeline, artifact state, resume/retry)
+  - Full token migration of artifact rail (zero inline hex/rgba)
+  - useRunDetail hook with polling, abort cleanup, concurrency safety
+  - Evidence rail wired for contextual artifact content
+  - 20/20 tasks, TS 0 errors, Vite build clean (147 modules)
+
 ---
 
 ## Upcoming Sessions
 
-- Session 02: Artifact Handoff and Evidence Rail
+- Session 03: Report Viewer
 
 ---
 
@@ -108,8 +116,8 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
   touched
 - Cross-surface consistency: 7 sessions rebuilding different surfaces must
   maintain consistent density, rail usage, and copy tone
-- Run detail route (/runs/:runId) currently redirects to home; needs a real
-  implementation
+- Run detail route (/runs/:runId) implemented in Session 02 with real
+  RunDetailPage component
 
 ### Relevant Considerations
 

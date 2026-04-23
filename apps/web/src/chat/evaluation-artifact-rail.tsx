@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { Link } from "react-router";
 import type { StartupStatus } from "../boot/startup-types";
 import type { EvaluationResultClientError } from "./evaluation-result-client";
 import type {
@@ -34,49 +35,81 @@ type EvaluationArtifactRailProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.4rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-xl)",
 	display: "grid",
-	gap: "0.9rem",
-	padding: "1rem",
-};
-
-const sectionStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.9)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1rem",
-	display: "grid",
-	gap: "0.7rem",
-	padding: "0.9rem",
+	gap: "var(--jh-space-gap)",
+	padding: "var(--jh-space-padding)",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
-	font: "inherit",
-	fontWeight: 700,
-	minHeight: "2.4rem",
-	padding: "0.55rem 0.9rem",
+	fontFamily: "var(--jh-font-body)",
+	fontSize: "var(--jh-text-body-sm-size)",
+	fontWeight: "var(--jh-font-weight-semibold)" as unknown as number,
+	lineHeight: "var(--jh-text-body-sm-line-height)",
+	minHeight: "2.2rem",
+	padding: "var(--jh-space-1) var(--jh-space-3)",
+};
+
+const pillStyle: CSSProperties = {
+	borderRadius: "var(--jh-radius-pill)",
+	display: "inline-block",
+	fontSize: "var(--jh-text-label-sm-size)",
+	fontWeight: "var(--jh-font-weight-medium)" as unknown as number,
+	letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
+	lineHeight: "var(--jh-text-label-sm-line-height)",
+	padding: "var(--jh-space-1) var(--jh-space-2)",
+};
+
+const linkStyle: CSSProperties = {
+	background: "transparent",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-text-primary)",
+	display: "inline-flex",
+	fontFamily: "var(--jh-font-body)",
+	fontSize: "var(--jh-text-body-sm-size)",
+	fontWeight: "var(--jh-font-weight-semibold)" as unknown as number,
+	lineHeight: "var(--jh-text-body-sm-line-height)",
+	minHeight: "2.2rem",
+	padding: "var(--jh-space-1) var(--jh-space-3)",
+	textDecoration: "none",
+	alignItems: "center",
+};
+
+const rowStyle: CSSProperties = {
+	alignItems: "center",
+	display: "flex",
+	flexWrap: "wrap",
+	gap: "var(--jh-space-2)",
+};
+
+const secondaryText: CSSProperties = {
+	color: "var(--jh-color-text-secondary)",
+	fontSize: "var(--jh-text-body-sm-size)",
+	lineHeight: "var(--jh-text-body-sm-line-height)",
+	margin: 0,
+};
+
+const mutedText: CSSProperties = {
+	color: "var(--jh-color-text-muted)",
+	fontSize: "var(--jh-text-caption-size)",
+	lineHeight: "var(--jh-text-caption-line-height)",
+	margin: 0,
 };
 
 function formatScore(score: number | null): string {
 	if (score === null) {
-		return "No score yet";
+		return "--";
 	}
 
 	return `${score.toFixed(1)} / 5`;
-}
-
-function formatWorkflow(value: string | null): string {
-	if (!value) {
-		return "Evaluation workflow pending";
-	}
-
-	return value.replace(/-/g, " ");
 }
 
 function formatInputKind(value: "job-url" | "raw-jd" | "unknown"): string {
@@ -96,18 +129,18 @@ function getArtifactTone(
 	switch (state) {
 		case "ready":
 			return {
-				background: "#dcfce7",
-				color: "#166534",
+				background: "var(--jh-color-status-ready-bg)",
+				color: "var(--jh-color-status-ready-fg)",
 			};
 		case "pending":
 			return {
-				background: "#dbeafe",
-				color: "#1d4ed8",
+				background: "var(--jh-color-status-pending-bg)",
+				color: "var(--jh-color-status-pending-fg)",
 			};
 		case "missing":
 			return {
-				background: "#fee2e2",
-				color: "#991b1b",
+				background: "var(--jh-color-status-error-bg)",
+				color: "var(--jh-color-status-error-fg)",
 			};
 	}
 }
@@ -118,23 +151,23 @@ function getCloseoutTone(
 	switch (state) {
 		case "review-ready":
 			return {
-				background: "#dcfce7",
-				color: "#166534",
+				background: "var(--jh-color-closeout-review-ready-bg)",
+				color: "var(--jh-color-closeout-review-ready-fg)",
 			};
 		case "in-progress":
 			return {
-				background: "#dbeafe",
-				color: "#1d4ed8",
+				background: "var(--jh-color-closeout-in-progress-bg)",
+				color: "var(--jh-color-closeout-in-progress-fg)",
 			};
 		case "attention-required":
 			return {
-				background: "#ffedd5",
-				color: "#9a3412",
+				background: "var(--jh-color-closeout-attention-bg)",
+				color: "var(--jh-color-closeout-attention-fg)",
 			};
 		case "not-ready":
 			return {
-				background: "#e2e8f0",
-				color: "#475569",
+				background: "var(--jh-color-closeout-not-ready-bg)",
+				color: "var(--jh-color-closeout-not-ready-fg)",
 			};
 	}
 }
@@ -150,24 +183,24 @@ function getVerificationTone(
 	switch (status) {
 		case "verified":
 			return {
-				background: "#dcfce7",
-				color: "#166534",
+				background: "var(--jh-color-status-ready-bg)",
+				color: "var(--jh-color-status-ready-fg)",
 			};
 		case "pending":
 			return {
-				background: "#dbeafe",
-				color: "#1d4ed8",
+				background: "var(--jh-color-status-pending-bg)",
+				color: "var(--jh-color-status-pending-fg)",
 			};
 		case "needs-review":
 			return {
-				background: "#ffedd5",
-				color: "#9a3412",
+				background: "var(--jh-color-closeout-attention-bg)",
+				color: "var(--jh-color-closeout-attention-fg)",
 			};
 		case "not-applicable":
 		case "unconfirmed":
 			return {
-				background: "#e2e8f0",
-				color: "#475569",
+				background: "var(--jh-color-status-blocked-bg)",
+				color: "var(--jh-color-status-blocked-fg)",
 			};
 	}
 }
@@ -178,18 +211,18 @@ function getHandoffTone(
 	switch (availability) {
 		case "ready":
 			return {
-				background: "#dcfce7",
-				color: "#166534",
+				background: "var(--jh-color-status-ready-bg)",
+				color: "var(--jh-color-status-ready-fg)",
 			};
 		case "deferred":
 			return {
-				background: "#fef3c7",
-				color: "#92400e",
+				background: "var(--jh-color-badge-attention-bg)",
+				color: "var(--jh-color-badge-attention-fg)",
 			};
 		case "unavailable":
 			return {
-				background: "#e2e8f0",
-				color: "#475569",
+				background: "var(--jh-color-status-blocked-bg)",
+				color: "var(--jh-color-status-blocked-fg)",
 			};
 	}
 }
@@ -205,29 +238,24 @@ function getEmptyState(
 	switch (status) {
 		case "loading":
 			return {
-				body: "Loading evaluation results for the active run.",
-				title: "Loading evaluation handoff",
+				body: "Fetching latest results.",
+				title: "Loading results",
 			};
 		case "offline":
 			return {
 				body:
-					error?.message ??
-					"Evaluation results are offline. Artifact handoff cannot refresh.",
-				title: "Evaluation handoff offline",
+					error?.message ?? "Cannot reach the server. Showing last snapshot.",
+				title: "Results offline",
 			};
 		case "error":
 			return {
-				body:
-					error?.message ??
-					"Evaluation results returned an unexpected response.",
-				title: "Evaluation handoff unavailable",
+				body: error?.message ?? "Unexpected response from the server.",
+				title: "Results unavailable",
 			};
 		default:
 			return {
-				body:
-					payload?.message ??
-					"Launch or select an evaluation run to inspect report, PDF, tracker, and closeout readiness.",
-				title: "No evaluation handoff yet",
+				body: payload?.message ?? "Start or select a run to see results here.",
+				title: "No results yet",
 			};
 	}
 }
@@ -493,50 +521,46 @@ export function EvaluationArtifactRail({
 				<header>
 					<p
 						style={{
-							color: "#475569",
-							letterSpacing: "0.08em",
-							marginBottom: "0.35rem",
+							color: "var(--jh-color-label-fg)",
+							fontFamily: "var(--jh-font-heading)",
+							fontSize: "var(--jh-text-label-sm-size)",
+							fontWeight: "var(--jh-font-weight-medium)" as unknown as number,
+							letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
+							lineHeight: "var(--jh-text-label-sm-line-height)",
+							marginBottom: "var(--jh-space-1)",
 							marginTop: 0,
 							textTransform: "uppercase",
 						}}
 					>
-						Artifact handoff
+						Results
 					</p>
 					<h2
 						id="evaluation-artifact-rail-title"
-						style={{ marginBottom: "0.35rem" }}
+						style={{
+							fontFamily: "var(--jh-font-heading)",
+							fontSize: "var(--jh-text-h3-size)",
+							fontWeight: "var(--jh-text-h3-weight)" as unknown as number,
+							letterSpacing: "var(--jh-text-h3-letter-spacing)",
+							lineHeight: "var(--jh-text-h3-line-height)",
+							margin: 0,
+						}}
 					>
 						{emptyState.title}
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0 }}>{emptyState.body}</p>
+					<p style={{ ...secondaryText, marginTop: "var(--jh-space-1)" }}>
+						{emptyState.body}
+					</p>
 				</header>
 			</section>
 		);
 	}
 
 	const handoffIntents = createHandoffIntents(summary);
-	const artifactCards = [
-		summary.artifacts.report,
-		summary.artifacts.pdf,
-		summary.artifacts.tracker,
-	];
-	const statCards = [
-		{
-			body: formatScore(summary.score),
-			title: "Score",
-		},
-		{
-			body: summary.legitimacy ?? "No legitimacy signal yet",
-			title: "Legitimacy",
-		},
-		{
-			body: summary.reportNumber ?? "No report number yet",
-			title: "Report number",
-		},
-		{
-			body: `${summary.warnings.totalCount} warning${summary.warnings.totalCount === 1 ? "" : "s"}`,
-			title: "Warnings",
-		},
+	const sessionId = summary.session?.sessionId ?? null;
+	const artifactEntries = [
+		{ label: "Report", state: summary.artifacts.report.state },
+		{ label: "PDF", state: summary.artifacts.pdf.state },
+		{ label: "Tracker", state: summary.artifacts.tracker.state },
 	];
 
 	return (
@@ -544,376 +568,213 @@ export function EvaluationArtifactRail({
 			aria-labelledby="evaluation-artifact-rail-title"
 			style={panelStyle}
 		>
-			<header>
+			{/* --- Header: score chip + legitimacy badge --- */}
+			<header style={{ display: "grid", gap: "var(--jh-space-2)" }}>
+				<div style={rowStyle}>
+					<span
+						id="evaluation-artifact-rail-title"
+						style={{
+							background: "var(--jh-color-badge-neutral-bg)",
+							borderRadius: "var(--jh-radius-md)",
+							color: "var(--jh-color-text-primary)",
+							display: "inline-block",
+							fontFamily: "var(--jh-font-mono)",
+							fontSize: "var(--jh-text-h3-size)",
+							fontWeight: "var(--jh-font-weight-bold)" as unknown as number,
+							lineHeight: "var(--jh-text-h3-line-height)",
+							padding: "var(--jh-space-1) var(--jh-space-3)",
+						}}
+					>
+						{formatScore(summary.score)}
+					</span>
+					{summary.legitimacy ? (
+						<span
+							style={{
+								...pillStyle,
+								background: "var(--jh-color-badge-info-bg)",
+								color: "var(--jh-color-badge-info-fg)",
+							}}
+						>
+							{summary.legitimacy}
+						</span>
+					) : null}
+					{summary.reportNumber ? (
+						<span style={{ ...mutedText, marginLeft: "auto" }}>
+							#{summary.reportNumber}
+						</span>
+					) : null}
+				</div>
+
+				{/* Closeout state badge */}
+				<div style={rowStyle}>
+					<span
+						style={{
+							...pillStyle,
+							...getCloseoutTone(summary.closeout.state),
+						}}
+					>
+						{summary.closeout.state}
+					</span>
+					<span style={secondaryText}>{summary.closeout.message}</span>
+				</div>
+
+				{isRefreshing ? <p style={mutedText}>Refreshing...</p> : null}
+			</header>
+
+			{/* --- Error / offline banner --- */}
+			{(status === "offline" || status === "error") && error ? (
+				<div
+					style={{
+						background:
+							status === "offline"
+								? "var(--jh-color-status-offline-bg)"
+								: "var(--jh-color-status-error-bg)",
+						border: `var(--jh-border-width) solid ${
+							status === "offline"
+								? "var(--jh-color-status-offline-border)"
+								: "var(--jh-color-status-error-border)"
+						}`,
+						borderRadius: "var(--jh-radius-sm)",
+						padding: "var(--jh-space-2) var(--jh-space-3)",
+					}}
+				>
+					<p
+						style={{
+							fontSize: "var(--jh-text-body-sm-size)",
+							fontWeight: "var(--jh-font-weight-semibold)" as unknown as number,
+							lineHeight: "var(--jh-text-body-sm-line-height)",
+							marginBottom: "var(--jh-space-1)",
+							marginTop: 0,
+						}}
+					>
+						{status === "offline" ? "Showing last snapshot" : "Data issue"}
+					</p>
+					<p style={{ ...secondaryText }}>{error.message}</p>
+				</div>
+			) : null}
+
+			{/* --- Artifact status pills --- */}
+			<div style={rowStyle}>
+				{artifactEntries.map((entry) => (
+					<span
+						key={entry.label}
+						style={{
+							...pillStyle,
+							...getArtifactTone(entry.state),
+						}}
+					>
+						{entry.label}: {entry.state}
+					</span>
+				))}
+			</div>
+
+			{/* --- Input + Verification compact lines --- */}
+			<div style={{ display: "grid", gap: "var(--jh-space-1)" }}>
+				<div style={rowStyle}>
+					<span
+						style={{
+							...pillStyle,
+							background: "var(--jh-color-badge-neutral-bg)",
+							color: "var(--jh-color-badge-neutral-fg)",
+						}}
+					>
+						{formatInputKind(summary.inputProvenance.kind)}
+					</span>
+					{summary.inputProvenance.canonicalUrl ? (
+						<span style={mutedText}>
+							{summary.inputProvenance.canonicalUrl}
+						</span>
+					) : null}
+				</div>
+				<div style={rowStyle}>
+					<span
+						style={{
+							...pillStyle,
+							...getVerificationTone(summary.verification.status),
+						}}
+					>
+						{summary.verification.status}
+					</span>
+					<span style={secondaryText}>{summary.verification.message}</span>
+				</div>
+			</div>
+
+			{/* --- Warnings compact --- */}
+			<div style={{ display: "grid", gap: "var(--jh-space-1)" }}>
+				<div style={rowStyle}>
+					<span
+						style={{
+							...pillStyle,
+							background:
+								summary.warnings.totalCount > 0
+									? "var(--jh-color-status-warning-bg)"
+									: "var(--jh-color-badge-neutral-bg)",
+							color:
+								summary.warnings.totalCount > 0
+									? "var(--jh-color-status-expired-fg)"
+									: "var(--jh-color-badge-neutral-fg)",
+							borderWidth:
+								summary.warnings.totalCount > 0
+									? "var(--jh-border-width)"
+									: undefined,
+							borderStyle:
+								summary.warnings.totalCount > 0 ? "solid" : undefined,
+							borderColor:
+								summary.warnings.totalCount > 0
+									? "var(--jh-color-status-warning-border)"
+									: undefined,
+						}}
+					>
+						{summary.warnings.totalCount === 0
+							? "No warnings"
+							: `${summary.warnings.totalCount} warning${summary.warnings.totalCount === 1 ? "" : "s"}`}
+					</span>
+				</div>
+				{summary.warnings.items.length > 0 ? (
+					<div
+						style={{
+							display: "grid",
+							gap: "var(--jh-space-1)",
+							paddingLeft: "var(--jh-space-2)",
+						}}
+					>
+						{summary.warnings.items.map((item) => (
+							<p key={item.code ?? item.message} style={secondaryText}>
+								{item.code ? <strong>{item.code}:</strong> : null}{" "}
+								{item.message}
+							</p>
+						))}
+						{summary.warnings.hasMore ? (
+							<p style={mutedText}>More warnings available in full report</p>
+						) : null}
+					</div>
+				) : null}
+			</div>
+
+			{/* --- Actions: compact button row --- */}
+			<div style={{ display: "grid", gap: "var(--jh-space-2)" }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-secondary)",
+						fontSize: "var(--jh-text-label-size)",
+						fontWeight: "var(--jh-font-weight-medium)" as unknown as number,
+						letterSpacing: "var(--jh-text-label-letter-spacing)",
+						lineHeight: "var(--jh-text-label-line-height)",
+						margin: 0,
+					}}
+				>
+					Actions
+				</p>
 				<div
 					style={{
 						alignItems: "center",
 						display: "flex",
 						flexWrap: "wrap",
-						gap: "0.65rem",
-						justifyContent: "space-between",
-					}}
-				>
-					<div>
-						<p
-							style={{
-								color: "#475569",
-								letterSpacing: "0.08em",
-								marginBottom: "0.35rem",
-								marginTop: 0,
-								textTransform: "uppercase",
-							}}
-						>
-							Artifact handoff
-						</p>
-						<h2
-							id="evaluation-artifact-rail-title"
-							style={{ marginBottom: "0.35rem" }}
-						>
-							{summary.session?.sessionId ?? "Latest evaluation summary"}
-						</h2>
-					</div>
-					<span
-						style={{
-							...getCloseoutTone(summary.closeout.state),
-							borderRadius: "999px",
-							fontSize: "0.85rem",
-							fontWeight: 700,
-							padding: "0.25rem 0.6rem",
-						}}
-					>
-						{summary.state}
-					</span>
-				</div>
-				<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-					{formatWorkflow(
-						summary.workflow ?? summary.session?.workflow ?? null,
-					)}
-				</p>
-				<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
-					{summary.message}
-				</p>
-				{isRefreshing ? (
-					<p
-						style={{ color: "#94a3b8", marginBottom: 0, marginTop: "0.45rem" }}
-					>
-						Refreshing artifact handoff...
-					</p>
-				) : null}
-			</header>
-
-			{(status === "offline" || status === "error") && error ? (
-				<section
-					style={{
-						background: status === "offline" ? "#e2e8f0" : "#fee2e2",
-						border: `1px solid ${status === "offline" ? "#cbd5e1" : "#fecaca"}`,
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ fontWeight: 700, marginBottom: "0.25rem", marginTop: 0 }}>
-						{status === "offline"
-							? "Showing the last handoff snapshot"
-							: "Data warning"}
-					</p>
-					<p style={{ margin: 0 }}>{error.message}</p>
-				</section>
-			) : null}
-
-			<section style={sectionStyle}>
-				<header>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
-						Closeout summary
-					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
-						{summary.closeout.message}
-					</p>
-				</header>
-				<div
-					style={{
-						display: "grid",
-						gap: "0.75rem",
-						gridTemplateColumns: "repeat(auto-fit, minmax(11rem, 1fr))",
-					}}
-				>
-					<article
-						style={{
-							background: "rgba(255, 255, 255, 0.8)",
-							border: "1px solid rgba(148, 163, 184, 0.18)",
-							borderRadius: "0.9rem",
-							padding: "0.75rem 0.8rem",
-						}}
-					>
-						<p
-							style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}
-						>
-							Review state
-						</p>
-						<span
-							style={{
-								...getCloseoutTone(summary.closeout.state),
-								borderRadius: "999px",
-								display: "inline-block",
-								fontSize: "0.82rem",
-								fontWeight: 700,
-								padding: "0.22rem 0.55rem",
-							}}
-						>
-							{summary.closeout.state}
-						</span>
-					</article>
-					{statCards.map((card) => (
-						<article
-							key={card.title}
-							style={{
-								background: "rgba(255, 255, 255, 0.8)",
-								border: "1px solid rgba(148, 163, 184, 0.18)",
-								borderRadius: "0.9rem",
-								padding: "0.75rem 0.8rem",
-							}}
-						>
-							<p
-								style={{
-									color: "#64748b",
-									marginBottom: "0.2rem",
-									marginTop: 0,
-								}}
-							>
-								{card.title}
-							</p>
-							<p style={{ margin: 0 }}>{card.body}</p>
-						</article>
-					))}
-				</div>
-			</section>
-
-			<section style={sectionStyle}>
-				<header>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
-						Input and verification
-					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
-						Input source and verification are determined server-side.
-					</p>
-				</header>
-				<div
-					style={{
-						display: "grid",
-						gap: "0.75rem",
-						gridTemplateColumns: "repeat(auto-fit, minmax(14rem, 1fr))",
-					}}
-				>
-					<article style={sectionStyle}>
-						<div
-							style={{
-								alignItems: "center",
-								display: "flex",
-								flexWrap: "wrap",
-								gap: "0.55rem",
-								justifyContent: "space-between",
-							}}
-						>
-							<h4 style={{ margin: 0 }}>Input provenance</h4>
-							<span
-								style={{
-									...getCloseoutTone("not-ready"),
-									borderRadius: "999px",
-									fontSize: "0.82rem",
-									fontWeight: 700,
-									padding: "0.2rem 0.55rem",
-								}}
-							>
-								{formatInputKind(summary.inputProvenance.kind)}
-							</span>
-						</div>
-						<p style={{ color: "#475569", margin: 0 }}>
-							{summary.inputProvenance.message}
-						</p>
-						{summary.inputProvenance.canonicalUrl ? (
-							<p style={{ color: "#64748b", margin: 0 }}>
-								{summary.inputProvenance.canonicalUrl}
-							</p>
-						) : null}
-					</article>
-
-					<article style={sectionStyle}>
-						<div
-							style={{
-								alignItems: "center",
-								display: "flex",
-								flexWrap: "wrap",
-								gap: "0.55rem",
-								justifyContent: "space-between",
-							}}
-						>
-							<h4 style={{ margin: 0 }}>Verification</h4>
-							<span
-								style={{
-									...getVerificationTone(summary.verification.status),
-									borderRadius: "999px",
-									fontSize: "0.82rem",
-									fontWeight: 700,
-									padding: "0.2rem 0.55rem",
-								}}
-							>
-								{summary.verification.status}
-							</span>
-						</div>
-						<p style={{ color: "#475569", margin: 0 }}>
-							{summary.verification.message}
-						</p>
-						{summary.verification.url ? (
-							<p style={{ color: "#64748b", margin: 0 }}>
-								{summary.verification.url}
-							</p>
-						) : null}
-					</article>
-				</div>
-			</section>
-
-			<section style={sectionStyle}>
-				<header>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
-						Artifact packet
-					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
-						Report, PDF, and tracker readiness stays backend-owned and explicit.
-					</p>
-				</header>
-				<div
-					style={{
-						display: "grid",
-						gap: "0.75rem",
-						gridTemplateColumns: "repeat(auto-fit, minmax(13rem, 1fr))",
-					}}
-				>
-					{artifactCards.map((artifact) => (
-						<article key={artifact.kind} style={sectionStyle}>
-							<div
-								style={{
-									alignItems: "center",
-									display: "flex",
-									flexWrap: "wrap",
-									gap: "0.55rem",
-									justifyContent: "space-between",
-								}}
-							>
-								<h4 style={{ margin: 0 }}>{artifact.kind}</h4>
-								<span
-									style={{
-										...getArtifactTone(artifact.state),
-										borderRadius: "999px",
-										fontSize: "0.82rem",
-										fontWeight: 700,
-										padding: "0.2rem 0.55rem",
-									}}
-								>
-									{artifact.state}
-								</span>
-							</div>
-							<p style={{ color: "#475569", margin: 0 }}>{artifact.message}</p>
-							<p style={{ color: "#64748b", margin: 0 }}>
-								{artifact.repoRelativePath ?? "No workspace path recorded"}
-							</p>
-						</article>
-					))}
-				</div>
-			</section>
-
-			<section style={sectionStyle}>
-				<header>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
-						Warning preview
-					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
-						Showing the server-provided warning preview.
-					</p>
-				</header>
-				{summary.warnings.items.length === 0 ? (
-					<p style={{ margin: 0 }}>
-						No warning preview is attached to this result.
-					</p>
-				) : (
-					<div style={{ display: "grid", gap: "0.6rem" }}>
-						{summary.warnings.items.map((item) => (
-							<article
-								key={item.code ?? item.message}
-								style={{
-									background: "#fff7ed",
-									border: "1px solid #fed7aa",
-									borderRadius: "0.9rem",
-									padding: "0.75rem 0.8rem",
-								}}
-							>
-								<p
-									style={{
-										fontWeight: 700,
-										marginBottom: "0.2rem",
-										marginTop: 0,
-									}}
-								>
-									{item.code ?? "Warning"}
-								</p>
-								<p style={{ margin: 0 }}>{item.message}</p>
-							</article>
-						))}
-						{summary.warnings.hasMore ? (
-							<p style={{ color: "#92400e", margin: 0 }}>
-								Additional warnings are available in the backend summary.
-							</p>
-						) : null}
-					</div>
-				)}
-			</section>
-
-			<section style={sectionStyle}>
-				<header>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
-						Handoff actions
-					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
-						Navigate to report, pipeline, or tracker review from here.
-					</p>
-				</header>
-				<div
-					style={{
-						display: "grid",
-						gap: "0.75rem",
-						gridTemplateColumns: "repeat(auto-fit, minmax(14rem, 1fr))",
+						gap: "var(--jh-space-2)",
 					}}
 				>
 					{handoffIntents.map((intent) => (
-						<article key={intent.kind} style={sectionStyle}>
-							<div
-								style={{
-									alignItems: "center",
-									display: "flex",
-									flexWrap: "wrap",
-									gap: "0.55rem",
-									justifyContent: "space-between",
-								}}
-							>
-								<h4 style={{ margin: 0 }}>{intent.kind}</h4>
-								<span
-									style={{
-										...getHandoffTone(intent.availability),
-										borderRadius: "999px",
-										fontSize: "0.82rem",
-										fontWeight: 700,
-										padding: "0.2rem 0.55rem",
-									}}
-								>
-									{intent.availability}
-								</span>
-							</div>
-							<p style={{ color: "#475569", margin: 0 }}>
-								{intent.description}
-							</p>
-							{intent.repoRelativePath ? (
-								<p style={{ color: "#64748b", margin: 0 }}>
-									{intent.repoRelativePath}
-								</p>
-							) : null}
+						<span key={intent.kind} style={{ display: "contents" }}>
 							{renderActionButton(
 								intent,
 								isBusy,
@@ -922,10 +783,15 @@ export function EvaluationArtifactRail({
 								onOpenReportViewer,
 								onOpenTrackerReview,
 							)}
-						</article>
+						</span>
 					))}
+					{sessionId ? (
+						<Link to={`/runs/${sessionId}`} style={linkStyle}>
+							View run details
+						</Link>
+					) : null}
 				</div>
-			</section>
+			</div>
 		</section>
 	);
 }
