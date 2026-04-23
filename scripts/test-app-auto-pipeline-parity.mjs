@@ -1426,22 +1426,16 @@ try {
 		const page = await browser.newPage();
 		await page.goto(`${webUrl}/evaluate`, { waitUntil: "domcontentloaded" });
 
-		await page
-			.getByRole("heading", { name: "Loading recent sessions" })
-			.waitFor();
-		await page
-			.getByRole("heading", { name: "Loading evaluation handoff" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Loading recent runs" }).waitFor();
+		await page.getByRole("heading", { name: "Loading results" }).waitFor();
 
 		fakeApi.setSummaryDelayMs(0);
 		fakeApi.setEvaluationResultDelayMs(0);
 		await page.waitForLoadState("networkidle");
-		await page
-			.getByRole("heading", { name: "No recent sessions yet" })
-			.waitFor();
+		await page.getByRole("heading", { name: "No recent runs" }).waitFor();
 		await page
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
-			.getByRole("heading", { name: "No evaluation handoff yet" })
+			.getByRole("heading", { name: "No results yet" })
 			.waitFor();
 
 		fakeApi.setPhase("ready");
@@ -1466,9 +1460,7 @@ try {
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
 			.getByRole("button", { name: "Open report viewer" })
 			.click();
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page.getByText("Raw JD report body.").waitFor();
 		assert.match(page.url(), /\/artifacts/);
 
@@ -1477,9 +1469,7 @@ try {
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
 			.getByRole("button", { name: "Open pipeline review" })
 			.click();
-		await page
-			.getByRole("heading", { name: "Pipeline review workspace" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Queue triage" }).waitFor();
 		assert.match(page.url(), /\/pipeline/);
 
 		await page.getByRole("link", { name: /Chat/ }).first().click();
@@ -1489,7 +1479,7 @@ try {
 			.click();
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		await page.getByText("Auto-pipeline closeout focus").waitFor();
@@ -1515,9 +1505,7 @@ try {
 		await liveRail.getByText("active via browser review").first().waitFor();
 
 		await liveRail.getByRole("button", { name: "Open report viewer" }).click();
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		assert.match(page.url(), /\/artifacts/);
 
 		await page.goto(`${webUrl}/evaluate?session=session-live-url`, {
@@ -1529,9 +1517,7 @@ try {
 		await liveRail
 			.getByRole("button", { name: "Open pipeline review" })
 			.click();
-		await page
-			.getByRole("heading", { name: "Pipeline review workspace" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Queue triage" }).waitFor();
 		assert.match(page.url(), /\/pipeline/);
 
 		await page.goto(`${webUrl}/evaluate?session=session-live-url`, {
@@ -1543,7 +1529,7 @@ try {
 		await liveRail.getByRole("button", { name: "Open tracker review" }).click();
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		assert.match(page.url(), /\/tracker/);
@@ -1563,7 +1549,7 @@ try {
 			waitUntil: "networkidle",
 		});
 		await errorPage
-			.getByRole("heading", { name: "Evaluation handoff unavailable" })
+			.getByRole("heading", { name: "Results unavailable" })
 			.waitFor();
 		await errorPage.close();
 		fakeApi.setEvaluationResultMode("ready");
@@ -1586,7 +1572,7 @@ try {
 			.click();
 		await offlinePage
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
-			.getByText("Showing the last handoff snapshot")
+			.getByText("Showing last snapshot")
 			.waitFor();
 		await offlinePage.close();
 		await page.close();

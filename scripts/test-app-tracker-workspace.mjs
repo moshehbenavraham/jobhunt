@@ -915,7 +915,7 @@ try {
 
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		await page
@@ -948,9 +948,7 @@ try {
 
 		await page.getByRole("button", { name: /Open report viewer/ }).click();
 		await page.waitForURL(/\/artifacts/);
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page
 			.getByText("Tracker workspace smoke handoff report body.")
 			.waitFor();
@@ -959,7 +957,7 @@ try {
 		});
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		await page.getByText("Auto-pipeline closeout focus").waitFor();
@@ -971,9 +969,7 @@ try {
 		await page.getByText("Pending TSV 20-future-company.tsv").waitFor();
 		await page.getByRole("button", { name: /Open report viewer/ }).click();
 		await page.waitForURL(/\/artifacts/);
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 
 		fakeApi.setTrackerMode("slow");
 		const loadingPage = await browser.newPage();
@@ -981,7 +977,7 @@ try {
 		await loadingPage.getByText("Loading tracker workspace").waitFor();
 		await loadingPage
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		await loadingPage.close();
@@ -1009,7 +1005,7 @@ try {
 			.click();
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		await page.route("**/tracker-workspace*", async (route) => {

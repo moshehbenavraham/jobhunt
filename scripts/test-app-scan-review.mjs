@@ -1062,9 +1062,7 @@ try {
 	try {
 		const page = await browser.newPage();
 		await page.goto(`${webUrl}#scan`, { waitUntil: "networkidle" });
-		await page
-			.getByRole("heading", { name: "Scan review workspace" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Scan review" }).waitFor();
 		await page.getByText("Applied AI Engineer").waitFor();
 		await page.getByText("duplicate-heavy").waitFor();
 		await page.getByRole("button", { name: /Applied AI Engineer/ }).click();
@@ -1082,12 +1080,8 @@ try {
 				`Shortlist candidate restored for scan session ${SCAN_SESSION_ID}.`,
 			)
 			.waitFor();
-		await page
-			.getByRole("button", { name: "Launch single evaluation" })
-			.click();
-		await page
-			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
-			.waitFor();
+		await page.getByRole("button", { name: "Evaluate" }).click();
+		await page.getByRole("heading", { name: "Evaluation console" }).waitFor();
 		assert.match(page.url(), /session=session-eval-01/);
 		assert.match(page.url(), /\/evaluate/);
 		await page
@@ -1100,9 +1094,7 @@ try {
 			.getByRole("button", { name: /Forward Deployed Engineer/ })
 			.click();
 		await page.getByRole("button", { name: "Seed batch evaluation" }).click();
-		await page
-			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Evaluation console" }).waitFor();
 		assert.match(page.url(), /\/evaluate/);
 
 		fakeApi.setScanMode("empty");
@@ -1113,9 +1105,7 @@ try {
 		const loadingPage = await browser.newPage();
 		await loadingPage.goto(`${webUrl}#scan`);
 		await loadingPage.getByText("Loading scan workspace").waitFor();
-		await loadingPage
-			.getByRole("heading", { name: "Scan review workspace" })
-			.waitFor();
+		await loadingPage.getByRole("heading", { name: "Scan review" }).waitFor();
 		await loadingPage.getByText("Forward Deployed Engineer").waitFor();
 		await loadingPage.close();
 

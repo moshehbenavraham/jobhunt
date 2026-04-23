@@ -835,9 +835,7 @@ try {
 		const page = await browser.newPage();
 		await page.goto(`${webUrl}/pipeline`, { waitUntil: "networkidle" });
 
-		await page
-			.getByRole("heading", { name: "Pipeline review workspace" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Queue triage" }).waitFor();
 		await page.getByText("Current strongest lane: Forward Deployed.").waitFor();
 		await page.getByText("Forward Deployed Engineer").first().waitFor();
 		await page
@@ -857,9 +855,7 @@ try {
 		await page
 			.getByRole("button", { name: "Open report viewer from pipeline detail" })
 			.click();
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		assert.match(page.url(), /\/artifacts$/);
 
 		await page.goto(

@@ -1870,22 +1870,16 @@ try {
 		await page
 			.getByRole("heading", { name: "Launch a supported workflow" })
 			.waitFor();
-		await page
-			.getByRole("heading", { name: "Loading recent sessions" })
-			.waitFor();
-		await page
-			.getByRole("heading", { name: "Loading evaluation handoff" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Loading recent runs" }).waitFor();
+		await page.getByRole("heading", { name: "Loading results" }).waitFor();
 
 		await page.waitForLoadState("networkidle");
 		fakeApi.setSummaryDelayMs(0);
 		fakeApi.setEvaluationResultDelayMs(0);
-		await page
-			.getByRole("heading", { name: "No recent sessions yet" })
-			.waitFor();
+		await page.getByRole("heading", { name: "No recent runs" }).waitFor();
 		await page
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
-			.getByRole("heading", { name: "No evaluation handoff yet" })
+			.getByRole("heading", { name: "No results yet" })
 			.waitFor();
 
 		const launchGate = fakeApi.holdNextLaunch();
@@ -1904,7 +1898,7 @@ try {
 			.waitFor();
 		await page
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
-			.getByText("Evaluation session is still running.")
+			.getByText("Evaluation closeout is still in progress.")
 			.waitFor();
 		await page.getByText("session-live").first().waitFor();
 
@@ -2078,12 +2072,8 @@ try {
 		const completedRail = page.locator(
 			'section[aria-labelledby="evaluation-artifact-rail-title"]',
 		);
-		await completedRail.getByText("reports/101-ready.md").first().waitFor();
-		await completedRail
-			.getByText(
-				"Launched from raw job-description text. Prompt text is redacted from stored session context.",
-			)
-			.waitFor();
+		await completedRail.getByText("#101").first().waitFor();
+		await completedRail.getByText("Raw JD text").first().waitFor();
 		await completedRail.getByText("not-applicable").first().waitFor();
 		assert.equal(
 			await completedRail
@@ -2106,9 +2096,7 @@ try {
 		await completedRail
 			.getByRole("button", { name: "Open report viewer" })
 			.click();
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page.getByText("Artifact handoff report body.").waitFor();
 		assert.match(page.url(), /\/artifacts/);
 		await page.goto(`${webUrl}/evaluate?session=session-completed`, {
@@ -2124,9 +2112,7 @@ try {
 		await completedRail
 			.getByRole("button", { name: "Open pipeline review" })
 			.click();
-		await page
-			.getByRole("heading", { name: "Pipeline review workspace" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Queue triage" }).waitFor();
 		assert.match(page.url(), /\/pipeline/);
 		await page.goto(`${webUrl}/evaluate?session=session-completed`, {
 			waitUntil: "networkidle",
@@ -2142,10 +2128,9 @@ try {
 			.click();
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
-		await page.getByText("Auto-pipeline closeout focus").waitFor();
 		await page.getByText("Showing tracker row for report #101.").waitFor();
 		assert.match(page.url(), /\/tracker/);
 		await page.goto(`${webUrl}/evaluate?session=session-completed`, {
@@ -2192,7 +2177,7 @@ try {
 			waitUntil: "networkidle",
 		});
 		await errorPage
-			.getByRole("heading", { name: "Evaluation handoff unavailable" })
+			.getByRole("heading", { name: "Results unavailable" })
 			.waitFor();
 		await errorPage.close();
 		fakeApi.setEvaluationResultMode("ready");
@@ -2203,7 +2188,7 @@ try {
 		});
 		await offlinePage
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
-			.getByText("reports/101-ready.md")
+			.getByText("#101")
 			.first()
 			.waitFor();
 		await offlinePage.route("**/api/evaluation-result*", async (route) => {
@@ -2214,7 +2199,7 @@ try {
 			.click();
 		await offlinePage
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
-			.getByText("Showing the last handoff snapshot")
+			.getByText("Showing last snapshot")
 			.waitFor();
 		await offlinePage.close();
 

@@ -963,7 +963,7 @@ try {
 		});
 
 		await page
-			.getByRole("heading", { name: "Application-help workspace" })
+			.getByRole("heading", { name: "Application-help workspace", exact: true })
 			.waitFor();
 		await page
 			.getByText("The application-help run completed and the draft is ready")

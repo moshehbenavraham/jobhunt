@@ -3112,39 +3112,27 @@ try {
 		await page.goto(webUrl, { waitUntil: "networkidle" });
 		await page.getByRole("heading", { name: "Daily overview" }).waitFor();
 		await page.getByRole("button", { name: "Open Pipeline" }).click();
-		await page
-			.getByRole("heading", { name: "Pipeline review workspace" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Queue triage" }).waitFor();
 		assert.match(page.url(), /pipeline/);
 
 		await page.getByRole("link", { name: /Chat/ }).first().click();
 		await page
 			.getByRole("heading", { name: "Launch a supported workflow" })
 			.waitFor();
-		await page
-			.getByRole("heading", { name: "No recent sessions yet" })
-			.waitFor();
+		await page.getByRole("heading", { name: "No recent runs" }).waitFor();
 		await page.getByRole("link", { name: /Scan/ }).first().click();
-		await page
-			.getByRole("heading", { name: "Scan review workspace" })
-			.waitFor();
-		await page.getByText("Applied AI Engineer").waitFor();
+		await page.getByRole("heading", { name: "Scan review" }).waitFor();
+		await page.getByRole("button", { name: /Applied AI Engineer/ }).waitFor();
 		await page.getByRole("button", { name: /Applied AI Engineer/ }).click();
-		await page
-			.getByRole("button", { name: "Launch single evaluation" })
-			.click();
-		await page
-			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
-			.waitFor();
+		await page.getByRole("button", { name: "Evaluate" }).click();
+		await page.getByRole("heading", { name: "Evaluation console" }).waitFor();
 		assert.match(page.url(), /\/evaluate/);
 		await page.getByRole("link", { name: /Batch/ }).first().click();
 		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
 		await page.getByRole("button", { name: /Select batch item 2/ }).click();
 		await page.getByText("Showing batch item #2.").waitFor();
 		await page.getByRole("button", { name: /Open report viewer/ }).click();
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page.getByText("Tracker handoff report body.").waitFor();
 		assert.match(page.url(), /\/artifacts/);
 		await page.goto(`${webUrl}/batch?batchItemId=2`, {
@@ -3154,7 +3142,7 @@ try {
 		await page.getByRole("button", { name: /Open tracker workspace/ }).click();
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		assert.match(page.url(), /\/tracker/);
@@ -3163,9 +3151,7 @@ try {
 		});
 		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
 		await page.getByRole("button", { name: /^Open chat$/ }).click();
-		await page
-			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Evaluation console" }).waitFor();
 		assert.match(page.url(), /\/evaluate/);
 		await page.goto(`${webUrl}/batch?batchItemId=2`, {
 			waitUntil: "networkidle",
@@ -3193,9 +3179,7 @@ try {
 			.first()
 			.waitFor();
 		await page.getByRole("button", { name: /Open report viewer/ }).click();
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		assert.match(page.url(), /\/artifacts/);
 		await page.goto(
 			`${webUrl}/apply?applicationHelpSessionId=app-help-completed-shell`,
@@ -3204,9 +3188,7 @@ try {
 			},
 		);
 		await page.getByRole("button", { name: /Open chat/ }).click();
-		await page
-			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Evaluation console" }).waitFor();
 		assert.match(page.url(), /\/evaluate/);
 		await page.goto(
 			`${webUrl}/apply?applicationHelpSessionId=app-help-paused-shell`,
@@ -3273,20 +3255,18 @@ try {
 				has: page.getByRole("heading", { name: "Detail and handoffs" }),
 			})
 			.getByRole("button", {
-				name: /Open the dedicated detail surface for the selected specialist workflow/,
+				name: /Open the dedicated detail view for the selected specialist workflow/,
 			})
 			.click();
 		await page
-			.getByRole("heading", { name: "Application-help workspace" })
+			.getByRole("heading", { name: "Application-help workspace", exact: true })
 			.waitFor();
 		assert.match(page.url(), /\/apply/);
 		await page
 			.getByRole("link", { name: /Pipeline/ })
 			.first()
 			.click();
-		await page
-			.getByRole("heading", { name: "Pipeline review workspace" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Queue triage" }).waitFor();
 		await page.getByText("Current strongest lane: Forward Deployed.").waitFor();
 		await page
 			.getByRole("link", { name: /Tracker/ })
@@ -3294,7 +3274,7 @@ try {
 			.click();
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		await page
@@ -3303,9 +3283,7 @@ try {
 			})
 			.waitFor();
 		await page.getByRole("button", { name: /Open report viewer/ }).click();
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page.getByText("Tracker handoff report body.").waitFor();
 		assert.match(page.url(), /\/artifacts/);
 		await page.goto(`${webUrl}/tracker?trackerReportNumber=020`, {
@@ -3313,7 +3291,7 @@ try {
 		});
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		await page.getByText("Auto-pipeline closeout focus").waitFor();
@@ -3325,9 +3303,7 @@ try {
 		await page.getByText("Pending TSV 20-future-company.tsv").waitFor();
 		await page.getByText("This closeout has not been merged into").waitFor();
 		await page.getByRole("button", { name: /Open report viewer/ }).click();
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		assert.match(page.url(), /\/artifacts/);
 		await page
 			.getByRole("link", { name: /Approvals/ })
@@ -3369,7 +3345,7 @@ try {
 			.first()
 			.click();
 		await page
-			.getByRole("heading", { name: "Settings and maintenance surface" })
+			.getByRole("heading", { name: "Settings and maintenance" })
 			.waitFor();
 		await page.getByText("Run doctor", { exact: true }).waitFor();
 		assert.match(page.url(), /\/settings/);
@@ -3390,7 +3366,7 @@ try {
 			.first()
 			.click();
 		await page
-			.getByRole("heading", { name: "Settings and maintenance surface" })
+			.getByRole("heading", { name: "Settings and maintenance" })
 			.waitFor();
 		await page.getByText("Updater is current").waitFor();
 

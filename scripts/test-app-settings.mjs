@@ -662,17 +662,15 @@ try {
 			.waitFor();
 		fakeApi.setDelayMs(0);
 		await page
-			.getByRole("heading", { name: "Settings and maintenance surface" })
+			.getByRole("heading", { name: "Settings and maintenance" })
 			.waitFor();
 		await page.getByText("Update available", { exact: true }).waitFor();
 		await page.getByText("Run doctor", { exact: true }).waitFor();
 		await page.getByText("Check updates", { exact: true }).waitFor();
-		await page
-			.getByText("The app-owned home surface is the primary runtime.")
-			.waitFor();
+		await page.getByText("The operator home is the primary runtime.").waitFor();
 		await page
 			.getByText(
-				"Phase 03 is ready for the operator home and app shell to stay primary",
+				"Iteration 03 is ready for the operator home and app shell to stay primary",
 			)
 			.waitFor();
 
@@ -707,7 +705,7 @@ try {
 			.waitFor();
 		await page
 			.getByText(
-				"Phase 03 still depends on runtime or onboarding follow-up before the operator home can stay primary.",
+				"Iteration 03 still depends on runtime or onboarding follow-up before the operator home can stay primary.",
 			)
 			.waitFor();
 

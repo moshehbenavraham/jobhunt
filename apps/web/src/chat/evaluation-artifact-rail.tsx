@@ -205,7 +205,7 @@ function getVerificationTone(
 	}
 }
 
-function getHandoffTone(
+function _getHandoffTone(
 	availability: "deferred" | "ready" | "unavailable",
 ): CSSProperties {
 	switch (availability) {

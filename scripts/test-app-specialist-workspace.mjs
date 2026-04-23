@@ -2312,7 +2312,7 @@ try {
 				has: page.getByRole("heading", { name: "Detail and handoffs" }),
 			})
 			.getByRole("button", {
-				name: /Open the dedicated detail surface for the selected specialist workflow/,
+				name: /Open the dedicated detail view for the selected specialist workflow/,
 			})
 			.click();
 		await page
@@ -2331,7 +2331,7 @@ try {
 		await page.getByRole("button", { name: "Open tracker" }).click();
 		await page
 			.getByRole("heading", {
-				name: "Tracker workspace and integrity actions",
+				name: "Applications",
 			})
 			.waitFor();
 		await page.getByText("Showing selected tracker row #19.").first().waitFor();

@@ -207,10 +207,7 @@ export function PipelineReviewSurface({
 
 			<PipelineShortlist shortlist={payload.shortlist} />
 
-			<div
-				className="jh-pipeline-two-zone"
-				style={responsiveTwoZone}
-			>
+			<div className="jh-pipeline-two-zone" style={responsiveTwoZone}>
 				<section style={{ display: "grid", gap: "var(--jh-space-3)" }}>
 					<PipelineFilters
 						counts={payload.queue.counts}

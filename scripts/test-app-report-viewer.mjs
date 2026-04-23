@@ -802,9 +802,7 @@ try {
 		await page.getByRole("button", { name: "Open report viewer" }).waitFor();
 		await page.getByRole("button", { name: "Open report viewer" }).click();
 		await page.waitForURL(/\/artifacts/);
-		await page
-			.getByRole("heading", { name: "Artifact review surface" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Reports", exact: true }).waitFor();
 		await page
 			.getByRole("heading", { name: "Evaluation: HTTP Co -- Latest Role" })
 			.waitFor();
