@@ -257,7 +257,12 @@ export function NavigationRail({
 				>
 					Workbench
 				</p>
-				<h2 style={{ fontSize: "1.35rem", marginBottom: "0.35rem" }}>
+				<h2
+					style={{
+						fontSize: "var(--jh-text-h3-size)",
+						marginBottom: "0.35rem",
+					}}
+				>
 					Operator navigation
 				</h2>
 				<p
@@ -319,8 +324,8 @@ export function NavigationRail({
 												...badgeToneStyles[badge.tone],
 												borderRadius: "var(--jh-radius-pill)",
 												display: "inline-flex",
-												fontSize: "0.82rem",
-												fontWeight: 700,
+												fontSize: "var(--jh-text-caption-size)",
+												fontWeight: "var(--jh-font-weight-bold)",
 												gap: "var(--jh-space-1)",
 												padding: "0.2rem 0.55rem",
 											}}
@@ -335,7 +340,7 @@ export function NavigationRail({
 								<span
 									style={{
 										color: "var(--jh-color-nav-muted)",
-										fontSize: "0.92rem",
+										fontSize: "var(--jh-text-body-sm-size)",
 									}}
 								>
 									{surface.description}

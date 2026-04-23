@@ -40,10 +40,10 @@ const cardStyle: CSSProperties = {
 };
 
 const badgeStyle: CSSProperties = {
-	borderRadius: "999px",
+	borderRadius: "var(--jh-radius-pill)",
 	display: "inline-flex",
-	fontSize: "0.9rem",
-	fontWeight: 700,
+	fontSize: "var(--jh-text-body-sm-size)",
+	fontWeight: "var(--jh-font-weight-bold)",
 	padding: "0.3rem 0.75rem",
 };
 
@@ -54,13 +54,13 @@ const actionRowStyle: CSSProperties = {
 };
 
 const actionButtonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
-	fontWeight: 700,
+	fontWeight: "var(--jh-font-weight-bold)",
 	minHeight: "2.7rem",
 	padding: "0.7rem 0.95rem",
 };
@@ -370,7 +370,11 @@ export function OperatorHomeSurface({
 						}}
 					>
 						<p
-							style={{ fontWeight: 700, marginBottom: "0.35rem", marginTop: 0 }}
+							style={{
+								fontWeight: "var(--jh-font-weight-bold)",
+								marginBottom: "0.35rem",
+								marginTop: 0,
+							}}
 						>
 							{state.status === "offline"
 								? "Showing the last known operator-home snapshot."

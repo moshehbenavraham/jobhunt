@@ -36,7 +36,8 @@ import { useOperatorShell } from "./use-operator-shell";
 const pageStyle: CSSProperties = {
 	background: "var(--jh-color-shell-bg)",
 	color: "var(--jh-color-text-primary)",
-	lineHeight: 1.6,
+	fontFamily: "var(--jh-font-body)",
+	lineHeight: "var(--jh-text-body-line-height)",
 	minHeight: "100vh",
 	padding: "var(--jh-space-padding) var(--jh-space-gap) var(--jh-space-8)",
 };

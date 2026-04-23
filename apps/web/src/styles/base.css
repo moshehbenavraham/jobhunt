@@ -50,8 +50,77 @@ select {
 body {
   background: var(--jh-color-shell-bg);
   color: var(--jh-color-text-primary);
-  font-family:
-    'IBM Plex Sans', 'Avenir Next', 'Trebuchet MS', 'Gill Sans', sans-serif;
-  line-height: 1.6;
+  font-family: var(--jh-font-body);
+  font-size: var(--jh-text-body-size);
+  font-weight: var(--jh-text-body-weight);
+  letter-spacing: var(--jh-text-body-letter-spacing);
+  line-height: var(--jh-text-body-line-height);
   min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--jh-font-heading);
+}
+
+h1 {
+  font-size: var(--jh-text-h1-size);
+  font-weight: var(--jh-text-h1-weight);
+  letter-spacing: var(--jh-text-h1-letter-spacing);
+  line-height: var(--jh-text-h1-line-height);
+}
+
+h2 {
+  font-size: var(--jh-text-h2-size);
+  font-weight: var(--jh-text-h2-weight);
+  letter-spacing: var(--jh-text-h2-letter-spacing);
+  line-height: var(--jh-text-h2-line-height);
+}
+
+h3 {
+  font-size: var(--jh-text-h3-size);
+  font-weight: var(--jh-text-h3-weight);
+  letter-spacing: var(--jh-text-h3-letter-spacing);
+  line-height: var(--jh-text-h3-line-height);
+}
+
+h4 {
+  font-size: var(--jh-text-h4-size);
+  font-weight: var(--jh-text-h4-weight);
+  letter-spacing: var(--jh-text-h4-letter-spacing);
+  line-height: var(--jh-text-h4-line-height);
+}
+
+h5 {
+  font-size: var(--jh-text-body-lg-size);
+  font-weight: var(--jh-font-weight-medium);
+  letter-spacing: var(--jh-text-body-lg-letter-spacing);
+  line-height: var(--jh-text-body-lg-line-height);
+}
+
+h6 {
+  font-size: var(--jh-text-body-size);
+  font-weight: var(--jh-font-weight-semibold);
+  letter-spacing: var(--jh-text-body-letter-spacing);
+  line-height: var(--jh-text-body-line-height);
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--jh-font-mono);
+  font-size: var(--jh-text-mono-size);
+  letter-spacing: var(--jh-text-mono-letter-spacing);
+  line-height: var(--jh-text-mono-line-height);
+}
+
+small {
+  font-size: var(--jh-text-body-sm-size);
+  letter-spacing: var(--jh-text-body-sm-letter-spacing);
+  line-height: var(--jh-text-body-sm-line-height);
 }

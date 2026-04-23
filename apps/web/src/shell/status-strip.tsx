@@ -48,8 +48,8 @@ const buttonStyle: CSSProperties = {
 	borderRadius: "var(--jh-radius-pill)",
 	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
-	fontSize: "0.95rem",
-	fontWeight: 700,
+	fontSize: "var(--jh-text-body-sm-size)",
+	fontWeight: "var(--jh-font-weight-bold)",
 	minWidth: "12rem",
 	padding: "var(--jh-space-2) var(--jh-space-gap)",
 };
@@ -182,7 +182,13 @@ export function StatusStrip({
 						>
 							Operator shell
 						</p>
-						<h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", margin: 0 }}>
+						<h1
+							style={{
+								fontSize: "var(--jh-text-display-size)",
+								letterSpacing: "var(--jh-text-display-letter-spacing)",
+								margin: 0,
+							}}
+						>
 							{fallback.title}
 						</h1>
 						<p
@@ -279,7 +285,13 @@ export function StatusStrip({
 					>
 						Operator shell
 					</p>
-					<h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", margin: 0 }}>
+					<h1
+						style={{
+							fontSize: "var(--jh-text-display-size)",
+							letterSpacing: "var(--jh-text-display-letter-spacing)",
+							margin: 0,
+						}}
+					>
 						App-first operator home
 					</h1>
 					<p
@@ -315,7 +327,7 @@ export function StatusStrip({
 							borderRadius: "var(--jh-radius-pill)",
 							color: tone.accent,
 							display: "inline-flex",
-							fontWeight: 700,
+							fontWeight: "var(--jh-font-weight-bold)",
 							padding: "var(--jh-space-1) var(--jh-space-2)",
 						}}
 					>
