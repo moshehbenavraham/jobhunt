@@ -113,7 +113,7 @@ function isLikelyCodeContext(source, index, value) {
 	}
 
 	if (
-		/\.(id|path|key|status|source|workflow|kind|code)\s*[=!]==?\s*["']/.test(
+		/\.(id|path|key|status|source|workflow|kind|code|state)\s*[=!]==?\s*["']/.test(
 			line,
 		)
 	) {
@@ -159,6 +159,10 @@ function isLikelyCodeContext(source, index, value) {
 	}
 
 	if (/\bkey=\{/.test(line)) {
+		return true;
+	}
+
+	if (/=>\s/.test(line) && /\.\w+\.\w+/.test(value)) {
 		return true;
 	}
 

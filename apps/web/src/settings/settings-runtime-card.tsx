@@ -47,7 +47,7 @@ function getEmptyCopy(status: SettingsViewStatus): string {
 		case "error":
 			return "The latest settings request failed before runtime readiness could refresh.";
 		default:
-			return "Open the settings surface to calculate runtime readiness.";
+			return "Open settings to calculate runtime readiness.";
 	}
 }
 
@@ -120,10 +120,11 @@ export function SettingsRuntimeCard({
 	}
 
 	const tone = getTone(summary);
+	const iterationNumber = summary.currentSession.phase;
 	const phaseLabel =
-		summary.currentSession.phase !== null
-			? `Phase ${summary.currentSession.phase.toString().padStart(2, "0")}`
-			: "Current phase";
+		iterationNumber !== null
+			? `Iteration ${iterationNumber.toString().padStart(2, "0")}`
+			: "Current iteration";
 
 	return (
 		<section aria-labelledby="settings-runtime-title" style={cardStyle}>
@@ -253,7 +254,7 @@ export function SettingsRuntimeCard({
 
 			<div style={buttonRowStyle}>
 				<button
-					aria-label="Open the startup surface from runtime readiness"
+					aria-label="Open startup from runtime readiness"
 					onClick={onOpenStartup}
 					style={buttonStyle}
 					type="button"
@@ -261,7 +262,7 @@ export function SettingsRuntimeCard({
 					Open Startup
 				</button>
 				<button
-					aria-label="Open the onboarding surface from runtime readiness"
+					aria-label="Open onboarding from runtime readiness"
 					disabled={summary.health.missing.onboarding === 0}
 					onClick={onOpenOnboarding}
 					style={{

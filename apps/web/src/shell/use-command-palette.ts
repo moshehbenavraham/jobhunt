@@ -1,9 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { PaletteCommand } from "./command-palette-types";
-import { PALETTE_ACTIONS } from "./command-palette-types";
+import {
+	PALETTE_ACTIONS,
+	PALETTE_CONTEXT_COMMANDS,
+} from "./command-palette-types";
+import type { ShellSurfaceId } from "./shell-types";
 import { SHELL_SURFACES } from "./shell-types";
 
-function buildRegistry(): readonly PaletteCommand[] {
+function buildRegistry(
+	surfaceId: ShellSurfaceId | null,
+): readonly PaletteCommand[] {
+	const contextCommands = PALETTE_CONTEXT_COMMANDS.filter(
+		(cmd) => cmd.forSurface == null || cmd.forSurface === surfaceId,
+	);
+
 	const surfaceCommands: PaletteCommand[] = SHELL_SURFACES.map((s) => ({
 		actionId: null,
 		description: s.description,
@@ -14,7 +24,7 @@ function buildRegistry(): readonly PaletteCommand[] {
 		surfaceId: s.id,
 	}));
 
-	return [...surfaceCommands, ...PALETTE_ACTIONS];
+	return [...contextCommands, ...surfaceCommands, ...PALETTE_ACTIONS];
 }
 
 function matchesQuery(command: PaletteCommand, query: string): boolean {
@@ -62,7 +72,10 @@ export type CommandPaletteActions = {
 	toggle: () => void;
 };
 
-export function useCommandPalette(onNavigate: (path: string) => void): {
+export function useCommandPalette(
+	onNavigate: (path: string) => void,
+	currentSurfaceId: ShellSurfaceId | null,
+): {
 	actions: CommandPaletteActions;
 	state: CommandPaletteState;
 } {
@@ -71,7 +84,16 @@ export function useCommandPalette(onNavigate: (path: string) => void): {
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const previousFocusRef = useRef<HTMLElement | null>(null);
 
-	const registry = useMemo(() => buildRegistry(), []);
+	const registry = useMemo(
+		() => buildRegistry(currentSurfaceId),
+		[currentSurfaceId],
+	);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional reset on surface navigation change
+	useEffect(() => {
+		setQuery("");
+		setSelectedIndex(0);
+	}, [currentSurfaceId]);
 
 	const commands = useMemo(() => {
 		if (query.trim() === "") {

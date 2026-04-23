@@ -23,15 +23,15 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
 
 ## Progress Tracker
 
-| Session | Name                                    | Status   | Est. Tasks | Validated  |
-| ------- | --------------------------------------- | -------- | ---------- | ---------- |
-| 01      | Evaluation Console and Run Flow         | Complete | 20         | 2026-04-23 |
-| 02      | Artifact Handoff and Evidence Rail      | Complete | 20         | 2026-04-23 |
-| 03      | Report Viewer                           | Complete | 20         | 2026-04-23 |
-| 04      | Pipeline Review                         | Complete | 20         | 2026-04-23 |
-| 05      | Tracker and Scan Surfaces               | Complete | 22         | 2026-04-23 |
-| 06      | Batch and Specialist Surfaces           | Complete | 22         | 2026-04-23 |
-| 07      | Deep Linking, Approvals, and Guardrails | Complete | 20         | 2026-04-23 |
+| Session | Name                                    | Status      | Est. Tasks | Validated  |
+| ------- | --------------------------------------- | ----------- | ---------- | ---------- |
+| 01      | Evaluation Console and Run Flow         | Complete    | 20         | 2026-04-23 |
+| 02      | Artifact Handoff and Evidence Rail      | Complete    | 20         | 2026-04-23 |
+| 03      | Report Viewer                           | Complete    | 20         | 2026-04-23 |
+| 04      | Pipeline Review                         | Complete    | 20         | 2026-04-23 |
+| 05      | Tracker and Scan Surfaces               | Complete    | 22         | 2026-04-23 |
+| 06      | Batch and Specialist Surfaces           | Complete    | 22         | 2026-04-23 |
+| 07      | Deep Linking, Approvals, and Guardrails | Complete    | 20         | 2026-04-23 |
 
 ---
 

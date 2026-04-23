@@ -23,13 +23,13 @@ const heroStyle: CSSProperties = {
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
-	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	background: "var(--jh-color-button-bg)",
+	border: "none",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
-	fontWeight: 700,
+	fontWeight: "var(--jh-font-weight-bold)" as CSSProperties["fontWeight"],
 	minHeight: "2.8rem",
 	padding: "0.7rem 1rem",
 };
@@ -75,23 +75,32 @@ export function ApprovalInboxSurface({
 				<div>
 					<p
 						style={{
-							color: "#9a3412",
-							letterSpacing: "0.08em",
+							color: "var(--jh-color-label-fg)",
+							fontFamily: "var(--jh-font-body)",
+							fontSize: "var(--jh-text-label-sm-size)",
+							fontWeight:
+								"var(--jh-text-label-sm-weight)" as CSSProperties["fontWeight"],
+							letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
 							marginBottom: "0.35rem",
 							marginTop: 0,
 							textTransform: "uppercase",
 						}}
 					>
-						Session 04
+						Approvals
 					</p>
 					<h2 id="approval-inbox-title" style={{ marginBottom: "0.35rem" }}>
 						Approval inbox and human review flow
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem" }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: "0.2rem",
+						}}
+					>
 						Inspect pending approvals, resolve them through the shared runtime,
 						and hand interrupted work back to the existing resume route.
 					</p>
-					<p style={{ color: "#94a3b8", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-tertiary)", margin: 0 }}>
 						Last refreshed: {formatTimestamp(inbox.state.lastUpdatedAt)}
 					</p>
 				</div>

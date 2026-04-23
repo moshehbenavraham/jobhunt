@@ -80,7 +80,7 @@ function getHandoffCopy(health: OnboardingSummaryPayload["health"]) {
 	if (health.missing.onboarding > 0) {
 		return {
 			nextAction: "Keep repairing onboarding",
-			note: "Required onboarding files are still missing. Stay on this surface and finish the remaining repairs.",
+			note: "Required onboarding files are still missing. Stay here and finish the remaining repairs.",
 			tone: "#9a3412",
 		};
 	}
@@ -88,7 +88,7 @@ function getHandoffCopy(health: OnboardingSummaryPayload["health"]) {
 	if (health.startupStatus === "ready") {
 		return {
 			nextAction: "Open operator home",
-			note: "Startup prerequisites are complete. The shell can hand off to the app-owned home surface instead of returning to startup diagnostics.",
+			note: "Startup prerequisites are complete. The workbench can proceed to the operator home instead of returning to startup diagnostics.",
 			tone: "#166534",
 		};
 	}
@@ -234,7 +234,7 @@ export function ReadinessHandoffCard({
 
 			<div style={buttonRowStyle}>
 				<button
-					aria-label="Open the startup surface"
+					aria-label="Open startup"
 					onClick={onOpenStartup}
 					style={buttonStyle}
 					type="button"
@@ -242,7 +242,7 @@ export function ReadinessHandoffCard({
 					Open Startup
 				</button>
 				<button
-					aria-label="Open the operator home surface"
+					aria-label="Open the operator home"
 					disabled={health.missing.onboarding > 0 || health.missing.runtime > 0}
 					onClick={onOpenHome}
 					style={{

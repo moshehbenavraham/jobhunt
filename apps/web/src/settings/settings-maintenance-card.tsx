@@ -57,7 +57,7 @@ function getEmptyCopy(status: SettingsViewStatus): string {
 		case "error":
 			return "The latest settings request failed before maintenance guidance could refresh.";
 		default:
-			return "Open the settings surface to inspect maintenance guidance.";
+			return "Open settings to inspect maintenance guidance.";
 	}
 }
 
@@ -186,10 +186,9 @@ export function SettingsMaintenanceCard({
 					Updater and explicit terminal actions
 				</h2>
 				<p style={{ color: "#475569", marginBottom: 0 }}>
-					The app-owned home surface is the primary runtime. Refresh is the only
-					browser action here; update apply, rollback, backup, doctor, and auth
-					changes stay explicit in the terminal, and the dashboard remains
-					secondary.
+					The operator home is the primary runtime. Refresh is the only browser
+					action here; update apply, rollback, backup, doctor, and auth changes
+					stay explicit in the terminal, and the dashboard remains secondary.
 				</p>
 			</header>
 

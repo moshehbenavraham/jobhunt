@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 import { ApplyPage } from "./pages/apply-page";
 import { ApprovalsPage } from "./pages/approvals-page";
 import { ArtifactsPage } from "./pages/artifacts-page";
+import { BatchDetailPage } from "./pages/batch-detail-page";
 import { BatchPage } from "./pages/batch-page";
 import { ChatPage } from "./pages/chat-page";
 import { HomePage } from "./pages/home-page";
@@ -10,10 +11,12 @@ import { OnboardingPage } from "./pages/onboarding-page";
 import { PipelinePage } from "./pages/pipeline-page";
 import { ReportPage } from "./pages/report-page";
 import { RunDetailPage } from "./pages/run-detail-page";
+import { ScanDetailPage } from "./pages/scan-detail-page";
 import { ScanPage } from "./pages/scan-page";
 import { SettingsPage } from "./pages/settings-page";
 import { StartupPage } from "./pages/startup-page";
 import { TrackerPage } from "./pages/tracker-page";
+import { WorkflowDetailPage } from "./pages/workflow-detail-page";
 import { WorkflowsPage } from "./pages/workflows-page";
 import { RootLayout } from "./shell/root-layout";
 
@@ -77,6 +80,9 @@ export const router = createBrowserRouter([
 			{ path: "settings", Component: SettingsPage },
 			{ path: "runs/:runId", Component: RunDetailPage },
 			{ path: "reports/:reportId", Component: ReportPage },
+			{ path: "workflows/:workflowId", Component: WorkflowDetailPage },
+			{ path: "batch/:batchId", Component: BatchDetailPage },
+			{ path: "scan/:scanId", Component: ScanDetailPage },
 			{ path: "*", Component: NotFoundPage },
 		],
 	},

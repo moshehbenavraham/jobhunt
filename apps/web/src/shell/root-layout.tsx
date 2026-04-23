@@ -98,9 +98,8 @@ export function RootLayout() {
 	const startup = useStartupDiagnostics();
 	const shell = useOperatorShell();
 	const responsive = useResponsiveLayout();
-	const palette = useCommandPalette((path) => navigate(path));
-
 	const currentSurface = surfaceIdFromPath(location.pathname) ?? "home";
+	const palette = useCommandPalette((path) => navigate(path), currentSurface);
 
 	const home = useOperatorHome({
 		isActive: currentSurface === "home",

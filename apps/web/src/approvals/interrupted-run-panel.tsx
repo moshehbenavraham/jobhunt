@@ -14,52 +14,52 @@ type InterruptedRunPanelProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.4rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
-	gap: "0.9rem",
-	padding: "1rem",
+	gap: "var(--jh-space-4)",
+	padding: "var(--jh-space-padding)",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
-	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	background: "var(--jh-color-button-bg)",
+	border: "none",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
-	fontWeight: 700,
+	fontWeight: "var(--jh-font-weight-bold)" as CSSProperties["fontWeight"],
 	minHeight: "2.7rem",
-	padding: "0.7rem 1rem",
+	padding: "var(--jh-space-2) var(--jh-space-4)",
 };
 
 function getTone(state: string): CSSProperties {
 	switch (state) {
 		case "resume-ready":
 			return {
-				background: "#dbeafe",
-				color: "#1d4ed8",
+				background: "var(--jh-color-status-info-bg)",
+				color: "var(--jh-color-status-info-fg)",
 			};
 		case "waiting-for-approval":
 			return {
-				background: "#fef3c7",
-				color: "#92400e",
+				background: "var(--jh-color-status-pending-bg)",
+				color: "var(--jh-color-status-pending-fg)",
 			};
 		case "running":
 			return {
-				background: "#dcfce7",
-				color: "#166534",
+				background: "var(--jh-color-status-completed-bg)",
+				color: "var(--jh-color-status-completed-fg)",
 			};
 		case "completed":
 			return {
-				background: "#e2e8f0",
-				color: "#334155",
+				background: "var(--jh-color-badge-neutral-bg)",
+				color: "var(--jh-color-badge-neutral-fg)",
 			};
 		default:
 			return {
-				background: "#fee2e2",
-				color: "#991b1b",
+				background: "var(--jh-color-status-error-bg)",
+				color: "var(--jh-color-status-error-fg)",
 			};
 	}
 }
@@ -73,7 +73,7 @@ function getEmptyState(status: ApprovalInboxViewStatus): string {
 		case "error":
 			return "Interrupted-run state failed to load.";
 		default:
-			return "Select an approval to inspect whether the attached session can resume.";
+			return "Select an approval to inspect whether the attached run can resume.";
 	}
 }
 
@@ -96,8 +96,12 @@ export function InterruptedRunPanel({
 			<header>
 				<p
 					style={{
-						color: "#475569",
-						letterSpacing: "0.08em",
+						color: "var(--jh-color-text-secondary)",
+						fontFamily: "var(--jh-font-body)",
+						fontSize: "var(--jh-text-label-sm-size)",
+						fontWeight:
+							"var(--jh-text-label-sm-weight)" as CSSProperties["fontWeight"],
+						letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
 						marginBottom: "0.35rem",
 						marginTop: 0,
 						textTransform: "uppercase",
@@ -108,9 +112,9 @@ export function InterruptedRunPanel({
 				<h2 id="approval-resume-title" style={{ marginBottom: "0.35rem" }}>
 					Resume handoff
 				</h2>
-				<p style={{ color: "#64748b", marginBottom: 0 }}>
+				<p style={{ color: "var(--jh-color-text-muted)", marginBottom: 0 }}>
 					Resume uses the existing orchestration route instead of a second
-					runner path, and application-help sessions can return to their review
+					runner path, and application-help runs can return to their review
 					workspace.
 				</p>
 			</header>
@@ -122,7 +126,7 @@ export function InterruptedRunPanel({
 					<section
 						style={{
 							...getTone(interruptedRun.state),
-							borderRadius: "1rem",
+							borderRadius: "var(--jh-radius-md)",
 							padding: "0.85rem 0.9rem",
 						}}
 					>
@@ -135,7 +139,7 @@ export function InterruptedRunPanel({
 					</section>
 
 					{selected?.failure ? (
-						<p style={{ color: "#991b1b", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-status-error-fg)", margin: 0 }}>
 							Latest failure: {selected.failure.message}
 						</p>
 					) : null}
@@ -147,7 +151,7 @@ export function InterruptedRunPanel({
 						<div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
 							{interruptedRun.resumeAllowed ? (
 								<button
-									aria-label={`Resume session ${interruptedRun.sessionId ?? ""}`}
+									aria-label={`Resume run ${interruptedRun.sessionId ?? ""}`}
 									disabled={pendingAction !== null}
 									onClick={onResume}
 									style={{
@@ -164,7 +168,7 @@ export function InterruptedRunPanel({
 							interruptedRun.sessionId &&
 							onOpenApplicationHelp ? (
 								<button
-									aria-label={`Open application-help review for session ${interruptedRun.sessionId}`}
+									aria-label={`Open application-help review for run ${interruptedRun.sessionId}`}
 									onClick={() =>
 										onOpenApplicationHelp({
 											sessionId: interruptedRun.sessionId,
@@ -172,8 +176,8 @@ export function InterruptedRunPanel({
 									}
 									style={{
 										...buttonStyle,
-										background: "#e2e8f0",
-										color: "#0f172a",
+										background: "var(--jh-color-badge-neutral-bg)",
+										color: "var(--jh-color-text-primary)",
 									}}
 									type="button"
 								>

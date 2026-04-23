@@ -32,8 +32,9 @@
     "2": {
       "name": "Rebuild Workbench and Review Surfaces",
       "description": "Rebuild the main evaluation workbench and all review surfaces on top of the Phase 01 foundation. Evaluation console, artifact handoff, report viewer, pipeline, tracker, scan, batch, specialist, and approvals surfaces rebuilt for dense operator scanning. Deep-linking for all major review states. Closes with screenshot validation and spec guardrail updates.",
-      "status": "in_progress",
-      "session_count": 7
+      "status": "complete",
+      "session_count": 7,
+      "completed_date": "2026-04-23"
     }
   },
   "completed_sessions": [
@@ -80,6 +81,10 @@
     },
     {
       "id": "phase02-session06-batch-and-specialist-surfaces",
+      "package": "apps/web"
+    },
+    {
+      "id": "phase02-session07-deep-linking-approvals-and-guardrails",
       "package": "apps/web"
     }
   ],
@@ -291,6 +296,24 @@
     {
       "date": "2026-04-23",
       "session": "phase02-session06-batch-and-specialist-surfaces",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session07-deep-linking-approvals-and-guardrails",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session07-deep-linking-approvals-and-guardrails",
+      "package": "apps/web",
+      "status": "validated"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session07-deep-linking-approvals-and-guardrails",
       "package": "apps/web",
       "status": "completed"
     }

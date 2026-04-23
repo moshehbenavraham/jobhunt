@@ -92,7 +92,7 @@ export function OnboardingWizardSurface({
 							textTransform: "uppercase",
 						}}
 					>
-						Session 03
+						Onboarding
 					</p>
 					<h2 id="onboarding-wizard-title" style={{ marginBottom: "0.35rem" }}>
 						Startup checklist and onboarding wizard
