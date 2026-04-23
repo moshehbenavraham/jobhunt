@@ -1,0 +1,142 @@
+/* tokens.css -- PRD design token vocabulary (single source of truth)
+   Convention: --jh-{category}-{name}
+   Source: docs/PRD_UX.md section 10 "Design System" */
+
+:root {
+  /* ----------------------------------------------------------------
+     COLOR: PRD palette
+     ---------------------------------------------------------------- */
+
+  /* Dominant surface (60 %) -- mineral paper */
+  --jh-color-paper: #f4efe6;
+
+  /* Secondary surfaces (25 %) */
+  --jh-color-stone: #e3ddd2;
+  --jh-color-fog: #d9e4e8;
+  --jh-color-ink: #20313a;
+
+  /* Accent (10 %) -- cobalt */
+  --jh-color-accent: #2c63ff;
+
+  /* Signal colors (5 %) */
+  --jh-color-verdigris: #1f9d84;
+  --jh-color-amber: #c5851b;
+  --jh-color-coral: #d85b45;
+  --jh-color-mulberry: #7b4ed8;
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- shell
+     ---------------------------------------------------------------- */
+  --jh-color-shell-bg: var(--jh-color-paper);
+  --jh-color-surface-bg: rgba(255, 255, 255, 0.84);
+  --jh-color-surface-border: rgba(148, 163, 184, 0.18);
+
+  --jh-color-text-primary: var(--jh-color-ink);
+  --jh-color-text-secondary: #475569;
+  --jh-color-text-muted: #64748b;
+  --jh-color-text-on-ink: #f8fafc;
+
+  --jh-color-nav-bg: rgba(15, 23, 42, 0.9);
+  --jh-color-nav-text: #f8fafc;
+  --jh-color-nav-muted: #cbd5e1;
+  --jh-color-nav-border: rgba(148, 163, 184, 0.22);
+  --jh-color-nav-item-bg: rgba(15, 23, 42, 0.4);
+  --jh-color-nav-item-selected-bg: rgba(248, 250, 252, 0.14);
+  --jh-color-nav-item-selected-border: rgba(251, 191, 36, 0.7);
+  --jh-color-nav-accent: #fbbf24;
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- status tones
+     ---------------------------------------------------------------- */
+  --jh-color-status-ready-bg: #dcfce7;
+  --jh-color-status-ready-fg: #166534;
+
+  --jh-color-status-setup-bg: #ffedd5;
+  --jh-color-status-setup-fg: #9a3412;
+
+  --jh-color-status-error-bg: #fee2e2;
+  --jh-color-status-error-fg: #991b1b;
+
+  --jh-color-status-auth-bg: #dbeafe;
+  --jh-color-status-auth-fg: #1d4ed8;
+
+  --jh-color-status-expired-bg: #fed7aa;
+  --jh-color-status-expired-fg: #7c2d12;
+
+  --jh-color-status-prompt-bg: #ede9fe;
+  --jh-color-status-prompt-fg: #7c3aed;
+
+  --jh-color-status-warning-bg: #fff7ed;
+  --jh-color-status-warning-border: #fed7aa;
+
+  --jh-color-status-error-border: #fecaca;
+
+  --jh-color-status-offline-bg: #fef3c7;
+  --jh-color-status-offline-border: #fcd34d;
+
+  /* Badge tones */
+  --jh-color-badge-attention-bg: #fde68a;
+  --jh-color-badge-attention-fg: #7c2d12;
+
+  --jh-color-badge-info-bg: #bfdbfe;
+  --jh-color-badge-info-fg: #1d4ed8;
+
+  --jh-color-badge-neutral-bg: #e2e8f0;
+  --jh-color-badge-neutral-fg: #334155;
+
+  --jh-color-badge-positive-bg: #bbf7d0;
+  --jh-color-badge-positive-fg: #166534;
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- interactive / button
+     ---------------------------------------------------------------- */
+  --jh-color-button-bg: #0f172a;
+  --jh-color-button-fg: #f8fafc;
+
+  /* Session / heading label */
+  --jh-color-label-fg: #7c2d12;
+
+  /* ----------------------------------------------------------------
+     SPACING: 4px base unit scale (PRD_UX.md section 10)
+     ---------------------------------------------------------------- */
+  --jh-space-1: 4px;
+  --jh-space-2: 8px;
+  --jh-space-3: 12px;
+  --jh-space-4: 16px;
+  --jh-space-6: 24px;
+  --jh-space-8: 32px;
+  --jh-space-12: 48px;
+  --jh-space-16: 64px;
+  --jh-space-24: 96px;
+
+  /* Named spacing aliases */
+  --jh-space-gap: var(--jh-space-4);
+  --jh-space-section-gap: var(--jh-space-6);
+  --jh-space-padding: var(--jh-space-4);
+  --jh-space-padding-sm: var(--jh-space-3);
+  --jh-space-padding-lg: var(--jh-space-6);
+
+  /* ----------------------------------------------------------------
+     RADIUS
+     ---------------------------------------------------------------- */
+  --jh-radius-sm: 0.5rem;
+  --jh-radius-md: 0.75rem;
+  --jh-radius-lg: 1.15rem;
+  --jh-radius-xl: 1.5rem;
+  --jh-radius-2xl: 1.8rem;
+  --jh-radius-pill: 999px;
+
+  /* ----------------------------------------------------------------
+     BORDER
+     ---------------------------------------------------------------- */
+  --jh-border-width: 1px;
+  --jh-border-color: var(--jh-color-surface-border);
+  --jh-border-subtle: var(--jh-border-width) solid var(--jh-border-color);
+
+  /* ----------------------------------------------------------------
+     SHADOW
+     ---------------------------------------------------------------- */
+  --jh-shadow-sm: 0 1px 2px rgba(32, 49, 58, 0.06);
+  --jh-shadow-md: 0 2px 6px rgba(32, 49, 58, 0.08);
+  --jh-shadow-lg: 0 4px 14px rgba(32, 49, 58, 0.12);
+}

@@ -19,19 +19,18 @@ type NavBadge = {
 };
 
 const railStyle: CSSProperties = {
-	backdropFilter: "blur(14px)",
-	background: "rgba(15, 23, 42, 0.9)",
-	border: "1px solid rgba(148, 163, 184, 0.22)",
-	borderRadius: "1.5rem",
-	color: "#f8fafc",
+	background: "var(--jh-color-nav-bg)",
+	border: "var(--jh-border-width) solid var(--jh-color-nav-border)",
+	borderRadius: "var(--jh-radius-xl)",
+	color: "var(--jh-color-nav-text)",
 	display: "grid",
-	gap: "1rem",
-	padding: "1rem",
+	gap: "var(--jh-space-gap)",
+	padding: "var(--jh-space-gap)",
 };
 
 const listStyle: CSSProperties = {
 	display: "grid",
-	gap: "0.75rem",
+	gap: "var(--jh-space-3)",
 	listStyle: "none",
 	margin: 0,
 	padding: 0,
@@ -39,20 +38,20 @@ const listStyle: CSSProperties = {
 
 const badgeToneStyles: Record<NonNullable<NavBadge["tone"]>, CSSProperties> = {
 	attention: {
-		background: "#fde68a",
-		color: "#7c2d12",
+		background: "var(--jh-color-badge-attention-bg)",
+		color: "var(--jh-color-badge-attention-fg)",
 	},
 	info: {
-		background: "#bfdbfe",
-		color: "#1d4ed8",
+		background: "var(--jh-color-badge-info-bg)",
+		color: "var(--jh-color-badge-info-fg)",
 	},
 	neutral: {
-		background: "#e2e8f0",
-		color: "#334155",
+		background: "var(--jh-color-badge-neutral-bg)",
+		color: "var(--jh-color-badge-neutral-fg)",
 	},
 	positive: {
-		background: "#bbf7d0",
-		color: "#166534",
+		background: "var(--jh-color-badge-positive-bg)",
+		color: "var(--jh-color-badge-positive-fg)",
 	},
 };
 
@@ -246,22 +245,28 @@ export function NavigationRail({
 	summary,
 }: NavigationRailProps) {
 	return (
-		<nav aria-label="Operator shell surfaces" style={railStyle}>
+		<nav aria-label="Operator workbench navigation" style={railStyle}>
 			<div>
 				<p
 					style={{
-						color: "#fbbf24",
+						color: "var(--jh-color-nav-accent)",
 						letterSpacing: "0.08em",
 						margin: 0,
 						textTransform: "uppercase",
 					}}
 				>
-					Phase 06 shell
+					Workbench
 				</p>
 				<h2 style={{ fontSize: "1.35rem", marginBottom: "0.35rem" }}>
 					Operator navigation
 				</h2>
-				<p style={{ color: "#cbd5e1", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-nav-muted)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					One stable frame for the operator home, startup, chat, specialist
 					workflows, scan review, batch supervision, application-help review,
 					queue review, tracker closeout, and settings.
@@ -286,16 +291,16 @@ export function NavigationRail({
 								style={{
 									alignItems: "center",
 									background: isSelected
-										? "rgba(248, 250, 252, 0.14)"
-										: "rgba(15, 23, 42, 0.4)",
+										? "var(--jh-color-nav-item-selected-bg)"
+										: "var(--jh-color-nav-item-bg)",
 									border: isSelected
-										? "1px solid rgba(251, 191, 36, 0.7)"
-										: "1px solid rgba(148, 163, 184, 0.18)",
-									borderRadius: "1.15rem",
-									color: "#f8fafc",
+										? "var(--jh-border-width) solid var(--jh-color-nav-item-selected-border)"
+										: "var(--jh-border-width) solid var(--jh-color-surface-border)",
+									borderRadius: "var(--jh-radius-lg)",
+									color: "var(--jh-color-nav-text)",
 									display: "grid",
-									gap: "0.35rem",
-									padding: "0.9rem 1rem",
+									gap: "var(--jh-space-1)",
+									padding: "var(--jh-space-padding-sm) var(--jh-space-padding)",
 									textDecoration: "none",
 								}}
 							>
@@ -312,11 +317,11 @@ export function NavigationRail({
 										<span
 											style={{
 												...badgeToneStyles[badge.tone],
-												borderRadius: "999px",
+												borderRadius: "var(--jh-radius-pill)",
 												display: "inline-flex",
 												fontSize: "0.82rem",
 												fontWeight: 700,
-												gap: "0.35rem",
+												gap: "var(--jh-space-1)",
 												padding: "0.2rem 0.55rem",
 											}}
 										>
@@ -327,7 +332,12 @@ export function NavigationRail({
 										</span>
 									) : null}
 								</div>
-								<span style={{ color: "#cbd5e1", fontSize: "0.92rem" }}>
+								<span
+									style={{
+										color: "var(--jh-color-nav-muted)",
+										fontSize: "0.92rem",
+									}}
+								>
 									{surface.description}
 								</span>
 							</a>
@@ -339,22 +349,27 @@ export function NavigationRail({
 			{summary ? (
 				<section
 					style={{
-						background: "rgba(15, 23, 42, 0.45)",
-						border: "1px solid rgba(148, 163, 184, 0.18)",
-						borderRadius: "1.15rem",
-						padding: "0.85rem 0.95rem",
+						background: "var(--jh-color-nav-item-bg)",
+						border:
+							"var(--jh-border-width) solid var(--jh-color-surface-border)",
+						borderRadius: "var(--jh-radius-lg)",
+						padding: "var(--jh-space-padding-sm)",
 					}}
 				>
 					<p
-						style={{ color: "#94a3b8", marginBottom: "0.35rem", marginTop: 0 }}
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: "0.35rem",
+							marginTop: 0,
+						}}
 					>
-						Current spec session
+						Active build
 					</p>
 					<p style={{ margin: 0 }}>
 						<strong>{summary.currentSession.id}</strong>
 					</p>
-					<p style={{ color: "#cbd5e1", marginBottom: 0 }}>
-						{summary.currentSession.packagePath ?? "Cross-cutting package"}
+					<p style={{ color: "var(--jh-color-nav-muted)", marginBottom: 0 }}>
+						{summary.currentSession.packagePath ?? "Cross-cutting"}
 					</p>
 				</section>
 			) : null}

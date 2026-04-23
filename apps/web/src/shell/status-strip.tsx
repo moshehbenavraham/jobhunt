@@ -20,40 +20,38 @@ type StatusStripProps = {
 };
 
 const panelStyle: CSSProperties = {
-	backdropFilter: "blur(16px)",
-	background:
-		"linear-gradient(135deg, rgba(255, 250, 240, 0.92) 0%, rgba(248, 250, 252, 0.94) 58%, rgba(237, 233, 254, 0.58) 100%)",
-	border: "1px solid rgba(148, 163, 184, 0.22)",
-	borderRadius: "1.8rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-width) solid var(--jh-color-nav-border)",
+	borderRadius: "var(--jh-radius-2xl)",
 	display: "grid",
-	gap: "1rem",
-	padding: "1.25rem 1.35rem",
+	gap: "var(--jh-space-gap)",
+	padding: "var(--jh-space-padding-lg) var(--jh-space-padding-lg)",
 };
 
 const cardGridStyle: CSSProperties = {
 	display: "grid",
-	gap: "0.95rem",
+	gap: "var(--jh-space-padding-sm)",
 	gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))",
 };
 
 const cardStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.76)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.2rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	minHeight: "100%",
-	padding: "0.95rem 1rem",
+	padding: "var(--jh-space-padding-sm) var(--jh-space-padding)",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	fontSize: "0.95rem",
 	fontWeight: 700,
 	minWidth: "12rem",
-	padding: "0.8rem 1rem",
+	padding: "var(--jh-space-2) var(--jh-space-gap)",
 };
 
 function formatTimestamp(value: string | null): string {
@@ -78,44 +76,44 @@ function getStatusTone(status: OperatorShellStartupStatus): {
 	switch (status) {
 		case "ready":
 			return {
-				accent: "#166534",
-				background: "#dcfce7",
+				accent: "var(--jh-color-status-ready-fg)",
+				background: "var(--jh-color-status-ready-bg)",
 				label: "Ready",
 			};
 		case "missing-prerequisites":
 			return {
-				accent: "#9a3412",
-				background: "#ffedd5",
+				accent: "var(--jh-color-status-setup-fg)",
+				background: "var(--jh-color-status-setup-bg)",
 				label: "Setup required",
 			};
 		case "runtime-error":
 			return {
-				accent: "#991b1b",
-				background: "#fee2e2",
+				accent: "var(--jh-color-status-error-fg)",
+				background: "var(--jh-color-status-error-bg)",
 				label: "Runtime blocked",
 			};
 		case "auth-required":
 			return {
-				accent: "#1d4ed8",
-				background: "#dbeafe",
+				accent: "var(--jh-color-status-auth-fg)",
+				background: "var(--jh-color-status-auth-bg)",
 				label: "Auth required",
 			};
 		case "expired-auth":
 			return {
-				accent: "#7c2d12",
-				background: "#fed7aa",
+				accent: "var(--jh-color-status-expired-fg)",
+				background: "var(--jh-color-status-expired-bg)",
 				label: "Auth expired",
 			};
 		case "invalid-auth":
 			return {
-				accent: "#7c2d12",
-				background: "#ffedd5",
+				accent: "var(--jh-color-status-expired-fg)",
+				background: "var(--jh-color-status-setup-bg)",
 				label: "Auth invalid",
 			};
 		case "prompt-failure":
 			return {
-				accent: "#7c3aed",
-				background: "#ede9fe",
+				accent: "var(--jh-color-status-prompt-fg)",
+				background: "var(--jh-color-status-prompt-bg)",
 				label: "Prompt issue",
 			};
 	}
@@ -143,7 +141,7 @@ function getFallbackSummary(status: OperatorShellViewStatus): {
 			};
 		default:
 			return {
-				body: "Refresh to request the first operator-shell summary payload.",
+				body: "Refresh to request the first operator-shell summary.",
 				title: "Waiting for shell summary",
 			};
 	}
@@ -168,14 +166,14 @@ export function StatusStrip({
 						alignItems: "center",
 						display: "flex",
 						flexWrap: "wrap",
-						gap: "1rem",
+						gap: "var(--jh-space-gap)",
 						justifyContent: "space-between",
 					}}
 				>
 					<div>
 						<p
 							style={{
-								color: "#7c2d12",
+								color: "var(--jh-color-label-fg)",
 								letterSpacing: "0.08em",
 								marginBottom: "0.45rem",
 								marginTop: 0,
@@ -187,7 +185,14 @@ export function StatusStrip({
 						<h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", margin: 0 }}>
 							{fallback.title}
 						</h1>
-						<p style={{ color: "#475569", marginBottom: 0 }}>{fallback.body}</p>
+						<p
+							style={{
+								color: "var(--jh-color-text-secondary)",
+								marginBottom: 0,
+							}}
+						>
+							{fallback.body}
+						</p>
 					</div>
 					<button
 						aria-label="Refresh operator shell summary"
@@ -207,8 +212,8 @@ export function StatusStrip({
 					<section
 						style={{
 							...cardStyle,
-							background: "#fff7ed",
-							borderColor: "#fed7aa",
+							background: "var(--jh-color-status-warning-bg)",
+							borderColor: "var(--jh-color-status-warning-border)",
 						}}
 					>
 						<h2 style={{ marginTop: 0 }}>Most recent client message</h2>
@@ -258,14 +263,14 @@ export function StatusStrip({
 					alignItems: "center",
 					display: "flex",
 					flexWrap: "wrap",
-					gap: "1rem",
+					gap: "var(--jh-space-gap)",
 					justifyContent: "space-between",
 				}}
 			>
 				<div>
 					<p
 						style={{
-							color: "#7c2d12",
+							color: "var(--jh-color-label-fg)",
 							letterSpacing: "0.08em",
 							marginBottom: "0.45rem",
 							marginTop: 0,
@@ -277,10 +282,21 @@ export function StatusStrip({
 					<h1 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", margin: 0 }}>
 						App-first operator home
 					</h1>
-					<p style={{ color: "#475569", marginBottom: "0.35rem" }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: "0.35rem",
+						}}
+					>
 						{summary.message}
 					</p>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						Last refreshed: {formatTimestamp(lastUpdatedAt)}
 					</p>
 				</div>
@@ -290,17 +306,17 @@ export function StatusStrip({
 						alignItems: "center",
 						display: "flex",
 						flexWrap: "wrap",
-						gap: "0.75rem",
+						gap: "var(--jh-space-3)",
 					}}
 				>
 					<span
 						style={{
 							background: tone.background,
-							borderRadius: "999px",
+							borderRadius: "var(--jh-radius-pill)",
 							color: tone.accent,
 							display: "inline-flex",
 							fontWeight: 700,
-							padding: "0.35rem 0.8rem",
+							padding: "var(--jh-space-1) var(--jh-space-2)",
 						}}
 					>
 						{tone.label}
@@ -324,8 +340,14 @@ export function StatusStrip({
 				<section
 					style={{
 						...cardStyle,
-						background: status === "offline" ? "#fef3c7" : "#fee2e2",
-						borderColor: status === "offline" ? "#fcd34d" : "#fecaca",
+						background:
+							status === "offline"
+								? "var(--jh-color-status-offline-bg)"
+								: "var(--jh-color-status-error-bg)",
+						borderColor:
+							status === "offline"
+								? "var(--jh-color-status-offline-border)"
+								: "var(--jh-color-status-error-border)",
 					}}
 				>
 					<h2 style={{ marginTop: 0 }}>
@@ -343,13 +365,19 @@ export function StatusStrip({
 			<div style={cardGridStyle}>
 				<article style={cardStyle}>
 					<p
-						style={{ color: "#64748b", marginBottom: "0.35rem", marginTop: 0 }}
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: "0.35rem",
+							marginTop: 0,
+						}}
 					>
 						Home readiness
 					</p>
 					<h2 style={{ marginBottom: "0.4rem", marginTop: 0 }}>{tone.label}</h2>
 					<p style={{ marginBottom: "0.35rem" }}>{summary.health.message}</p>
-					<p style={{ color: "#475569", marginBottom: 0 }}>
+					<p
+						style={{ color: "var(--jh-color-text-secondary)", marginBottom: 0 }}
+					>
 						Missing: onboarding {summary.health.missing.onboarding}, optional{" "}
 						{summary.health.missing.optional}, runtime{" "}
 						{summary.health.missing.runtime}
@@ -358,7 +386,11 @@ export function StatusStrip({
 
 				<article style={cardStyle}>
 					<p
-						style={{ color: "#64748b", marginBottom: "0.35rem", marginTop: 0 }}
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: "0.35rem",
+							marginTop: 0,
+						}}
 					>
 						Daily path
 					</p>
@@ -369,17 +401,23 @@ export function StatusStrip({
 					</h2>
 					<p style={{ marginBottom: "0.35rem" }}>
 						{summary.activity.activeSession
-							? `Session ${summary.activity.activeSession.sessionId} is ${summary.activity.activeSession.status}.`
-							: "No running or waiting runtime session is attached to the app-owned daily path right now."}
+							? `Run ${summary.activity.activeSession.sessionId} is ${summary.activity.activeSession.status}.`
+							: "No running or waiting runtime is attached to the daily path right now."}
 					</p>
-					<p style={{ color: "#475569", marginBottom: 0 }}>
-						Active sessions: {summary.activity.activeSessionCount}
+					<p
+						style={{ color: "var(--jh-color-text-secondary)", marginBottom: 0 }}
+					>
+						Active runs: {summary.activity.activeSessionCount}
 					</p>
 				</article>
 
 				<article style={cardStyle}>
 					<p
-						style={{ color: "#64748b", marginBottom: "0.35rem", marginTop: 0 }}
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: "0.35rem",
+							marginTop: 0,
+						}}
 					>
 						Approvals
 					</p>
@@ -387,7 +425,9 @@ export function StatusStrip({
 						{approvalHeading}
 					</h2>
 					<p style={{ marginBottom: "0.35rem" }}>{approvalBody}</p>
-					<p style={{ color: "#475569", marginBottom: 0 }}>
+					<p
+						style={{ color: "var(--jh-color-text-secondary)", marginBottom: 0 }}
+					>
 						{approvalFocus
 							? "Open the inbox to review live approvals or interrupted runs."
 							: "Approval badge is kept live in the left rail."}
@@ -409,9 +449,13 @@ export function StatusStrip({
 
 				<article style={cardStyle}>
 					<p
-						style={{ color: "#64748b", marginBottom: "0.35rem", marginTop: 0 }}
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: "0.35rem",
+							marginTop: 0,
+						}}
 					>
-						Current spec session
+						Active build
 					</p>
 					<h2 style={{ marginBottom: "0.4rem", marginTop: 0 }}>
 						{summary.currentSession.id}
@@ -419,7 +463,9 @@ export function StatusStrip({
 					<p style={{ marginBottom: "0.35rem" }}>
 						Package: {summary.currentSession.packagePath ?? "cross-cutting"}
 					</p>
-					<p style={{ color: "#475569", marginBottom: 0 }}>
+					<p
+						style={{ color: "var(--jh-color-text-secondary)", marginBottom: 0 }}
+					>
 						Recent failures: {summary.activity.recentFailureCount}
 					</p>
 				</article>

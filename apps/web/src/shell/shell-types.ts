@@ -26,94 +26,94 @@ export type ShellSurfaceDefinition = {
 export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 	{
 		description:
-			"Land on one bounded operator-home surface for readiness, approvals, closeout, artifacts, and maintenance guidance.",
+			"Readiness overview, approvals, closeout, artifacts, and maintenance guidance.",
 		id: "home",
 		label: "Home",
-		owner: "Session 06",
+		owner: "S06",
 	},
 	{
 		description:
-			"Read the canonical startup diagnostics and keep workspace readiness visible.",
+			"Read the startup diagnostics and keep workspace readiness visible.",
 		id: "startup",
 		label: "Startup",
-		owner: "Session 01",
+		owner: "S01",
 	},
 	{
 		description:
-			"Host the chat console and session resume workflow without rebuilding shell chrome.",
+			"Chat console and run-resume workflow without rebuilding shell chrome.",
 		id: "chat",
 		label: "Chat",
-		owner: "Session 02",
+		owner: "S02",
 	},
 	{
 		description:
-			"Launch, resume, and inspect specialist workflows from one shared workspace surface.",
+			"Launch, resume, and inspect specialist workflows from one shared workspace.",
 		id: "workflows",
 		label: "Workflows",
-		owner: "Phase 06",
+		owner: "P06",
 	},
 	{
 		description:
 			"Launch scan runs, review shortlist candidates, and hand selected roles into evaluation or batch flow.",
 		id: "scan",
 		label: "Scan",
-		owner: "Phase 05",
+		owner: "P05",
 	},
 	{
 		description:
 			"Supervise batch draft state, run progress, retry paths, and closeout handoffs from one bounded workspace.",
 		id: "batch",
 		label: "Batch",
-		owner: "Phase 05",
+		owner: "P05",
 	},
 	{
 		description:
-			"Review staged application-help drafts, approval pauses, and artifact handoffs without opening a second browser workflow path.",
+			"Review staged application-help drafts, approval pauses, and artifact handoffs.",
 		id: "application-help",
 		label: "Apply",
-		owner: "Phase 05",
+		owner: "P05",
 	},
 	{
 		description:
 			"Review shortlist context plus pending and processed queue rows with bounded detail and report handoff.",
 		id: "pipeline",
 		label: "Pipeline",
-		owner: "Phase 04",
+		owner: "P04",
 	},
 	{
 		description:
-			"Review tracker rows, pending TSV additions, and canonical maintenance actions inside one bounded workspace.",
+			"Review tracker rows, pending TSV additions, and maintenance actions inside one bounded workspace.",
 		id: "tracker",
 		label: "Tracker",
-		owner: "Phase 04",
+		owner: "P04",
 	},
 	{
 		description:
-			"Review checked-in reports and browse recent report or PDF artifacts in one read-only shell surface.",
+			"Review checked-in reports and browse recent report or PDF artifacts in read-only mode.",
 		id: "artifacts",
 		label: "Artifacts",
-		owner: "Phase 04",
+		owner: "P04",
 	},
 	{
 		description:
 			"Guide prerequisite repair and first-run setup when onboarding files are missing.",
 		id: "onboarding",
 		label: "Onboarding",
-		owner: "Session 03",
+		owner: "S03",
 	},
 	{
 		description:
-			"Surface human review work with a stable inbox and shared runtime context.",
+			"Review human decisions with a stable inbox and shared runtime context.",
 		id: "approvals",
 		label: "Approvals",
-		owner: "Session 04",
+		owner: "S04",
 	},
 	{
 		description:
-			"Keep maintenance, auth, and environment review in one stable shell surface.",
+			"Maintenance, auth, and environment review in one stable workspace.",
 		id: "settings",
 		label: "Settings",
-		owner: "Session 05",
+		owner: "S05",
 	},
 ] as const;
 

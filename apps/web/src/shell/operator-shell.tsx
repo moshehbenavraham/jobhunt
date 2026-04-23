@@ -34,53 +34,50 @@ import { useOperatorHome } from "./use-operator-home";
 import { useOperatorShell } from "./use-operator-shell";
 
 const pageStyle: CSSProperties = {
-	background:
-		"radial-gradient(circle at top left, #fff7ed 0%, #f8fafc 38%, #f5f3ff 100%)",
-	color: "#0f172a",
-	fontFamily: '"Avenir Next", "Trebuchet MS", "Gill Sans", sans-serif',
+	background: "var(--jh-color-shell-bg)",
+	color: "var(--jh-color-text-primary)",
 	lineHeight: 1.6,
 	minHeight: "100vh",
-	padding: "1.2rem 1rem 2rem",
+	padding: "var(--jh-space-padding) var(--jh-space-gap) var(--jh-space-8)",
 };
 
 const frameStyle: CSSProperties = {
 	display: "grid",
-	gap: "1rem",
+	gap: "var(--jh-zone-gap)",
 	margin: "0 auto",
-	maxWidth: "88rem",
+	maxWidth: "var(--jh-frame-max-width)",
 };
 
 const shellBodyStyle: CSSProperties = {
 	alignItems: "start",
 	display: "flex",
 	flexWrap: "wrap",
-	gap: "1rem",
+	gap: "var(--jh-zone-gap)",
 };
 
 const railWrapperStyle: CSSProperties = {
-	flex: "1 1 18rem",
-	minWidth: "16rem",
+	flex: "1 1 var(--jh-zone-rail-width)",
+	minWidth: "var(--jh-zone-rail-min-width)",
 };
 
 const surfaceWrapperStyle: CSSProperties = {
-	flex: "999 1 42rem",
-	minWidth: "18rem",
+	flex: "999 1 var(--jh-zone-canvas-min-width)",
+	minWidth: "var(--jh-zone-rail-width)",
 };
 
 const surfaceCardStyle: CSSProperties = {
-	backdropFilter: "blur(16px)",
-	background: "rgba(255, 255, 255, 0.84)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1.6rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-xl)",
 	minHeight: "100%",
-	padding: "1.15rem",
+	padding: "var(--jh-space-padding)",
 };
 
 const startupNoticeStyle: CSSProperties = {
-	background: "#fff7ed",
-	border: "1px solid #fed7aa",
-	borderRadius: "1.1rem",
-	padding: "0.95rem 1rem",
+	background: "var(--jh-color-status-warning-bg)",
+	border: "var(--jh-border-width) solid var(--jh-color-status-warning-border)",
+	borderRadius: "var(--jh-radius-lg)",
+	padding: "var(--jh-space-padding-sm) var(--jh-space-padding)",
 };
 
 function renderStartupNotice(
@@ -106,14 +103,14 @@ function renderStartupNotice(
 				<section
 					style={{
 						...startupNoticeStyle,
-						background: "#dbeafe",
-						borderColor: "#bfdbfe",
+						background: "var(--jh-color-status-auth-bg)",
+						borderColor: "var(--jh-color-badge-info-bg)",
 					}}
 				>
 					<h2 style={{ marginTop: 0 }}>Agent runtime is not ready</h2>
 					<p style={{ marginBottom: 0 }}>
 						{message ??
-							"The startup contract loaded, but agent runtime readiness still needs attention."}
+							"The startup check loaded, but agent runtime readiness still needs attention."}
 					</p>
 				</section>
 			);
@@ -122,8 +119,8 @@ function renderStartupNotice(
 				<section
 					style={{
 						...startupNoticeStyle,
-						background: "#fee2e2",
-						borderColor: "#fecaca",
+						background: "var(--jh-color-status-error-bg)",
+						borderColor: "var(--jh-color-status-error-border)",
 					}}
 				>
 					<h2 style={{ marginTop: 0 }}>Runtime blockers detected</h2>
@@ -150,7 +147,7 @@ function renderStartupSurface(
 			<section style={startupNoticeStyle}>
 				<h2 style={{ marginTop: 0 }}>Waiting for startup diagnostics</h2>
 				<p style={{ marginBottom: 0 }}>
-					Refresh to request the first startup payload from the API.
+					Refresh to request the first startup readiness check from the API.
 				</p>
 			</section>
 		);
@@ -161,8 +158,8 @@ function renderStartupSurface(
 			<section style={startupNoticeStyle}>
 				<h2 style={{ marginTop: 0 }}>Checking startup readiness</h2>
 				<p style={{ marginBottom: 0 }}>
-					Reading the repo boundary, prompt contract, and operational-store
-					surface from the API.
+					Reading the repo boundary, prompt readiness, and operational-store
+					status from the API.
 				</p>
 			</section>
 		);
@@ -185,14 +182,14 @@ function renderStartupSurface(
 			<section
 				style={{
 					...startupNoticeStyle,
-					background: "#fee2e2",
-					borderColor: "#fecaca",
+					background: "var(--jh-color-status-error-bg)",
+					borderColor: "var(--jh-color-status-error-border)",
 				}}
 			>
 				<h2 style={{ marginTop: 0 }}>Startup diagnostics failed</h2>
 				<p style={{ marginBottom: 0 }}>
 					{startup.error?.message ??
-						"The startup contract failed before diagnostics could load."}
+						"The startup check failed before diagnostics could load."}
 				</p>
 			</section>
 		);
@@ -203,28 +200,27 @@ function renderStartupSurface(
 			aria-labelledby="surface-title-startup"
 			style={{
 				display: "grid",
-				gap: "1rem",
+				gap: "var(--jh-zone-gap)",
 			}}
 		>
 			<header style={surfaceCardStyle}>
 				<p
 					style={{
-						color: "#7c2d12",
+						color: "var(--jh-color-label-fg)",
 						letterSpacing: "0.08em",
 						marginBottom: "0.5rem",
 						marginTop: 0,
 						textTransform: "uppercase",
 					}}
 				>
-					Session 01
+					Build 01
 				</p>
 				<h2 id="surface-title-startup" style={{ marginBottom: "0.45rem" }}>
-					Canonical startup surface
+					Startup diagnostics
 				</h2>
-				<p style={{ color: "#475569", marginBottom: 0 }}>
-					The startup diagnostics contract remains the source of truth for
-					readiness. The shell wraps it without changing ownership or mutating
-					the workspace.
+				<p style={{ color: "var(--jh-color-text-secondary)", marginBottom: 0 }}>
+					The startup diagnostics remain the source of truth for readiness. The
+					shell wraps it without changing ownership or mutating the workspace.
 				</p>
 			</header>
 
@@ -246,13 +242,13 @@ function renderStartupSurface(
 				<section
 					style={{
 						...startupNoticeStyle,
-						background: "#fee2e2",
-						borderColor: "#fecaca",
+						background: "var(--jh-color-status-error-bg)",
+						borderColor: "var(--jh-color-status-error-border)",
 					}}
 				>
-					<h2 style={{ marginTop: 0 }}>Startup contract error</h2>
+					<h2 style={{ marginTop: 0 }}>Startup readiness error</h2>
 					<p style={{ marginBottom: 0 }}>
-						Runtime blockers were detected in the checked-in repo contract.
+						Runtime blockers were detected in the checked-in repo configuration.
 					</p>
 				</section>
 			) : null}

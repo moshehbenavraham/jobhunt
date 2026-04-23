@@ -1,0 +1,25 @@
+/* layout.css -- layout zone custom properties for the three-zone shell
+   Values only; media queries and grid application deferred to session 03 */
+
+:root {
+  /* Zone widths */
+  --jh-zone-rail-width: 18rem;
+  --jh-zone-rail-min-width: 16rem;
+  --jh-zone-canvas-min-width: 42rem;
+  --jh-zone-evidence-rail-width: 22rem;
+
+  /* Zone gaps */
+  --jh-zone-gap: var(--jh-space-gap);
+  --jh-zone-section-gap: var(--jh-space-section-gap);
+
+  /* Frame */
+  --jh-frame-max-width: 88rem;
+  --jh-frame-padding-x: var(--jh-space-gap);
+  --jh-frame-padding-y: var(--jh-space-6);
+
+  /* Breakpoints (reference values for JS or future media queries) */
+  --jh-bp-mobile: 768px;
+  --jh-bp-tablet: 1200px;
+  --jh-bp-desktop: 1200px;
+  --jh-bp-wide: 1600px;
+}

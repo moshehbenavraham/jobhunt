@@ -1,0 +1,57 @@
+/* base.css -- CSS reset and body defaults consuming design tokens */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+:root {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--jh-color-shell-bg);
+  color: var(--jh-color-text-primary);
+  font-family:
+    'IBM Plex Sans', 'Avenir Next', 'Trebuchet MS', 'Gill Sans', sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
