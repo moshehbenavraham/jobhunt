@@ -4,7 +4,7 @@
 **Sessions**: 7
 **Estimated Duration**: 14-28 days
 
-**Progress**: 2/7 sessions (29%)
+**Progress**: 3/7 sessions (43%)
 
 ---
 
@@ -27,7 +27,7 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
 | ------- | --------------------------------------- | ----------- | ---------- | ---------- |
 | 01      | Evaluation Console and Run Flow         | Complete    | 20         | 2026-04-23 |
 | 02      | Artifact Handoff and Evidence Rail      | Complete    | 20         | 2026-04-23 |
-| 03      | Report Viewer                           | Not Started | ~18        | -          |
+| 03      | Report Viewer                           | Complete    | 20         | 2026-04-23 |
 | 04      | Pipeline Review                         | Not Started | ~18        | -          |
 | 05      | Tracker and Scan Surfaces               | Not Started | ~20        | -          |
 | 06      | Batch and Specialist Surfaces           | Not Started | ~20        | -          |
@@ -51,11 +51,21 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
   - Evidence rail wired for contextual artifact content
   - 20/20 tasks, TS 0 errors, Vite build clean (147 modules)
 
+- **Session 03: Report Viewer** -- completed 2026-04-23
+  - Report viewer rebuilt as wide-column long-form reader with mineral paper reading surface
+  - Sticky metadata rail (score, legitimacy, company, role, date, warnings, linked PDF)
+  - Table-of-contents section markers with click-to-scroll navigation and active highlight
+  - Real /reports/:reportId route with ReportPage component
+  - Artifact action shelf (refresh, download PDF, tracker, re-evaluate, browse artifacts)
+  - Full token migration (zero inline hex/RGB), all banned terms purged
+  - 3-tier responsive layout (mobile/desktop/wide)
+  - 20/20 tasks, 8/8 tests, TS 0 errors, Vite build clean (153 modules)
+
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Report Viewer
+- Session 04: Pipeline Review
 
 ---
 

@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router";
+import { createBrowserRouter } from "react-router";
 import { ApplyPage } from "./pages/apply-page";
 import { ApprovalsPage } from "./pages/approvals-page";
 import { ArtifactsPage } from "./pages/artifacts-page";
@@ -8,6 +8,7 @@ import { HomePage } from "./pages/home-page";
 import { NotFoundPage } from "./pages/not-found-page";
 import { OnboardingPage } from "./pages/onboarding-page";
 import { PipelinePage } from "./pages/pipeline-page";
+import { ReportPage } from "./pages/report-page";
 import { RunDetailPage } from "./pages/run-detail-page";
 import { ScanPage } from "./pages/scan-page";
 import { SettingsPage } from "./pages/settings-page";
@@ -75,10 +76,7 @@ export const router = createBrowserRouter([
 			{ path: "approvals", Component: ApprovalsPage },
 			{ path: "settings", Component: SettingsPage },
 			{ path: "runs/:runId", Component: RunDetailPage },
-			{
-				path: "reports/:reportId",
-				element: <Navigate to="/artifacts" replace />,
-			},
+			{ path: "reports/:reportId", Component: ReportPage },
 			{ path: "*", Component: NotFoundPage },
 		],
 	},

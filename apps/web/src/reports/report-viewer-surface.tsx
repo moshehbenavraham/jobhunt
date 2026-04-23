@@ -1,53 +1,135 @@
-import type { CSSProperties } from "react";
+import { type CSSProperties, useCallback, useRef, useState } from "react";
+import type { TocEntry } from "./extract-sections";
+import { ReportActionShelf } from "./report-action-shelf";
+import { ReportMetadataRail } from "./report-metadata-rail";
+import { ReportReadingColumn } from "./report-reading-column";
+import { ReportToc } from "./report-toc";
 import {
 	REPORT_VIEWER_ARTIFACT_GROUPS,
 	type ReportViewerArtifactGroup,
 } from "./report-viewer-types";
 import { useReportViewer } from "./use-report-viewer";
 
+type ReportViewerSurfaceProps = {
+	initialReportPath?: string | null;
+};
+
+/* ----------------------------------------------------------------
+   Token-only styles
+   ---------------------------------------------------------------- */
+
 const surfaceStyle: CSSProperties = {
 	display: "grid",
-	gap: "1rem",
+	fontFamily: "var(--jh-font-body)",
+	gap: "var(--jh-space-4)",
+};
+
+const desktopLayoutStyle: CSSProperties = {
+	display: "grid",
+	gap: "var(--jh-space-4)",
+	gridTemplateColumns: "minmax(0, 1fr) 16rem",
+};
+
+const wideLayoutStyle: CSSProperties = {
+	display: "grid",
+	gap: "var(--jh-space-4)",
+	gridTemplateColumns: "12rem minmax(0, 1fr) 18rem",
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.4rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
-	gap: "0.9rem",
-	padding: "1rem",
-};
-
-const twoColumnStyle: CSSProperties = {
-	display: "grid",
-	gap: "1rem",
-	gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 20rem), 1fr))",
+	gap: "var(--jh-space-3)",
+	padding: "var(--jh-space-padding)",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
-	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	background: "var(--jh-color-button-bg)",
+	border: "none",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
-	font: "inherit",
-	fontWeight: 700,
+	fontFamily: "var(--jh-font-body)",
+	fontSize: "var(--jh-text-body-sm-size)",
+	fontWeight: "var(--jh-font-weight-bold)",
 	minHeight: "2.4rem",
-	padding: "0.55rem 0.9rem",
+	padding: "var(--jh-space-2) var(--jh-space-4)",
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.28)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-text-primary)",
 	cursor: "pointer",
-	font: "inherit",
-	fontWeight: 600,
+	fontFamily: "var(--jh-font-body)",
+	fontSize: "var(--jh-text-body-sm-size)",
+	fontWeight: "var(--jh-font-weight-semibold)",
 	minHeight: "2.2rem",
-	padding: "0.45rem 0.8rem",
+	padding: "var(--jh-space-1) var(--jh-space-3)",
 };
+
+const headingStyle: CSSProperties = {
+	fontFamily: "var(--jh-font-heading)",
+	fontSize: "var(--jh-text-h2-size)",
+	fontWeight: "var(--jh-text-h2-weight)",
+	letterSpacing: "var(--jh-text-h2-letter-spacing)",
+	lineHeight: "var(--jh-text-h2-line-height)",
+	margin: 0,
+};
+
+const h3Style: CSSProperties = {
+	fontFamily: "var(--jh-font-heading)",
+	fontSize: "var(--jh-text-h3-size)",
+	fontWeight: "var(--jh-text-h3-weight)",
+	letterSpacing: "var(--jh-text-h3-letter-spacing)",
+	lineHeight: "var(--jh-text-h3-line-height)",
+	margin: 0,
+};
+
+const bodyStyle: CSSProperties = {
+	color: "var(--jh-color-text-primary)",
+	fontFamily: "var(--jh-font-body)",
+	fontSize: "var(--jh-text-body-size)",
+	lineHeight: "var(--jh-text-body-line-height)",
+	margin: 0,
+};
+
+const bodyMutedStyle: CSSProperties = {
+	...bodyStyle,
+	color: "var(--jh-color-text-muted)",
+};
+
+const bodySecondaryStyle: CSSProperties = {
+	...bodyStyle,
+	color: "var(--jh-color-text-secondary)",
+};
+
+const labelSmStyle: CSSProperties = {
+	color: "var(--jh-color-text-muted)",
+	fontSize: "var(--jh-text-caption-size)",
+	fontWeight: "var(--jh-text-label-weight)",
+	letterSpacing: "var(--jh-text-label-letter-spacing)",
+	margin: 0,
+	textTransform: "uppercase",
+};
+
+const kindChipStyle: CSSProperties = {
+	borderRadius: "var(--jh-radius-pill)",
+	fontSize: "var(--jh-text-label-sm-size)",
+	fontWeight: "var(--jh-text-label-sm-weight)",
+	letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
+	lineHeight: 1,
+	padding: "var(--jh-space-1) var(--jh-space-3)",
+	textTransform: "uppercase",
+	whiteSpace: "nowrap",
+};
+
+/* ----------------------------------------------------------------
+   Helpers
+   ---------------------------------------------------------------- */
 
 function formatTimestamp(value: string | null): string {
 	if (!value) {
@@ -66,7 +148,7 @@ function formatTimestamp(value: string | null): string {
 function getGroupLabel(group: ReportViewerArtifactGroup): string {
 	switch (group) {
 		case "all":
-			return "All artifacts";
+			return "All";
 		case "output":
 			return "PDFs";
 		case "reports":
@@ -74,65 +156,107 @@ function getGroupLabel(group: ReportViewerArtifactGroup): string {
 	}
 }
 
-function getSelectionTone(origin: "latest" | "none" | "selected") {
-	switch (origin) {
-		case "latest":
-			return {
-				background: "#dbeafe",
-				color: "#1d4ed8",
-				label: "Latest fallback",
-			};
-		case "selected":
-			return {
-				background: "#dcfce7",
-				color: "#166534",
-				label: "Selected report",
-			};
-		case "none":
-			return {
-				background: "#e2e8f0",
-				color: "#475569",
-				label: "No report selected",
-			};
-	}
+function getReadingStatus(
+	viewerStatus: string,
+	selectedState: string,
+): "empty" | "error" | "loading" | "missing" | "offline" | "ready" {
+	if (viewerStatus === "loading") return "loading";
+	if (viewerStatus === "offline") return "offline";
+	if (viewerStatus === "error") return "error";
+	if (selectedState === "missing") return "missing";
+	if (selectedState === "empty") return "empty";
+	return "ready";
 }
 
-function getEmptyState(input: {
-	error: string | null;
-	status: ReturnType<typeof useReportViewer>["state"]["status"];
-}) {
+function getMetadataStatus(
+	viewerStatus: string,
+): "empty" | "error" | "loading" | "offline" | "ready" {
+	if (viewerStatus === "loading") return "loading";
+	if (viewerStatus === "offline") return "offline";
+	if (viewerStatus === "error") return "error";
+	return "ready";
+}
+
+function useViewportTier(): "mobile" | "tablet" | "desktop" | "wide" {
+	const [tier, setTier] = useState<"mobile" | "tablet" | "desktop" | "wide">(
+		() => classifyWidth(window.innerWidth),
+	);
+
+	const classify = useCallback(() => {
+		setTier(classifyWidth(window.innerWidth));
+	}, []);
+
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	if (typeof window !== "undefined") {
+		// Intentionally using a passive listener pattern
+		window.addEventListener("resize", classify, { passive: true });
+	}
+
+	return tier;
+}
+
+function classifyWidth(
+	width: number,
+): "mobile" | "tablet" | "desktop" | "wide" {
+	if (width < 768) return "mobile";
+	if (width < 1200) return "tablet";
+	if (width < 1600) return "desktop";
+	return "wide";
+}
+
+/* ----------------------------------------------------------------
+   Empty / error / offline state rendering
+   ---------------------------------------------------------------- */
+
+function getEmptyState(input: { error: string | null; status: string }) {
 	switch (input.status) {
 		case "loading":
 			return {
-				body: "Reading the bounded report-viewer summary and recent artifact browser from the API.",
-				title: "Loading artifact review",
+				body: "Loading reports and recent files...",
+				title: "Loading",
 			};
 		case "offline":
 			return {
 				body:
 					input.error ??
-					"The report-viewer endpoint is offline, so artifact review cannot refresh.",
-				title: "Artifact review offline",
+					"The server is unreachable. Check your connection and try again.",
+				title: "Offline",
 			};
 		case "error":
 			return {
 				body:
 					input.error ??
-					"The report-viewer payload could not be parsed into the artifact review surface.",
-				title: "Artifact review unavailable",
+					"Something went wrong loading the report data. Try refreshing.",
+				title: "Unable to load reports",
 			};
 		default:
 			return {
-				body: "Open a report from chat or browse recent report artifacts once they exist in the workspace.",
-				title: "No artifact review payload yet",
+				body: "Open a report from an evaluation or browse recent files once they exist in the workspace.",
+				title: "No reports yet",
 			};
 	}
 }
 
-export function ReportViewerSurface() {
-	const viewer = useReportViewer();
-	const payload = viewer.state.data;
+/* ----------------------------------------------------------------
+   Component
+   ---------------------------------------------------------------- */
 
+export function ReportViewerSurface({
+	initialReportPath,
+}: ReportViewerSurfaceProps = {}) {
+	const viewer = useReportViewer(
+		initialReportPath ? { initialReportPath } : undefined,
+	);
+	const payload = viewer.state.data;
+	const scrollContainerRef = useRef<HTMLElement | null>(null);
+	const [tocEntries, setTocEntries] = useState<TocEntry[]>([]);
+	const viewportTier = useViewportTier();
+
+	const handleSectionsExtracted = useCallback((entries: TocEntry[]) => {
+		setTocEntries(entries);
+	}, []);
+
+	/* ---- No data yet ---- */
 	if (!payload) {
 		const emptyState = getEmptyState({
 			error: viewer.state.error?.message ?? null,
@@ -143,89 +267,90 @@ export function ReportViewerSurface() {
 			<section aria-labelledby="report-viewer-title" style={surfaceStyle}>
 				<section style={panelStyle}>
 					<header>
-						<p
-							style={{
-								color: "#475569",
-								letterSpacing: "0.08em",
-								marginBottom: "0.35rem",
-								marginTop: 0,
-								textTransform: "uppercase",
-							}}
-						>
-							Session 03
-						</p>
-						<h2 id="report-viewer-title" style={{ marginBottom: "0.35rem" }}>
-							Artifact review surface
+						<h2 id="report-viewer-title" style={headingStyle}>
+							Reports
 						</h2>
-						<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-							Open checked-in reports, inspect header metadata, and browse
-							recent report or PDF artifacts without leaving the shell.
+						<p style={bodyMutedStyle}>
+							Read evaluation reports, inspect metadata, and browse recent
+							files.
 						</p>
 					</header>
 
 					<section
 						style={{
-							background: "rgba(248, 250, 252, 0.9)",
-							border: "1px solid rgba(148, 163, 184, 0.2)",
-							borderRadius: "1rem",
-							padding: "0.95rem",
+							background: "var(--jh-color-report-reading-bg)",
+							border: "var(--jh-border-subtle)",
+							borderRadius: "var(--jh-radius-md)",
+							padding: "var(--jh-space-padding)",
 						}}
 					>
-						<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
+						<h3 style={{ ...h3Style, marginBottom: "var(--jh-space-1)" }}>
 							{emptyState.title}
 						</h3>
-						<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
-							{emptyState.body}
-						</p>
+						<p style={bodySecondaryStyle}>{emptyState.body}</p>
 					</section>
 				</section>
 			</section>
 		);
 	}
 
+	/* ---- Derived state ---- */
 	const selectedReport = payload.selectedReport;
 	const recentArtifacts = payload.recentArtifacts;
 	const visibleRangeStart =
 		recentArtifacts.totalCount === 0 ? 0 : recentArtifacts.offset + 1;
 	const visibleRangeEnd = recentArtifacts.offset + recentArtifacts.items.length;
 
-	const selectionTone = getSelectionTone(selectedReport.origin);
+	const hasSelectedReport =
+		selectedReport.state === "ready" && selectedReport.header !== null;
+
+	const readingStatus = getReadingStatus(
+		viewer.state.status,
+		selectedReport.state,
+	);
+	const metadataStatus = getMetadataStatus(viewer.state.status);
+
+	/* ---- Layout selection ---- */
+	const isMobile = viewportTier === "mobile";
+	const isWide = viewportTier === "wide";
+	const showTocSidebar = isWide && tocEntries.length > 0 && hasSelectedReport;
+
+	const contentLayoutStyle = showTocSidebar
+		? wideLayoutStyle
+		: isMobile
+			? { display: "grid", gap: "var(--jh-space-4)" }
+			: desktopLayoutStyle;
 
 	return (
 		<section aria-labelledby="report-viewer-title" style={surfaceStyle}>
+			{/* Header bar */}
 			<section style={panelStyle}>
 				<header
 					style={{
 						alignItems: "start",
 						display: "flex",
 						flexWrap: "wrap",
-						gap: "0.9rem",
+						gap: "var(--jh-space-3)",
 						justifyContent: "space-between",
 					}}
 				>
 					<div>
-						<p
-							style={{
-								color: "#475569",
-								letterSpacing: "0.08em",
-								marginBottom: "0.35rem",
-								marginTop: 0,
-								textTransform: "uppercase",
-							}}
-						>
-							Session 03
-						</p>
-						<h2 id="report-viewer-title" style={{ marginBottom: "0.35rem" }}>
-							Artifact review surface
+						<h2 id="report-viewer-title" style={headingStyle}>
+							Reports
 						</h2>
-						<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-							{payload.message}
-						</p>
+						<p style={bodyMutedStyle}>{payload.message}</p>
 					</div>
 
-					<div style={{ display: "grid", gap: "0.55rem", justifyItems: "end" }}>
+					<div
+						style={{
+							alignItems: "end",
+							display: "grid",
+							gap: "var(--jh-space-2)",
+							justifyItems: "end",
+						}}
+					>
 						<button
-							aria-label="Refresh artifact review"
+							aria-label="Refresh reports"
 							disabled={viewer.state.isRefreshing}
 							onClick={() => viewer.refresh()}
 							style={{
@@ -236,540 +361,326 @@ export function ReportViewerSurface() {
 						>
 							Refresh
 						</button>
-						<span style={{ color: "#64748b", fontSize: "0.92rem" }}>
-							Last updated: {formatTimestamp(viewer.state.lastUpdatedAt)}
+						<span style={{ ...labelSmStyle, textTransform: "none" }}>
+							Updated: {formatTimestamp(viewer.state.lastUpdatedAt)}
 						</span>
 					</div>
 				</header>
 
+				{/* Offline / error banner */}
 				{(viewer.state.status === "offline" ||
 					viewer.state.status === "error") &&
 				viewer.state.error ? (
 					<section
 						style={{
 							background:
-								viewer.state.status === "offline" ? "#e2e8f0" : "#fee2e2",
-							border: `1px solid ${
-								viewer.state.status === "offline" ? "#cbd5e1" : "#fecaca"
+								viewer.state.status === "offline"
+									? "var(--jh-color-status-offline-bg)"
+									: "var(--jh-color-status-error-bg)",
+							border: `var(--jh-border-width) solid ${
+								viewer.state.status === "offline"
+									? "var(--jh-color-status-offline-border)"
+									: "var(--jh-color-status-error-border)"
 							}`,
-							borderRadius: "1rem",
-							padding: "0.85rem 0.9rem",
+							borderRadius: "var(--jh-radius-md)",
+							padding: "var(--jh-space-padding-sm) var(--jh-space-padding)",
 						}}
 					>
 						<p
-							style={{ fontWeight: 700, marginBottom: "0.25rem", marginTop: 0 }}
-						>
-							{viewer.state.status === "offline"
-								? "Showing the last artifact snapshot"
-								: "Artifact review warning"}
-						</p>
-						<p style={{ margin: 0 }}>{viewer.state.error.message}</p>
-					</section>
-				) : null}
-
-				<section style={panelStyle}>
-					<header
-						style={{
-							alignItems: "center",
-							display: "flex",
-							flexWrap: "wrap",
-							gap: "0.6rem",
-							justifyContent: "space-between",
-						}}
-					>
-						<div>
-							<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
-								Recent artifacts
-							</h3>
-							<p style={{ color: "#64748b", margin: 0 }}>
-								Browse recent report and PDF artifacts with explicit, bounded
-								pagination.
-							</p>
-						</div>
-
-						<div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-							{REPORT_VIEWER_ARTIFACT_GROUPS.map((group) => {
-								const selected = viewer.state.focus.group === group;
-
-								return (
-									<button
-										aria-label={`Show ${getGroupLabel(group)}`}
-										key={group}
-										onClick={() => viewer.selectGroup(group)}
-										style={{
-											...subtleButtonStyle,
-											background: selected
-												? "#0f172a"
-												: subtleButtonStyle.background,
-											color: selected ? "#f8fafc" : subtleButtonStyle.color,
-										}}
-										type="button"
-									>
-										{getGroupLabel(group)}
-									</button>
-								);
-							})}
-						</div>
-					</header>
-
-					<div
-						style={{
-							display: "grid",
-							gap: "0.75rem",
-						}}
-					>
-						{recentArtifacts.items.length === 0 ? (
-							<section
-								style={{
-									background: "rgba(248, 250, 252, 0.9)",
-									border: "1px solid rgba(148, 163, 184, 0.2)",
-									borderRadius: "1rem",
-									padding: "0.95rem",
-								}}
-							>
-								<p style={{ margin: 0 }}>
-									No {getGroupLabel(recentArtifacts.group).toLowerCase()} are
-									available in the current workspace view.
-								</p>
-							</section>
-						) : (
-							recentArtifacts.items.map((artifact) => {
-								const isReport = artifact.kind === "report";
-
-								return (
-									<article
-										key={artifact.repoRelativePath}
-										style={{
-											background: artifact.selected
-												? "rgba(219, 234, 254, 0.7)"
-												: "rgba(248, 250, 252, 0.9)",
-											border: artifact.selected
-												? "1px solid rgba(37, 99, 235, 0.35)"
-												: "1px solid rgba(148, 163, 184, 0.2)",
-											borderRadius: "1rem",
-											display: "grid",
-											gap: "0.55rem",
-											padding: "0.9rem",
-										}}
-									>
-										<div
-											style={{
-												alignItems: "center",
-												display: "flex",
-												flexWrap: "wrap",
-												gap: "0.5rem",
-												justifyContent: "space-between",
-											}}
-										>
-											<div>
-												<p
-													style={{
-														color: "#475569",
-														marginBottom: "0.2rem",
-														marginTop: 0,
-													}}
-												>
-													{artifact.fileName}
-												</p>
-												<p style={{ color: "#64748b", margin: 0 }}>
-													{artifact.repoRelativePath}
-												</p>
-											</div>
-											<span
-												style={{
-													background:
-														artifact.kind === "report" ? "#dbeafe" : "#fef3c7",
-													borderRadius: "999px",
-													color:
-														artifact.kind === "report" ? "#1d4ed8" : "#92400e",
-													fontSize: "0.82rem",
-													fontWeight: 700,
-													padding: "0.22rem 0.55rem",
-												}}
-											>
-												{artifact.kind === "report" ? "Report" : "PDF"}
-											</span>
-										</div>
-
-										<div
-											style={{
-												color: "#475569",
-												display: "flex",
-												flexWrap: "wrap",
-												gap: "0.8rem",
-											}}
-										>
-											<span>
-												Date: {artifact.artifactDate ?? "No embedded date"}
-											</span>
-											<span>
-												Report #: {artifact.reportNumber ?? "Not numbered"}
-											</span>
-										</div>
-
-										{isReport ? (
-											<button
-												aria-label={`Open report ${artifact.repoRelativePath}`}
-												onClick={() =>
-													viewer.selectReport(artifact.repoRelativePath)
-												}
-												style={buttonStyle}
-												type="button"
-											>
-												{artifact.selected ? "Selected report" : "Open report"}
-											</button>
-										) : (
-											<p style={{ color: "#64748b", margin: 0 }}>
-												PDF review stays read-only in the workspace for now. Use
-												the repo-relative path above when the PDF artifact is
-												needed.
-											</p>
-										)}
-									</article>
-								);
-							})
-						)}
-					</div>
-
-					<div
-						style={{
-							alignItems: "center",
-							display: "flex",
-							flexWrap: "wrap",
-							gap: "0.75rem",
-							justifyContent: "space-between",
-						}}
-					>
-						<p style={{ color: "#64748b", margin: 0 }}>
-							Showing {visibleRangeStart}-{visibleRangeEnd} of{" "}
-							{recentArtifacts.totalCount}
-						</p>
-						<div style={{ display: "flex", gap: "0.5rem" }}>
-							<button
-								aria-label="Previous artifact page"
-								disabled={recentArtifacts.offset === 0}
-								onClick={() => viewer.goToPreviousPage()}
-								style={{
-									...subtleButtonStyle,
-									opacity: recentArtifacts.offset === 0 ? 0.55 : 1,
-								}}
-								type="button"
-							>
-								Previous
-							</button>
-							<button
-								aria-label="Next artifact page"
-								disabled={!recentArtifacts.hasMore}
-								onClick={() => viewer.goToNextPage()}
-								style={{
-									...subtleButtonStyle,
-									opacity: recentArtifacts.hasMore ? 1 : 0.55,
-								}}
-								type="button"
-							>
-								Next
-							</button>
-						</div>
-					</div>
-				</section>
-
-				<section style={twoColumnStyle}>
-					<section style={panelStyle}>
-						<header
 							style={{
-								alignItems: "center",
-								display: "flex",
-								flexWrap: "wrap",
-								gap: "0.6rem",
-								justifyContent: "space-between",
+								...bodyStyle,
+								fontWeight: "var(--jh-font-weight-bold)",
+								marginBottom: "var(--jh-space-1)",
 							}}
 						>
-							<div>
-								<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
-									Selected report
-								</h3>
-								<p style={{ color: "#64748b", margin: 0 }}>
-									Review extracted header metadata before reading the markdown
-									body.
-								</p>
-							</div>
-							<span
-								style={{
-									...selectionTone,
-									borderRadius: "999px",
-									fontSize: "0.82rem",
-									fontWeight: 700,
-									padding: "0.25rem 0.6rem",
-								}}
-							>
-								{selectionTone.label}
-							</span>
-						</header>
+							{viewer.state.status === "offline"
+								? "Showing last available snapshot"
+								: "Warning"}
+						</p>
+						<p style={bodyStyle}>{viewer.state.error.message}</p>
+					</section>
+				) : null}
+			</section>
 
-						{selectedReport.state === "empty" ? (
-							<section
-								style={{
-									background: "rgba(248, 250, 252, 0.9)",
-									border: "1px solid rgba(148, 163, 184, 0.2)",
-									borderRadius: "1rem",
-									padding: "0.95rem",
-								}}
-							>
-								<p style={{ margin: 0 }}>{selectedReport.message}</p>
-							</section>
-						) : selectedReport.state === "missing" ? (
-							<section
-								style={{
-									background: "#ffedd5",
-									border: "1px solid #fed7aa",
-									borderRadius: "1rem",
-									display: "grid",
-									gap: "0.8rem",
-									padding: "0.95rem",
-								}}
-							>
-								<div>
-									<h4 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
-										Selected report is stale
-									</h4>
-									<p style={{ marginBottom: "0.35rem", marginTop: 0 }}>
-										{selectedReport.message}
-									</p>
-									<p style={{ color: "#7c2d12", margin: 0 }}>
-										Requested path:{" "}
-										{selectedReport.requestedRepoRelativePath ??
-											selectedReport.repoRelativePath ??
-											"Unknown"}
-									</p>
-								</div>
+			{/* Mobile metadata summary strip */}
+			{isMobile && hasSelectedReport ? (
+				<ReportMetadataRail
+					errorMessage={viewer.state.error?.message}
+					header={selectedReport.header}
+					repoRelativePath={selectedReport.repoRelativePath}
+					reportNumber={selectedReport.reportNumber}
+					status={metadataStatus}
+				/>
+			) : null}
 
-								<div
-									style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}
-								>
-									<button
-										aria-label="Follow the latest report"
-										onClick={() => viewer.followLatest()}
-										style={buttonStyle}
-										type="button"
-									>
-										Follow latest report
-									</button>
-								</div>
-							</section>
-						) : (
-							<div style={{ display: "grid", gap: "0.85rem" }}>
-								<section
+			{/* Action shelf */}
+			{hasSelectedReport ? (
+				<ReportActionShelf
+					header={selectedReport.header}
+					isRefreshing={viewer.state.isRefreshing}
+					onRefresh={() => viewer.refresh()}
+					repoRelativePath={selectedReport.repoRelativePath}
+				/>
+			) : null}
+
+			{/* Main content: TOC sidebar (wide) | reading column | metadata rail (desktop+) */}
+			<div style={contentLayoutStyle}>
+				{/* TOC sidebar -- wide viewports only */}
+				{showTocSidebar ? (
+					<ReportToc
+						entries={tocEntries}
+						scrollContainerRef={scrollContainerRef}
+					/>
+				) : null}
+
+				{/* Reading column */}
+				<ReportReadingColumn
+					body={selectedReport.body}
+					errorMessage={viewer.state.error?.message}
+					onSectionsExtracted={handleSectionsExtracted}
+					ref={scrollContainerRef}
+					status={readingStatus}
+				/>
+
+				{/* Metadata rail -- tablet+ */}
+				{!isMobile ? (
+					<ReportMetadataRail
+						errorMessage={viewer.state.error?.message}
+						header={selectedReport.header}
+						repoRelativePath={selectedReport.repoRelativePath}
+						reportNumber={selectedReport.reportNumber}
+						status={metadataStatus}
+					/>
+				) : null}
+			</div>
+
+			{/* Missing report recovery */}
+			{selectedReport.state === "missing" ? (
+				<section style={panelStyle}>
+					<h3 style={h3Style}>Report unavailable</h3>
+					<p style={bodySecondaryStyle}>{selectedReport.message}</p>
+					<p
+						style={{
+							...bodyMutedStyle,
+							fontSize: "var(--jh-text-body-sm-size)",
+						}}
+					>
+						Requested:{" "}
+						{selectedReport.requestedRepoRelativePath ??
+							selectedReport.repoRelativePath ??
+							"Unknown"}
+					</p>
+					<button
+						aria-label="Show the latest report instead"
+						onClick={() => viewer.followLatest()}
+						style={buttonStyle}
+						type="button"
+					>
+						Show latest report
+					</button>
+				</section>
+			) : null}
+
+			{/* Recent artifacts browser */}
+			<section style={panelStyle}>
+				<header
+					style={{
+						alignItems: "center",
+						display: "flex",
+						flexWrap: "wrap",
+						gap: "var(--jh-space-3)",
+						justifyContent: "space-between",
+					}}
+				>
+					<div>
+						<h3 style={h3Style}>Recent files</h3>
+						<p style={bodyMutedStyle}>Browse recent reports and PDFs.</p>
+					</div>
+
+					<div
+						style={{
+							display: "flex",
+							flexWrap: "wrap",
+							gap: "var(--jh-space-2)",
+						}}
+					>
+						{REPORT_VIEWER_ARTIFACT_GROUPS.map((group) => {
+							const selected = viewer.state.focus.group === group;
+
+							return (
+								<button
+									aria-label={`Show ${getGroupLabel(group)}`}
+									key={group}
+									onClick={() => viewer.selectGroup(group)}
 									style={{
-										background: "rgba(248, 250, 252, 0.9)",
-										border: "1px solid rgba(148, 163, 184, 0.2)",
-										borderRadius: "1rem",
+										...subtleButtonStyle,
+										background: selected
+											? "var(--jh-color-button-bg)"
+											: subtleButtonStyle.background,
+										color: selected
+											? "var(--jh-color-button-fg)"
+											: subtleButtonStyle.color,
+									}}
+									type="button"
+								>
+									{getGroupLabel(group)}
+								</button>
+							);
+						})}
+					</div>
+				</header>
+
+				<div style={{ display: "grid", gap: "var(--jh-space-3)" }}>
+					{recentArtifacts.items.length === 0 ? (
+						<section
+							style={{
+								background: "var(--jh-color-report-reading-bg)",
+								border: "var(--jh-border-subtle)",
+								borderRadius: "var(--jh-radius-md)",
+								padding: "var(--jh-space-padding)",
+							}}
+						>
+							<p style={bodyStyle}>
+								No {getGroupLabel(recentArtifacts.group).toLowerCase()} are
+								available yet.
+							</p>
+						</section>
+					) : (
+						recentArtifacts.items.map((artifact) => {
+							const isReport = artifact.kind === "report";
+
+							return (
+								<article
+									key={artifact.repoRelativePath}
+									style={{
+										background: artifact.selected
+											? "var(--jh-color-report-toc-active-bg)"
+											: "var(--jh-color-surface-bg)",
+										border: artifact.selected
+											? "var(--jh-border-width) solid var(--jh-color-accent)"
+											: "var(--jh-border-subtle)",
+										borderRadius: "var(--jh-radius-md)",
 										display: "grid",
-										gap: "0.75rem",
-										padding: "0.95rem",
+										gap: "var(--jh-space-2)",
+										padding: "var(--jh-space-padding-sm)",
 									}}
 								>
-									<div>
-										<h4 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
-											{selectedReport.header?.title ?? "Untitled report"}
-										</h4>
-										<p style={{ color: "#64748b", margin: 0 }}>
-											{selectedReport.repoRelativePath}
-										</p>
+									<div
+										style={{
+											alignItems: "center",
+											display: "flex",
+											flexWrap: "wrap",
+											gap: "var(--jh-space-2)",
+											justifyContent: "space-between",
+										}}
+									>
+										<div>
+											<p
+												style={{
+													...bodySecondaryStyle,
+													marginBottom: "var(--jh-space-1)",
+												}}
+											>
+												{artifact.fileName}
+											</p>
+											<p style={bodyMutedStyle}>{artifact.repoRelativePath}</p>
+										</div>
+										<span
+											style={{
+												...kindChipStyle,
+												background:
+													artifact.kind === "report"
+														? "var(--jh-color-badge-info-bg)"
+														: "var(--jh-color-badge-attention-bg)",
+												color:
+													artifact.kind === "report"
+														? "var(--jh-color-badge-info-fg)"
+														: "var(--jh-color-badge-attention-fg)",
+											}}
+										>
+											{artifact.kind === "report" ? "Report" : "PDF"}
+										</span>
 									</div>
 
 									<div
 										style={{
-											display: "grid",
-											gap: "0.7rem",
-											gridTemplateColumns:
-												"repeat(auto-fit, minmax(12rem, 1fr))",
+											color: "var(--jh-color-text-secondary)",
+											display: "flex",
+											flexWrap: "wrap",
+											fontSize: "var(--jh-text-body-sm-size)",
+											gap: "var(--jh-space-3)",
 										}}
 									>
-										<article>
-											<p
-												style={{
-													color: "#64748b",
-													marginBottom: "0.2rem",
-													marginTop: 0,
-												}}
-											>
-												Report #
-											</p>
-											<p style={{ margin: 0 }}>
-												{selectedReport.reportNumber ?? "Unavailable"}
-											</p>
-										</article>
-										<article>
-											<p
-												style={{
-													color: "#64748b",
-													marginBottom: "0.2rem",
-													marginTop: 0,
-												}}
-											>
-												Date
-											</p>
-											<p style={{ margin: 0 }}>
-												{selectedReport.header?.date ?? "Unavailable"}
-											</p>
-										</article>
-										<article>
-											<p
-												style={{
-													color: "#64748b",
-													marginBottom: "0.2rem",
-													marginTop: 0,
-												}}
-											>
-												Score
-											</p>
-											<p style={{ margin: 0 }}>
-												{selectedReport.header?.score == null
-													? "Unavailable"
-													: `${selectedReport.header?.score.toFixed(1)} / 5`}
-											</p>
-										</article>
-										<article>
-											<p
-												style={{
-													color: "#64748b",
-													marginBottom: "0.2rem",
-													marginTop: 0,
-												}}
-											>
-												Legitimacy
-											</p>
-											<p style={{ margin: 0 }}>
-												{selectedReport.header?.legitimacy ?? "Unavailable"}
-											</p>
-										</article>
-										<article>
-											<p
-												style={{
-													color: "#64748b",
-													marginBottom: "0.2rem",
-													marginTop: 0,
-												}}
-											>
-												Archetype
-											</p>
-											<p style={{ margin: 0 }}>
-												{selectedReport.header?.archetype ?? "Unavailable"}
-											</p>
-										</article>
-										<article>
-											<p
-												style={{
-													color: "#64748b",
-													marginBottom: "0.2rem",
-													marginTop: 0,
-												}}
-											>
-												Verification
-											</p>
-											<p style={{ margin: 0 }}>
-												{selectedReport.header?.verification ?? "Unavailable"}
-											</p>
-										</article>
+										<span>Date: {artifact.artifactDate ?? "No date"}</span>
+										<span>
+											Report #: {artifact.reportNumber ?? "Not numbered"}
+										</span>
 									</div>
 
-									<div style={{ display: "grid", gap: "0.65rem" }}>
-										<div>
-											<p
-												style={{
-													color: "#64748b",
-													marginBottom: "0.2rem",
-													marginTop: 0,
-												}}
-											>
-												URL
-											</p>
-											{selectedReport.header?.url ? (
-												<a
-													href={selectedReport.header.url}
-													rel="noreferrer"
-													style={{ color: "#1d4ed8" }}
-													target="_blank"
-												>
-													{selectedReport.header.url}
-												</a>
-											) : (
-												<p style={{ margin: 0 }}>Unavailable</p>
-											)}
-										</div>
+									{isReport ? (
+										<button
+											aria-label={`Open report ${artifact.fileName}`}
+											onClick={() =>
+												viewer.selectReport(artifact.repoRelativePath)
+											}
+											style={buttonStyle}
+											type="button"
+										>
+											{artifact.selected ? "Currently viewing" : "Open report"}
+										</button>
+									) : (
+										<p style={bodyMutedStyle}>
+											PDF available at the path above. Download from your file
+											manager or the linked report.
+										</p>
+									)}
+								</article>
+							);
+						})
+					)}
+				</div>
 
-										<div>
-											<p
-												style={{
-													color: "#64748b",
-													marginBottom: "0.2rem",
-													marginTop: 0,
-												}}
-											>
-												Linked PDF
-											</p>
-											<p style={{ margin: 0 }}>
-												{selectedReport.header?.pdf.repoRelativePath ??
-													"Unavailable"}
-											</p>
-											<p style={{ color: "#64748b", marginBottom: 0 }}>
-												{selectedReport.header?.pdf.exists
-													? "PDF artifact exists in output/."
-													: "No linked PDF is currently available."}
-											</p>
-										</div>
-									</div>
-								</section>
-							</div>
-						)}
-					</section>
-
-					<section style={panelStyle}>
-						<header>
-							<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
-								Markdown review
-							</h3>
-							<p style={{ color: "#64748b", margin: 0 }}>
-								Read the checked-in report exactly as stored in the repository.
-							</p>
-						</header>
-
-						{selectedReport.state !== "ready" || !selectedReport.body ? (
-							<section
-								style={{
-									background: "rgba(248, 250, 252, 0.9)",
-									border: "1px solid rgba(148, 163, 184, 0.2)",
-									borderRadius: "1rem",
-									padding: "0.95rem",
-								}}
-							>
-								<p style={{ margin: 0 }}>
-									{selectedReport.state === "missing"
-										? "The selected report no longer exists, so no markdown body can be shown."
-										: "Select a report to review its markdown body."}
-								</p>
-							</section>
-						) : (
-							<section aria-label="Selected report markdown">
-								<pre
-									style={{
-										background: "#0f172a",
-										borderRadius: "1rem",
-										color: "#e2e8f0",
-										margin: 0,
-										maxHeight: "42rem",
-										overflow: "auto",
-										padding: "1rem",
-										whiteSpace: "pre-wrap",
-										wordBreak: "break-word",
-									}}
-								>
-									{selectedReport.body}
-								</pre>
-							</section>
-						)}
-					</section>
-				</section>
+				{/* Pagination */}
+				<div
+					style={{
+						alignItems: "center",
+						display: "flex",
+						flexWrap: "wrap",
+						gap: "var(--jh-space-3)",
+						justifyContent: "space-between",
+					}}
+				>
+					<p style={bodyMutedStyle}>
+						Showing {visibleRangeStart}-{visibleRangeEnd} of{" "}
+						{recentArtifacts.totalCount}
+					</p>
+					<div style={{ display: "flex", gap: "var(--jh-space-2)" }}>
+						<button
+							aria-label="Previous page"
+							disabled={recentArtifacts.offset === 0}
+							onClick={() => viewer.goToPreviousPage()}
+							style={{
+								...subtleButtonStyle,
+								opacity: recentArtifacts.offset === 0 ? 0.55 : 1,
+							}}
+							type="button"
+						>
+							Previous
+						</button>
+						<button
+							aria-label="Next page"
+							disabled={!recentArtifacts.hasMore}
+							onClick={() => viewer.goToNextPage()}
+							style={{
+								...subtleButtonStyle,
+								opacity: recentArtifacts.hasMore ? 1 : 0.55,
+							}}
+							type="button"
+						>
+							Next
+						</button>
+					</div>
+				</div>
 			</section>
 		</section>
 	);

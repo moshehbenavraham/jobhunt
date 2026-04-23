@@ -137,6 +137,15 @@
   --jh-color-closeout-not-ready-bg: #e2e8f0;
   --jh-color-closeout-not-ready-fg: #475569;
 
+  /* Report viewer -- reading surface and metadata rail */
+  --jh-color-report-reading-bg: var(--jh-color-paper);
+  --jh-color-report-reading-fg: var(--jh-color-ink);
+  --jh-color-report-meta-bg: var(--jh-color-surface-bg);
+  --jh-color-report-meta-border: var(--jh-color-surface-border);
+  --jh-color-report-toc-accent: var(--jh-color-accent);
+  --jh-color-report-toc-active-bg: rgba(44, 99, 255, 0.08);
+  --jh-color-report-section-border: var(--jh-color-stone);
+
   /* Badge tones */
   --jh-color-badge-attention-bg: #fde68a;
   --jh-color-badge-attention-fg: #7c2d12;

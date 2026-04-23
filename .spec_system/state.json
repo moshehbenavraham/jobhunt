@@ -65,6 +65,10 @@
     {
       "id": "phase02-session02-artifact-handoff-and-evidence-rail",
       "package": "apps/web"
+    },
+    {
+      "id": "phase02-session03-report-viewer",
+      "package": "apps/web"
     }
   ],
   "next_session_history": [
@@ -203,6 +207,24 @@
     {
       "date": "2026-04-23",
       "session": "phase02-session02-artifact-handoff-and-evidence-rail",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session03-report-viewer",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session03-report-viewer",
+      "package": "apps/web",
+      "status": "validated"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session03-report-viewer",
       "package": "apps/web",
       "status": "completed"
     }
