@@ -4,7 +4,7 @@
 **Sessions**: 6 (initial estimate)
 **Estimated Duration**: 12-24 days
 
-**Progress**: 2/6 sessions (33%)
+**Progress**: 3/6 sessions (50%)
 
 ---
 
@@ -27,7 +27,7 @@ Maps to **Phase B** of the recovery plan and covers Workstreams 1, 2, and 5:
 | ------- | ----------------------------------- | ----------- | ---------- | ---------- |
 | 01      | Design Token Layer                  | Complete    | 20         | 2026-04-23 |
 | 02      | Typography and Base Styles          | Complete    | 18         | 2026-04-23 |
-| 03      | Three-Zone Shell Layout             | Not Started | ~22        | -          |
+| 03      | Three-Zone Shell Layout             | Complete    | 20         | 2026-04-23 |
 | 04      | Responsive Layout and Mobile        | Not Started | ~18        | -          |
 | 05      | Router and Deep-Linkable Navigation | Not Started | ~20        | -          |
 | 06      | Command Palette and Operator Copy   | Not Started | ~18        | -          |
@@ -38,12 +38,13 @@ Maps to **Phase B** of the recovery plan and covers Workstreams 1, 2, and 5:
 
 - Session 01: Design Token Layer (2026-04-23) -- 20 tasks, apps/web
 - Session 02: Typography and Base Styles (2026-04-23) -- 18 tasks, apps/web
+- Session 03: Three-Zone Shell Layout (2026-04-23) -- 20 tasks, apps/web
 
 ---
 
 ## Upcoming Sessions
 
-- Session 03: Three-Zone Shell Layout
+- Session 04: Responsive Layout and Mobile
 
 ---
 

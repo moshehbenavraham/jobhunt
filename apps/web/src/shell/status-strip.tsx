@@ -31,7 +31,7 @@ const panelStyle: CSSProperties = {
 const cardGridStyle: CSSProperties = {
 	display: "grid",
 	gap: "var(--jh-space-padding-sm)",
-	gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))",
+	gridTemplateColumns: "repeat(4, 1fr)",
 };
 
 const cardStyle: CSSProperties = {

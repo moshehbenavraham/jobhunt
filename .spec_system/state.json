@@ -40,6 +40,10 @@
     {
       "id": "phase01-session02-typography-and-base-styles",
       "package": "apps/web"
+    },
+    {
+      "id": "phase01-session03-three-zone-shell-layout",
+      "package": "apps/web"
     }
   ],
   "next_session_history": [
@@ -70,6 +74,24 @@
     {
       "date": "2026-04-23",
       "session": "phase01-session02-typography-and-base-styles",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session03-three-zone-shell-layout",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session03-three-zone-shell-layout",
+      "package": "apps/web",
+      "status": "validated"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session03-three-zone-shell-layout",
       "package": "apps/web",
       "status": "completed"
     }

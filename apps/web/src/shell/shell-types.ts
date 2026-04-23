@@ -117,6 +117,11 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 	},
 ] as const;
 
+export type EvidenceRailContent = {
+	heading: string | null;
+	isEmpty: boolean;
+};
+
 export type OperatorShellActivityState =
 	| "active"
 	| "attention-required"

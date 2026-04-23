@@ -24,6 +24,7 @@ import { openSpecialistWorkspaceSurface } from "../workflows/specialist-workspac
 import { SpecialistWorkspaceSurface } from "../workflows/specialist-workspace-surface";
 import type { SpecialistWorkspaceMode } from "../workflows/specialist-workspace-types";
 import { SPECIALIST_WORKSPACE_MODE_VALUES } from "../workflows/specialist-workspace-types";
+import { EvidenceRail } from "./evidence-rail";
 import { NavigationRail } from "./navigation-rail";
 import { OperatorHomeSurface } from "./operator-home-surface";
 import type { OperatorHomeAction } from "./operator-home-types";
@@ -39,31 +40,6 @@ const pageStyle: CSSProperties = {
 	fontFamily: "var(--jh-font-body)",
 	lineHeight: "var(--jh-text-body-line-height)",
 	minHeight: "100vh",
-	padding: "var(--jh-space-padding) var(--jh-space-gap) var(--jh-space-8)",
-};
-
-const frameStyle: CSSProperties = {
-	display: "grid",
-	gap: "var(--jh-zone-gap)",
-	margin: "0 auto",
-	maxWidth: "var(--jh-frame-max-width)",
-};
-
-const shellBodyStyle: CSSProperties = {
-	alignItems: "start",
-	display: "flex",
-	flexWrap: "wrap",
-	gap: "var(--jh-zone-gap)",
-};
-
-const railWrapperStyle: CSSProperties = {
-	flex: "1 1 var(--jh-zone-rail-width)",
-	minWidth: "var(--jh-zone-rail-min-width)",
-};
-
-const surfaceWrapperStyle: CSSProperties = {
-	flex: "999 1 var(--jh-zone-canvas-min-width)",
-	minWidth: "var(--jh-zone-rail-width)",
 };
 
 const surfaceCardStyle: CSSProperties = {
@@ -462,7 +438,7 @@ export function OperatorShell() {
 
 	return (
 		<main style={pageStyle}>
-			<div style={frameStyle}>
+			<div className="jh-shell-frame">
 				<StatusStrip
 					error={shell.state.error}
 					isRefreshing={shell.state.isRefreshing || startup.state.isRefreshing}
@@ -477,8 +453,8 @@ export function OperatorShell() {
 					summary={shell.state.data}
 				/>
 
-				<div style={shellBodyStyle}>
-					<aside style={railWrapperStyle}>
+				<div className="jh-shell-body">
+					<aside>
 						<NavigationRail
 							currentSurface={shell.state.selectedSurface}
 							onSelect={shell.selectSurface}
@@ -486,10 +462,7 @@ export function OperatorShell() {
 						/>
 					</aside>
 
-					<section
-						id={`surface-${renderedSurface.id}`}
-						style={surfaceWrapperStyle}
-					>
+					<section id={`surface-${renderedSurface.id}`} style={{ minWidth: 0 }}>
 						<div style={surfaceCardStyle}>
 							{renderedSurface.id === "home" ? (
 								<OperatorHomeSurface
@@ -579,6 +552,8 @@ export function OperatorShell() {
 							)}
 						</div>
 					</section>
+
+					<EvidenceRail />
 				</div>
 			</div>
 		</main>

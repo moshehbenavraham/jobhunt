@@ -1,5 +1,5 @@
-/* layout.css -- layout zone custom properties for the three-zone shell
-   Values only; media queries and grid application deferred to session 03 */
+/* layout.css -- layout zone custom properties and grid composition
+   for the three-zone shell (left rail, center canvas, evidence rail) */
 
 :root {
   /* Zone widths */
@@ -22,4 +22,30 @@
   --jh-bp-tablet: 1200px;
   --jh-bp-desktop: 1200px;
   --jh-bp-wide: 1600px;
+}
+
+/* Shell frame: status strip above, shell body below */
+.jh-shell-frame {
+  display: grid;
+  gap: var(--jh-zone-gap);
+  margin: 0 auto;
+  max-width: var(--jh-frame-max-width);
+}
+
+/* Shell body: single-column stack by default (mobile-first) */
+.jh-shell-body {
+  display: grid;
+  gap: var(--jh-zone-gap);
+  grid-template-columns: 1fr;
+}
+
+/* Desktop: three-zone grid when viewport >= 1200px */
+@media (min-width: 1200px) {
+  .jh-shell-body {
+    align-items: start;
+    grid-template-columns:
+      var(--jh-zone-rail-width)
+      minmax(0, 1fr)
+      var(--jh-zone-evidence-rail-width);
+  }
 }
