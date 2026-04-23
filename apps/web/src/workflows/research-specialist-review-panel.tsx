@@ -11,18 +11,18 @@ type ResearchSpecialistReviewPanelProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "0.95rem",
 	padding: "1rem",
 };
 
 const cardStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.6rem",
 	padding: "0.9rem",
@@ -66,12 +66,12 @@ function describeEmptyState(status: SpecialistReviewStatus): {
 			};
 		case "offline":
 			return {
-				body: "The research-specialist review endpoint is offline, so the last narrative packet cannot refresh right now.",
+				body: "Research review is unavailable right now, so the last narrative packet cannot refresh.",
 				title: "Narrative review offline",
 			};
 		case "error":
 			return {
-				body: "The research-specialist review payload could not be parsed into a narrative summary.",
+				body: "Research review data could not be loaded into a narrative summary.",
 				title: "Narrative review unavailable",
 			};
 		default:
@@ -135,10 +135,12 @@ function renderPacket(packet: ResearchSpecialistPacket) {
 									"Unknown"}
 							</strong>
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Language: {packet.language} | Characters: {packet.characterCount}
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>{packet.messageDraft}</p>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+							{packet.messageDraft}
+						</p>
 					</section>
 
 					{packet.alternativeTargets.length > 0 ? (
@@ -169,7 +171,7 @@ function renderPacket(packet: ResearchSpecialistPacket) {
 							Format: {packet.processOverview.format ?? "Unknown"} | Difficulty:{" "}
 							{packet.processOverview.difficulty ?? "Unknown"}
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Rounds: {packet.processOverview.rounds ?? "Unknown"}
 						</p>
 						{packet.processOverview.knownQuirks.length > 0 ? (
@@ -191,7 +193,9 @@ function renderPacket(packet: ResearchSpecialistPacket) {
 								style={{ display: "grid", gap: "0.15rem" }}
 							>
 								<p style={{ fontWeight: 700, margin: 0 }}>{round.name}</p>
-								<p style={{ color: "#475569", margin: 0 }}>
+								<p
+									style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}
+								>
 									Conducted by: {round.conductedBy ?? "Unknown"} | Duration:{" "}
 									{round.duration ?? "Unknown"}
 								</p>
@@ -220,7 +224,7 @@ function renderPacket(packet: ResearchSpecialistPacket) {
 						{packet.trainingTitle}
 					</p>
 					{packet.betterAlternative ? (
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Better alternative: {packet.betterAlternative}
 						</p>
 					) : null}
@@ -244,7 +248,7 @@ function renderPacket(packet: ResearchSpecialistPacket) {
 						{packet.projectTitle}
 					</p>
 					{packet.betterAlternative ? (
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Better alternative: {packet.betterAlternative}
 						</p>
 					) : null}
@@ -277,7 +281,7 @@ export function ResearchSpecialistReviewPanel({
 				<header>
 					<p
 						style={{
-							color: "#475569",
+							color: "var(--jh-color-text-secondary)",
 							letterSpacing: "0.08em",
 							marginBottom: "0.35rem",
 							marginTop: 0,
@@ -292,7 +296,13 @@ export function ResearchSpecialistReviewPanel({
 					>
 						{emptyState.title}
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</header>
@@ -319,7 +329,7 @@ export function ResearchSpecialistReviewPanel({
 				<div>
 					<p
 						style={{
-							color: "#475569",
+							color: "var(--jh-color-text-secondary)",
 							letterSpacing: "0.08em",
 							marginBottom: "0.35rem",
 							marginTop: 0,
@@ -334,7 +344,13 @@ export function ResearchSpecialistReviewPanel({
 					>
 						{selectedSummary.workflow.label}
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{selectedSummary.message}
 					</p>
 				</div>
@@ -342,17 +358,17 @@ export function ResearchSpecialistReviewPanel({
 					style={{
 						background:
 							selectedSummary.state === "rejected"
-								? "#fee2e2"
+								? "var(--jh-color-status-error-bg)"
 								: selectedSummary.state === "approval-paused"
-									? "#fef3c7"
-									: "#dbeafe",
-						borderRadius: "999px",
+									? "var(--jh-color-severity-warn-bg)"
+									: "var(--jh-color-severity-info-bg)",
+						borderRadius: "var(--jh-radius-pill)",
 						color:
 							selectedSummary.state === "rejected"
-								? "#991b1b"
+								? "var(--jh-color-status-error-fg)"
 								: selectedSummary.state === "approval-paused"
-									? "#92400e"
-									: "#1d4ed8",
+									? "var(--jh-color-severity-warn-fg)"
+									: "var(--jh-color-severity-info-fg)",
 						fontSize: "0.9rem",
 						fontWeight: 700,
 						padding: "0.3rem 0.75rem",
@@ -367,11 +383,11 @@ export function ResearchSpecialistReviewPanel({
 					Review boundary
 				</h3>
 				<p style={{ margin: 0 }}>{selectedSummary.reviewBoundary.message}</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Automation allowed: no | Manual send required:{" "}
 					{selectedSummary.reviewBoundary.manualSendRequired ? "yes" : "no"}
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Next action: {formatStateLabel(selectedSummary.nextAction.action)}
 				</p>
 			</section>
@@ -386,12 +402,12 @@ export function ResearchSpecialistReviewPanel({
 							{context.company ?? context.subject ?? "Context pending"}
 						</strong>
 					</p>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						{context.role ?? "Role unavailable"} |{" "}
 						{context.modeRepoRelativePath}
 					</p>
 					{context.storyBank ? (
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Story bank: {context.storyBank.source}
 							{context.storyBank.repoRelativePath
 								? ` (${context.storyBank.repoRelativePath})`
@@ -421,7 +437,7 @@ export function ResearchSpecialistReviewPanel({
 					<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
 						Narrative packet
 					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						{selectedSummary.message}
 					</p>
 				</section>

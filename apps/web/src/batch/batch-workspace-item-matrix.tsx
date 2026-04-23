@@ -20,9 +20,9 @@ type BatchWorkspaceItemMatrixProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "0.95rem",
 	padding: "1rem",
@@ -37,10 +37,10 @@ const listStyle: CSSProperties = {
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 700,
@@ -49,10 +49,10 @@ const buttonStyle: CSSProperties = {
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.3)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-button-subtle-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 600,
@@ -72,17 +72,17 @@ function describeEmptyState(status: BatchWorkspaceViewStatus): {
 			};
 		case "offline":
 			return {
-				body: "The batch-supervisor endpoint is offline, so the item matrix cannot refresh.",
+				body: "The batch job data is unavailable right now, so the item matrix cannot refresh.",
 				title: "Item matrix offline",
 			};
 		case "error":
 			return {
-				body: "The batch-supervisor payload could not be rendered into item rows.",
+				body: "Batch item data could not be loaded.",
 				title: "Item matrix unavailable",
 			};
 		default:
 			return {
-				body: "Select the batch surface once draft rows and run status are available.",
+				body: "Open batch jobs once draft rows and run status are ready.",
 				title: "No batch rows yet",
 			};
 	}
@@ -131,7 +131,13 @@ export function BatchWorkspaceItemMatrix({
 					>
 						Item matrix
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						Review bounded batch rows, filters, and warning badges without
 						reading repo files in the browser.
 					</p>
@@ -139,16 +145,22 @@ export function BatchWorkspaceItemMatrix({
 
 				<section
 					style={{
-						background: "rgba(248, 250, 252, 0.92)",
-						border: "1px solid rgba(148, 163, 184, 0.18)",
-						borderRadius: "1rem",
+						background: "var(--jh-color-surface-bg)",
+						border: "var(--jh-border-subtle)",
+						borderRadius: "var(--jh-radius-md)",
 						padding: "0.9rem",
 					}}
 				>
 					<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</section>
@@ -194,7 +206,13 @@ export function BatchWorkspaceItemMatrix({
 					>
 						Item matrix
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						Showing {visibleRangeStart}-{visibleRangeEnd} of{" "}
 						{summary.items.filteredCount} filtered rows.
 					</p>
@@ -261,16 +279,22 @@ export function BatchWorkspaceItemMatrix({
 			{summary.items.items.length === 0 ? (
 				<section
 					style={{
-						background: "rgba(248, 250, 252, 0.92)",
-						border: "1px solid rgba(148, 163, 184, 0.18)",
-						borderRadius: "1rem",
+						background: "var(--jh-color-surface-bg)",
+						border: "var(--jh-border-subtle)",
+						borderRadius: "var(--jh-radius-md)",
 						padding: "0.9rem",
 					}}
 				>
 					<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
 						No rows match the current filter
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						Try another status filter or wait for the next batch refresh.
 					</p>
 				</section>
@@ -291,9 +315,9 @@ export function BatchWorkspaceItemMatrix({
 										alignItems: "start",
 										background: selected ? "rgba(15, 23, 42, 0.06)" : "#ffffff",
 										border: selected
-											? "1px solid rgba(15, 23, 42, 0.42)"
-											: "1px solid rgba(148, 163, 184, 0.25)",
-										borderRadius: "1rem",
+											? "1px solid var(--jh-color-selected-border)"
+											: "var(--jh-border-subtle)",
+										borderRadius: "var(--jh-radius-md)",
 										cursor: "pointer",
 										display: "grid",
 										gap: "0.45rem",
@@ -317,7 +341,7 @@ export function BatchWorkspaceItemMatrix({
 											</strong>
 											<p
 												style={{
-													color: "#475569",
+													color: "var(--jh-color-text-secondary)",
 													marginBottom: 0,
 													marginTop: "0.15rem",
 												}}
@@ -327,9 +351,13 @@ export function BatchWorkspaceItemMatrix({
 										</div>
 										<span
 											style={{
-												background: selected ? "#0f172a" : "#e2e8f0",
-												borderRadius: "999px",
-												color: selected ? "#f8fafc" : "#334155",
+												background: selected
+													? "var(--jh-color-button-bg)"
+													: "var(--jh-color-status-blocked-bg)",
+												borderRadius: "var(--jh-radius-pill)",
+												color: selected
+													? "var(--jh-color-button-fg)"
+													: "var(--jh-color-badge-neutral-fg)",
 												fontSize: "0.82rem",
 												fontWeight: 700,
 												padding: "0.25rem 0.6rem",
@@ -341,7 +369,7 @@ export function BatchWorkspaceItemMatrix({
 
 									<p
 										style={{
-											color: "#475569",
+											color: "var(--jh-color-text-secondary)",
 											display: "flex",
 											flexWrap: "wrap",
 											gap: "0.75rem",
@@ -355,7 +383,7 @@ export function BatchWorkspaceItemMatrix({
 
 									<p
 										style={{
-											color: "#64748b",
+											color: "var(--jh-color-text-muted)",
 											display: "flex",
 											flexWrap: "wrap",
 											gap: "0.75rem",

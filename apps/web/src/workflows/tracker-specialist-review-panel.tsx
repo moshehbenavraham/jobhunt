@@ -11,18 +11,18 @@ type TrackerSpecialistReviewPanelProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "0.95rem",
 	padding: "1rem",
 };
 
 const cardStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.6rem",
 	padding: "0.9rem",
@@ -94,13 +94,23 @@ function renderPacket(packet: TrackerSpecialistResultPacket) {
 									<p style={{ fontWeight: 700, margin: 0 }}>
 										{offer.company ?? offer.label ?? offer.fileName}
 									</p>
-									<p style={{ color: "#475569", margin: 0 }}>
+									<p
+										style={{
+											color: "var(--jh-color-text-secondary)",
+											margin: 0,
+										}}
+									>
 										{offer.role ?? "Role unavailable"}
 										{offer.score !== null
 											? ` | Score ${offer.score.toFixed(1)} / 5`
 											: ""}
 									</p>
-									<p style={{ color: "#475569", margin: 0 }}>
+									<p
+										style={{
+											color: "var(--jh-color-text-secondary)",
+											margin: 0,
+										}}
+									>
 										Match: {formatStateLabel(offer.matchState)}
 										{offer.reportNumber
 											? ` | Report ${offer.reportNumber}`
@@ -144,12 +154,12 @@ function renderPacket(packet: TrackerSpecialistResultPacket) {
 						<p style={{ margin: 0 }}>
 							Actionable: <strong>{packet.metadata.actionable}</strong>
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Urgent {packet.metadata.urgent} | Overdue{" "}
 							{packet.metadata.overdue}
 							{" | "}Waiting {packet.metadata.waiting}
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Tracked entries: {packet.metadata.totalTracked} | Analysis date:{" "}
 							{packet.metadata.analysisDate}
 						</p>
@@ -168,10 +178,20 @@ function renderPacket(packet: TrackerSpecialistResultPacket) {
 									<p style={{ fontWeight: 700, margin: 0 }}>
 										#{entry.num} {entry.company}
 									</p>
-									<p style={{ color: "#475569", margin: 0 }}>
+									<p
+										style={{
+											color: "var(--jh-color-text-secondary)",
+											margin: 0,
+										}}
+									>
 										{entry.role} | {entry.status} | {entry.urgency}
 									</p>
-									<p style={{ color: "#475569", margin: 0 }}>
+									<p
+										style={{
+											color: "var(--jh-color-text-secondary)",
+											margin: 0,
+										}}
+									>
 										Applied {entry.daysSinceApplication} days ago | Follow-ups{" "}
 										{entry.followupCount}
 									</p>
@@ -203,8 +223,17 @@ function renderPacket(packet: TrackerSpecialistResultPacket) {
 										style={{ display: "grid", gap: "0.15rem" }}
 									>
 										<p style={{ fontWeight: 700, margin: 0 }}>{item.action}</p>
-										<p style={{ color: "#475569", margin: 0 }}>{item.impact}</p>
-										<p style={{ color: "#64748b", margin: 0 }}>
+										<p
+											style={{
+												color: "var(--jh-color-text-secondary)",
+												margin: 0,
+											}}
+										>
+											{item.impact}
+										</p>
+										<p
+											style={{ color: "var(--jh-color-text-muted)", margin: 0 }}
+										>
 											{item.reasoning}
 										</p>
 									</article>
@@ -221,7 +250,7 @@ function renderPacket(packet: TrackerSpecialistResultPacket) {
 							Recommended threshold:{" "}
 							<strong>{packet.scoreThreshold.recommended}</strong>
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							{packet.scoreThreshold.reasoning}
 						</p>
 						{packet.topBlockers.length > 0 ? (
@@ -256,7 +285,7 @@ export function TrackerSpecialistReviewPanel({
 				<header>
 					<p
 						style={{
-							color: "#475569",
+							color: "var(--jh-color-text-secondary)",
 							letterSpacing: "0.08em",
 							marginBottom: "0.35rem",
 							marginTop: 0,
@@ -271,7 +300,13 @@ export function TrackerSpecialistReviewPanel({
 					>
 						{emptyState.title}
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</header>
@@ -296,7 +331,7 @@ export function TrackerSpecialistReviewPanel({
 				<div>
 					<p
 						style={{
-							color: "#475569",
+							color: "var(--jh-color-text-secondary)",
 							letterSpacing: "0.08em",
 							marginBottom: "0.35rem",
 							marginTop: 0,
@@ -311,7 +346,13 @@ export function TrackerSpecialistReviewPanel({
 					>
 						{selectedSummary.workflow.label}
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{selectedSummary.message}
 					</p>
 				</div>
@@ -319,17 +360,17 @@ export function TrackerSpecialistReviewPanel({
 					style={{
 						background:
 							selectedSummary.state === "degraded"
-								? "#fee2e2"
+								? "var(--jh-color-status-error-bg)"
 								: selectedSummary.state === "waiting"
-									? "#fef3c7"
-									: "#dbeafe",
-						borderRadius: "999px",
+									? "var(--jh-color-severity-warn-bg)"
+									: "var(--jh-color-severity-info-bg)",
+						borderRadius: "var(--jh-radius-pill)",
 						color:
 							selectedSummary.state === "degraded"
-								? "#991b1b"
+								? "var(--jh-color-status-error-fg)"
 								: selectedSummary.state === "waiting"
-									? "#92400e"
-									: "#1d4ed8",
+									? "var(--jh-color-severity-warn-fg)"
+									: "var(--jh-color-severity-info-fg)",
 						fontSize: "0.9rem",
 						fontWeight: 700,
 						padding: "0.3rem 0.75rem",
@@ -344,10 +385,10 @@ export function TrackerSpecialistReviewPanel({
 				<p style={{ fontWeight: 700, margin: 0 }}>
 					{formatStateLabel(selectedSummary.nextAction.action)}
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					{selectedSummary.nextAction.message}
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Run state: {formatStateLabel(selectedSummary.run.state)} | Resume
 					allowed: {selectedSummary.run.resumeAllowed ? "yes" : "no"}
 				</p>
@@ -373,7 +414,7 @@ export function TrackerSpecialistReviewPanel({
 					<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
 						Review packet
 					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						{selectedSummary.message}
 					</p>
 				</section>

@@ -26,28 +26,28 @@ type SpecialistWorkspaceLaunchPanelProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "1rem",
 	padding: "1rem",
 };
 
 const cardStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.55rem",
 	padding: "0.9rem",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 700,
@@ -56,10 +56,10 @@ const buttonStyle: CSSProperties = {
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.3)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-button-subtle-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 600,
@@ -99,12 +99,12 @@ function describeEmptyState(status: SpecialistWorkspaceViewStatus): {
 			};
 		case "offline":
 			return {
-				body: "The specialist workspace endpoint is offline, so workflow availability cannot refresh.",
+				body: "The specialist workspace is unavailable right now, so workflow availability cannot refresh.",
 				title: "Workflows workspace offline",
 			};
 		case "error":
 			return {
-				body: "The specialist workspace payload could not be parsed into the workflow inventory.",
+				body: "The specialist workspace data could not be loaded into the workflow inventory.",
 				title: "Workflows workspace unavailable",
 			};
 		default:
@@ -129,12 +129,12 @@ function getSupportBadgeStyle(
 ): CSSProperties {
 	return supportState === "ready"
 		? {
-				background: "#dcfce7",
-				color: "#166534",
+				background: "var(--jh-color-status-ready-bg)",
+				color: "var(--jh-color-status-ready-fg)",
 			}
 		: {
-				background: "#fef3c7",
-				color: "#92400e",
+				background: "var(--jh-color-severity-warn-bg)",
+				color: "var(--jh-color-severity-warn-fg)",
 			};
 }
 
@@ -159,9 +159,11 @@ function renderWorkflowCard(input: {
 			style={{
 				...cardStyle,
 				border: isSelected
-					? "1px solid rgba(251, 191, 36, 0.7)"
+					? "1px solid var(--jh-color-selected-highlight-border)"
 					: cardStyle.border,
-				boxShadow: isSelected ? "0 0 0 1px rgba(251, 191, 36, 0.18)" : "none",
+				boxShadow: isSelected
+					? "0 0 0 1px var(--jh-color-selected-highlight-shadow)"
+					: "none",
 			}}
 		>
 			<div
@@ -176,14 +178,14 @@ function renderWorkflowCard(input: {
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						{descriptor.handoff.label}
 					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						{descriptor.handoff.specialistLabel} | {descriptor.handoff.family}
 					</p>
 				</div>
 				<span
 					style={{
 						...getSupportBadgeStyle(descriptor.supportState),
-						borderRadius: "999px",
+						borderRadius: "var(--jh-radius-pill)",
 						fontSize: "0.82rem",
 						fontWeight: 700,
 						padding: "0.2rem 0.6rem",
@@ -193,11 +195,13 @@ function renderWorkflowCard(input: {
 				</span>
 			</div>
 
-			<p style={{ color: "#475569", margin: 0 }}>{descriptor.message}</p>
-			<p style={{ color: "#475569", margin: 0 }}>
+			<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+				{descriptor.message}
+			</p>
+			<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 				Intake: {descriptor.intake.message}
 			</p>
-			<p style={{ color: "#475569", margin: 0 }}>
+			<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 				Saved state:{" "}
 				{descriptor.intake.requiresSavedState ? "required" : "optional"} |
 				Summary:{" "}
@@ -206,7 +210,7 @@ function renderWorkflowCard(input: {
 					: descriptor.summaryAvailability}
 			</p>
 			{descriptor.missingCapabilities.length > 0 ? (
-				<p style={{ color: "#92400e", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-severity-warn-fg)", margin: 0 }}>
 					Missing capabilities: {descriptor.missingCapabilities.join(", ")}
 				</p>
 			) : null}
@@ -268,24 +272,19 @@ export function SpecialistWorkspaceLaunchPanel({
 					}}
 				>
 					<div>
-						<p
-							style={{
-								color: "#475569",
-								letterSpacing: "0.08em",
-								marginBottom: "0.35rem",
-								marginTop: 0,
-								textTransform: "uppercase",
-							}}
-						>
-							Phase 06 / Session 02
-						</p>
 						<h2
 							id="specialist-workspace-launch-title"
 							style={{ marginBottom: "0.35rem", marginTop: 0 }}
 						>
 							Specialist workflows inventory
 						</h2>
-						<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+						<p
+							style={{
+								color: "var(--jh-color-text-muted)",
+								marginBottom: 0,
+								marginTop: 0,
+							}}
+						>
 							Review the typed workflow inventory, then launch specialist work
 							through explicit backend-owned actions.
 						</p>
@@ -300,7 +299,12 @@ export function SpecialistWorkspaceLaunchPanel({
 						>
 							Refresh
 						</button>
-						<span style={{ color: "#64748b", fontSize: "0.92rem" }}>
+						<span
+							style={{
+								color: "var(--jh-color-text-muted)",
+								fontSize: "0.92rem",
+							}}
+						>
 							Last updated: {formatTimestamp(lastUpdatedAt)}
 						</span>
 					</div>
@@ -310,7 +314,13 @@ export function SpecialistWorkspaceLaunchPanel({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</section>
@@ -344,24 +354,19 @@ export function SpecialistWorkspaceLaunchPanel({
 				}}
 			>
 				<div>
-					<p
-						style={{
-							color: "#475569",
-							letterSpacing: "0.08em",
-							marginBottom: "0.35rem",
-							marginTop: 0,
-							textTransform: "uppercase",
-						}}
-					>
-						Phase 06 / Session 02
-					</p>
 					<h2
 						id="specialist-workspace-launch-title"
 						style={{ marginBottom: "0.35rem", marginTop: 0 }}
 					>
 						Specialist workflows inventory
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{summary.selected.message}
 					</p>
 				</div>
@@ -395,7 +400,9 @@ export function SpecialistWorkspaceLaunchPanel({
 							Refresh
 						</button>
 					</div>
-					<span style={{ color: "#64748b", fontSize: "0.92rem" }}>
+					<span
+						style={{ color: "var(--jh-color-text-muted)", fontSize: "0.92rem" }}
+					>
 						Last updated: {formatTimestamp(lastUpdatedAt)}
 					</span>
 				</div>
@@ -407,18 +414,18 @@ export function SpecialistWorkspaceLaunchPanel({
 					style={{
 						background:
 							notice.kind === "success"
-								? "#dcfce7"
+								? "var(--jh-color-status-ready-bg)"
 								: notice.kind === "warn"
-									? "#fef3c7"
-									: "#dbeafe",
+									? "var(--jh-color-severity-warn-bg)"
+									: "var(--jh-color-severity-info-bg)",
 						border: `1px solid ${
 							notice.kind === "success"
-								? "#86efac"
+								? "var(--jh-color-status-ready-border)"
 								: notice.kind === "warn"
-									? "#fcd34d"
+									? "var(--jh-color-status-offline-border)"
 									: "#93c5fd"
 						}`,
-						borderRadius: "1rem",
+						borderRadius: "var(--jh-radius-md)",
 						display: "grid",
 						gap: "0.5rem",
 						padding: "0.85rem 0.95rem",
@@ -457,8 +464,10 @@ export function SpecialistWorkspaceLaunchPanel({
 				<p style={{ margin: 0 }}>
 					<strong>{selectedLabel}</strong>
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>{summary.message}</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+					{summary.message}
+				</p>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Query focus: {focus.mode ?? "catalog"} | Session:{" "}
 					{focus.sessionId ?? "latest or none"}
 				</p>
@@ -469,7 +478,13 @@ export function SpecialistWorkspaceLaunchPanel({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						No specialist workflows configured
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{summary.message}
 					</p>
 				</section>
@@ -479,9 +494,14 @@ export function SpecialistWorkspaceLaunchPanel({
 				<section style={{ display: "grid", gap: "0.75rem" }}>
 					<div>
 						<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>Ready now</h3>
-						<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-							Supported specialist routes that can launch or re-enter from the
-							shared workflows surface today.
+						<p
+							style={{
+								color: "var(--jh-color-text-muted)",
+								marginBottom: 0,
+								marginTop: 0,
+							}}
+						>
+							Workflows that can launch or resume today.
 						</p>
 					</div>
 					<div style={workflowGridStyle}>
@@ -504,7 +524,13 @@ export function SpecialistWorkspaceLaunchPanel({
 						<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
 							Tooling gaps
 						</h3>
-						<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+						<p
+							style={{
+								color: "var(--jh-color-text-muted)",
+								marginBottom: 0,
+								marginTop: 0,
+							}}
+						>
 							Specialist routes that are visible in the catalog but still
 							blocked on typed tooling or summary work.
 						</p>

@@ -26,7 +26,7 @@ const detailGridStyle: CSSProperties = {
 };
 
 const noticeStyle: CSSProperties = {
-	borderRadius: "1rem",
+	borderRadius: "var(--jh-radius-md)",
 	padding: "0.9rem",
 };
 
@@ -47,24 +47,19 @@ export function BatchWorkspaceSurface({
 					gap: "0.35rem",
 				}}
 			>
-				<p
-					style={{
-						color: "#9a3412",
-						letterSpacing: "0.08em",
-						marginBottom: 0,
-						marginTop: 0,
-						textTransform: "uppercase",
-					}}
-				>
-					Phase 05 / Session 04
-				</p>
 				<h1
 					id="batch-workspace-title"
 					style={{ marginBottom: 0, marginTop: 0 }}
 				>
 					Batch jobs workspace
 				</h1>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-muted)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					Supervise bounded batch draft state, run progress, failures, and
 					closeout handoffs without reopening raw repo artifacts in the browser.
 				</p>
@@ -76,9 +71,13 @@ export function BatchWorkspaceSurface({
 					style={{
 						...noticeStyle,
 						background:
-							batch.state.status === "offline" ? "#e2e8f0" : "#fee2e2",
+							batch.state.status === "offline"
+								? "var(--jh-color-status-blocked-bg)"
+								: "var(--jh-color-status-error-bg)",
 						border: `1px solid ${
-							batch.state.status === "offline" ? "#cbd5e1" : "#fecaca"
+							batch.state.status === "offline"
+								? "var(--jh-color-nav-muted)"
+								: "var(--jh-color-status-error-border)"
 						}`,
 					}}
 				>

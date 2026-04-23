@@ -163,7 +163,7 @@ async function parseResponsePayload<TPayload>(
 			cause: error,
 			code: "invalid-json",
 			httpStatus: response.status,
-			message: "Application-help endpoint returned invalid JSON.",
+			message: "Application help returned invalid data.",
 			state: "error",
 		});
 	});
@@ -195,7 +195,7 @@ async function parseResponsePayload<TPayload>(
 				cause: parsedError,
 				code: "invalid-response",
 				httpStatus: response.status,
-				message: "Application-help endpoint returned an unexpected payload.",
+				message: "Application help returned unexpected data.",
 				state: "error",
 			});
 		}
@@ -257,7 +257,7 @@ async function fetchSummaryOnce(options: {
 			throw new ApplicationHelpClientError({
 				cause: error,
 				code: "timeout",
-				message: "Application-help summary timed out before it responded.",
+				message: "Application help summary request timed out.",
 				state: "offline",
 			});
 		}
@@ -270,7 +270,7 @@ async function fetchSummaryOnce(options: {
 			cause: error,
 			code: "offline",
 			message:
-				"Application-help summary endpoint is unavailable. Start the local API server and try again.",
+				"Application help summary is unavailable. Start the local API server and try again.",
 			state: "offline",
 		});
 	} finally {
@@ -430,7 +430,7 @@ export async function submitApplicationHelpCommand(
 			cause: error,
 			code: "offline",
 			message:
-				"Orchestration endpoint is unavailable. Start the local API server and try again.",
+				"Orchestration service is unavailable. Start the local API server and try again.",
 			state: "offline",
 		});
 	}

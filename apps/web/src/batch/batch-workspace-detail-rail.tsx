@@ -16,28 +16,28 @@ type BatchWorkspaceDetailRailProps = {
 };
 
 const railStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "0.95rem",
 	padding: "1rem",
 };
 
 const cardStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.55rem",
 	padding: "0.9rem",
 };
 
 const actionButtonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 700,
@@ -46,10 +46,10 @@ const actionButtonStyle: CSSProperties = {
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.3)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-button-subtle-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 600,
@@ -69,12 +69,12 @@ function describeEmptyState(status: BatchWorkspaceViewStatus): {
 			};
 		case "offline":
 			return {
-				body: "The batch-supervisor endpoint is offline, so selected-item detail is not available right now.",
+				body: "Batch detail data is unavailable right now.",
 				title: "Detail rail offline",
 			};
 		case "error":
 			return {
-				body: "The selected-item detail could not be rendered from the batch-supervisor payload.",
+				body: "Selected item detail could not be loaded.",
 				title: "Detail rail unavailable",
 			};
 		default:
@@ -128,7 +128,13 @@ export function BatchWorkspaceDetailRail({
 					>
 						Selected detail
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						Keep one selected batch item plus run-context handoffs visible while
 						you supervise batch work.
 					</p>
@@ -138,7 +144,13 @@ export function BatchWorkspaceDetailRail({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</section>
@@ -160,7 +172,13 @@ export function BatchWorkspaceDetailRail({
 				>
 					Selected detail
 				</h2>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-muted)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					{summary.selectedDetail.message}
 				</p>
 			</header>
@@ -170,11 +188,17 @@ export function BatchWorkspaceDetailRail({
 				<p style={{ margin: 0 }}>
 					<strong>{formatRunStateLabel(summary.run.state)}</strong>
 				</p>
-				<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-secondary)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					{summary.run.message}
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
-					Session: {summary.run.sessionId ?? "not available"} | Approval:{" "}
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+					Run: {summary.run.sessionId ?? "not available"} | Approval:{" "}
 					{summary.run.approvalId ?? "none"}
 				</p>
 				<div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
@@ -231,7 +255,7 @@ export function BatchWorkspaceDetailRail({
 							</p>
 							<p
 								style={{
-									color: "#475569",
+									color: "var(--jh-color-text-secondary)",
 									marginBottom: 0,
 									marginTop: "0.15rem",
 								}}
@@ -248,32 +272,36 @@ export function BatchWorkspaceDetailRail({
 						</button>
 					</div>
 
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						{formatRunStateLabel(selectedRow.status)} |{" "}
 						{formatScore(selectedRow.score)}
 						{" | "}Retries {selectedRow.retries}
 					</p>
-					<p style={{ color: "#475569", margin: 0 }}>{selectedRow.url}</p>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+						{selectedRow.url}
+					</p>
 					{selectedRow.legitimacy ? (
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Legitimacy: {selectedRow.legitimacy}
 						</p>
 					) : null}
 					{selectedRow.notes ? (
-						<p style={{ color: "#475569", margin: 0 }}>{selectedRow.notes}</p>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+							{selectedRow.notes}
+						</p>
 					) : null}
 					{selectedRow.source ? (
-						<p style={{ color: "#64748b", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-muted)", margin: 0 }}>
 							Source: {selectedRow.source}
 						</p>
 					) : null}
 					{selectedRow.error ? (
-						<p style={{ color: "#991b1b", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-status-error-fg)", margin: 0 }}>
 							Last error: {selectedRow.error}
 						</p>
 					) : null}
 					{selectedRow.rawStateError ? (
-						<p style={{ color: "#991b1b", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-status-error-fg)", margin: 0 }}>
 							State parse warning: {selectedRow.rawStateError}
 						</p>
 					) : null}
@@ -344,7 +372,13 @@ export function BatchWorkspaceDetailRail({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						Selection guidance
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{summary.selectedDetail.message}
 					</p>
 				</section>

@@ -25,19 +25,19 @@ type ApplicationHelpLaunchPanelProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "0.9rem",
 	padding: "1rem",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 700,
@@ -46,10 +46,10 @@ const buttonStyle: CSSProperties = {
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.28)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-button-subtle-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 600,
@@ -58,10 +58,10 @@ const subtleButtonStyle: CSSProperties = {
 };
 
 const textareaStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.24)",
-	borderRadius: "1rem",
-	color: "#0f172a",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
+	color: "var(--jh-color-button-bg)",
 	font: "inherit",
 	lineHeight: 1.5,
 	minHeight: "8rem",
@@ -111,18 +111,18 @@ function getEmptyState(status: ApplicationHelpViewStatus): {
 			};
 		case "offline":
 			return {
-				body: "The application-help endpoint is offline, so draft review and launch status cannot refresh.",
+				body: "Application help is unavailable right now, so draft review and launch status cannot refresh.",
 				title: "Application-help workspace offline",
 			};
 		case "error":
 			return {
-				body: "The application-help payload could not be parsed into the launch and review surface.",
+				body: "Application help data could not be loaded.",
 				title: "Application-help workspace unavailable",
 			};
 		default:
 			return {
-				body: "Start a new application-help run with report hints or a review request, or load the latest session once one exists.",
-				title: "No application-help session yet",
+				body: "Start a new application-help run with report hints or a review request, or load the latest run once one exists.",
+				title: "No application-help run yet",
 			};
 	}
 }
@@ -173,26 +173,21 @@ export function ApplicationHelpLaunchPanel({
 				}}
 			>
 				<div>
-					<p
-						style={{
-							color: "#475569",
-							letterSpacing: "0.08em",
-							marginBottom: "0.35rem",
-							marginTop: 0,
-							textTransform: "uppercase",
-						}}
-					>
-						Phase 05 / Session 06
-					</p>
 					<h2
 						id="application-help-launch-title"
 						style={{ marginBottom: "0.35rem" }}
 					>
 						Application-help launch and resume
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-						Launch a new application-help review through the shared chat command
-						route, or resume the selected session without leaving the shell.
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
+						Launch a new review through the chat command, or resume the selected
+						run without leaving the workspace.
 					</p>
 				</div>
 
@@ -237,7 +232,9 @@ export function ApplicationHelpLaunchPanel({
 							Launch review
 						</button>
 					</div>
-					<span style={{ color: "#64748b", fontSize: "0.92rem" }}>
+					<span
+						style={{ color: "var(--jh-color-text-muted)", fontSize: "0.92rem" }}
+					>
 						Last updated: {formatTimestamp(lastUpdatedAt)}
 					</span>
 				</div>
@@ -249,18 +246,18 @@ export function ApplicationHelpLaunchPanel({
 					style={{
 						background:
 							notice.kind === "success"
-								? "#dcfce7"
+								? "var(--jh-color-status-ready-bg)"
 								: notice.kind === "warn"
-									? "#fef3c7"
-									: "#dbeafe",
+									? "var(--jh-color-severity-warn-bg)"
+									: "var(--jh-color-severity-info-bg)",
 						border: `1px solid ${
 							notice.kind === "success"
-								? "#86efac"
+								? "var(--jh-color-status-ready-border)"
 								: notice.kind === "warn"
-									? "#fcd34d"
+									? "var(--jh-color-status-offline-border)"
 									: "#93c5fd"
 						}`,
-						borderRadius: "1rem",
+						borderRadius: "var(--jh-radius-md)",
 						display: "grid",
 						gap: "0.6rem",
 						padding: "0.9rem",
@@ -289,9 +286,9 @@ export function ApplicationHelpLaunchPanel({
 
 			<section
 				style={{
-					background: "rgba(248, 250, 252, 0.92)",
-					border: "1px solid rgba(148, 163, 184, 0.2)",
-					borderRadius: "1rem",
+					background: "var(--jh-color-surface-bg)",
+					border: "var(--jh-border-subtle)",
+					borderRadius: "var(--jh-radius-md)",
 					display: "grid",
 					gap: "0.75rem",
 					padding: "0.95rem",
@@ -315,7 +312,7 @@ export function ApplicationHelpLaunchPanel({
 				/>
 				<p
 					id="application-help-launch-hint"
-					style={{ color: "#64748b", margin: 0 }}
+					style={{ color: "var(--jh-color-text-muted)", margin: 0 }}
 				>
 					The browser only launches or resumes review. It never submits the
 					application for you.
@@ -324,9 +321,9 @@ export function ApplicationHelpLaunchPanel({
 
 			<section
 				style={{
-					background: "rgba(248, 250, 252, 0.92)",
-					border: "1px solid rgba(148, 163, 184, 0.2)",
-					borderRadius: "1rem",
+					background: "var(--jh-color-surface-bg)",
+					border: "var(--jh-border-subtle)",
+					borderRadius: "var(--jh-radius-md)",
 					display: "grid",
 					gap: "0.7rem",
 					padding: "0.95rem",
@@ -345,7 +342,13 @@ export function ApplicationHelpLaunchPanel({
 						<h3 style={{ marginBottom: "0.3rem", marginTop: 0 }}>
 							Selected or latest review
 						</h3>
-						<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+						<p
+							style={{
+								color: "var(--jh-color-text-secondary)",
+								marginBottom: 0,
+								marginTop: 0,
+							}}
+						>
 							{summary?.message ?? emptyState?.body}
 						</p>
 					</div>
@@ -361,7 +364,7 @@ export function ApplicationHelpLaunchPanel({
 							}}
 							type="button"
 						>
-							Resume selected session
+							Resume selected run
 						</button>
 					) : null}
 				</div>
@@ -373,10 +376,10 @@ export function ApplicationHelpLaunchPanel({
 							{" | "}
 							{formatReviewStateLabel(selectedSummary.state)}
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							{selectedSummary.message}
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							{selectedSummary.nextReview.message}
 						</p>
 					</>
@@ -385,7 +388,7 @@ export function ApplicationHelpLaunchPanel({
 						<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
 							{emptyState?.title ?? "Selection update"}
 						</h3>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							{selectedDetail.message}
 						</p>
 					</>
@@ -394,23 +397,31 @@ export function ApplicationHelpLaunchPanel({
 						<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
 							{emptyState.title}
 						</h3>
-						<p style={{ color: "#475569", margin: 0 }}>{emptyState.body}</p>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+							{emptyState.body}
+						</p>
 					</>
 				) : null}
 			</section>
 
 			<section
 				style={{
-					background: "#fff7ed",
-					border: "1px solid #fed7aa",
-					borderRadius: "1rem",
+					background: "var(--jh-color-status-warning-bg)",
+					border: "1px solid var(--jh-color-status-warning-border)",
+					borderRadius: "var(--jh-radius-md)",
 					padding: "0.95rem",
 				}}
 			>
 				<h3 style={{ marginBottom: "0.3rem", marginTop: 0 }}>
 					Manual-review boundary
 				</h3>
-				<p style={{ color: "#7c2d12", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-badge-attention-fg)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					{reviewBoundaryMessage}
 				</p>
 			</section>

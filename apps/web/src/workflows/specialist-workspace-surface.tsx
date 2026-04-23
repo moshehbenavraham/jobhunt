@@ -45,7 +45,7 @@ const detailGridStyle: CSSProperties = {
 };
 
 const noticeStyle: CSSProperties = {
-	borderRadius: "1rem",
+	borderRadius: "var(--jh-radius-md)",
 	padding: "0.9rem",
 };
 
@@ -84,26 +84,21 @@ export function SpecialistWorkspaceSurface({
 					gap: "0.35rem",
 				}}
 			>
-				<p
-					style={{
-						color: "#9a3412",
-						letterSpacing: "0.08em",
-						marginBottom: 0,
-						marginTop: 0,
-						textTransform: "uppercase",
-					}}
-				>
-					Phase 06 / Session 02
-				</p>
 				<h1
 					id="specialist-workspace-title"
 					style={{ marginBottom: 0, marginTop: 0 }}
 				>
 					Specialist workflows workspace
 				</h1>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-muted)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					Launch, resume, inspect, and hand off specialist workflows from one
-					bounded shell surface without browser-side repo reads.
+					bounded workspace without browser-side repo reads.
 				</p>
 			</header>
 
@@ -115,12 +110,12 @@ export function SpecialistWorkspaceSurface({
 						...noticeStyle,
 						background:
 							specialistWorkspace.state.status === "offline"
-								? "#e2e8f0"
-								: "#fee2e2",
+								? "var(--jh-color-status-blocked-bg)"
+								: "var(--jh-color-status-error-bg)",
 						border: `1px solid ${
 							specialistWorkspace.state.status === "offline"
-								? "#cbd5e1"
-								: "#fecaca"
+								? "var(--jh-color-nav-muted)"
+								: "var(--jh-color-status-error-border)"
 						}`,
 					}}
 				>

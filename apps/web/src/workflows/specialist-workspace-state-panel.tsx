@@ -14,28 +14,28 @@ type SpecialistWorkspaceStatePanelProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "0.95rem",
 	padding: "1rem",
 };
 
 const cardStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.55rem",
 	padding: "0.9rem",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 700,
@@ -44,10 +44,10 @@ const buttonStyle: CSSProperties = {
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.3)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-button-subtle-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 600,
@@ -56,10 +56,10 @@ const subtleButtonStyle: CSSProperties = {
 };
 
 const warningChipStyle: CSSProperties = {
-	background: "#fef3c7",
-	border: "1px solid #fde68a",
-	borderRadius: "999px",
-	color: "#92400e",
+	background: "var(--jh-color-severity-warn-bg)",
+	border: "1px solid var(--jh-color-badge-attention-bg)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-severity-warn-fg)",
 	fontSize: "0.82rem",
 	fontWeight: 700,
 	padding: "0.22rem 0.6rem",
@@ -77,17 +77,17 @@ function describeEmptyState(status: SpecialistWorkspaceViewStatus): {
 			};
 		case "offline":
 			return {
-				body: "The specialist workspace endpoint is offline, so selected workflow state is unavailable right now.",
+				body: "The workflows workspace is unavailable right now, so selected workflow state cannot refresh.",
 				title: "Selected workflow offline",
 			};
 		case "error":
 			return {
-				body: "The selected specialist state could not be rendered from the summary payload.",
+				body: "The selected specialist state could not be loaded.",
 				title: "Selected workflow unavailable",
 			};
 		default:
 			return {
-				body: "Select a workflow to inspect run state, selected session context, and the next explicit browser action.",
+				body: "Select a workflow to inspect run state, run context, and the next explicit browser action.",
 				title: "No workflow selected",
 			};
 	}
@@ -115,11 +115,11 @@ function formatStateLabel(
 ): string {
 	switch (value) {
 		case "active-session":
-			return "Active session";
+			return "Active run";
 		case "dedicated-detail":
 			return input.inlineReview ? "Inline review" : "Dedicated detail";
 		case "pending-session":
-			return "Pending session";
+			return "Pending run";
 		case "summary-pending":
 			return "Summary pending";
 		case "tooling-gap":
@@ -156,7 +156,13 @@ export function SpecialistWorkspaceStatePanel({
 					>
 						Selected workflow state
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						Keep one bounded specialist state in view while the shared workflow
 						inventory stays visible beside it.
 					</p>
@@ -166,7 +172,13 @@ export function SpecialistWorkspaceStatePanel({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</section>
@@ -193,7 +205,13 @@ export function SpecialistWorkspaceStatePanel({
 				>
 					Selected workflow state
 				</h2>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-muted)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					{summary?.selected.message ?? selectedSummary.message}
 				</p>
 			</header>
@@ -211,7 +229,7 @@ export function SpecialistWorkspaceStatePanel({
 						<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 							{selectedSummary.handoff.label}
 						</h3>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							{selectedSummary.handoff.specialistLabel} |{" "}
 							{selectedSummary.supportState}
 						</p>
@@ -226,8 +244,10 @@ export function SpecialistWorkspaceStatePanel({
 					</button>
 				</div>
 
-				<p style={{ color: "#475569", margin: 0 }}>{selectedSummary.message}</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+					{selectedSummary.message}
+				</p>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Result:{" "}
 					{formatStateLabel(selectedSummary.result.state, {
 						inlineReview,
@@ -237,9 +257,9 @@ export function SpecialistWorkspaceStatePanel({
 						inlineReview,
 					})}
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					{inlineReview
-						? "Planner and narrative review now stay in the workflows surface while approvals, chat, tracker, pipeline, and report routes remain explicit."
+						? "Planner and narrative review now stay in the workflows workspace while approvals, chat, tracker, pipeline, and report routes remain explicit."
 						: selectedSummary.nextAction.message}
 				</p>
 
@@ -256,7 +276,12 @@ export function SpecialistWorkspaceStatePanel({
 					>
 						Resume selected
 					</button>
-					<span style={{ color: "#475569", fontSize: "0.92rem" }}>
+					<span
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							fontSize: "0.92rem",
+						}}
+					>
 						{selectedSummary.result.message}
 					</span>
 				</div>
@@ -271,25 +296,25 @@ export function SpecialistWorkspaceStatePanel({
 						})}
 					</strong>
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					{selectedSummary.run.message}
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Resume allowed: {selectedSummary.run.resumeAllowed ? "yes" : "no"}
 				</p>
 				{selectedSummary.session ? (
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						Session {selectedSummary.session.sessionId} is{" "}
 						{selectedSummary.session.status}. Updated{" "}
 						{formatTimestamp(selectedSummary.session.updatedAt)}.
 					</p>
 				) : (
-					<p style={{ color: "#475569", margin: 0 }}>
-						No specialist session is currently attached to this selection.
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+						No specialist run is currently attached to this selection.
 					</p>
 				)}
 				{selectedSummary.job ? (
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						Job {selectedSummary.job.jobId} is {selectedSummary.job.status}
 						{selectedSummary.job.waitReason
 							? ` (${selectedSummary.job.waitReason})`
@@ -313,7 +338,10 @@ export function SpecialistWorkspaceStatePanel({
 					</div>
 					<div style={{ display: "grid", gap: "0.35rem" }}>
 						{selectedSummary.warnings.map((warning) => (
-							<p key={warning.code} style={{ color: "#475569", margin: 0 }}>
+							<p
+								key={warning.code}
+								style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}
+							>
 								{warning.message}
 							</p>
 						))}
@@ -326,10 +354,10 @@ export function SpecialistWorkspaceStatePanel({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						Latest failure
 					</h3>
-					<p style={{ color: "#991b1b", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-status-error-fg)", margin: 0 }}>
 						{selectedSummary.failure.message}
 					</p>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						Failed {formatTimestamp(selectedSummary.failure.failedAt)} | Run{" "}
 						{selectedSummary.failure.runId}
 					</p>

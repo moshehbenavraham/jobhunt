@@ -23,18 +23,18 @@ type BatchWorkspaceRunPanelProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "1rem",
 	padding: "1rem",
 };
 
 const sectionCardStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.55rem",
 	padding: "0.9rem",
@@ -47,10 +47,10 @@ const gridStyle: CSSProperties = {
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 700,
@@ -59,10 +59,10 @@ const buttonStyle: CSSProperties = {
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.3)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-button-subtle-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 600,
@@ -115,12 +115,12 @@ function describeEmptyState(status: BatchWorkspaceViewStatus): {
 			};
 		case "offline":
 			return {
-				body: "The batch-supervisor endpoint is offline, so batch supervision cannot refresh right now.",
+				body: "Batch control is unavailable right now, so batch supervision cannot refresh.",
 				title: "Batch workspace offline",
 			};
 		case "error":
 			return {
-				body: "The batch-supervisor payload could not be rendered into the batch workspace.",
+				body: "Batch run data could not be loaded.",
 				title: "Batch workspace unavailable",
 			};
 		default:
@@ -179,18 +179,18 @@ function getNoticeStyle(
 	switch (kind) {
 		case "info":
 			return {
-				background: "#dbeafe",
-				borderColor: "#bfdbfe",
+				background: "var(--jh-color-severity-info-bg)",
+				borderColor: "var(--jh-color-badge-info-bg)",
 			};
 		case "success":
 			return {
-				background: "#dcfce7",
-				borderColor: "#bbf7d0",
+				background: "var(--jh-color-status-ready-bg)",
+				borderColor: "var(--jh-color-status-completed-bg)",
 			};
 		case "warn":
 			return {
-				background: "#fef3c7",
-				borderColor: "#fde68a",
+				background: "var(--jh-color-severity-warn-bg)",
+				borderColor: "var(--jh-color-badge-attention-bg)",
 			};
 	}
 }
@@ -230,9 +230,14 @@ export function BatchWorkspaceRunPanel({
 						>
 							Batch run control
 						</h2>
-						<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-							Review draft readiness, run progress, and closeout guidance from
-							the backend-owned batch-supervisor contract.
+						<p
+							style={{
+								color: "var(--jh-color-text-muted)",
+								marginBottom: 0,
+								marginTop: 0,
+							}}
+						>
+							Review draft readiness, run progress, and closeout guidance.
 						</p>
 					</div>
 
@@ -245,7 +250,12 @@ export function BatchWorkspaceRunPanel({
 						>
 							Refresh
 						</button>
-						<span style={{ color: "#64748b", fontSize: "0.92rem" }}>
+						<span
+							style={{
+								color: "var(--jh-color-text-muted)",
+								fontSize: "0.92rem",
+							}}
+						>
 							Last updated: {formatTimestamp(lastUpdatedAt)}
 						</span>
 					</div>
@@ -255,7 +265,13 @@ export function BatchWorkspaceRunPanel({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</section>
@@ -284,7 +300,13 @@ export function BatchWorkspaceRunPanel({
 					>
 						Batch run control
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{summary.message}
 					</p>
 				</div>
@@ -302,7 +324,9 @@ export function BatchWorkspaceRunPanel({
 					>
 						{isBusy ? "Refreshing..." : "Refresh"}
 					</button>
-					<span style={{ color: "#64748b", fontSize: "0.92rem" }}>
+					<span
+						style={{ color: "var(--jh-color-text-muted)", fontSize: "0.92rem" }}
+					>
 						Last updated: {formatTimestamp(lastUpdatedAt)}
 					</span>
 				</div>
@@ -352,7 +376,13 @@ export function BatchWorkspaceRunPanel({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						Draft readiness
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{summary.draft.message}
 					</p>
 					<p style={{ margin: 0 }}>
@@ -360,13 +390,13 @@ export function BatchWorkspaceRunPanel({
 						<strong>{summary.draft.pendingTrackerAdditionCount}</strong> pending
 						tracker additions
 					</p>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						Retryable: {summary.draft.counts.retryableFailed} | Pending:{" "}
 						{summary.draft.counts.pending} | Partial:{" "}
 						{summary.draft.counts.partial}
 					</p>
 					{summary.draft.firstRunnableItemId !== null ? (
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							First runnable item: #{summary.draft.firstRunnableItemId}
 						</p>
 					) : null}
@@ -377,21 +407,27 @@ export function BatchWorkspaceRunPanel({
 					<p style={{ margin: 0 }}>
 						<strong>{formatRunStateLabel(summary.run.state)}</strong>
 					</p>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{summary.run.message}
 					</p>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						Completed: {summary.run.counts.completed} | Failed:{" "}
 						{summary.run.counts.failed} | Processing:{" "}
 						{summary.run.counts.processing}
 					</p>
 					{summary.run.approvalId ? (
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Approval ID: {summary.run.approvalId}
 						</p>
 					) : null}
 					{summary.run.runId ? (
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Run ID: {summary.run.runId}
 						</p>
 					) : null}
@@ -401,14 +437,20 @@ export function BatchWorkspaceRunPanel({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						Closeout readiness
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{summary.closeout.message}
 					</p>
 					<p style={{ margin: 0 }}>
 						Merge blocked:{" "}
 						<strong>{summary.closeout.mergeBlocked ? "Yes" : "No"}</strong>
 					</p>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						Pending additions: {summary.closeout.pendingTrackerAdditionCount}
 					</p>
 					{summary.closeout.warnings.length > 0 ? (
@@ -420,7 +462,7 @@ export function BatchWorkspaceRunPanel({
 							))}
 						</ul>
 					) : (
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							No closeout warnings are blocking review right now.
 						</p>
 					)}
@@ -452,7 +494,12 @@ export function BatchWorkspaceRunPanel({
 									>
 										{describePendingAction(action.action, pendingAction)}
 									</button>
-									<p style={{ color: "#475569", margin: 0 }}>
+									<p
+										style={{
+											color: "var(--jh-color-text-secondary)",
+											margin: 0,
+										}}
+									>
 										{action.message}
 									</p>
 								</div>

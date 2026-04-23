@@ -249,7 +249,7 @@ async function parseResponsePayload<TPayload>(
 			cause: error,
 			code: "invalid-json",
 			httpStatus: response.status,
-			message: "Specialist workspace endpoint returned invalid JSON.",
+			message: "Specialist workspace returned invalid data.",
 			state: "error",
 		});
 	});
@@ -281,8 +281,7 @@ async function parseResponsePayload<TPayload>(
 				cause: parsedError,
 				code: "invalid-response",
 				httpStatus: response.status,
-				message:
-					"Specialist workspace endpoint returned an unexpected payload.",
+				message: "Specialist workspace returned unexpected data.",
 				state: "error",
 			});
 		}
@@ -367,8 +366,7 @@ async function fetchSummaryOnce(options: {
 		throw new SpecialistWorkspaceClientError({
 			cause: error,
 			code: "network-error",
-			message:
-				"Could not reach the specialist workspace summary endpoint right now.",
+			message: "Could not reach the specialist workspace right now.",
 			state: "offline",
 		});
 	} finally {
@@ -488,7 +486,7 @@ async function submitActionOnce(options: {
 		throw new SpecialistWorkspaceClientError({
 			cause: error,
 			code: "network-error",
-			message: "Could not reach the specialist workspace action endpoint.",
+			message: "Could not reach the specialist workspace action service.",
 			state: "offline",
 		});
 	} finally {

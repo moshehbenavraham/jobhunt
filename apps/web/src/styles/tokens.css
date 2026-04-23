@@ -233,6 +233,10 @@
      ---------------------------------------------------------------- */
   --jh-color-button-bg: #0f172a;
   --jh-color-button-fg: #f8fafc;
+  --jh-color-button-subtle-bg: rgba(15, 23, 42, 0.08);
+  --jh-color-selected-border: rgba(15, 23, 42, 0.42);
+  --jh-color-selected-highlight-border: rgba(251, 191, 36, 0.7);
+  --jh-color-selected-highlight-shadow: rgba(251, 191, 36, 0.18);
 
   /* Session / heading label */
   --jh-color-label-fg: #7c2d12;

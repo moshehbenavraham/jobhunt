@@ -23,28 +23,28 @@ type SpecialistWorkspaceDetailRailProps = {
 };
 
 const railStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "0.95rem",
 	padding: "1rem",
 };
 
 const cardStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.55rem",
 	padding: "0.9rem",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 700,
@@ -53,10 +53,10 @@ const buttonStyle: CSSProperties = {
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.3)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-button-subtle-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 600,
@@ -71,22 +71,22 @@ function describeEmptyState(status: SpecialistWorkspaceViewStatus): {
 	switch (status) {
 		case "loading":
 			return {
-				body: "Loading handoff routes, detail-surface metadata, and tool previews for the selected workflow.",
+				body: "Loading handoff routes, detail metadata, and tool previews for the selected workflow.",
 				title: "Loading workflow handoffs",
 			};
 		case "offline":
 			return {
-				body: "The specialist workspace endpoint is offline, so explicit handoffs cannot refresh right now.",
+				body: "The specialist workspace is unavailable right now, so explicit handoffs cannot refresh.",
 				title: "Workflow handoffs offline",
 			};
 		case "error":
 			return {
-				body: "The selected workflow handoff rail could not be rendered from the summary payload.",
+				body: "The selected workflow handoff rail data could not be loaded.",
 				title: "Workflow handoffs unavailable",
 			};
 		default:
 			return {
-				body: "Select a workflow with a dedicated detail surface to inspect explicit handoff routes. Inline tracker and research review now stay in the workflows surface.",
+				body: "Select a workflow with dedicated detail to inspect explicit handoff routes. Inline tracker and research review now stay in the workflows workspace.",
 				title: "No handoff selected",
 			};
 	}
@@ -117,8 +117,14 @@ export function SpecialistWorkspaceDetailRail({
 					>
 						Detail and handoffs
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-						Keep specialist detail surfaces and cross-shell routes explicit.
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
+						Keep specialist detail views and cross-shell routes explicit.
 					</p>
 				</header>
 
@@ -126,7 +132,13 @@ export function SpecialistWorkspaceDetailRail({
 					<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</section>
@@ -156,9 +168,15 @@ export function SpecialistWorkspaceDetailRail({
 				>
 					Detail and handoffs
 				</h2>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-muted)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					{selectedSummary.handoff.mode === "application-help"
-						? "Application-help keeps detailed review in its own surface, while the workflows shell keeps the handoff explicit."
+						? "Application-help keeps detailed review in its own workspace, while the workflows shell keeps the handoff explicit."
 						: selectedSummary.result.message}
 				</p>
 			</header>
@@ -176,8 +194,8 @@ export function SpecialistWorkspaceDetailRail({
 						<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
 							Explicit handoffs
 						</h3>
-						<p style={{ color: "#475569", margin: 0 }}>
-							Route from the shared workflows surface into dedicated review
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
+							Navigate from the shared workflows workspace into dedicated review
 							areas without guessing from repo artifacts or duplicating the
 							review UI in the browser shell.
 						</p>
@@ -194,7 +212,7 @@ export function SpecialistWorkspaceDetailRail({
 
 				<div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
 					<button
-						aria-label="Open the dedicated detail surface for the selected specialist workflow"
+						aria-label="Open the dedicated detail view for the selected specialist workflow"
 						disabled={detailSurface === null}
 						onClick={() => {
 							if (!detailSurface) {
@@ -213,7 +231,7 @@ export function SpecialistWorkspaceDetailRail({
 						}}
 						type="button"
 					>
-						{detailSurface ? detailSurface.label : "No detail surface"}
+						{detailSurface ? detailSurface.label : "No detail view"}
 					</button>
 					<button
 						aria-label="Open approvals for the selected specialist workflow"
@@ -258,18 +276,18 @@ export function SpecialistWorkspaceDetailRail({
 				<p style={{ margin: 0 }}>
 					<strong>{selectedSummary.handoff.label}</strong>
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Repo mode: {selectedSummary.handoff.modeRepoRelativePath}
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Workspace path: {selectedSummary.handoff.workspacePath}
 				</p>
 				{descriptor ? (
 					<>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							{descriptor.intake.message}
 						</p>
-						<p style={{ color: "#475569", margin: 0 }}>
+						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 							Missing capabilities:{" "}
 							{descriptor.missingCapabilities.length > 0
 								? descriptor.missingCapabilities.join(", ")
@@ -281,7 +299,7 @@ export function SpecialistWorkspaceDetailRail({
 
 			<section style={cardStyle}>
 				<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>Tool preview</h3>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					{selectedSummary.handoff.toolPreview.fallbackApplied
 						? "Fallback preview applied."
 						: "Direct tool preview available."}{" "}
@@ -291,7 +309,7 @@ export function SpecialistWorkspaceDetailRail({
 					{selectedSummary.handoff.toolPreview.items.map((tool) => (
 						<p
 							key={`${tool.access}:${tool.name}`}
-							style={{ color: "#475569", margin: 0 }}
+							style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}
 						>
 							{tool.name} ({tool.access})
 						</p>

@@ -26,7 +26,7 @@ const detailGridStyle: CSSProperties = {
 };
 
 const noticeStyle: CSSProperties = {
-	borderRadius: "1rem",
+	borderRadius: "var(--jh-radius-md)",
 	padding: "0.9rem",
 };
 
@@ -51,26 +51,21 @@ export function ApplicationHelpSurface({
 					gap: "0.35rem",
 				}}
 			>
-				<p
-					style={{
-						color: "#9a3412",
-						letterSpacing: "0.08em",
-						marginBottom: 0,
-						marginTop: 0,
-						textTransform: "uppercase",
-					}}
-				>
-					Phase 05 / Session 06
-				</p>
 				<h1
 					id="application-help-workspace-title"
 					style={{ marginBottom: 0, marginTop: 0 }}
 				>
 					Application-help workspace
 				</h1>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-muted)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					Review staged application answers, approval pauses, and report-backed
-					context from one bounded shell surface without implying automatic
+					context from one bounded workspace without implying automatic
 					submission.
 				</p>
 			</header>
@@ -83,10 +78,12 @@ export function ApplicationHelpSurface({
 						...noticeStyle,
 						background:
 							applicationHelp.state.status === "offline"
-								? "#e2e8f0"
-								: "#fee2e2",
+								? "var(--jh-color-status-blocked-bg)"
+								: "var(--jh-color-status-error-bg)",
 						border: `1px solid ${
-							applicationHelp.state.status === "offline" ? "#cbd5e1" : "#fecaca"
+							applicationHelp.state.status === "offline"
+								? "var(--jh-color-nav-muted)"
+								: "var(--jh-color-status-error-border)"
 						}`,
 					}}
 				>

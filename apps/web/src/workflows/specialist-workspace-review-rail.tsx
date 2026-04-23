@@ -34,28 +34,28 @@ type SpecialistWorkspaceReviewRailProps = {
 };
 
 const railStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
 	gap: "0.95rem",
 	padding: "1rem",
 };
 
 const cardStyle: CSSProperties = {
-	background: "rgba(248, 250, 252, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.18)",
-	borderRadius: "1rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.55rem",
 	padding: "0.9rem",
 };
 
 const actionButtonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 700,
@@ -64,10 +64,10 @@ const actionButtonStyle: CSSProperties = {
 };
 
 const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.3)",
-	borderRadius: "999px",
-	color: "#0f172a",
+	background: "var(--jh-color-button-subtle-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
 	font: "inherit",
 	fontWeight: 600,
@@ -124,14 +124,20 @@ export function SpecialistWorkspaceReviewRail({
 					>
 						Review handoffs
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-						Inline specialist review surfaces keep report, tracker, pipeline,
-						chat, and approval handoffs explicit and backend-owned.
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
+						Inline specialist review views keep report, tracker, pipeline, chat,
+						and approval handoffs explicit and backend-owned.
 					</p>
 				</header>
 
 				<section style={cardStyle}>
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						Select an inline-review workflow to activate report, tracker,
 						pipeline, approval, and chat handoffs.
 					</p>
@@ -173,27 +179,31 @@ export function SpecialistWorkspaceReviewRail({
 				>
 					Review handoffs
 				</h2>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-muted)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					Use explicit backend-owned routes when the review packet points to
 					related reports, tracker rows, pipeline items, approvals, or chat.
 				</p>
 			</header>
 
 			<section style={cardStyle}>
-				<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>
-					Session context
-				</h3>
+				<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>Run context</h3>
 				<p style={{ margin: 0 }}>
 					<strong>
 						{selectedSummary?.workflow.label ?? "Specialist review"}
 					</strong>
 				</p>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					Session {sessionId ?? "not available"} | Run{" "}
 					{selectedSummary?.run.state ?? "unknown"}
 				</p>
 				{selectedSummary?.session ? (
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						Last updated {formatTimestamp(selectedSummary.session.updatedAt)}
 					</p>
 				) : null}
@@ -296,17 +306,17 @@ export function SpecialistWorkspaceReviewRail({
 
 			<section style={cardStyle}>
 				<h3 style={{ marginBottom: "0.2rem", marginTop: 0 }}>Review notes</h3>
-				<p style={{ color: "#475569", margin: 0 }}>
+				<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 					{selectedSummary?.message}
 				</p>
 				{review.family === "research-specialist" &&
 				review.payload.selected.summary?.reviewBoundary ? (
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						{review.payload.selected.summary.reviewBoundary.message}
 					</p>
 				) : null}
 				{review.family === "tracker-specialist" && selectedSummary ? (
-					<p style={{ color: "#475569", margin: 0 }}>
+					<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
 						{selectedSummary.nextAction.message}
 					</p>
 				) : null}

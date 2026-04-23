@@ -4,7 +4,7 @@
 **Sessions**: 7
 **Estimated Duration**: 14-28 days
 
-**Progress**: 5/7 sessions (71%)
+**Progress**: 6/7 sessions (86%)
 
 ---
 
@@ -30,7 +30,7 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
 | 03      | Report Viewer                           | Complete    | 20         | 2026-04-23 |
 | 04      | Pipeline Review                         | Complete    | 20         | 2026-04-23 |
 | 05      | Tracker and Scan Surfaces               | Complete    | 22         | 2026-04-23 |
-| 06      | Batch and Specialist Surfaces           | Not Started | ~20        | -          |
+| 06      | Batch and Specialist Surfaces           | Complete    | 22         | 2026-04-23 |
 | 07      | Deep Linking, Approvals, and Guardrails | Not Started | ~18        | -          |
 
 ---
@@ -82,11 +82,21 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
   - All banned terms purged from tracker and scan files
   - 22/22 tasks, TS 0 errors
 
+- **Session 06: Batch and Specialist Surfaces** -- completed 2026-04-23
+  - Token migration across batch (5 files), specialist (8 files), application-help (5 files)
+  - ~120 inline hex/rgba values replaced with CSS custom property references (4 documented exceptions)
+  - ~40 banned-term violations purged from user-visible strings across all three surface families
+  - Batch item matrix with dense scannable rows, status filters, selection state
+  - Specialist workflow cards with ready/gap separation, state panels, review rails
+  - Application help launch-to-draft flow with context rail
+  - 4 new CSS tokens added (button-subtle-bg, selected-border, selected-highlight-border, selected-highlight-shadow)
+  - 22/22 tasks, TS 0 errors, Vite build clean
+
 ---
 
 ## Upcoming Sessions
 
-- Session 06: Batch and Specialist Surfaces
+- Session 07: Deep Linking, Approvals, and Guardrails
 
 ---
 

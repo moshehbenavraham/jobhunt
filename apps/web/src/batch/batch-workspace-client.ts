@@ -203,7 +203,7 @@ async function parseResponsePayload<TPayload>(
 			cause: error,
 			code: "invalid-json",
 			httpStatus: response.status,
-			message: "Batch-workspace endpoint returned invalid JSON.",
+			message: "Batch workspace returned invalid data.",
 			state: "error",
 		});
 	});
@@ -235,7 +235,7 @@ async function parseResponsePayload<TPayload>(
 				cause: parsedError,
 				code: "invalid-response",
 				httpStatus: response.status,
-				message: "Batch-workspace endpoint returned an unexpected payload.",
+				message: "Batch workspace returned unexpected data.",
 				state: "error",
 			});
 		}
@@ -329,7 +329,7 @@ async function fetchSummaryOnce(options: {
 			throw new BatchWorkspaceClientError({
 				cause: error,
 				code: "timeout",
-				message: "Batch-workspace summary timed out before it responded.",
+				message: "Batch workspace summary request timed out.",
 				state: "offline",
 			});
 		}
@@ -342,7 +342,7 @@ async function fetchSummaryOnce(options: {
 			cause: error,
 			code: "offline",
 			message:
-				"Batch-workspace summary endpoint is unavailable. Start the local API server and try again.",
+				"Batch workspace summary is unavailable. Start the local API server and try again.",
 			state: "offline",
 		});
 	} finally {
@@ -385,7 +385,7 @@ async function submitActionOnce(options: {
 			throw new BatchWorkspaceClientError({
 				cause: error,
 				code: "timeout",
-				message: "Batch-workspace action timed out before it responded.",
+				message: "Batch workspace action request timed out.",
 				state: "offline",
 			});
 		}
@@ -398,7 +398,7 @@ async function submitActionOnce(options: {
 			cause: error,
 			code: "offline",
 			message:
-				"Batch-workspace action endpoint is unavailable. Start the local API server and try again.",
+				"Batch workspace action is unavailable. Start the local API server and try again.",
 			state: "offline",
 		});
 	} finally {
