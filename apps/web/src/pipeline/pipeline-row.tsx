@@ -11,11 +11,16 @@ type PipelineRowProps = {
 };
 
 const baseRowStyle: CSSProperties = {
+	appearance: "none",
 	borderRadius: "var(--jh-radius-md)",
+	color: "inherit",
 	cursor: "pointer",
 	display: "grid",
+	font: "inherit",
 	gap: "var(--jh-space-2)",
 	padding: "var(--jh-space-3) var(--jh-space-padding)",
+	textAlign: "start",
+	width: "100%",
 };
 
 const topLineStyle: CSSProperties = {
@@ -169,7 +174,7 @@ export function PipelineRow({ onSelect, row }: PipelineRowProps) {
 	};
 
 	return (
-		<div
+		<button
 			aria-current={row.selected ? "true" : undefined}
 			aria-label={
 				row.reportNumber
@@ -177,15 +182,8 @@ export function PipelineRow({ onSelect, row }: PipelineRowProps) {
 					: `Queue row ${row.url}`
 			}
 			onClick={() => onSelect(row)}
-			onKeyDown={(e) => {
-				if (e.key === "Enter" || e.key === " ") {
-					e.preventDefault();
-					onSelect(row);
-				}
-			}}
-			role="button"
 			style={rowStyle}
-			tabIndex={0}
+			type="button"
 		>
 			<div style={topLineStyle}>
 				<div style={{ minWidth: 0 }}>
@@ -246,6 +244,6 @@ export function PipelineRow({ onSelect, row }: PipelineRowProps) {
 					</span>
 				))}
 			</div>
-		</div>
+		</button>
 	);
 }
