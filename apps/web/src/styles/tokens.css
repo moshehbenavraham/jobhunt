@@ -238,4 +238,22 @@
   --jh-text-label-sm-weight: var(--jh-font-weight-medium);
   --jh-text-label-sm-line-height: 1.3;
   --jh-text-label-sm-letter-spacing: 0.04em;
+
+  /* ----------------------------------------------------------------
+     BREAKPOINTS: reference values for JS and documentation
+     (CSS media queries use raw px values since custom properties
+     cannot appear in @media conditions)
+     ---------------------------------------------------------------- */
+  --jh-bp-mobile: 768px;
+  --jh-bp-tablet: 1200px;
+  --jh-bp-wide: 1600px;
+
+  /* ----------------------------------------------------------------
+     LAYOUT: responsive zone dimensions
+     ---------------------------------------------------------------- */
+  --jh-zone-rail-collapsed-width: 56px;
+  --jh-zone-drawer-width: 320px;
+  --jh-zone-bottom-nav-height: 56px;
+  --jh-zone-drawer-transition: 250ms ease-out;
+  --jh-color-drawer-backdrop: rgba(15, 23, 42, 0.5);
 }

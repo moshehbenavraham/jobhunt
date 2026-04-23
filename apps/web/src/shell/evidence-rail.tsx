@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 type EvidenceRailProps = {
 	className?: string;
+	inline?: boolean;
 };
 
 const railStyle: CSSProperties = {
@@ -13,18 +14,20 @@ const railStyle: CSSProperties = {
 	padding: "var(--jh-space-padding)",
 };
 
+const drawerContentStyle: CSSProperties = {
+	display: "grid",
+	gap: "var(--jh-space-gap)",
+	padding: "var(--jh-space-padding)",
+};
+
 const emptyStateStyle: CSSProperties = {
 	color: "var(--jh-color-text-muted)",
 	textAlign: "center" as const,
 };
 
-export function EvidenceRail({ className }: EvidenceRailProps) {
+function EvidenceRailContent() {
 	return (
-		<aside
-			aria-label="Evidence and context"
-			className={className}
-			style={railStyle}
-		>
+		<>
 			<div>
 				<p
 					style={{
@@ -52,6 +55,26 @@ export function EvidenceRail({ className }: EvidenceRailProps) {
 					work.
 				</p>
 			</div>
+		</>
+	);
+}
+
+export function EvidenceRail({ className, inline = true }: EvidenceRailProps) {
+	if (!inline) {
+		return (
+			<div style={drawerContentStyle}>
+				<EvidenceRailContent />
+			</div>
+		);
+	}
+
+	return (
+		<aside
+			aria-label="Evidence and context"
+			className={className}
+			style={railStyle}
+		>
+			<EvidenceRailContent />
 		</aside>
 	);
 }

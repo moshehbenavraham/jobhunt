@@ -24,6 +24,8 @@ import { openSpecialistWorkspaceSurface } from "../workflows/specialist-workspac
 import { SpecialistWorkspaceSurface } from "../workflows/specialist-workspace-surface";
 import type { SpecialistWorkspaceMode } from "../workflows/specialist-workspace-types";
 import { SPECIALIST_WORKSPACE_MODE_VALUES } from "../workflows/specialist-workspace-types";
+import { BottomNav } from "./bottom-nav";
+import { Drawer } from "./drawer";
 import { EvidenceRail } from "./evidence-rail";
 import { NavigationRail } from "./navigation-rail";
 import { OperatorHomeSurface } from "./operator-home-surface";
@@ -33,6 +35,7 @@ import { StatusStrip } from "./status-strip";
 import { SurfacePlaceholder } from "./surface-placeholder";
 import { useOperatorHome } from "./use-operator-home";
 import { useOperatorShell } from "./use-operator-shell";
+import { useResponsiveLayout } from "./use-responsive-layout";
 
 const pageStyle: CSSProperties = {
 	background: "var(--jh-color-shell-bg)",
@@ -244,9 +247,58 @@ function renderStartupSurface(
 	);
 }
 
+const evidenceToggleStyle: CSSProperties = {
+	alignItems: "center",
+	background: "var(--jh-color-nav-bg)",
+	border: "var(--jh-border-width) solid var(--jh-color-nav-border)",
+	borderRadius: "var(--jh-radius-md)",
+	color: "var(--jh-color-nav-text)",
+	cursor: "pointer",
+	display: "inline-flex",
+	fontFamily: "var(--jh-font-body)",
+	fontSize: "var(--jh-text-body-sm-size)",
+	gap: "var(--jh-space-2)",
+	justifyContent: "center",
+	padding: "var(--jh-space-2) var(--jh-space-3)",
+};
+
+const mobileMenuButtonStyle: CSSProperties = {
+	alignItems: "center",
+	background: "var(--jh-color-nav-bg)",
+	border: "var(--jh-border-width) solid var(--jh-color-nav-border)",
+	borderRadius: "var(--jh-radius-md)",
+	color: "var(--jh-color-nav-text)",
+	cursor: "pointer",
+	display: "inline-flex",
+	fontFamily: "var(--jh-font-body)",
+	fontSize: "var(--jh-text-body-sm-size)",
+	gap: "var(--jh-space-2)",
+	justifyContent: "center",
+	padding: "var(--jh-space-2) var(--jh-space-3)",
+};
+
+const drawerHeaderStyle: CSSProperties = {
+	alignItems: "center",
+	borderBottom: "var(--jh-border-subtle)",
+	display: "flex",
+	justifyContent: "space-between",
+	padding: "var(--jh-space-padding)",
+};
+
+const drawerCloseStyle: CSSProperties = {
+	background: "none",
+	border: "none",
+	color: "var(--jh-color-text-primary)",
+	cursor: "pointer",
+	fontFamily: "var(--jh-font-body)",
+	fontSize: "var(--jh-text-body-lg-size)",
+	padding: "var(--jh-space-2)",
+};
+
 export function OperatorShell() {
 	const startup = useStartupDiagnostics();
 	const shell = useOperatorShell();
+	const responsive = useResponsiveLayout();
 	const home = useOperatorHome({
 		isActive: shell.state.selectedSurface === "home",
 	});
@@ -436,6 +488,12 @@ export function OperatorShell() {
 		}
 	};
 
+	const { breakpoint, isEvidenceDrawerOpen, isNavDrawerOpen, railVariant } =
+		responsive.state;
+	const isDesktop = breakpoint === "desktop";
+	const isMobile = breakpoint === "mobile";
+	const showEvidenceInline = isDesktop;
+
 	return (
 		<main style={pageStyle}>
 			<div className="jh-shell-frame">
@@ -453,12 +511,43 @@ export function OperatorShell() {
 					summary={shell.state.data}
 				/>
 
+				{!isDesktop ? (
+					<div
+						style={{
+							display: "flex",
+							gap: "var(--jh-space-2)",
+							justifyContent: "flex-end",
+							padding: "0 var(--jh-space-2)",
+						}}
+					>
+						{isMobile ? (
+							<button
+								aria-label="Open navigation"
+								onClick={responsive.toggleNavDrawer}
+								style={mobileMenuButtonStyle}
+								type="button"
+							>
+								Menu
+							</button>
+						) : null}
+						<button
+							aria-label="Toggle evidence panel"
+							onClick={responsive.toggleEvidenceDrawer}
+							style={evidenceToggleStyle}
+							type="button"
+						>
+							Evidence
+						</button>
+					</div>
+				) : null}
+
 				<div className="jh-shell-body">
-					<aside>
+					<aside className="jh-nav-rail--inline">
 						<NavigationRail
 							currentSurface={shell.state.selectedSurface}
 							onSelect={shell.selectSurface}
 							summary={shell.state.data}
+							variant={railVariant}
 						/>
 					</aside>
 
@@ -553,8 +642,71 @@ export function OperatorShell() {
 						</div>
 					</section>
 
-					<EvidenceRail />
+					{showEvidenceInline ? (
+						<EvidenceRail className="jh-evidence-rail--inline" />
+					) : null}
 				</div>
+
+				<Drawer
+					ariaLabel="Evidence and context"
+					isOpen={isEvidenceDrawerOpen}
+					onClose={responsive.closeEvidenceDrawer}
+					side="right"
+				>
+					<div style={drawerHeaderStyle}>
+						<strong>Evidence</strong>
+						<button
+							aria-label="Close evidence panel"
+							onClick={responsive.closeEvidenceDrawer}
+							style={drawerCloseStyle}
+							type="button"
+						>
+							X
+						</button>
+					</div>
+					<EvidenceRail inline={false} />
+				</Drawer>
+
+				<Drawer
+					ariaLabel="Navigation menu"
+					isOpen={isNavDrawerOpen}
+					onClose={responsive.closeNavDrawer}
+					side="left"
+					width="min(85vw, var(--jh-zone-drawer-width))"
+				>
+					<div style={drawerHeaderStyle}>
+						<strong>Navigation</strong>
+						<button
+							aria-label="Close navigation menu"
+							onClick={responsive.closeNavDrawer}
+							style={drawerCloseStyle}
+							type="button"
+						>
+							X
+						</button>
+					</div>
+					<div
+						style={{ flex: 1, overflowY: "auto", padding: "var(--jh-space-2)" }}
+					>
+						<NavigationRail
+							currentSurface={shell.state.selectedSurface}
+							onSelect={(surfaceId) => {
+								shell.selectSurface(surfaceId);
+								responsive.closeNavDrawer();
+							}}
+							summary={shell.state.data}
+							variant="full"
+						/>
+					</div>
+				</Drawer>
+
+				{isMobile ? (
+					<BottomNav
+						currentSurface={shell.state.selectedSurface}
+						onMenuTap={responsive.toggleNavDrawer}
+						onSelect={shell.selectSurface}
+					/>
+				) : null}
 			</div>
 		</main>
 	);

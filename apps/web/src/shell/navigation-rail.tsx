@@ -5,11 +5,29 @@ import {
 	SHELL_SURFACES,
 	type ShellSurfaceId,
 } from "./shell-types";
+import type { NavigationRailVariant } from "./use-responsive-layout";
 
 type NavigationRailProps = {
 	currentSurface: ShellSurfaceId;
 	onSelect: (surfaceId: ShellSurfaceId) => void;
 	summary: OperatorShellSummaryPayload | null;
+	variant?: NavigationRailVariant;
+};
+
+export const SURFACE_ICON_MAP: Record<ShellSurfaceId, string> = {
+	home: "H",
+	startup: "S",
+	chat: "C",
+	workflows: "W",
+	scan: "R",
+	batch: "B",
+	"application-help": "A",
+	pipeline: "P",
+	tracker: "T",
+	artifacts: "F",
+	onboarding: "O",
+	approvals: "!",
+	settings: "*",
 };
 
 type NavBadge = {
@@ -239,11 +257,80 @@ function getBadge(
 	}
 }
 
+const collapsedRailStyle: CSSProperties = {
+	...railStyle,
+	padding: "var(--jh-space-2)",
+	width: "var(--jh-zone-rail-collapsed-width)",
+};
+
+const collapsedItemStyle: CSSProperties = {
+	alignItems: "center",
+	background: "var(--jh-color-nav-item-bg)",
+	border: "var(--jh-border-width) solid var(--jh-color-surface-border)",
+	borderRadius: "var(--jh-radius-md)",
+	color: "var(--jh-color-nav-text)",
+	display: "flex",
+	fontFamily: "var(--jh-font-heading)",
+	fontSize: "var(--jh-text-body-sm-size)",
+	fontWeight: "var(--jh-font-weight-bold)",
+	height: "36px",
+	justifyContent: "center",
+	textDecoration: "none",
+	width: "100%",
+};
+
 export function NavigationRail({
 	currentSurface,
 	onSelect,
 	summary,
+	variant = "full",
 }: NavigationRailProps) {
+	if (variant === "hidden") {
+		return null;
+	}
+
+	if (variant === "collapsed") {
+		return (
+			<nav
+				aria-label="Operator workbench navigation"
+				style={collapsedRailStyle}
+			>
+				<ul style={{ ...listStyle, gap: "var(--jh-space-2)" }}>
+					{SHELL_SURFACES.map((surface) => {
+						const isSelected = surface.id === currentSurface;
+
+						return (
+							<li key={surface.id}>
+								<a
+									aria-controls={`surface-${surface.id}`}
+									aria-current={isSelected ? "page" : undefined}
+									aria-label={surface.label}
+									href={`#${surface.id}`}
+									onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+										event.preventDefault();
+										onSelect(surface.id);
+									}}
+									style={{
+										...collapsedItemStyle,
+										background: isSelected
+											? "var(--jh-color-nav-item-selected-bg)"
+											: "var(--jh-color-nav-item-bg)",
+										border: isSelected
+											? "var(--jh-border-width) solid var(--jh-color-nav-item-selected-border)"
+											: "var(--jh-border-width) solid var(--jh-color-surface-border)",
+									}}
+									title={surface.label}
+								>
+									{SURFACE_ICON_MAP[surface.id]}
+								</a>
+							</li>
+						);
+					})}
+				</ul>
+			</nav>
+		);
+	}
+
 	return (
 		<nav aria-label="Operator workbench navigation" style={railStyle}>
 			<div>
