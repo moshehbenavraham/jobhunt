@@ -196,6 +196,25 @@
   --jh-color-pipeline-stale-bg: var(--jh-color-pipeline-warn-low-score-bg);
   --jh-color-pipeline-stale-border: var(--jh-color-status-warning-border);
 
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- tracker surface
+     ---------------------------------------------------------------- */
+  --jh-color-tracker-row-bg: rgba(248, 250, 252, 0.9);
+  --jh-color-tracker-row-border: var(--jh-color-surface-border);
+  --jh-color-tracker-row-selected-bg: rgba(219, 234, 254, 0.7);
+  --jh-color-tracker-row-selected-border: rgba(37, 99, 235, 0.35);
+  --jh-color-tracker-filter-bar-bg: var(--jh-color-surface-bg);
+  --jh-color-tracker-filter-bar-border: var(--jh-color-surface-border);
+  --jh-dense-row-height: 2.75rem;
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- scan surface
+     ---------------------------------------------------------------- */
+  --jh-color-scan-row-bg: rgba(248, 250, 252, 0.9);
+  --jh-color-scan-row-border: var(--jh-color-surface-border);
+  --jh-color-scan-row-selected-bg: #eff6ff;
+  --jh-color-scan-row-selected-border: #60a5fa;
+
   /* Badge tones */
   --jh-color-badge-attention-bg: #fde68a;
   --jh-color-badge-attention-fg: #7c2d12;

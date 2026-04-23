@@ -7,6 +7,14 @@ import {
 	type ScanReviewSummaryPayload,
 	type ScanReviewWarningCode,
 } from "./scan-review-types";
+import {
+	scanBucketBadge,
+	scanListingRow,
+	scanListingRowSelected,
+	scanPanel,
+	scanStatCard,
+	scanSubtleButton,
+} from "./scan-styles";
 import type { ScanReviewViewStatus } from "./use-scan-review";
 
 type ScanReviewShortlistProps = {
@@ -22,27 +30,6 @@ type ScanReviewShortlistProps = {
 	status: ScanReviewViewStatus;
 };
 
-const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
-	display: "grid",
-	gap: "0.9rem",
-	padding: "1rem",
-};
-
-const buttonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.28)",
-	borderRadius: "999px",
-	color: "#0f172a",
-	cursor: "pointer",
-	font: "inherit",
-	fontWeight: 600,
-	minHeight: "2.2rem",
-	padding: "0.45rem 0.8rem",
-};
-
 const srOnlyStyle: CSSProperties = {
 	border: 0,
 	clip: "rect(0 0 0 0)",
@@ -56,29 +43,35 @@ const srOnlyStyle: CSSProperties = {
 	width: "1px",
 };
 
+const metaStyle: CSSProperties = {
+	color: "var(--jh-color-text-muted)",
+	fontSize: "var(--jh-text-caption-size)",
+	margin: 0,
+};
+
 function getWarningTone(code: ScanReviewWarningCode): CSSProperties {
 	switch (code) {
 		case "already-ignored":
 			return {
-				background: "#e2e8f0",
-				color: "#334155",
+				background: "var(--jh-color-badge-neutral-bg)",
+				color: "var(--jh-color-badge-neutral-fg)",
 			};
 		case "already-pending":
 		case "approval-paused":
 		case "stale-selection":
 			return {
-				background: "#fef3c7",
-				color: "#92400e",
+				background: "var(--jh-color-status-offline-bg)",
+				color: "var(--jh-color-severity-warn-fg)",
 			};
 		case "degraded-result":
 			return {
-				background: "#fee2e2",
-				color: "#991b1b",
+				background: "var(--jh-color-status-error-bg)",
+				color: "var(--jh-color-status-error-fg)",
 			};
 		case "duplicate-heavy":
 			return {
-				background: "#dbeafe",
-				color: "#1d4ed8",
+				background: "var(--jh-color-severity-info-bg)",
+				color: "var(--jh-color-severity-info-fg)",
 			};
 	}
 }
@@ -86,13 +79,13 @@ function getWarningTone(code: ScanReviewWarningCode): CSSProperties {
 function getBucketLabel(bucket: ScanReviewBucketFilter): string {
 	switch (bucket) {
 		case "adjacent-or-noisy":
-			return "Adjacent or noisy";
+			return "Adjacent";
 		case "all":
 			return "All";
 		case "possible-fit":
-			return "Possible fit";
+			return "Possible";
 		case "strongest-fit":
-			return "Strongest fit";
+			return "Strongest";
 	}
 }
 
@@ -113,23 +106,23 @@ function getEmptyState(input: { status: ScanReviewViewStatus }): {
 	switch (input.status) {
 		case "loading":
 			return {
-				body: "Waiting for shortlist candidates from the scan-review summary.",
-				title: "Loading shortlist",
+				body: "Loading candidates...",
+				title: "Loading candidates",
 			};
 		case "offline":
 			return {
-				body: "The scan-review endpoint is offline, so shortlist cards cannot refresh.",
-				title: "Shortlist offline",
+				body: "The API is offline. Showing cached data.",
+				title: "Candidates offline",
 			};
 		case "error":
 			return {
-				body: "The scan-review payload could not be rendered into shortlist cards.",
-				title: "Shortlist unavailable",
+				body: "Could not load candidates.",
+				title: "Candidates unavailable",
 			};
 		default:
 			return {
-				body: "Refresh scan review once shortlist candidates are available.",
-				title: "No shortlist payload yet",
+				body: "No candidates yet.",
+				title: "No candidates yet",
 			};
 	}
 }
@@ -152,29 +145,28 @@ export function ScanReviewShortlist({
 		});
 
 		return (
-			<section aria-labelledby="scan-shortlist-title" style={panelStyle}>
+			<section aria-labelledby="scan-shortlist-title" style={scanPanel}>
 				<header>
-					<h2 id="scan-shortlist-title" style={{ marginBottom: "0.35rem" }}>
-						Shortlist review
+					<h2
+						id="scan-shortlist-title"
+						style={{ marginBottom: "var(--jh-space-1)" }}
+					>
+						Shortlist
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-						Rank candidates, filter fit buckets, and keep selection backed by
-						URL state instead of hidden client-only memory.
-					</p>
+					<p style={metaStyle}>Filter and select candidates.</p>
 				</header>
 
-				<section
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.95rem",
-					}}
-				>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
+				<section style={scanStatCard}>
+					<h3 style={{ marginBottom: "var(--jh-space-1)", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</section>
@@ -187,106 +179,61 @@ export function ScanReviewShortlist({
 	const disabled = isBusy || status === "loading";
 
 	return (
-		<section aria-labelledby="scan-shortlist-title" style={panelStyle}>
+		<section aria-labelledby="scan-shortlist-title" style={scanPanel}>
 			<header
 				style={{
 					alignItems: "start",
 					display: "flex",
 					flexWrap: "wrap",
-					gap: "0.9rem",
+					gap: "var(--jh-space-3)",
 					justifyContent: "space-between",
 				}}
 			>
 				<div>
-					<h2 id="scan-shortlist-title" style={{ marginBottom: "0.35rem" }}>
-						Shortlist review
+					<h2
+						id="scan-shortlist-title"
+						style={{ marginBottom: "var(--jh-space-1)" }}
+					>
+						Shortlist
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-						{shortlist.message}
-					</p>
+					<p style={metaStyle}>{shortlist.message}</p>
 				</div>
 				<div
 					style={{
 						display: "grid",
-						gap: "0.25rem",
+						gap: "var(--jh-space-1)",
 						justifyItems: "end",
 					}}
 				>
-					<strong>
-						Showing {getVisibleRange(shortlist)} of {shortlist.filteredCount}
+					<strong style={{ fontSize: "var(--jh-text-body-sm-size)" }}>
+						{getVisibleRange(shortlist)} of {shortlist.filteredCount}
 					</strong>
-					<span style={{ color: "#64748b", fontSize: "0.92rem" }}>
-						Total shortlist rows: {shortlist.totalCount}
-					</span>
+					<span style={metaStyle}>Total: {shortlist.totalCount}</span>
 				</div>
 			</header>
 
 			<section
 				style={{
 					display: "grid",
-					gap: "0.8rem",
-					gridTemplateColumns: "repeat(auto-fit, minmax(10rem, 1fr))",
+					gap: "var(--jh-space-2)",
+					gridTemplateColumns: "repeat(auto-fit, minmax(8rem, 1fr))",
 				}}
 			>
-				<article
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-						Strongest fit
-					</p>
-					<strong style={{ fontSize: "1.1rem" }}>
-						{shortlist.counts.strongestFit ?? "N/A"}
-					</strong>
+				<article style={scanStatCard}>
+					<p style={metaStyle}>Strongest</p>
+					<strong>{shortlist.counts.strongestFit ?? "N/A"}</strong>
 				</article>
-				<article
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-						Possible fit
-					</p>
-					<strong style={{ fontSize: "1.1rem" }}>
-						{shortlist.counts.possibleFit ?? "N/A"}
-					</strong>
+				<article style={scanStatCard}>
+					<p style={metaStyle}>Possible</p>
+					<strong>{shortlist.counts.possibleFit ?? "N/A"}</strong>
 				</article>
-				<article
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-						Duplicate heavy
-					</p>
-					<strong style={{ fontSize: "1.1rem" }}>
-						{shortlist.counts.duplicateHeavy}
-					</strong>
+				<article style={scanStatCard}>
+					<p style={metaStyle}>Dup-heavy</p>
+					<strong>{shortlist.counts.duplicateHeavy}</strong>
 				</article>
-				<article
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-						Pending overlap
-					</p>
-					<strong style={{ fontSize: "1.1rem" }}>
-						{shortlist.counts.pendingOverlap}
-					</strong>
+				<article style={scanStatCard}>
+					<p style={metaStyle}>Overlaps</p>
+					<strong>{shortlist.counts.pendingOverlap}</strong>
 				</article>
 			</section>
 
@@ -295,7 +242,7 @@ export function ScanReviewShortlist({
 					alignItems: "center",
 					display: "flex",
 					flexWrap: "wrap",
-					gap: "0.55rem",
+					gap: "var(--jh-space-2)",
 					justifyContent: "space-between",
 				}}
 			>
@@ -304,13 +251,13 @@ export function ScanReviewShortlist({
 						border: 0,
 						display: "flex",
 						flexWrap: "wrap",
-						gap: "0.55rem",
+						gap: "var(--jh-space-2)",
 						margin: 0,
 						minInlineSize: 0,
 						padding: 0,
 					}}
 				>
-					<legend style={srOnlyStyle}>Scan shortlist fit filters</legend>
+					<legend style={srOnlyStyle}>Fit filters</legend>
 					{SCAN_REVIEW_BUCKET_FILTER_VALUES.map((bucket) => {
 						const isSelected = bucket === focus.bucket;
 
@@ -320,9 +267,13 @@ export function ScanReviewShortlist({
 								key={bucket}
 								onClick={() => onSelectBucket(bucket)}
 								style={{
-									...buttonStyle,
-									background: isSelected ? "#0f172a" : buttonStyle.background,
-									color: isSelected ? "#f8fafc" : buttonStyle.color,
+									...scanSubtleButton,
+									background: isSelected
+										? "var(--jh-color-button-bg)"
+										: scanSubtleButton.background,
+									color: isSelected
+										? "var(--jh-color-button-fg)"
+										: scanSubtleButton.color,
 								}}
 								type="button"
 							>
@@ -332,191 +283,166 @@ export function ScanReviewShortlist({
 					})}
 				</fieldset>
 
-				<div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
+				<div
+					style={{
+						display: "flex",
+						flexWrap: "wrap",
+						gap: "var(--jh-space-2)",
+					}}
+				>
 					<button
 						aria-pressed={focus.includeIgnored}
 						onClick={() => onSetIncludeIgnored(!focus.includeIgnored)}
 						style={{
-							...buttonStyle,
+							...scanSubtleButton,
 							background: focus.includeIgnored
-								? "#1d4ed8"
-								: buttonStyle.background,
-							color: focus.includeIgnored ? "#eff6ff" : buttonStyle.color,
+								? "var(--jh-color-accent)"
+								: scanSubtleButton.background,
+							color: focus.includeIgnored
+								? "var(--jh-color-text-on-ink)"
+								: scanSubtleButton.color,
 						}}
 						type="button"
 					>
-						{focus.includeIgnored ? "Including ignored" : "Show ignored"}
+						{focus.includeIgnored ? "Showing ignored" : "Show ignored"}
 					</button>
 					<button
 						disabled={selectedUrl === null}
 						onClick={onClearSelection}
 						style={{
-							...buttonStyle,
+							...scanSubtleButton,
 							opacity: selectedUrl === null ? 0.6 : 1,
 						}}
 						type="button"
 					>
-						Clear selection
+						Clear
 					</button>
 				</div>
 			</section>
 
 			{shortlist.items.length === 0 ? (
-				<section
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "1rem",
-					}}
-				>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
-						No candidates in this view
+				<section style={scanStatCard}>
+					<h3 style={{ marginBottom: "var(--jh-space-1)", marginTop: 0 }}>
+						No candidates
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
-						Try a broader bucket, include ignored roles, or refresh after a new
-						scan run completes.
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
+						Try a broader filter, include ignored roles, or refresh after a new
+						scan completes.
 					</p>
 				</section>
 			) : (
-				<fieldset
+				<ul
 					style={{
-						border: 0,
 						display: "grid",
-						gap: "0.8rem",
-						gridTemplateColumns:
-							"repeat(auto-fit, minmax(min(100%, 19rem), 1fr))",
+						gap: "var(--jh-space-1)",
+						listStyle: "none",
 						margin: 0,
-						minInlineSize: 0,
 						padding: 0,
 					}}
 				>
-					<legend style={srOnlyStyle}>Scan shortlist candidates</legend>
+					<li style={srOnlyStyle}>Shortlist candidates</li>
 					{shortlist.items.map((candidate) => {
 						const isSelected = selectedUrl === candidate.url;
 
 						return (
-							<button
-								aria-pressed={isSelected}
-								key={candidate.url}
-								onClick={() => onSelectCandidate(candidate)}
-								style={{
-									alignItems: "start",
-									background: isSelected
-										? "#eff6ff"
-										: "rgba(248, 250, 252, 0.9)",
-									border: isSelected
-										? "1px solid #60a5fa"
-										: "1px solid rgba(148, 163, 184, 0.2)",
-									borderRadius: "1rem",
-									color: "#0f172a",
-									cursor: "pointer",
-									display: "grid",
-									gap: "0.7rem",
-									padding: "0.95rem",
-									textAlign: "left",
-								}}
-								type="button"
-							>
-								<div
+							<li key={candidate.url}>
+								<button
+									aria-pressed={isSelected}
+									onClick={() => onSelectCandidate(candidate)}
 									style={{
-										alignItems: "start",
-										display: "flex",
-										gap: "0.7rem",
-										justifyContent: "space-between",
+										...(isSelected ? scanListingRowSelected : scanListingRow),
+										font: "inherit",
+										gridTemplateColumns: "2.5rem 1fr auto",
+										alignItems: "center",
 									}}
+									type="button"
 								>
-									<div>
-										<p
-											style={{
-												color: "#64748b",
-												marginBottom: "0.2rem",
-												marginTop: 0,
-											}}
-										>
-											#{candidate.rank} {getBucketLabel(candidate.bucket)}
-										</p>
-										<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
-											{candidate.role}
-										</h3>
-										<p style={{ color: "#475569", margin: 0 }}>
-											{candidate.company ?? "Unknown company"}
-										</p>
-									</div>
 									<span
 										style={{
-											background: candidate.ignored ? "#e2e8f0" : "#dbeafe",
-											borderRadius: "999px",
-											color: candidate.ignored ? "#334155" : "#1d4ed8",
-											fontSize: "0.8rem",
-											fontWeight: 700,
-											padding: "0.2rem 0.55rem",
+											color: "var(--jh-color-text-muted)",
+											fontFamily: "var(--jh-font-mono)",
+											fontSize: "var(--jh-text-mono-sm-size)",
 										}}
 									>
-										{candidate.ignored ? "Ignored" : "Visible"}
+										#{candidate.rank}
 									</span>
-								</div>
 
-								<p
-									style={{
-										color: "#0f172a",
-										margin: 0,
-										wordBreak: "break-word",
-									}}
-								>
-									{candidate.url}
-								</p>
+									<div style={{ minWidth: 0 }}>
+										<p
+											style={{
+												fontSize: "var(--jh-text-body-sm-size)",
+												fontWeight: 700,
+												margin: 0,
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+												whiteSpace: "nowrap",
+											}}
+										>
+											{candidate.role}
+										</p>
+										<p
+											style={{
+												color: "var(--jh-color-text-secondary)",
+												fontSize: "var(--jh-text-caption-size)",
+												margin: 0,
+												overflow: "hidden",
+												textOverflow: "ellipsis",
+												whiteSpace: "nowrap",
+											}}
+										>
+											{candidate.company ?? "Unknown"} |{" "}
+											{candidate.reasonSummary ?? "No reason recorded"}
+										</p>
+									</div>
 
-								<p style={{ color: "#475569", margin: 0 }}>
-									{candidate.reasonSummary ?? "No reason summary was recorded."}
-								</p>
-
-								<div
-									style={{
-										display: "grid",
-										gap: "0.25rem",
-									}}
-								>
-									<span>
-										History: {candidate.duplicateHint.historyCount} entries
-									</span>
-									<span>
-										Pending overlap:{" "}
-										{candidate.duplicateHint.pendingOverlap ? "Yes" : "No"}
-									</span>
-									<span>
-										Freshness: {candidate.duplicateHint.firstSeen ?? "Unknown"}
-									</span>
-								</div>
-
-								{candidate.warnings.length > 0 ? (
 									<div
 										style={{
 											display: "flex",
-											flexWrap: "wrap",
-											gap: "0.45rem",
+											gap: "var(--jh-space-1)",
+											alignItems: "center",
 										}}
 									>
-										{candidate.warnings.map((warning) => (
-											<span
-												key={`${candidate.url}:${warning.code}`}
-												style={{
-													...getWarningTone(warning.code),
-													borderRadius: "999px",
-													fontSize: "0.8rem",
-													fontWeight: 700,
-													padding: "0.2rem 0.55rem",
-												}}
-											>
-												{warning.code}
-											</span>
-										))}
+										<span
+											style={{
+												...scanBucketBadge,
+												background: candidate.ignored
+													? "var(--jh-color-badge-neutral-bg)"
+													: "var(--jh-color-badge-info-bg)",
+												color: candidate.ignored
+													? "var(--jh-color-badge-neutral-fg)"
+													: "var(--jh-color-badge-info-fg)",
+											}}
+										>
+											{candidate.ignored
+												? "Ignored"
+												: getBucketLabel(candidate.bucket)}
+										</span>
+
+										{candidate.warnings.length > 0
+											? candidate.warnings.map((warning) => (
+													<span
+														key={`${candidate.url}:${warning.code}`}
+														style={{
+															...scanBucketBadge,
+															...getWarningTone(warning.code),
+														}}
+													>
+														{warning.code}
+													</span>
+												))
+											: null}
 									</div>
-								) : null}
-							</button>
+								</button>
+							</li>
 						);
 					})}
-				</fieldset>
+				</ul>
 			)}
 
 			<footer
@@ -524,35 +450,41 @@ export function ScanReviewShortlist({
 					alignItems: "center",
 					display: "flex",
 					flexWrap: "wrap",
-					gap: "0.55rem",
+					gap: "var(--jh-space-2)",
 					justifyContent: "space-between",
 				}}
 			>
-				<span style={{ color: "#64748b" }}>
-					{shortlist.campaignGuidance ?? "No campaign guidance recorded."}
+				<span style={metaStyle}>
+					{shortlist.campaignGuidance ?? "No guidance recorded."}
 				</span>
-				<div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
+				<div
+					style={{
+						display: "flex",
+						flexWrap: "wrap",
+						gap: "var(--jh-space-2)",
+					}}
+				>
 					<button
 						disabled={disabled || shortlist.offset === 0}
 						onClick={onPreviousPage}
 						style={{
-							...buttonStyle,
+							...scanSubtleButton,
 							opacity: disabled || shortlist.offset === 0 ? 0.6 : 1,
 						}}
 						type="button"
 					>
-						Previous page
+						Previous
 					</button>
 					<button
 						disabled={disabled || !shortlist.hasMore}
 						onClick={onNextPage}
 						style={{
-							...buttonStyle,
+							...scanSubtleButton,
 							opacity: disabled || !shortlist.hasMore ? 0.6 : 1,
 						}}
 						type="button"
 					>
-						Next page
+						Next
 					</button>
 				</div>
 			</footer>

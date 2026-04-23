@@ -4,6 +4,17 @@ import type {
 	ScanReviewSelectedDetail,
 	ScanReviewWarningCode,
 } from "./scan-review-types";
+import {
+	scanActionButton,
+	scanBucketBadge,
+	scanNoticeInfo,
+	scanNoticeSuccess,
+	scanNoticeWarn,
+	scanPanel,
+	scanStatCard,
+	scanSubtleButton,
+	scanWarning,
+} from "./scan-styles";
 import type {
 	ScanReviewActionNotice,
 	ScanReviewPendingAction,
@@ -23,37 +34,10 @@ type ScanReviewActionShelfProps = {
 	status: ScanReviewViewStatus;
 };
 
-const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
-	display: "grid",
-	gap: "0.9rem",
-	padding: "1rem",
-};
-
-const buttonStyle: CSSProperties = {
-	background: "#0f172a",
-	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
-	cursor: "pointer",
-	font: "inherit",
-	fontWeight: 700,
-	minHeight: "2.3rem",
-	padding: "0.5rem 0.85rem",
-};
-
-const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.28)",
-	borderRadius: "999px",
-	color: "#0f172a",
-	cursor: "pointer",
-	font: "inherit",
-	fontWeight: 600,
-	minHeight: "2.2rem",
-	padding: "0.45rem 0.8rem",
+const metaStyle: CSSProperties = {
+	color: "var(--jh-color-text-muted)",
+	fontSize: "var(--jh-text-caption-size)",
+	margin: 0,
 };
 
 function getEmptyState(input: { status: ScanReviewViewStatus }): {
@@ -63,23 +47,23 @@ function getEmptyState(input: { status: ScanReviewViewStatus }): {
 	switch (input.status) {
 		case "loading":
 			return {
-				body: "Loading the selected shortlist detail and action metadata.",
-				title: "Loading selected role",
+				body: "Loading details...",
+				title: "Loading detail",
 			};
 		case "offline":
 			return {
-				body: "The scan-review endpoint is offline, so selected-role detail is not available right now.",
-				title: "Selected role offline",
+				body: "The API is offline.",
+				title: "Detail offline",
 			};
 		case "error":
 			return {
-				body: "The selected shortlist detail could not be rendered from the scan-review payload.",
-				title: "Selected role unavailable",
+				body: "Could not load details.",
+				title: "Detail unavailable",
 			};
 		default:
 			return {
-				body: "Select a shortlist role to inspect duplicate context and launch follow-through actions.",
-				title: "No selected role",
+				body: "Select a role to see details and actions.",
+				title: "No role selected",
 			};
 	}
 }
@@ -87,20 +71,11 @@ function getEmptyState(input: { status: ScanReviewViewStatus }): {
 function getNoticeStyle(kind: NonNullable<ScanReviewActionNotice>["kind"]) {
 	switch (kind) {
 		case "info":
-			return {
-				background: "#dbeafe",
-				borderColor: "#bfdbfe",
-			};
+			return scanNoticeInfo;
 		case "success":
-			return {
-				background: "#dcfce7",
-				borderColor: "#bbf7d0",
-			};
+			return scanNoticeSuccess;
 		case "warn":
-			return {
-				background: "#fef3c7",
-				borderColor: "#fde68a",
-			};
+			return scanNoticeWarn;
 	}
 }
 
@@ -108,27 +83,37 @@ function getWarningTone(code: ScanReviewWarningCode): CSSProperties {
 	switch (code) {
 		case "already-ignored":
 			return {
-				background: "#e2e8f0",
-				color: "#334155",
+				background: "var(--jh-color-badge-neutral-bg)",
+				color: "var(--jh-color-badge-neutral-fg)",
 			};
 		case "already-pending":
 		case "approval-paused":
 		case "stale-selection":
 			return {
-				background: "#fef3c7",
-				color: "#92400e",
+				background: "var(--jh-color-status-offline-bg)",
+				color: "var(--jh-color-severity-warn-fg)",
 			};
 		case "degraded-result":
 			return {
-				background: "#fee2e2",
-				color: "#991b1b",
+				background: "var(--jh-color-status-error-bg)",
+				color: "var(--jh-color-status-error-fg)",
 			};
 		case "duplicate-heavy":
 			return {
-				background: "#dbeafe",
-				color: "#1d4ed8",
+				background: "var(--jh-color-severity-info-bg)",
+				color: "var(--jh-color-severity-info-fg)",
 			};
 	}
+}
+
+function getIgnoreLabel(
+	action: "ignore" | "restore",
+	pendingAction: ScanReviewPendingAction,
+): string {
+	if (action === "ignore") {
+		return pendingAction !== null ? "Ignoring..." : "Ignore role";
+	}
+	return pendingAction !== null ? "Restoring..." : "Restore role";
 }
 
 export function ScanReviewActionShelf({
@@ -153,25 +138,15 @@ export function ScanReviewActionShelf({
 		actionsDisabled || selectedRow?.ignoreAction.sessionId === null;
 
 	return (
-		<aside aria-labelledby="scan-action-shelf-title" style={panelStyle}>
+		<aside aria-labelledby="scan-action-shelf-title" style={scanPanel}>
 			<header>
-				<p
-					style={{
-						color: "#475569",
-						letterSpacing: "0.08em",
-						marginBottom: "0.35rem",
-						marginTop: 0,
-						textTransform: "uppercase",
-					}}
+				<h2
+					id="scan-action-shelf-title"
+					style={{ marginBottom: "var(--jh-space-1)" }}
 				>
-					Selected detail
-				</p>
-				<h2 id="scan-action-shelf-title" style={{ marginBottom: "0.35rem" }}>
-					Action shelf
+					Actions
 				</h2>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-					{selectedDetail?.message ?? emptyState.body}
-				</p>
+				<p style={metaStyle}>{selectedDetail?.message ?? emptyState.body}</p>
 			</header>
 
 			{notice ? (
@@ -179,20 +154,20 @@ export function ScanReviewActionShelf({
 					style={{
 						...getNoticeStyle(notice.kind),
 						border: "1px solid",
-						borderRadius: "1rem",
+						borderRadius: "var(--jh-radius-sm)",
 						display: "grid",
-						gap: "0.55rem",
-						padding: "0.9rem",
+						gap: "var(--jh-space-2)",
+						padding: "var(--jh-space-3)",
 					}}
 				>
 					<p style={{ margin: 0 }}>{notice.message}</p>
 					<div>
 						<button
 							onClick={onClearNotice}
-							style={subtleButtonStyle}
+							style={scanSubtleButton}
 							type="button"
 						>
-							Dismiss notice
+							Dismiss
 						</button>
 					</div>
 				</section>
@@ -202,28 +177,24 @@ export function ScanReviewActionShelf({
 				<>
 					<section
 						style={{
-							background: "rgba(248, 250, 252, 0.9)",
-							border: "1px solid rgba(148, 163, 184, 0.2)",
-							borderRadius: "1rem",
+							...scanStatCard,
 							display: "grid",
-							gap: "0.7rem",
-							padding: "0.95rem",
+							gap: "var(--jh-space-2)",
 						}}
 					>
 						<div>
-							<p
-								style={{
-									color: "#64748b",
-									marginBottom: "0.2rem",
-									marginTop: 0,
-								}}
-							>
+							<p style={metaStyle}>
 								#{selectedRow.rank} {selectedRow.bucket}
 							</p>
-							<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
+							<h3 style={{ marginBottom: "var(--jh-space-1)", marginTop: 0 }}>
 								{selectedRow.role}
 							</h3>
-							<p style={{ color: "#475569", margin: 0 }}>
+							<p
+								style={{
+									color: "var(--jh-color-text-secondary)",
+									margin: 0,
+								}}
+							>
 								{selectedRow.company ?? "Unknown company"}
 							</p>
 						</div>
@@ -232,34 +203,40 @@ export function ScanReviewActionShelf({
 							style={{
 								margin: 0,
 								wordBreak: "break-word",
+								fontSize: "var(--jh-text-caption-size)",
+								fontFamily: "var(--jh-font-mono)",
 							}}
 						>
 							{selectedRow.url}
 						</p>
 
-						<p style={{ color: "#475569", margin: 0 }}>
-							{selectedRow.reasonSummary ?? "No reason summary was recorded."}
+						<p
+							style={{
+								color: "var(--jh-color-text-secondary)",
+								margin: 0,
+								fontSize: "var(--jh-text-body-sm-size)",
+							}}
+						>
+							{selectedRow.reasonSummary ?? "No reason recorded."}
 						</p>
 
 						<div
 							style={{
 								display: "grid",
-								gap: "0.35rem",
+								gap: "var(--jh-space-1)",
+								fontSize: "var(--jh-text-caption-size)",
 							}}
 						>
+							<span>History: {selectedRow.duplicateHint.historyCount}</span>
 							<span>
-								History count: {selectedRow.duplicateHint.historyCount}
-							</span>
-							<span>
-								Pending overlap:{" "}
+								Overlap:{" "}
 								{selectedRow.duplicateHint.pendingOverlap ? "Yes" : "No"}
 							</span>
 							<span>
 								First seen: {selectedRow.duplicateHint.firstSeen ?? "Unknown"}
 							</span>
 							<span>
-								Scan session:{" "}
-								{selectedRow.ignoreAction.sessionId ?? "Not bound yet"}
+								Run: {selectedRow.ignoreAction.sessionId ?? "No run selected"}
 							</span>
 						</div>
 					</section>
@@ -269,18 +246,15 @@ export function ScanReviewActionShelf({
 							style={{
 								display: "flex",
 								flexWrap: "wrap",
-								gap: "0.45rem",
+								gap: "var(--jh-space-1)",
 							}}
 						>
 							{selectedRow.warnings.map((warning) => (
 								<span
 									key={`${warning.code}:${warning.message}`}
 									style={{
+										...scanBucketBadge,
 										...getWarningTone(warning.code),
-										borderRadius: "999px",
-										fontSize: "0.82rem",
-										fontWeight: 700,
-										padding: "0.22rem 0.6rem",
 									}}
 								>
 									{warning.code}
@@ -292,7 +266,7 @@ export function ScanReviewActionShelf({
 					<section
 						style={{
 							display: "grid",
-							gap: "0.55rem",
+							gap: "var(--jh-space-2)",
 						}}
 					>
 						<button
@@ -307,75 +281,69 @@ export function ScanReviewActionShelf({
 									: undefined
 							}
 							style={{
-								...buttonStyle,
+								...scanActionButton,
 								opacity: ignoreDisabled ? 0.6 : 1,
 							}}
 							type="button"
 						>
-							{selectedRow.ignoreAction.action === "ignore"
-								? "Ignore role"
-								: "Restore role"}
+							{getIgnoreLabel(selectedRow.ignoreAction.action, pendingAction)}
 						</button>
 						<button
 							disabled={actionsDisabled}
 							onClick={onLaunchEvaluation}
 							style={{
-								...buttonStyle,
+								...scanActionButton,
 								opacity: actionsDisabled ? 0.6 : 1,
 							}}
 							type="button"
 						>
-							Launch single evaluation
+							{pendingAction !== null ? "Launching..." : "Evaluate"}
 						</button>
 						<button
 							disabled={actionsDisabled}
 							onClick={onLaunchBatchSeed}
 							style={{
-								...buttonStyle,
+								...scanActionButton,
 								opacity: actionsDisabled ? 0.6 : 1,
 							}}
 							type="button"
 						>
-							Seed batch evaluation
+							{pendingAction !== null ? "Seeding..." : "Add to batch"}
 						</button>
 						<button
 							onClick={onClearSelection}
-							style={subtleButtonStyle}
+							style={scanSubtleButton}
 							type="button"
 						>
-							Clear selection
+							Clear
 						</button>
 					</section>
 
 					{selectedRow.ignoreAction.sessionId === null ? (
-						<section
-							style={{
-								background: "#fef3c7",
-								border: "1px solid #fde68a",
-								borderRadius: "1rem",
-								padding: "0.9rem",
-							}}
-						>
-							<p style={{ margin: 0 }}>
-								Ignore and restore controls stay disabled until the shortlist is
-								scoped to a concrete scan session.
+						<section style={scanWarning}>
+							<p
+								style={{
+									margin: 0,
+									fontSize: "var(--jh-text-caption-size)",
+								}}
+							>
+								Scope to a specific scan run to enable ignore and restore.
 							</p>
 						</section>
 					) : null}
 				</>
 			) : (
-				<section
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "1rem",
-					}}
-				>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
+				<section style={scanStatCard}>
+					<h3 style={{ marginBottom: "var(--jh-space-1)", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{selectedDetail?.message ?? emptyState.body}
 					</p>
 				</section>

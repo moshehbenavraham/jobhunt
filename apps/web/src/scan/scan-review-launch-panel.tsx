@@ -1,6 +1,13 @@
-import type { CSSProperties } from "react";
 import type { ScanReviewFocus } from "./scan-review-client";
 import type { ScanReviewSummaryPayload } from "./scan-review-types";
+import {
+	scanActionButton,
+	scanBucketBadge,
+	scanPanel,
+	scanStatCard,
+	scanSubtleButton,
+	scanWarning,
+} from "./scan-styles";
 import type { ScanReviewViewStatus } from "./use-scan-review";
 
 type ScanReviewLaunchPanelProps = {
@@ -13,39 +20,6 @@ type ScanReviewLaunchPanelProps = {
 	onScopeToRun: () => void;
 	summary: ScanReviewSummaryPayload | null;
 	status: ScanReviewViewStatus;
-};
-
-const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.35rem",
-	display: "grid",
-	gap: "0.9rem",
-	padding: "1rem",
-};
-
-const buttonStyle: CSSProperties = {
-	background: "#0f172a",
-	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
-	cursor: "pointer",
-	font: "inherit",
-	fontWeight: 700,
-	minHeight: "2.45rem",
-	padding: "0.55rem 0.9rem",
-};
-
-const subtleButtonStyle: CSSProperties = {
-	background: "rgba(15, 23, 42, 0.08)",
-	border: "1px solid rgba(148, 163, 184, 0.28)",
-	borderRadius: "999px",
-	color: "#0f172a",
-	cursor: "pointer",
-	font: "inherit",
-	fontWeight: 600,
-	minHeight: "2.25rem",
-	padding: "0.45rem 0.8rem",
 };
 
 function formatTimestamp(value: string | null): string {
@@ -96,26 +70,33 @@ function getEmptyState(input: { status: ScanReviewViewStatus }): {
 	switch (input.status) {
 		case "loading":
 			return {
-				body: "Reading the bounded scan-review summary from the API.",
-				title: "Loading scan workspace",
+				body: "Loading scan data...",
+				title: "Loading scans",
 			};
 		case "offline":
 			return {
-				body: "The scan-review endpoint is offline, so launcher readiness and shortlist detail cannot refresh.",
-				title: "Scan workspace offline",
+				body: "The API is offline. Showing cached data.",
+				title: "Scans offline",
 			};
 		case "error":
 			return {
-				body: "The scan-review payload could not be parsed into the launcher and shortlist surface.",
-				title: "Scan workspace unavailable",
+				body: "Could not load scan data.",
+				title: "Scans unavailable",
 			};
 		default:
 			return {
-				body: "Launch or refresh scan review once the API exposes a shortlist summary.",
-				title: "No scan summary yet",
+				body: "No scan data yet.",
+				title: "No scan data yet",
 			};
 	}
 }
+
+const statLabelStyle = {
+	color: "var(--jh-color-text-muted)",
+	marginBottom: "0.2rem",
+	marginTop: 0,
+	fontSize: "var(--jh-text-caption-size)",
+} as const;
 
 export function ScanReviewLaunchPanel({
 	focus,
@@ -134,40 +115,36 @@ export function ScanReviewLaunchPanel({
 		});
 
 		return (
-			<section aria-labelledby="scan-launch-panel-title" style={panelStyle}>
+			<section aria-labelledby="scan-launch-panel-title" style={scanPanel}>
 				<header>
+					<h2
+						id="scan-launch-panel-title"
+						style={{ marginBottom: "var(--jh-space-1)" }}
+					>
+						Scan status
+					</h2>
 					<p
 						style={{
-							color: "#475569",
-							letterSpacing: "0.08em",
-							marginBottom: "0.35rem",
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
 							marginTop: 0,
-							textTransform: "uppercase",
 						}}
 					>
-						Phase 05 / Session 02
-					</p>
-					<h2 id="scan-launch-panel-title" style={{ marginBottom: "0.35rem" }}>
-						Scan launcher and run status
-					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-						Review launcher readiness, current scan state, and shortlist totals
-						without leaving the operator shell.
+						Run status and shortlist summary.
 					</p>
 				</header>
 
-				<section
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.95rem",
-					}}
-				>
-					<h3 style={{ marginBottom: "0.35rem", marginTop: 0 }}>
+				<section style={scanStatCard}>
+					<h3 style={{ marginBottom: "var(--jh-space-1)", marginTop: 0 }}>
 						{emptyState.title}
 					</h3>
-					<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							marginBottom: 0,
+							marginTop: 0,
+						}}
+					>
 						{emptyState.body}
 					</p>
 				</section>
@@ -180,45 +157,57 @@ export function ScanReviewLaunchPanel({
 	const launchDisabled =
 		isBusy || !summary.launcher.available || !summary.launcher.canStart;
 
+	const launcherReady = summary.launcher.canStart && summary.launcher.available;
+
 	return (
-		<section aria-labelledby="scan-launch-panel-title" style={panelStyle}>
+		<section aria-labelledby="scan-launch-panel-title" style={scanPanel}>
 			<header
 				style={{
 					alignItems: "start",
 					display: "flex",
 					flexWrap: "wrap",
-					gap: "0.9rem",
+					gap: "var(--jh-space-3)",
 					justifyContent: "space-between",
 				}}
 			>
 				<div>
+					<h2
+						id="scan-launch-panel-title"
+						style={{ marginBottom: "var(--jh-space-1)" }}
+					>
+						Scan status
+					</h2>
 					<p
 						style={{
-							color: "#475569",
-							letterSpacing: "0.08em",
-							marginBottom: "0.35rem",
+							color: "var(--jh-color-text-muted)",
+							marginBottom: 0,
 							marginTop: 0,
-							textTransform: "uppercase",
 						}}
 					>
-						Phase 05 / Session 02
-					</p>
-					<h2 id="scan-launch-panel-title" style={{ marginBottom: "0.35rem" }}>
-						Scan launcher and run status
-					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
 						{summary.message}
 					</p>
 				</div>
 
-				<div style={{ display: "grid", gap: "0.55rem", justifyItems: "end" }}>
-					<div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
+				<div
+					style={{
+						display: "grid",
+						gap: "var(--jh-space-2)",
+						justifyItems: "end",
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							flexWrap: "wrap",
+							gap: "var(--jh-space-2)",
+						}}
+					>
 						<button
-							aria-label="Refresh scan review"
+							aria-label="Refresh scan data"
 							disabled={isBusy}
 							onClick={onRefresh}
 							style={{
-								...subtleButtonStyle,
+								...scanSubtleButton,
 								opacity: isBusy ? 0.7 : 1,
 							}}
 							type="button"
@@ -226,22 +215,27 @@ export function ScanReviewLaunchPanel({
 							Refresh
 						</button>
 						<button
-							aria-label="Launch scan review"
+							aria-label="Launch scan"
 							disabled={launchDisabled}
 							onClick={onLaunch}
 							style={{
-								...buttonStyle,
+								...scanActionButton,
 								opacity: launchDisabled ? 0.7 : 1,
 							}}
 							type="button"
 						>
 							{summary.run.state === "running" || summary.run.state === "queued"
-								? "Scan already active"
+								? "Scan active"
 								: "Launch scan"}
 						</button>
 					</div>
-					<span style={{ color: "#64748b", fontSize: "0.92rem" }}>
-						Last updated: {formatTimestamp(lastUpdatedAt)}
+					<span
+						style={{
+							color: "var(--jh-color-text-muted)",
+							fontSize: "var(--jh-text-caption-size)",
+						}}
+					>
+						Updated: {formatTimestamp(lastUpdatedAt)}
 					</span>
 				</div>
 			</header>
@@ -250,19 +244,19 @@ export function ScanReviewLaunchPanel({
 				style={{
 					background:
 						summary.run.state === "degraded"
-							? "#fee2e2"
+							? "var(--jh-color-status-error-bg)"
 							: summary.run.state === "approval-paused"
-								? "#fef3c7"
-								: "rgba(248, 250, 252, 0.9)",
+								? "var(--jh-color-status-offline-bg)"
+								: scanStatCard.background,
 					border: `1px solid ${
 						summary.run.state === "degraded"
-							? "#fecaca"
+							? "var(--jh-color-status-error-border)"
 							: summary.run.state === "approval-paused"
-								? "#fde68a"
-								: "rgba(148, 163, 184, 0.2)"
+								? "var(--jh-color-status-offline-border)"
+								: "var(--jh-color-scan-row-border)"
 					}`,
-					borderRadius: "1rem",
-					padding: "0.95rem",
+					borderRadius: "var(--jh-radius-sm)",
+					padding: "var(--jh-space-3)",
 				}}
 			>
 				<div
@@ -270,40 +264,46 @@ export function ScanReviewLaunchPanel({
 						alignItems: "center",
 						display: "flex",
 						flexWrap: "wrap",
-						gap: "0.6rem",
+						gap: "var(--jh-space-2)",
 						justifyContent: "space-between",
-						marginBottom: "0.65rem",
+						marginBottom: "var(--jh-space-2)",
 					}}
 				>
 					<div>
-						<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
+						<h3 style={{ marginBottom: "var(--jh-space-1)", marginTop: 0 }}>
 							{getRunStateLabel(summary.run.state)}
 						</h3>
-						<p style={{ color: "#475569", margin: 0 }}>{summary.run.message}</p>
+						<p
+							style={{
+								color: "var(--jh-color-text-secondary)",
+								margin: 0,
+							}}
+						>
+							{summary.run.message}
+						</p>
 					</div>
 					<span
 						style={{
-							background:
-								summary.launcher.canStart && summary.launcher.available
-									? "#dbeafe"
-									: "#e2e8f0",
-							borderRadius: "999px",
-							color:
-								summary.launcher.canStart && summary.launcher.available
-									? "#1d4ed8"
-									: "#334155",
-							fontSize: "0.85rem",
-							fontWeight: 700,
-							padding: "0.25rem 0.65rem",
+							...scanBucketBadge,
+							background: launcherReady
+								? "var(--jh-color-badge-info-bg)"
+								: "var(--jh-color-badge-neutral-bg)",
+							color: launcherReady
+								? "var(--jh-color-badge-info-fg)"
+								: "var(--jh-color-badge-neutral-fg)",
 						}}
 					>
-						{summary.launcher.canStart && summary.launcher.available
-							? "Ready to launch"
-							: "Launcher guarded"}
+						{launcherReady ? "Ready" : "Not ready"}
 					</span>
 				</div>
 
-				<p style={{ color: "#475569", marginBottom: 0, marginTop: 0 }}>
+				<p
+					style={{
+						color: "var(--jh-color-text-secondary)",
+						marginBottom: 0,
+						marginTop: 0,
+					}}
+				>
 					{summary.launcher.message}
 				</p>
 			</section>
@@ -311,111 +311,76 @@ export function ScanReviewLaunchPanel({
 			<section
 				style={{
 					display: "grid",
-					gap: "0.8rem",
+					gap: "var(--jh-space-2)",
 					gridTemplateColumns: "repeat(auto-fit, minmax(11rem, 1fr))",
 				}}
 			>
-				<article
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-						New offers
-					</p>
-					<strong style={{ fontSize: "1.2rem" }}>
-						{formatCount(summary.run.summary.newOffersAdded)}
-					</strong>
+				<article style={scanStatCard}>
+					<p style={statLabelStyle}>New offers</p>
+					<strong>{formatCount(summary.run.summary.newOffersAdded)}</strong>
 				</article>
-				<article
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-						Jobs found
-					</p>
-					<strong style={{ fontSize: "1.2rem" }}>
-						{formatCount(summary.run.summary.totalJobsFound)}
-					</strong>
+				<article style={scanStatCard}>
+					<p style={statLabelStyle}>Jobs found</p>
+					<strong>{formatCount(summary.run.summary.totalJobsFound)}</strong>
 				</article>
-				<article
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-						Duplicates skipped
-					</p>
-					<strong style={{ fontSize: "1.2rem" }}>
-						{formatCount(summary.run.summary.duplicatesSkipped)}
-					</strong>
+				<article style={scanStatCard}>
+					<p style={statLabelStyle}>Duplicates skipped</p>
+					<strong>{formatCount(summary.run.summary.duplicatesSkipped)}</strong>
 				</article>
-				<article
-					style={{
-						background: "rgba(248, 250, 252, 0.9)",
-						border: "1px solid rgba(148, 163, 184, 0.2)",
-						borderRadius: "1rem",
-						padding: "0.85rem 0.9rem",
-					}}
-				>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem", marginTop: 0 }}>
-						Current scope
-					</p>
-					<strong style={{ fontSize: "1rem" }}>
-						{focus.sessionId ?? "Latest scan session"}
+				<article style={scanStatCard}>
+					<p style={statLabelStyle}>Scope</p>
+					<strong style={{ fontSize: "var(--jh-text-body-sm-size)" }}>
+						{focus.sessionId ?? "Latest run"}
 					</strong>
 				</article>
 			</section>
 
 			<section
 				style={{
-					background: "rgba(248, 250, 252, 0.9)",
-					border: "1px solid rgba(148, 163, 184, 0.2)",
-					borderRadius: "1rem",
+					...scanStatCard,
 					display: "grid",
-					gap: "0.75rem",
-					padding: "0.9rem",
+					gap: "var(--jh-space-3)",
 				}}
 			>
 				<div>
-					<h3 style={{ marginBottom: "0.25rem", marginTop: 0 }}>
-						Session scope
+					<h3 style={{ marginBottom: "var(--jh-space-1)", marginTop: 0 }}>
+						Run scope
 					</h3>
-					<p style={{ color: "#475569", margin: 0 }}>
-						Keep review locked to a specific scan run when you need stable
-						ignore or restore history, or clear the scope to follow the newest
-						run.
+					<p
+						style={{
+							color: "var(--jh-color-text-secondary)",
+							margin: 0,
+						}}
+					>
+						Lock to a specific run for stable history, or clear to follow the
+						latest.
 					</p>
 				</div>
 
-				<div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
+				<div
+					style={{
+						display: "flex",
+						flexWrap: "wrap",
+						gap: "var(--jh-space-2)",
+					}}
+				>
 					<button
 						disabled={summary.run.sessionId === null || scopeMatchesRun}
 						onClick={onScopeToRun}
 						style={{
-							...subtleButtonStyle,
+							...scanSubtleButton,
 							opacity:
 								summary.run.sessionId === null || scopeMatchesRun ? 0.6 : 1,
 						}}
 						type="button"
 					>
-						Scope to current run
+						Lock to current run
 					</button>
 					<button
 						disabled={focus.sessionId === null}
 						onClick={onClearSessionScope}
 						style={{
-							...subtleButtonStyle,
+							...scanSubtleButton,
 							opacity: focus.sessionId === null ? 0.6 : 1,
 						}}
 						type="button"
@@ -429,35 +394,35 @@ export function ScanReviewLaunchPanel({
 				<section
 					style={{
 						display: "grid",
-						gap: "0.7rem",
+						gap: "var(--jh-space-2)",
 					}}
 				>
-					<h3 style={{ marginBottom: 0, marginTop: 0 }}>Run warnings</h3>
+					<h3 style={{ marginBottom: 0, marginTop: 0 }}>Warnings</h3>
 					<div
 						style={{
 							display: "grid",
-							gap: "0.65rem",
+							gap: "var(--jh-space-2)",
 						}}
 					>
 						{summary.run.warnings.map((warning) => (
 							<article
 								key={`${warning.code}:${warning.message}`}
-								style={{
-									background: "#fef3c7",
-									border: "1px solid #fde68a",
-									borderRadius: "0.95rem",
-									padding: "0.8rem",
-								}}
+								style={scanWarning}
 							>
 								<strong
 									style={{
 										display: "block",
-										marginBottom: "0.25rem",
+										marginBottom: "var(--jh-space-1)",
+										fontSize: "var(--jh-text-caption-size)",
 									}}
 								>
 									{warning.code}
 								</strong>
-								<p style={{ margin: 0 }}>{warning.message}</p>
+								<p
+									style={{ margin: 0, fontSize: "var(--jh-text-caption-size)" }}
+								>
+									{warning.message}
+								</p>
 							</article>
 						))}
 					</div>

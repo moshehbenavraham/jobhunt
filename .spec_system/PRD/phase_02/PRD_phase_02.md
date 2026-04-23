@@ -4,7 +4,7 @@
 **Sessions**: 7
 **Estimated Duration**: 14-28 days
 
-**Progress**: 4/7 sessions (57%)
+**Progress**: 5/7 sessions (71%)
 
 ---
 
@@ -29,7 +29,7 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
 | 02      | Artifact Handoff and Evidence Rail      | Complete    | 20         | 2026-04-23 |
 | 03      | Report Viewer                           | Complete    | 20         | 2026-04-23 |
 | 04      | Pipeline Review                         | Complete    | 20         | 2026-04-23 |
-| 05      | Tracker and Scan Surfaces               | Not Started | ~20        | -          |
+| 05      | Tracker and Scan Surfaces               | Complete    | 22         | 2026-04-23 |
 | 06      | Batch and Specialist Surfaces           | Not Started | ~20        | -          |
 | 07      | Deep Linking, Approvals, and Guardrails | Not Started | ~18        | -          |
 
@@ -72,11 +72,21 @@ Maps to **Phases C + D** of the recovery plan (Workstreams 3, 4, 5, 6):
   - All banned terms purged, refreshing indicator with duplicate-trigger prevention
   - 20/20 tasks, TS 0 errors, Vite build clean (158 modules)
 
+- **Session 05: Tracker and Scan Surfaces** -- completed 2026-04-23
+  - Tracker surface rebuilt as composition of 3 extracted components (filter bar, row list, detail pane)
+  - Dense scannable rows with explicit column widths and sticky filter bar
+  - Tracker detail pane with status update, maintenance actions, report handoff
+  - Scan surfaces migrated to token-based styling with dense listing rows
+  - Scan action shelf with duplicate-trigger prevention (ignore/restore/launch/seed)
+  - Full token migration (10 new semantic tokens, zero inline hex/RGB in components)
+  - All banned terms purged from tracker and scan files
+  - 22/22 tasks, TS 0 errors
+
 ---
 
 ## Upcoming Sessions
 
-- Session 05: Tracker and Scan Surfaces
+- Session 06: Batch and Specialist Surfaces
 
 ---
 

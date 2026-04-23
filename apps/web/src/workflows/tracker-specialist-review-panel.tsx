@@ -55,22 +55,22 @@ function describeEmptyState(status: SpecialistReviewStatus): {
 	switch (status) {
 		case "loading":
 			return {
-				body: "Loading tracker-specialist planning detail from the bounded review route.",
+				body: "Loading planner detail.",
 				title: "Loading planner review",
 			};
 		case "offline":
 			return {
-				body: "The tracker-specialist review endpoint is offline, so the last planning detail cannot refresh right now.",
+				body: "The planner service is offline and cannot refresh right now.",
 				title: "Planner review offline",
 			};
 		case "error":
 			return {
-				body: "The tracker-specialist review payload could not be parsed into a planning summary.",
+				body: "Could not load planner data. Try refreshing.",
 				title: "Planner review unavailable",
 			};
 		default:
 			return {
-				body: "Select a compare-offers, follow-up, or rejection-pattern workflow to inspect the bounded planning packet here.",
+				body: "Select a compare-offers, follow-up, or rejection-pattern workflow to inspect planning detail here.",
 				title: "No planner review selected",
 			};
 	}

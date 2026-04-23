@@ -10,19 +10,14 @@ type ScanReviewSurfaceProps = {
 
 const surfaceStyle: CSSProperties = {
 	display: "grid",
-	gap: "1rem",
+	gap: "var(--jh-space-4)",
 };
 
 const detailGridStyle: CSSProperties = {
 	alignItems: "start",
 	display: "grid",
-	gap: "1rem",
+	gap: "var(--jh-space-4)",
 	gridTemplateColumns: "minmax(0, 1.8fr) minmax(18rem, 1fr)",
-};
-
-const noticeStyle: CSSProperties = {
-	borderRadius: "1rem",
-	padding: "0.9rem",
 };
 
 export function ScanReviewSurface({
@@ -38,26 +33,20 @@ export function ScanReviewSurface({
 			<header
 				style={{
 					display: "grid",
-					gap: "0.35rem",
+					gap: "var(--jh-space-1)",
 				}}
 			>
+				<h1 id="scan-review-title" style={{ marginBottom: 0, marginTop: 0 }}>
+					Scan review
+				</h1>
 				<p
 					style={{
-						color: "#9a3412",
-						letterSpacing: "0.08em",
+						color: "var(--jh-color-text-muted)",
 						marginBottom: 0,
 						marginTop: 0,
-						textTransform: "uppercase",
 					}}
 				>
-					Phase 05 / Session 02
-				</p>
-				<h1 id="scan-review-title" style={{ marginBottom: 0, marginTop: 0 }}>
-					Scan review workspace
-				</h1>
-				<p style={{ color: "#64748b", marginBottom: 0, marginTop: 0 }}>
-					Launch scans, review shortlist candidates, and hand selected roles
-					into evaluation or batch workflows without leaving the operator shell.
+					Launch scans, review candidates, and start evaluations.
 				</p>
 			</header>
 
@@ -65,23 +54,28 @@ export function ScanReviewSurface({
 			review.state.error ? (
 				<section
 					style={{
-						...noticeStyle,
 						background:
-							review.state.status === "offline" ? "#e2e8f0" : "#fee2e2",
+							review.state.status === "offline"
+								? "var(--jh-color-status-blocked-bg)"
+								: "var(--jh-color-status-error-bg)",
 						border: `1px solid ${
-							review.state.status === "offline" ? "#cbd5e1" : "#fecaca"
+							review.state.status === "offline"
+								? "var(--jh-color-status-blocked-border)"
+								: "var(--jh-color-status-error-border)"
 						}`,
+						borderRadius: "var(--jh-radius-sm)",
+						padding: "var(--jh-space-3)",
 					}}
 				>
 					<strong
 						style={{
 							display: "block",
-							marginBottom: "0.25rem",
+							marginBottom: "var(--jh-space-1)",
 						}}
 					>
 						{review.state.status === "offline"
-							? "Showing the last scan snapshot"
-							: "Scan workspace warning"}
+							? "Showing last snapshot"
+							: "Warning"}
 					</strong>
 					<p style={{ margin: 0 }}>{review.state.error.message}</p>
 				</section>
