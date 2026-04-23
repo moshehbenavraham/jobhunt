@@ -1,5 +1,6 @@
-import { OperatorShell } from './shell/operator-shell';
+import { RouterProvider } from "react-router";
+import { router } from "./routes";
 
 export function App() {
-  return <OperatorShell />;
+	return <RouterProvider router={router} />;
 }

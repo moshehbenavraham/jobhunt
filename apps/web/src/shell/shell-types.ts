@@ -21,6 +21,7 @@ export type ShellSurfaceDefinition = {
 	id: ShellSurfaceId;
 	label: string;
 	owner: string;
+	path: string;
 };
 
 export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
@@ -30,6 +31,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "home",
 		label: "Home",
 		owner: "S06",
+		path: "/",
 	},
 	{
 		description:
@@ -37,6 +39,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "startup",
 		label: "Startup",
 		owner: "S01",
+		path: "/startup",
 	},
 	{
 		description:
@@ -44,6 +47,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "chat",
 		label: "Chat",
 		owner: "S02",
+		path: "/evaluate",
 	},
 	{
 		description:
@@ -51,6 +55,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "workflows",
 		label: "Workflows",
 		owner: "P06",
+		path: "/workflows",
 	},
 	{
 		description:
@@ -58,6 +63,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "scan",
 		label: "Scan",
 		owner: "P05",
+		path: "/scan",
 	},
 	{
 		description:
@@ -65,6 +71,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "batch",
 		label: "Batch",
 		owner: "P05",
+		path: "/batch",
 	},
 	{
 		description:
@@ -72,6 +79,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "application-help",
 		label: "Apply",
 		owner: "P05",
+		path: "/apply",
 	},
 	{
 		description:
@@ -79,6 +87,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "pipeline",
 		label: "Pipeline",
 		owner: "P04",
+		path: "/pipeline",
 	},
 	{
 		description:
@@ -86,6 +95,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "tracker",
 		label: "Tracker",
 		owner: "P04",
+		path: "/tracker",
 	},
 	{
 		description:
@@ -93,6 +103,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "artifacts",
 		label: "Artifacts",
 		owner: "P04",
+		path: "/artifacts",
 	},
 	{
 		description:
@@ -100,6 +111,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "onboarding",
 		label: "Onboarding",
 		owner: "S03",
+		path: "/onboarding",
 	},
 	{
 		description:
@@ -107,6 +119,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "approvals",
 		label: "Approvals",
 		owner: "S04",
+		path: "/approvals",
 	},
 	{
 		description:
@@ -114,6 +127,7 @@ export const SHELL_SURFACES: readonly ShellSurfaceDefinition[] = [
 		id: "settings",
 		label: "Settings",
 		owner: "S05",
+		path: "/settings",
 	},
 ] as const;
 
@@ -534,6 +548,22 @@ function parseActiveSessionSummary(
 		updatedAt: readString(record, "updatedAt"),
 		workflow: readString(record, "workflow"),
 	};
+}
+
+const SURFACE_PATH_TO_ID: ReadonlyMap<string, ShellSurfaceId> = new Map(
+	SHELL_SURFACES.map((s) => [s.path, s.id]),
+);
+
+const SURFACE_ID_TO_PATH: ReadonlyMap<ShellSurfaceId, string> = new Map(
+	SHELL_SURFACES.map((s) => [s.id, s.path]),
+);
+
+export function surfaceIdFromPath(pathname: string): ShellSurfaceId | null {
+	return SURFACE_PATH_TO_ID.get(pathname) ?? null;
+}
+
+export function pathFromSurfaceId(surfaceId: ShellSurfaceId): string {
+	return SURFACE_ID_TO_PATH.get(surfaceId) ?? "/";
 }
 
 export function isShellSurfaceId(value: string): value is ShellSurfaceId {

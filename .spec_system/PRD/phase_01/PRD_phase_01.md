@@ -4,7 +4,7 @@
 **Sessions**: 6 (initial estimate)
 **Estimated Duration**: 12-24 days
 
-**Progress**: 4/6 sessions (67%)
+**Progress**: 5/6 sessions (83%)
 
 ---
 
@@ -29,7 +29,7 @@ Maps to **Phase B** of the recovery plan and covers Workstreams 1, 2, and 5:
 | 02      | Typography and Base Styles          | Complete    | 18         | 2026-04-23 |
 | 03      | Three-Zone Shell Layout             | Complete    | 20         | 2026-04-23 |
 | 04      | Responsive Layout and Mobile        | Complete    | 20         | 2026-04-23 |
-| 05      | Router and Deep-Linkable Navigation | Not Started | ~20        | -          |
+| 05      | Router and Deep-Linkable Navigation | Complete    | 20         | 2026-04-23 |
 | 06      | Command Palette and Operator Copy   | Not Started | ~18        | -          |
 
 ---
@@ -40,12 +40,13 @@ Maps to **Phase B** of the recovery plan and covers Workstreams 1, 2, and 5:
 - Session 02: Typography and Base Styles (2026-04-23) -- 18 tasks, apps/web
 - Session 03: Three-Zone Shell Layout (2026-04-23) -- 20 tasks, apps/web
 - Session 04: Responsive Layout and Mobile (2026-04-23) -- 20 tasks, apps/web
+- Session 05: Router and Deep-Linkable Navigation (2026-04-23) -- 20 tasks, apps/web
 
 ---
 
 ## Upcoming Sessions
 
-- Session 05: Router and Deep-Linkable Navigation
+- Session 06: Command Palette and Operator Copy
 
 ---
 

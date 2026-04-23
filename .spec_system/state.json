@@ -48,6 +48,10 @@
     {
       "id": "phase01-session04-responsive-layout-and-mobile",
       "package": "apps/web"
+    },
+    {
+      "id": "phase01-session05-router-and-deep-linking",
+      "package": "apps/web"
     }
   ],
   "next_session_history": [
@@ -114,6 +118,24 @@
     {
       "date": "2026-04-23",
       "session": "phase01-session04-responsive-layout-and-mobile",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session05-router-and-deep-linking",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session05-router-and-deep-linking",
+      "package": "apps/web",
+      "status": "validated"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase01-session05-router-and-deep-linking",
       "package": "apps/web",
       "status": "completed"
     }

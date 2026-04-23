@@ -1,4 +1,5 @@
-import type { CSSProperties, MouseEvent } from "react";
+import type { CSSProperties } from "react";
+import { NavLink } from "react-router";
 import { SPECIALIST_WORKSPACE_MODE_VALUES } from "../workflows/specialist-workspace-types";
 import {
 	type OperatorShellSummaryPayload,
@@ -8,8 +9,7 @@ import {
 import type { NavigationRailVariant } from "./use-responsive-layout";
 
 type NavigationRailProps = {
-	currentSurface: ShellSurfaceId;
-	onSelect: (surfaceId: ShellSurfaceId) => void;
+	onDrawerClose?: () => void;
 	summary: OperatorShellSummaryPayload | null;
 	variant?: NavigationRailVariant;
 };
@@ -263,7 +263,7 @@ const collapsedRailStyle: CSSProperties = {
 	width: "var(--jh-zone-rail-collapsed-width)",
 };
 
-const collapsedItemStyle: CSSProperties = {
+const collapsedItemBase: CSSProperties = {
 	alignItems: "center",
 	background: "var(--jh-color-nav-item-bg)",
 	border: "var(--jh-border-width) solid var(--jh-color-surface-border)",
@@ -279,9 +279,26 @@ const collapsedItemStyle: CSSProperties = {
 	width: "100%",
 };
 
+const fullItemBase: CSSProperties = {
+	alignItems: "center",
+	background: "var(--jh-color-nav-item-bg)",
+	border: "var(--jh-border-width) solid var(--jh-color-surface-border)",
+	borderRadius: "var(--jh-radius-lg)",
+	color: "var(--jh-color-nav-text)",
+	display: "grid",
+	gap: "var(--jh-space-1)",
+	padding: "var(--jh-space-padding-sm) var(--jh-space-padding)",
+	textDecoration: "none",
+};
+
+const activeItemOverrides: CSSProperties = {
+	background: "var(--jh-color-nav-item-selected-bg)",
+	border:
+		"var(--jh-border-width) solid var(--jh-color-nav-item-selected-border)",
+};
+
 export function NavigationRail({
-	currentSurface,
-	onSelect,
+	onDrawerClose,
 	summary,
 	variant = "full",
 }: NavigationRailProps) {
@@ -296,36 +313,23 @@ export function NavigationRail({
 				style={collapsedRailStyle}
 			>
 				<ul style={{ ...listStyle, gap: "var(--jh-space-2)" }}>
-					{SHELL_SURFACES.map((surface) => {
-						const isSelected = surface.id === currentSurface;
-
-						return (
-							<li key={surface.id}>
-								<a
-									aria-controls={`surface-${surface.id}`}
-									aria-current={isSelected ? "page" : undefined}
-									aria-label={surface.label}
-									href={`#${surface.id}`}
-									onClick={(event: MouseEvent<HTMLAnchorElement>) => {
-										event.preventDefault();
-										onSelect(surface.id);
-									}}
-									style={{
-										...collapsedItemStyle,
-										background: isSelected
-											? "var(--jh-color-nav-item-selected-bg)"
-											: "var(--jh-color-nav-item-bg)",
-										border: isSelected
-											? "var(--jh-border-width) solid var(--jh-color-nav-item-selected-border)"
-											: "var(--jh-border-width) solid var(--jh-color-surface-border)",
-									}}
-									title={surface.label}
-								>
-									{SURFACE_ICON_MAP[surface.id]}
-								</a>
-							</li>
-						);
-					})}
+					{SHELL_SURFACES.map((surface) => (
+						<li key={surface.id}>
+							<NavLink
+								aria-label={surface.label}
+								end={surface.path === "/"}
+								onClick={onDrawerClose}
+								style={({ isActive }) => ({
+									...collapsedItemBase,
+									...(isActive ? activeItemOverrides : undefined),
+								})}
+								title={surface.label}
+								to={surface.path}
+							>
+								{SURFACE_ICON_MAP[surface.id]}
+							</NavLink>
+						</li>
+					))}
 				</ul>
 			</nav>
 		);
@@ -367,34 +371,18 @@ export function NavigationRail({
 
 			<ul style={listStyle}>
 				{SHELL_SURFACES.map((surface) => {
-					const isSelected = surface.id === currentSurface;
 					const badge = getBadge(summary, surface.id);
 
 					return (
 						<li key={surface.id}>
-							<a
-								aria-controls={`surface-${surface.id}`}
-								aria-current={isSelected ? "page" : undefined}
-								href={`#${surface.id}`}
-								onClick={(event: MouseEvent<HTMLAnchorElement>) => {
-									event.preventDefault();
-									onSelect(surface.id);
-								}}
-								style={{
-									alignItems: "center",
-									background: isSelected
-										? "var(--jh-color-nav-item-selected-bg)"
-										: "var(--jh-color-nav-item-bg)",
-									border: isSelected
-										? "var(--jh-border-width) solid var(--jh-color-nav-item-selected-border)"
-										: "var(--jh-border-width) solid var(--jh-color-surface-border)",
-									borderRadius: "var(--jh-radius-lg)",
-									color: "var(--jh-color-nav-text)",
-									display: "grid",
-									gap: "var(--jh-space-1)",
-									padding: "var(--jh-space-padding-sm) var(--jh-space-padding)",
-									textDecoration: "none",
-								}}
+							<NavLink
+								end={surface.path === "/"}
+								onClick={onDrawerClose}
+								style={({ isActive }) => ({
+									...fullItemBase,
+									...(isActive ? activeItemOverrides : undefined),
+								})}
+								to={surface.path}
 							>
 								<div
 									style={{
@@ -432,7 +420,7 @@ export function NavigationRail({
 								>
 									{surface.description}
 								</span>
-							</a>
+							</NavLink>
 						</li>
 					);
 				})}

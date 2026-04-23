@@ -1,24 +1,22 @@
 import type { CSSProperties, MouseEvent } from "react";
 import { useRef } from "react";
-import type { ShellSurfaceId } from "./shell-types";
+import { NavLink } from "react-router";
 
 type BottomNavItem = {
 	icon: string;
-	id: ShellSurfaceId;
 	label: string;
+	path: string;
 };
 
 type BottomNavProps = {
-	currentSurface: ShellSurfaceId;
 	onMenuTap: () => void;
-	onSelect: (surfaceId: ShellSurfaceId) => void;
 };
 
 const BOTTOM_NAV_ITEMS: readonly BottomNavItem[] = [
-	{ icon: "H", id: "home", label: "Home" },
-	{ icon: "C", id: "chat", label: "Chat" },
-	{ icon: "W", id: "workflows", label: "Workflows" },
-	{ icon: "T", id: "tracker", label: "Tracker" },
+	{ icon: "H", label: "Home", path: "/" },
+	{ icon: "C", label: "Chat", path: "/evaluate" },
+	{ icon: "W", label: "Workflows", path: "/workflows" },
+	{ icon: "T", label: "Tracker", path: "/tracker" },
 ] as const;
 
 const barStyle: CSSProperties = {
@@ -51,6 +49,7 @@ const itemStyle: CSSProperties = {
 	letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
 	minWidth: "44px",
 	padding: "var(--jh-space-1) 0",
+	textDecoration: "none",
 };
 
 const iconStyle: CSSProperties = {
@@ -65,25 +64,14 @@ const iconStyle: CSSProperties = {
 	width: "28px",
 };
 
+const menuButtonStyle: CSSProperties = {
+	...itemStyle,
+};
+
 const DEBOUNCE_MS = 300;
 
-export function BottomNav({
-	currentSurface,
-	onMenuTap,
-	onSelect,
-}: BottomNavProps) {
+export function BottomNav({ onMenuTap }: BottomNavProps) {
 	const lastTapRef = useRef(0);
-
-	const handleTap = (
-		event: MouseEvent<HTMLButtonElement>,
-		surfaceId: ShellSurfaceId,
-	) => {
-		event.preventDefault();
-		const now = Date.now();
-		if (now - lastTapRef.current < DEBOUNCE_MS) return;
-		lastTapRef.current = now;
-		onSelect(surfaceId);
-	};
 
 	const handleMenuTap = (event: MouseEvent<HTMLButtonElement>) => {
 		event.preventDefault();
@@ -95,40 +83,39 @@ export function BottomNav({
 
 	return (
 		<nav aria-label="Mobile navigation" style={barStyle}>
-			{BOTTOM_NAV_ITEMS.map((item) => {
-				const isActive = item.id === currentSurface;
-
-				return (
-					<button
-						aria-current={isActive ? "page" : undefined}
-						key={item.id}
-						onClick={(e) => handleTap(e, item.id)}
-						style={{
-							...itemStyle,
-							color: isActive
-								? "var(--jh-color-nav-accent)"
-								: "var(--jh-color-nav-muted)",
-						}}
-						type="button"
-					>
-						<span
-							style={{
-								...iconStyle,
-								background: isActive
-									? "var(--jh-color-nav-item-selected-bg)"
-									: "transparent",
-							}}
-						>
-							{item.icon}
-						</span>
-						<span>{item.label}</span>
-					</button>
-				);
-			})}
+			{BOTTOM_NAV_ITEMS.map((item) => (
+				<NavLink
+					end={item.path === "/"}
+					key={item.path}
+					style={({ isActive }) => ({
+						...itemStyle,
+						color: isActive
+							? "var(--jh-color-nav-accent)"
+							: "var(--jh-color-nav-muted)",
+					})}
+					to={item.path}
+				>
+					{({ isActive }) => (
+						<>
+							<span
+								style={{
+									...iconStyle,
+									background: isActive
+										? "var(--jh-color-nav-item-selected-bg)"
+										: "transparent",
+								}}
+							>
+								{item.icon}
+							</span>
+							<span>{item.label}</span>
+						</>
+					)}
+				</NavLink>
+			))}
 			<button
 				aria-label="Open navigation menu"
 				onClick={handleMenuTap}
-				style={itemStyle}
+				style={menuButtonStyle}
 				type="button"
 			>
 				<span style={iconStyle}>=</span>

@@ -9,12 +9,9 @@ import {
 	fetchOperatorShellSummary,
 	OperatorShellClientError,
 } from "./operator-shell-client";
-import {
-	getDefaultShellSurfaceId,
-	type OperatorShellStartupStatus,
-	type OperatorShellSummaryPayload,
-	resolveShellSurfaceId,
-	type ShellSurfaceId,
+import type {
+	OperatorShellStartupStatus,
+	OperatorShellSummaryPayload,
 } from "./shell-types";
 
 export type OperatorShellViewStatus =
@@ -29,7 +26,6 @@ export type OperatorShellState = {
 	error: OperatorShellClientError | null;
 	isRefreshing: boolean;
 	lastUpdatedAt: string | null;
-	selectedSurface: ShellSurfaceId;
 	status: OperatorShellViewStatus;
 };
 
@@ -38,27 +34,8 @@ const EMPTY_STATE: OperatorShellState = {
 	error: null,
 	isRefreshing: false,
 	lastUpdatedAt: null,
-	selectedSurface: resolveShellSurfaceId(window.location.hash),
 	status: "empty",
 };
-
-function syncHash(surfaceId: ShellSurfaceId, replace = false): void {
-	const nextHash = `#${surfaceId}`;
-
-	if (window.location.hash === nextHash) {
-		return;
-	}
-
-	const url = new URL(window.location.href);
-	url.hash = nextHash;
-
-	if (replace) {
-		window.history.replaceState(null, "", url);
-		return;
-	}
-
-	window.location.hash = nextHash;
-}
 
 function toOperatorShellClientError(error: unknown): OperatorShellClientError {
 	if (error instanceof OperatorShellClientError) {
@@ -77,7 +54,6 @@ function toOperatorShellClientError(error: unknown): OperatorShellClientError {
 
 export function useOperatorShell(): {
 	refresh: () => void;
-	selectSurface: (surfaceId: ShellSurfaceId) => void;
 	state: OperatorShellState;
 } {
 	const abortRef = useRef<AbortController | null>(null);
@@ -152,25 +128,6 @@ export function useOperatorShell(): {
 		},
 	);
 
-	const handleHashChange = useEffectEvent(() => {
-		const nextSurface = resolveShellSurfaceId(window.location.hash);
-
-		startTransition(() => {
-			setState((previous) =>
-				previous.selectedSurface === nextSurface
-					? previous
-					: {
-							...previous,
-							selectedSurface: nextSurface,
-						},
-			);
-		});
-
-		if (window.location.hash !== `#${nextSurface}`) {
-			syncHash(nextSurface, true);
-		}
-	});
-
 	const handleOnline = useEffectEvent(() => {
 		if (state.status === "offline") {
 			void loadSummary("online");
@@ -179,65 +136,15 @@ export function useOperatorShell(): {
 
 	useEffect(() => {
 		void loadSummary("mount");
-		window.addEventListener("hashchange", handleHashChange);
 		window.addEventListener("online", handleOnline);
 
 		return () => {
 			requestIdRef.current += 1;
 			abortRef.current?.abort();
 			abortRef.current = null;
-			window.removeEventListener("hashchange", handleHashChange);
 			window.removeEventListener("online", handleOnline);
 		};
 	}, []);
-
-	useEffect(() => {
-		if (!state.data) {
-			return;
-		}
-
-		const hasExplicitHash = window.location.hash.trim().length > 0;
-
-		if (state.status === "missing-prerequisites") {
-			if (state.selectedSurface !== "onboarding") {
-				startTransition(() => {
-					setState((previous) => ({
-						...previous,
-						selectedSurface: "onboarding",
-					}));
-				});
-			}
-
-			syncHash("onboarding", true);
-			return;
-		}
-
-		if (state.status === "ready" && state.selectedSurface === "onboarding") {
-			startTransition(() => {
-				setState((previous) => ({
-					...previous,
-					selectedSurface: "home",
-				}));
-			});
-			syncHash("home", true);
-			return;
-		}
-
-		if (!hasExplicitHash) {
-			const defaultSurface = getDefaultShellSurfaceId(state.data.status);
-
-			if (state.selectedSurface !== defaultSurface) {
-				startTransition(() => {
-					setState((previous) => ({
-						...previous,
-						selectedSurface: defaultSurface,
-					}));
-				});
-			}
-
-			syncHash(defaultSurface, true);
-		}
-	}, [state.data, state.selectedSurface, state.status]);
 
 	return {
 		refresh: () => {
@@ -246,19 +153,6 @@ export function useOperatorShell(): {
 			}
 
 			void loadSummary("refresh");
-		},
-		selectSurface: (surfaceId) => {
-			startTransition(() => {
-				setState((previous) =>
-					previous.selectedSurface === surfaceId
-						? previous
-						: {
-								...previous,
-								selectedSurface: surfaceId,
-							},
-				);
-			});
-			syncHash(surfaceId);
 		},
 		state,
 	};
