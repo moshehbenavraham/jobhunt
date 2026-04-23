@@ -790,7 +790,7 @@ function parseJobSummary(value: unknown): EvaluationResultJobSummary {
 }
 
 function parseSessionSummary(value: unknown): EvaluationResultSessionSummary {
-	const record = assertRecord(value, "evaluation session summary");
+	const record = assertRecord(value, "evaluation run summary");
 
 	return {
 		activeJobId: readNullableString(record, "activeJobId"),
@@ -800,7 +800,7 @@ function parseSessionSummary(value: unknown): EvaluationResultSessionSummary {
 			record,
 			"status",
 			EVALUATION_RESULT_SESSION_STATUSES,
-			"evaluation session status",
+			"evaluation run status",
 		),
 		updatedAt: readString(record, "updatedAt"),
 		workflow: readString(record, "workflow"),
@@ -808,7 +808,7 @@ function parseSessionSummary(value: unknown): EvaluationResultSessionSummary {
 }
 
 function parseSessionPreview(value: unknown): EvaluationResultSessionPreview {
-	const record = assertRecord(value, "evaluation session preview");
+	const record = assertRecord(value, "evaluation run preview");
 
 	return {
 		sessionId: readString(record, "sessionId"),
@@ -816,13 +816,13 @@ function parseSessionPreview(value: unknown): EvaluationResultSessionPreview {
 			record,
 			"state",
 			EVALUATION_RESULT_STATES,
-			"evaluation session state",
+			"evaluation run state",
 		),
 		status: readEnum(
 			record,
 			"status",
 			EVALUATION_RESULT_SESSION_STATUSES,
-			"evaluation session status",
+			"evaluation run status",
 		),
 		updatedAt: readString(record, "updatedAt"),
 		workflow: readEnum(
@@ -848,7 +848,7 @@ function parseWarningPreview(value: unknown): EvaluationResultWarningPreview {
 	const items = record.items;
 
 	if (!Array.isArray(items)) {
-		throw new Error("Expected evaluation warnings.items to be an array.");
+		throw new Error("Expected evaluation warnings to be an array.");
 	}
 
 	return {
@@ -914,12 +914,12 @@ function parseSummary(value: unknown): EvaluationResultSummary {
 export function parseEvaluationResultSummaryPayload(
 	value: unknown,
 ): EvaluationResultSummaryPayload {
-	const record = assertRecord(value, "evaluation result payload");
+	const record = assertRecord(value, "evaluation result response");
 	const filters = assertRecord(record.filters, "evaluation result filters");
 	const recentSessions = record.recentSessions;
 
 	if (!Array.isArray(recentSessions)) {
-		throw new Error("Expected recentSessions to be an array.");
+		throw new Error("Expected recent runs to be an array.");
 	}
 
 	return {
@@ -942,7 +942,7 @@ export function parseEvaluationResultSummaryPayload(
 export function parseEvaluationResultErrorPayload(
 	value: unknown,
 ): EvaluationResultErrorPayload {
-	const record = assertRecord(value, "evaluation result error payload");
+	const record = assertRecord(value, "evaluation result error response");
 	const error = assertRecord(record.error, "evaluation result error");
 
 	return {

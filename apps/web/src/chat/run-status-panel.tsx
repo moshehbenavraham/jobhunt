@@ -24,23 +24,23 @@ type RunStatusPanelProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background:
-		"linear-gradient(150deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.94) 50%, rgba(12, 74, 110, 0.88) 100%)",
-	border: "1px solid rgba(148, 163, 184, 0.22)",
-	borderRadius: "1.4rem",
-	color: "#f8fafc",
+	background: "var(--jh-color-nav-bg)",
+	border: "1px solid var(--jh-color-nav-border)",
+	borderRadius: "var(--jh-radius-lg)",
+	color: "var(--jh-color-text-on-ink)",
 	display: "grid",
-	gap: "0.95rem",
-	padding: "1.05rem 1.1rem",
+	fontFamily: "var(--jh-font-body)",
+	gap: "var(--jh-space-gap)",
+	padding: "var(--jh-space-padding) var(--jh-space-padding)",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#f8fafc",
+	background: "var(--jh-color-button-fg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#0f172a",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-bg)",
 	cursor: "pointer",
-	font: "inherit",
+	fontFamily: "var(--jh-font-body)",
 	fontWeight: 700,
 	minHeight: "2.5rem",
 	padding: "0.65rem 0.95rem",
@@ -69,67 +69,78 @@ function formatWorkflow(value: string | null): string {
 function getTone(state: DisplayTone): {
 	background: string;
 	border: string;
+	foreground: string;
 	label: string;
 } {
 	switch (state) {
 		case "completed":
 			return {
-				background: "#bbf7d0",
-				border: "#22c55e",
+				background: "var(--jh-color-status-completed-bg)",
+				border: "var(--jh-color-status-completed-border)",
+				foreground: "var(--jh-color-status-completed-fg)",
 				label: "Completed",
 			};
 		case "ready":
 			return {
-				background: "#dcfce7",
-				border: "#22c55e",
+				background: "var(--jh-color-status-ready-bg)",
+				border: "var(--jh-color-status-ready-border)",
+				foreground: "var(--jh-color-status-ready-fg)",
 				label: "Ready",
 			};
 		case "pending":
 			return {
-				background: "#dbeafe",
-				border: "#60a5fa",
+				background: "var(--jh-color-status-pending-bg)",
+				border: "var(--jh-color-status-pending-border)",
+				foreground: "var(--jh-color-status-pending-fg)",
 				label: "Pending",
 			};
 		case "running":
 			return {
-				background: "#bfdbfe",
-				border: "#60a5fa",
+				background: "var(--jh-color-status-running-bg)",
+				border: "var(--jh-color-status-running-border)",
+				foreground: "var(--jh-color-status-running-fg)",
 				label: "Running",
 			};
 		case "waiting-for-approval":
 			return {
-				background: "#fde68a",
-				border: "#f59e0b",
+				background: "var(--jh-color-status-paused-bg)",
+				border: "var(--jh-color-status-paused-border)",
+				foreground: "var(--jh-color-status-paused-fg)",
 				label: "Approval paused",
 			};
 		case "tooling-gap":
 			return {
-				background: "#ddd6fe",
-				border: "#8b5cf6",
+				background: "var(--jh-color-status-tooling-bg)",
+				border: "var(--jh-color-status-tooling-border)",
+				foreground: "var(--jh-color-status-tooling-fg)",
 				label: "Tooling gap",
 			};
 		case "auth-required":
 			return {
-				background: "#bae6fd",
-				border: "#38bdf8",
+				background: "var(--jh-color-status-auth-required-bg)",
+				border: "var(--jh-color-status-auth-required-border)",
+				foreground: "var(--jh-color-status-auth-required-fg)",
 				label: "Auth required",
 			};
 		case "degraded":
 			return {
-				background: "#fed7aa",
-				border: "#f97316",
+				background: "var(--jh-color-status-degraded-bg)",
+				border: "var(--jh-color-status-degraded-border)",
+				foreground: "var(--jh-color-status-degraded-fg)",
 				label: "Degraded",
 			};
 		case "blocked":
 			return {
-				background: "#e2e8f0",
-				border: "#94a3b8",
+				background: "var(--jh-color-status-blocked-bg)",
+				border: "var(--jh-color-status-blocked-border)",
+				foreground: "var(--jh-color-status-blocked-fg)",
 				label: "Not ready",
 			};
 		case "failed":
 			return {
-				background: "#fecaca",
-				border: "#ef4444",
+				background: "var(--jh-color-status-failed-bg)",
+				border: "var(--jh-color-status-failed-border)",
+				foreground: "var(--jh-color-status-failed-fg)",
 				label: "Failed",
 			};
 	}
@@ -163,7 +174,7 @@ function resolveEvaluationDisplay(payload: EvaluationResultSummaryPayload): {
 			return {
 				buttonLabel: null,
 				details: [
-					sessionId ?? "Selected session pending",
+					sessionId ?? "Run pending",
 					workflow,
 					summary.job?.status ?? "Job pending",
 				],
@@ -176,7 +187,7 @@ function resolveEvaluationDisplay(payload: EvaluationResultSummaryPayload): {
 			return {
 				buttonLabel: null,
 				details: [
-					sessionId ?? "Selected session running",
+					sessionId ?? "Run in progress",
 					workflow,
 					`${summary.checkpoint.completedStepCount} completed steps`,
 				],
@@ -207,7 +218,7 @@ function resolveEvaluationDisplay(payload: EvaluationResultSummaryPayload): {
 					? "Open interrupted run"
 					: null,
 				details: [
-					sessionId ?? "Failed session",
+					sessionId ?? "Failed run",
 					workflow,
 					summary.failure?.jobId ?? "Failure context unavailable",
 				],
@@ -225,7 +236,7 @@ function resolveEvaluationDisplay(payload: EvaluationResultSummaryPayload): {
 			return {
 				buttonLabel: null,
 				details: [
-					sessionId ?? "Completed session",
+					sessionId ?? "Completed run",
 					workflow,
 					summary.closeout.state,
 				],
@@ -238,7 +249,7 @@ function resolveEvaluationDisplay(payload: EvaluationResultSummaryPayload): {
 			return {
 				buttonLabel: null,
 				details: [
-					sessionId ?? "Degraded session",
+					sessionId ?? "Degraded run",
 					workflow,
 					`${summary.warnings.totalCount} warning${summary.warnings.totalCount === 1 ? "" : "s"}`,
 				],
@@ -250,7 +261,7 @@ function resolveEvaluationDisplay(payload: EvaluationResultSummaryPayload): {
 		case "empty":
 			return {
 				buttonLabel: null,
-				details: [workflow, "No evaluation session selected"],
+				details: [workflow, "No evaluation run selected"],
 				focus: null,
 				message: summary.message,
 				state: "blocked",
@@ -259,20 +270,20 @@ function resolveEvaluationDisplay(payload: EvaluationResultSummaryPayload): {
 		case "missing-session":
 			return {
 				buttonLabel: null,
-				details: [sessionId ?? "Missing session", workflow],
+				details: [sessionId ?? "Missing run", workflow],
 				focus: null,
 				message: summary.message,
 				state: "blocked",
-				title: "Selected session was not found",
+				title: "Selected run was not found",
 			};
 		case "unsupported-workflow":
 			return {
 				buttonLabel: null,
-				details: [sessionId ?? "Selected session", workflow],
+				details: [sessionId ?? "Selected run", workflow],
 				focus: null,
 				message: summary.message,
 				state: "blocked",
-				title: "Selected session is not an evaluation workflow",
+				title: "Selected run is not an evaluation workflow",
 			};
 	}
 }
@@ -380,7 +391,7 @@ function resolveFallbackDisplay(input: {
 								: input.selectedSession.session.state === "auth-required"
 									? "auth-required"
 									: "failed",
-			title: "Selected session state",
+			title: "Selected run state",
 		};
 	}
 
@@ -439,7 +450,7 @@ function resolveFallbackDisplay(input: {
 		focus: null,
 		message:
 			input.selectedWorkflow?.message ??
-			"Launch a workflow or select a recent session to inspect run state.",
+			"Launch a workflow or select a recent run to inspect run state.",
 		state: "ready",
 		title: "Console is ready",
 	};
@@ -486,7 +497,8 @@ export function RunStatusPanel({
 				<div>
 					<p
 						style={{
-							color: "#cbd5e1",
+							color: "var(--jh-color-nav-muted)",
+							fontFamily: "var(--jh-font-body)",
 							letterSpacing: "0.08em",
 							marginBottom: "0.35rem",
 							marginTop: 0,
@@ -497,18 +509,24 @@ export function RunStatusPanel({
 					</p>
 					<h2
 						id="chat-console-status-title"
-						style={{ marginBottom: "0.35rem" }}
+						style={{
+							fontFamily: "var(--jh-font-heading)",
+							marginBottom: "0.35rem",
+						}}
 					>
 						{display.title}
 					</h2>
-					<p style={{ color: "#e2e8f0", marginBottom: 0 }}>{display.message}</p>
+					<p style={{ color: "var(--jh-color-text-on-ink)", marginBottom: 0 }}>
+						{display.message}
+					</p>
 				</div>
 				<span
 					style={{
 						background: tone.background,
 						border: `1px solid ${tone.border}`,
-						borderRadius: "999px",
-						color: "#0f172a",
+						borderRadius: "var(--jh-radius-pill)",
+						color: tone.foreground,
+						fontFamily: "var(--jh-font-body)",
 						fontSize: "0.88rem",
 						fontWeight: 800,
 						padding: "0.35rem 0.7rem",
@@ -529,10 +547,11 @@ export function RunStatusPanel({
 					<article
 						key={detail}
 						style={{
-							background: "rgba(255, 255, 255, 0.08)",
-							border: "1px solid rgba(226, 232, 240, 0.14)",
-							borderRadius: "1rem",
-							padding: "0.8rem 0.9rem",
+							background: "var(--jh-color-nav-item-bg)",
+							border: "1px solid var(--jh-color-nav-border)",
+							borderRadius: "var(--jh-radius-md)",
+							fontFamily: "var(--jh-font-mono)",
+							padding: "var(--jh-space-padding-sm)",
 						}}
 					>
 						<p style={{ margin: 0 }}>{detail}</p>
@@ -543,16 +562,26 @@ export function RunStatusPanel({
 			{error ? (
 				<section
 					style={{
-						background: "rgba(254, 202, 202, 0.12)",
-						border: "1px solid rgba(248, 113, 113, 0.4)",
-						borderRadius: "1rem",
-						padding: "0.8rem 0.9rem",
+						background: "var(--jh-color-status-error-bg)",
+						border: "1px solid var(--jh-color-status-error-border)",
+						borderRadius: "var(--jh-radius-md)",
+						padding: "var(--jh-space-padding-sm)",
 					}}
 				>
-					<p style={{ fontWeight: 700, marginBottom: "0.3rem", marginTop: 0 }}>
-						Client message
+					<p
+						style={{
+							color: "var(--jh-color-status-failed-fg)",
+							fontFamily: "var(--jh-font-heading)",
+							fontWeight: 700,
+							marginBottom: "0.3rem",
+							marginTop: 0,
+						}}
+					>
+						Error detail
 					</p>
-					<p style={{ margin: 0 }}>{error.message}</p>
+					<p style={{ color: "var(--jh-color-status-failed-fg)", margin: 0 }}>
+						{error.message}
+					</p>
 				</section>
 			) : null}
 

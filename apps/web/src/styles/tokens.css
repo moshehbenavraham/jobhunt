@@ -30,6 +30,7 @@
   --jh-color-shell-bg: var(--jh-color-paper);
   --jh-color-surface-bg: rgba(255, 255, 255, 0.84);
   --jh-color-surface-border: rgba(148, 163, 184, 0.18);
+  --jh-color-input-bg: #fff;
 
   --jh-color-text-primary: var(--jh-color-ink);
   --jh-color-text-secondary: #475569;
@@ -50,9 +51,11 @@
      ---------------------------------------------------------------- */
   --jh-color-status-ready-bg: #dcfce7;
   --jh-color-status-ready-fg: #166534;
+  --jh-color-status-ready-border: #22c55e;
 
   --jh-color-status-setup-bg: #ffedd5;
   --jh-color-status-setup-fg: #9a3412;
+  --jh-color-status-setup-border: #fdba74;
 
   --jh-color-status-error-bg: #fee2e2;
   --jh-color-status-error-fg: #991b1b;
@@ -73,6 +76,66 @@
 
   --jh-color-status-offline-bg: #fef3c7;
   --jh-color-status-offline-border: #fcd34d;
+
+  /* Run status tones -- evaluation console (T003, T016) */
+  --jh-color-status-completed-bg: #bbf7d0;
+  --jh-color-status-completed-fg: #166534;
+  --jh-color-status-completed-border: #22c55e;
+
+  --jh-color-status-running-bg: #bfdbfe;
+  --jh-color-status-running-fg: #1d4ed8;
+  --jh-color-status-running-border: #60a5fa;
+
+  --jh-color-status-paused-bg: #fde68a;
+  --jh-color-status-paused-fg: #92400e;
+  --jh-color-status-paused-border: #f59e0b;
+
+  --jh-color-status-failed-bg: #fecaca;
+  --jh-color-status-failed-fg: #991b1b;
+  --jh-color-status-failed-border: #ef4444;
+
+  --jh-color-status-degraded-bg: #fed7aa;
+  --jh-color-status-degraded-fg: #9a3412;
+  --jh-color-status-degraded-border: #f97316;
+
+  --jh-color-status-pending-bg: #dbeafe;
+  --jh-color-status-pending-fg: #1d4ed8;
+  --jh-color-status-pending-border: #60a5fa;
+
+  --jh-color-status-blocked-bg: #e2e8f0;
+  --jh-color-status-blocked-fg: #475569;
+  --jh-color-status-blocked-border: #94a3b8;
+
+  --jh-color-status-tooling-bg: #ddd6fe;
+  --jh-color-status-tooling-fg: #6d28d9;
+  --jh-color-status-tooling-border: #8b5cf6;
+
+  --jh-color-status-auth-required-bg: #bae6fd;
+  --jh-color-status-auth-required-fg: #0369a1;
+  --jh-color-status-auth-required-border: #38bdf8;
+
+  /* Timeline severity tones */
+  --jh-color-severity-info-bg: #dbeafe;
+  --jh-color-severity-info-fg: #1d4ed8;
+
+  --jh-color-severity-warn-bg: #fef3c7;
+  --jh-color-severity-warn-fg: #92400e;
+
+  --jh-color-severity-error-bg: #fee2e2;
+  --jh-color-severity-error-fg: #991b1b;
+
+  /* Closeout tones */
+  --jh-color-closeout-review-ready-bg: #dcfce7;
+  --jh-color-closeout-review-ready-fg: #166534;
+
+  --jh-color-closeout-in-progress-bg: #dbeafe;
+  --jh-color-closeout-in-progress-fg: #1d4ed8;
+
+  --jh-color-closeout-attention-bg: #ffedd5;
+  --jh-color-closeout-attention-fg: #9a3412;
+
+  --jh-color-closeout-not-ready-bg: #e2e8f0;
+  --jh-color-closeout-not-ready-fg: #475569;
 
   /* Badge tones */
   --jh-color-badge-attention-bg: #fde68a;

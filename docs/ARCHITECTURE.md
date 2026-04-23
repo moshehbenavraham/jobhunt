@@ -12,7 +12,10 @@ Repo instructions and scripts
   -> apps/
      -> apps/api/src/index.ts
      -> apps/api/src/server/index.ts
-     -> apps/web/src/App.tsx
+     -> apps/web/src/main.tsx          (React + RouterProvider entry)
+     -> apps/web/src/shell/root-layout.tsx  (three-zone shell chrome)
+     -> apps/web/src/routes.tsx         (route tree, 13 surfaces + 404)
+     -> apps/web/src/styles/            (tokens.css, base.css, layout.css)
   -> reports / output / data / tracker files
   -> .jobhunt-app/ (app-owned runtime state only)
 ```
@@ -38,9 +41,25 @@ surfaces.
   routes, approval inbox routes, settings routes, report-viewer routes,
   pipeline-review routes, tracker-workspace routes, application-help routes,
   workflow bootstrap helpers, and the long-lived boot server.
-- `apps/web` owns the React shell that renders startup, onboarding, approval,
-  settings, report viewer, pipeline review, tracker workspace,
-  application-help, and maintenance surfaces.
+- `apps/web` owns the React operator shell with:
+  - **Design token layer** (`src/styles/tokens.css`, `base.css`, `layout.css`)
+    providing the mineral paper palette, Space Grotesk / IBM Plex typography,
+    spacing scale, and CSS custom properties for the entire shell.
+  - **Three-zone layout** (left navigation rail, center canvas, right evidence
+    rail) composed via CSS Grid in `layout.css` with responsive breakpoints
+    for desktop (>= 1200px), tablet (768-1199px), and mobile (< 768px).
+  - **React Router** (`src/routes.tsx`) with 13 deep-linkable surface routes,
+    legacy hash-URL redirect, and a catch-all 404 page.
+  - **Shell chrome** (`src/shell/root-layout.tsx`) using `<Outlet />` for
+    the center canvas, `ShellContext` for cross-surface navigation callbacks,
+    and `useResponsiveLayout` for breakpoint-driven drawer and bottom-nav
+    behavior.
+  - **Command palette** (`src/shell/command-palette.tsx`) bound to Cmd/Ctrl+K
+    with fuzzy search, keyboard navigation, and ARIA-compliant dialog roles.
+  - **Responsive components**: `Drawer`, `BottomNav`, and `EvidenceRail`
+    adapting across desktop, tablet, and mobile breakpoints.
+  - **14 page components** (`src/pages/`) wrapping existing surface components
+    with router-aware props via outlet context and shell context.
 - Package-level docs live in `apps/api/README_api.md` and
   `apps/web/README_web.md`.
 - `scripts/test-app-bootstrap.mjs` verifies the live app boot contract from the
@@ -48,8 +67,10 @@ surfaces.
 - `scripts/test-app-chat-console.mjs`, `scripts/test-app-report-viewer.mjs`,
   `scripts/test-app-pipeline-review.mjs`,
   `scripts/test-app-tracker-workspace.mjs`, and
-  `scripts/test-app-auto-pipeline-parity.mjs` keep the phase 04 shell surfaces
+  `scripts/test-app-auto-pipeline-parity.mjs` keep the shell surfaces
   aligned with the repo gate.
+- `scripts/check-app-ui-copy.mjs` enforces a banned-terms list to prevent
+  internal jargon from reaching operator-facing UI strings.
 
 ### Job evaluation pipeline
 
@@ -96,10 +117,10 @@ The app contract keeps the runtime read-first:
 2. `apps/api/src/server/index.ts` serves `/health`, `/startup`, onboarding,
    approval inbox, settings, report-viewer, pipeline-review, tracker-workspace,
    application-help, and workflow routes for the live boot surface.
-3. `apps/web/src/App.tsx` renders loading, ready, missing-prerequisites,
-   offline, onboarding, approval, settings, report viewer, pipeline review,
-   tracker workspace, application-help, and runtime-error states from the API
-   payloads.
+3. `apps/web/src/main.tsx` mounts `RouterProvider` with the route tree defined
+   in `src/routes.tsx`. The shell chrome lives in `src/shell/root-layout.tsx`
+   and renders the three-zone layout, navigation rail, evidence rail, command
+   palette, and responsive drawers around the router `<Outlet />`.
 
 The server and web shell inspect the existing repo contract, but they do not
 create or mutate user-layer files outside explicit repair actions.

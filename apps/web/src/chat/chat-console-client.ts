@@ -232,7 +232,7 @@ async function parseResponsePayload<TPayload>(
 			cause: error,
 			code: "invalid-json",
 			httpStatus: response.status,
-			message: "Chat-console endpoint returned invalid JSON.",
+			message: "Console returned unreadable data. Try refreshing.",
 			state: "error",
 		});
 	});
@@ -259,7 +259,7 @@ async function parseResponsePayload<TPayload>(
 				cause: parsedError,
 				code: "invalid-response",
 				httpStatus: response.status,
-				message: "Chat-console endpoint returned an unexpected payload.",
+				message: "Console returned an unexpected response. Try refreshing.",
 				state: "error",
 			});
 		}
@@ -304,7 +304,8 @@ async function fetchSummaryOnce(options: {
 			throw new ChatConsoleClientError({
 				cause: error,
 				code: "timeout",
-				message: "Chat-console summary timed out before it responded.",
+				message:
+					"Console summary timed out. Check that the API server is running.",
 				state: "offline",
 			});
 		}
@@ -317,7 +318,7 @@ async function fetchSummaryOnce(options: {
 			cause: error,
 			code: "offline",
 			message:
-				"Chat-console summary endpoint is unavailable. Start the local API server and try again.",
+				"Console summary is unreachable. Start the local API server and try again.",
 			state: "offline",
 		});
 	} finally {
@@ -393,7 +394,8 @@ export async function submitChatConsoleCommand(
 			throw new ChatConsoleClientError({
 				cause: error,
 				code: "timeout",
-				message: "Orchestration request timed out before it responded.",
+				message:
+					"Launch request timed out. Check that the API server is running.",
 				state: "offline",
 			});
 		}
@@ -406,7 +408,7 @@ export async function submitChatConsoleCommand(
 			cause: error,
 			code: "offline",
 			message:
-				"Orchestration endpoint is unavailable. Start the local API server and try again.",
+				"Launch service is unreachable. Start the local API server and try again.",
 			state: "offline",
 		});
 	} finally {

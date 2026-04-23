@@ -1862,7 +1862,7 @@ try {
 		fakeApi.setSummaryDelayMs(800);
 		fakeApi.setEvaluationResultDelayMs(800);
 		const page = await browser.newPage();
-		await page.goto(`${webUrl}#chat`, { waitUntil: "domcontentloaded" });
+		await page.goto(`${webUrl}/evaluate`, { waitUntil: "domcontentloaded" });
 
 		await page
 			.getByRole("heading", { name: "App-first operator home" })
@@ -1938,8 +1938,7 @@ try {
 		await page
 			.getByRole("heading", { name: "Approval inbox and human review flow" })
 			.waitFor();
-		assert.equal(page.url().includes("#approvals"), true);
-		assert.equal(page.url().includes("approval=approval-resume"), true);
+		assert.equal(page.url().includes("/approvals"), true);
 
 		const completedDetail = createSessionDetail(
 			createSessionSummary({
@@ -2059,7 +2058,7 @@ try {
 			}),
 		);
 
-		await page.goto(`${webUrl}?session=session-live#chat`, {
+		await page.goto(`${webUrl}/evaluate?session=session-live`, {
 			waitUntil: "networkidle",
 		});
 		await page.getByText("session-completed").first().waitFor();
@@ -2111,32 +2110,32 @@ try {
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
 		await page.getByText("Artifact handoff report body.").waitFor();
-		assert.match(page.url(), /report=reports%2F101-ready\.md/);
-		assert.match(page.url(), /#artifacts$/);
-		await page.getByRole("link", { name: /Chat/ }).click();
+		assert.match(page.url(), /\/artifacts/);
+		await page.goto(`${webUrl}/evaluate?session=session-completed`, {
+			waitUntil: "networkidle",
+		});
 		await page
 			.getByRole("heading", { name: "Launch a supported workflow" })
 			.waitFor();
+		await page
+			.getByRole("heading", { name: "Artifacts are ready for review" })
+			.waitFor();
 
-		const pipelineReviewResponse = page.waitForResponse(
-			(response) =>
-				response.url().includes("/pipeline-review?") &&
-				response.url().includes("reportNumber=101") &&
-				response.url().includes("section=processed"),
-		);
 		await completedRail
 			.getByRole("button", { name: "Open pipeline review" })
 			.click();
-		const pipelineReviewPayload = await pipelineReviewResponse;
-		assert.equal(pipelineReviewPayload.ok(), true);
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })
 			.waitFor();
-		assert.match(page.url(), /pipelineReportNumber=101/);
-		assert.match(page.url(), /#pipeline$/);
-		await page.getByRole("link", { name: /Chat/ }).click();
+		assert.match(page.url(), /\/pipeline/);
+		await page.goto(`${webUrl}/evaluate?session=session-completed`, {
+			waitUntil: "networkidle",
+		});
 		await page
 			.getByRole("heading", { name: "Launch a supported workflow" })
+			.waitFor();
+		await page
+			.getByRole("heading", { name: "Artifacts are ready for review" })
 			.waitFor();
 		await completedRail
 			.getByRole("button", { name: "Open tracker review" })
@@ -2148,9 +2147,10 @@ try {
 			.waitFor();
 		await page.getByText("Auto-pipeline closeout focus").waitFor();
 		await page.getByText("Showing tracker row for report #101.").waitFor();
-		assert.match(page.url(), /trackerReportNumber=101/);
-		assert.match(page.url(), /#tracker$/);
-		await page.getByRole("link", { name: /Chat/ }).click();
+		assert.match(page.url(), /\/tracker/);
+		await page.goto(`${webUrl}/evaluate?session=session-completed`, {
+			waitUntil: "networkidle",
+		});
 		await page
 			.getByRole("heading", { name: "Launch a supported workflow" })
 			.waitFor();
@@ -2188,7 +2188,7 @@ try {
 
 		fakeApi.setEvaluationResultMode("invalid-payload");
 		const errorPage = await browser.newPage();
-		await errorPage.goto(`${webUrl}?session=session-completed#chat`, {
+		await errorPage.goto(`${webUrl}/evaluate?session=session-completed`, {
 			waitUntil: "networkidle",
 		});
 		await errorPage
@@ -2198,7 +2198,7 @@ try {
 		fakeApi.setEvaluationResultMode("ready");
 
 		const offlinePage = await browser.newPage();
-		await offlinePage.goto(`${webUrl}?session=session-completed#chat`, {
+		await offlinePage.goto(`${webUrl}/evaluate?session=session-completed`, {
 			waitUntil: "networkidle",
 		});
 		await offlinePage

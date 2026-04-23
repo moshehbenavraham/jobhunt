@@ -101,7 +101,7 @@ function getKindLabel(command: PaletteCommand): string {
 
 export function CommandPalette({ actions, state }: CommandPaletteProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
-	const listRef = useRef<HTMLUListElement | null>(null);
+	const listRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		if (state.isOpen && inputRef.current) {

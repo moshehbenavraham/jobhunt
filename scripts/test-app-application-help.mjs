@@ -590,8 +590,33 @@ function createApplicationHelpErrorPayload(message) {
 	};
 }
 
+function toRunState(sessionStatus) {
+	switch (sessionStatus) {
+		case "completed":
+			return "ready";
+		case "failed":
+			return "failed";
+		case "waiting":
+			return "waiting-for-approval";
+		default:
+			return "running";
+	}
+}
+
+function toCommandSessionSummary(selectedSummary) {
+	return {
+		...selectedSummary.session,
+		job: selectedSummary.job ?? null,
+		latestFailure: selectedSummary.failure ?? null,
+		pendingApproval: selectedSummary.approval ?? null,
+		pendingApprovalCount: selectedSummary.approval ? 1 : 0,
+		state: toRunState(selectedSummary.session.status),
+	};
+}
+
 function createCommandPayload({ message, sessionId }) {
 	const selectedSummary = createDefaultFixtures()[sessionId];
+	const commandSession = toCommandSessionSummary(selectedSummary);
 
 	return {
 		generatedAt: "2026-04-22T01:12:00.000Z",
@@ -627,7 +652,7 @@ function createCommandPayload({ message, sessionId }) {
 					specialistId: "research-specialist",
 					status: "ready",
 				},
-				session: selectedSummary.session,
+				session: commandSession,
 				timeline: [
 					{
 						approvalId: selectedSummary.approval?.approvalId ?? null,
@@ -643,7 +668,7 @@ function createCommandPayload({ message, sessionId }) {
 					},
 				],
 			},
-			session: selectedSummary.session,
+			session: commandSession,
 			specialist: {
 				description:
 					"Owns application-help drafting, review, and bounded context resolution.",
@@ -933,7 +958,7 @@ try {
 
 	try {
 		const page = await browser.newPage();
-		await page.goto(`${webUrl}#application-help`, {
+		await page.goto(`${webUrl}/apply`, {
 			waitUntil: "networkidle",
 		});
 
@@ -947,7 +972,7 @@ try {
 		assert.match(page.url(), /applicationHelpSessionId=app-help-completed/);
 
 		await page.goto(
-			`${webUrl}?applicationHelpSessionId=app-help-draft-ready#application-help`,
+			`${webUrl}/apply?applicationHelpSessionId=app-help-draft-ready`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -956,7 +981,7 @@ try {
 		await page.getByText("What makes you a strong fit?").waitFor();
 
 		await page.goto(
-			`${webUrl}?applicationHelpSessionId=app-help-paused#application-help`,
+			`${webUrl}/apply?applicationHelpSessionId=app-help-paused`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -968,7 +993,7 @@ try {
 			.waitFor();
 
 		await page.goto(
-			`${webUrl}?applicationHelpSessionId=app-help-rejected#application-help`,
+			`${webUrl}/apply?applicationHelpSessionId=app-help-rejected`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -977,7 +1002,7 @@ try {
 		await page.getByText("Please revise the proof points.").first().waitFor();
 
 		await page.goto(
-			`${webUrl}?applicationHelpSessionId=app-help-resumed#application-help`,
+			`${webUrl}/apply?applicationHelpSessionId=app-help-resumed`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -989,13 +1014,13 @@ try {
 
 		fakeApi.setMode("slow");
 		const loadingPage = await browser.newPage();
-		await loadingPage.goto(`${webUrl}#application-help`);
+		await loadingPage.goto(`${webUrl}/apply`);
 		await loadingPage.getByText("Loading application-help workspace").waitFor();
 		await loadingPage.close();
 
 		fakeApi.setMode("empty");
 		const emptyPage = await browser.newPage();
-		await emptyPage.goto(`${webUrl}#application-help`, {
+		await emptyPage.goto(`${webUrl}/apply`, {
 			waitUntil: "networkidle",
 		});
 		await emptyPage
@@ -1006,7 +1031,7 @@ try {
 
 		fakeApi.setMode("error");
 		const errorPage = await browser.newPage();
-		await errorPage.goto(`${webUrl}#application-help`, {
+		await errorPage.goto(`${webUrl}/apply`, {
 			waitUntil: "networkidle",
 		});
 		await errorPage.getByText("Application-help workspace warning").waitFor();
@@ -1019,7 +1044,7 @@ try {
 
 		fakeApi.reset();
 		await page.goto(
-			`${webUrl}?applicationHelpSessionId=app-help-completed#application-help`,
+			`${webUrl}/apply?applicationHelpSessionId=app-help-completed`,
 			{
 				waitUntil: "networkidle",
 			},

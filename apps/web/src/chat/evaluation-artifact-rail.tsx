@@ -205,28 +205,28 @@ function getEmptyState(
 	switch (status) {
 		case "loading":
 			return {
-				body: "Reading the bounded evaluation-result summary for the active session.",
+				body: "Loading evaluation results for the active run.",
 				title: "Loading evaluation handoff",
 			};
 		case "offline":
 			return {
 				body:
 					error?.message ??
-					"The evaluation-result endpoint is offline, so the artifact handoff cannot refresh.",
+					"Evaluation results are offline. Artifact handoff cannot refresh.",
 				title: "Evaluation handoff offline",
 			};
 		case "error":
 			return {
 				body:
 					error?.message ??
-					"The evaluation-result payload could not be parsed into the artifact handoff surface.",
+					"Evaluation results returned an unexpected response.",
 				title: "Evaluation handoff unavailable",
 			};
 		default:
 			return {
 				body:
 					payload?.message ??
-					"Launch or select an evaluation session to inspect report, PDF, tracker, and closeout readiness in one place.",
+					"Launch or select an evaluation run to inspect report, PDF, tracker, and closeout readiness.",
 				title: "No evaluation handoff yet",
 			};
 	}
@@ -614,7 +614,7 @@ export function EvaluationArtifactRail({
 					<p style={{ fontWeight: 700, marginBottom: "0.25rem", marginTop: 0 }}>
 						{status === "offline"
 							? "Showing the last handoff snapshot"
-							: "Contract warning"}
+							: "Data warning"}
 					</p>
 					<p style={{ margin: 0 }}>{error.message}</p>
 				</section>
@@ -693,8 +693,7 @@ export function EvaluationArtifactRail({
 						Input and verification
 					</h3>
 					<p style={{ color: "#475569", margin: 0 }}>
-						Launch provenance and verification stay backend-owned so the browser
-						never re-parses prompt text or guesses at liveness.
+						Input source and verification are determined server-side.
 					</p>
 				</header>
 				<div
@@ -827,7 +826,7 @@ export function EvaluationArtifactRail({
 						Warning preview
 					</h3>
 					<p style={{ color: "#475569", margin: 0 }}>
-						The rail shows only the bounded preview from the backend contract.
+						Showing the server-provided warning preview.
 					</p>
 				</header>
 				{summary.warnings.items.length === 0 ? (
@@ -873,8 +872,7 @@ export function EvaluationArtifactRail({
 						Handoff actions
 					</h3>
 					<p style={{ color: "#475569", margin: 0 }}>
-						Report, pipeline, and tracker actions use the backend-owned review
-						focus contract instead of local path or prompt inference.
+						Navigate to report, pipeline, or tracker review from here.
 					</p>
 				</header>
 				<div

@@ -779,7 +779,7 @@ try {
 		page.on("pageerror", (error) => {
 			console.error(`PAGEERROR: ${error.message}`);
 		});
-		await page.goto(webUrl, { waitUntil: "networkidle" });
+		await page.goto(`${webUrl}/onboarding`, { waitUntil: "networkidle" });
 		await page
 			.getByRole("heading", { name: "Startup checklist and onboarding wizard" })
 			.waitFor();
@@ -810,13 +810,17 @@ try {
 		await page
 			.getByRole("button", { name: "Open the operator home surface" })
 			.click();
-		await page
-			.getByRole("heading", { name: "App-owned daily landing path" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Daily overview" }).waitFor();
 		await page.getByText("Authentication is still required.").first().waitFor();
-		assert.match(page.url(), /#home$/);
+		assert.ok(
+			new URL(page.url()).pathname === "/",
+			`Expected pathname to be '/' but got '${new URL(page.url()).pathname}'`,
+		);
 
-		await page.getByRole("link", { name: /Onboarding/ }).click();
+		await page
+			.getByRole("link", { name: /Onboarding/ })
+			.first()
+			.click();
 		fakeApi.setOnboardingMode("empty");
 		await page
 			.getByRole("button", { name: /Refresh onboarding summary/i })

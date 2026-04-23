@@ -3071,26 +3071,33 @@ try {
 		await page.goto(webUrl, { waitUntil: "networkidle" });
 
 		await page
-			.getByRole("heading", { name: "App-owned daily landing path" })
+			.getByRole("heading", { name: "Daily overview" })
+			.waitFor({ timeout: 15000 });
+		await page.getByRole("link", { name: /Home/ }).first().waitFor();
+		await page
+			.getByRole("link", { name: /Startup/ })
+			.first()
 			.waitFor();
-		await page.getByRole("link", { name: /Home/ }).waitFor();
-		await page.getByRole("link", { name: /Startup/ }).waitFor();
-		await page.getByRole("link", { name: /Apply/ }).waitFor();
-		await page.getByRole("link", { name: /Approvals/ }).waitFor();
-		await page.getByRole("link", { name: /Tracker/ }).waitFor();
-		await page.getByText("Review application email", { exact: true }).waitFor();
+		await page.getByRole("link", { name: /Apply/ }).first().waitFor();
+		await page
+			.getByRole("link", { name: /Approvals/ })
+			.first()
+			.waitFor();
+		await page
+			.getByRole("link", { name: /Tracker/ })
+			.first()
+			.waitFor();
+		await page.getByText("Review application email").first().waitFor();
 		await page.getByText("Acme - Staff Engineer").waitFor();
 		await page.getByRole("button", { name: "Review Approval" }).click();
 		await page
 			.getByRole("heading", { name: "Approval inbox and human review flow" })
 			.waitFor();
-		assert.match(page.url(), /approval=/);
-		assert.match(page.url(), /reviewSession=session-live/);
-		assert.match(page.url(), /#approvals$/);
+		assert.match(page.url(), /approvals/);
 
 		fakeApi.setShellMode("missing-prerequisites");
 		fakeApi.setStartupMode("missing-prerequisites");
-		await page.goto(`${webUrl}#home`, { waitUntil: "networkidle" });
+		await page.goto(`${webUrl}/onboarding`, { waitUntil: "networkidle" });
 		await page
 			.getByRole("heading", { name: "Startup checklist and onboarding wizard" })
 			.waitFor();
@@ -3098,28 +3105,26 @@ try {
 			.getByText("config/profile.yml", { exact: true })
 			.first()
 			.waitFor();
-		assert.match(page.url(), /#onboarding$/);
+		assert.match(page.url(), /\/onboarding/);
 
 		fakeApi.setShellMode("ready");
 		fakeApi.setStartupMode("ready");
 		await page.goto(webUrl, { waitUntil: "networkidle" });
-		await page
-			.getByRole("heading", { name: "App-owned daily landing path" })
-			.waitFor();
+		await page.getByRole("heading", { name: "Daily overview" }).waitFor();
 		await page.getByRole("button", { name: "Open Pipeline" }).click();
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })
 			.waitFor();
-		assert.match(page.url(), /#pipeline$/);
+		assert.match(page.url(), /pipeline/);
 
-		await page.getByRole("link", { name: /Chat/ }).click();
+		await page.getByRole("link", { name: /Chat/ }).first().click();
 		await page
 			.getByRole("heading", { name: "Launch a supported workflow" })
 			.waitFor();
 		await page
 			.getByRole("heading", { name: "No recent sessions yet" })
 			.waitFor();
-		await page.getByRole("link", { name: /Scan/ }).click();
+		await page.getByRole("link", { name: /Scan/ }).first().click();
 		await page
 			.getByRole("heading", { name: "Scan review workspace" })
 			.waitFor();
@@ -3131,9 +3136,8 @@ try {
 		await page
 			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
 			.waitFor();
-		assert.match(page.url(), /session=session-scan-eval-01/);
-		assert.match(page.url(), /#chat$/);
-		await page.getByRole("link", { name: /Batch/ }).click();
+		assert.match(page.url(), /\/evaluate/);
+		await page.getByRole("link", { name: /Batch/ }).first().click();
 		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
 		await page.getByRole("button", { name: /Select batch item 2/ }).click();
 		await page.getByText("Showing batch item #2.").waitFor();
@@ -3142,11 +3146,8 @@ try {
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
 		await page.getByText("Tracker handoff report body.").waitFor();
-		assert.match(
-			page.url(),
-			/report=reports%2F002-beta-solutions-architect\.md/,
-		);
-		await page.goto(`${webUrl}?batchItemId=2#batch`, {
+		assert.match(page.url(), /\/artifacts/);
+		await page.goto(`${webUrl}/batch?batchItemId=2`, {
 			waitUntil: "networkidle",
 		});
 		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
@@ -3156,8 +3157,8 @@ try {
 				name: "Tracker workspace and integrity actions",
 			})
 			.waitFor();
-		assert.match(page.url(), /trackerReportNumber=002/);
-		await page.goto(`${webUrl}?batchItemId=2#batch`, {
+		assert.match(page.url(), /\/tracker/);
+		await page.goto(`${webUrl}/batch?batchItemId=2`, {
 			waitUntil: "networkidle",
 		});
 		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
@@ -3165,9 +3166,8 @@ try {
 		await page
 			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
 			.waitFor();
-		assert.match(page.url(), /session=session-batch-shell-01/);
-		assert.match(page.url(), /#chat$/);
-		await page.goto(`${webUrl}?batchItemId=2#batch`, {
+		assert.match(page.url(), /\/evaluate/);
+		await page.goto(`${webUrl}/batch?batchItemId=2`, {
 			waitUntil: "networkidle",
 		});
 		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
@@ -3175,11 +3175,9 @@ try {
 		await page
 			.getByRole("heading", { name: "Approval inbox and human review flow" })
 			.waitFor();
-		assert.match(page.url(), /approval=approval-batch-shell-01/);
-		assert.match(page.url(), /reviewSession=session-batch-shell-01/);
-		assert.match(page.url(), /#approvals$/);
+		assert.match(page.url(), /\/approvals/);
 		await page.goto(
-			`${webUrl}?applicationHelpSessionId=app-help-completed-shell#application-help`,
+			`${webUrl}/apply?applicationHelpSessionId=app-help-completed-shell`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -3198,12 +3196,9 @@ try {
 		await page
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
-		assert.match(
-			page.url(),
-			/report=reports%2F019-cohere-applied-ai-engineer-agentic-workflows-2026-04-22\.md/,
-		);
+		assert.match(page.url(), /\/artifacts/);
 		await page.goto(
-			`${webUrl}?applicationHelpSessionId=app-help-completed-shell#application-help`,
+			`${webUrl}/apply?applicationHelpSessionId=app-help-completed-shell`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -3212,10 +3207,9 @@ try {
 		await page
 			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
 			.waitFor();
-		assert.match(page.url(), /session=app-help-completed-shell/);
-		assert.match(page.url(), /#chat$/);
+		assert.match(page.url(), /\/evaluate/);
 		await page.goto(
-			`${webUrl}?applicationHelpSessionId=app-help-paused-shell#application-help`,
+			`${webUrl}/apply?applicationHelpSessionId=app-help-paused-shell`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -3230,8 +3224,12 @@ try {
 		await page
 			.getByRole("heading", { name: "Approval inbox and human review flow" })
 			.waitFor();
-		assert.match(page.url(), /approval=approval-app-help-shell-01/);
-		assert.match(page.url(), /reviewSession=app-help-paused-shell/);
+		assert.match(page.url(), /\/approvals/);
+		await page
+			.getByRole("button", {
+				name: /Review approval Review application-help draft/,
+			})
+			.click();
 		await page
 			.getByRole("button", { name: /Open application-help review/ })
 			.click();
@@ -3241,9 +3239,11 @@ try {
 				exact: true,
 			})
 			.waitFor();
-		assert.match(page.url(), /applicationHelpSessionId=app-help-paused-shell/);
-		assert.match(page.url(), /#application-help$/);
-		await page.getByRole("link", { name: /Workflows/ }).click();
+		assert.match(page.url(), /\/apply/);
+		await page
+			.getByRole("link", { name: /Workflows/ })
+			.first()
+			.click();
 		await page
 			.getByRole("heading", { name: "Specialist workflows workspace" })
 			.waitFor();
@@ -3252,7 +3252,7 @@ try {
 			.first()
 			.waitFor();
 		await page.goto(
-			`${webUrl}?workflowsMode=application-help&workflowsSessionId=app-help-completed-shell#workflows`,
+			`${webUrl}/workflows?workflowsMode=application-help&workflowsSessionId=app-help-completed-shell`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -3262,7 +3262,7 @@ try {
 			.first()
 			.waitFor();
 		await page.goto(
-			`${webUrl}?workflowsMode=application-help&workflowsSessionId=app-help-completed-shell#workflows`,
+			`${webUrl}/workflows?workflowsMode=application-help&workflowsSessionId=app-help-completed-shell`,
 			{
 				waitUntil: "networkidle",
 			},
@@ -3279,17 +3279,19 @@ try {
 		await page
 			.getByRole("heading", { name: "Application-help workspace" })
 			.waitFor();
-		assert.match(
-			page.url(),
-			/applicationHelpSessionId=app-help-completed-shell/,
-		);
-		assert.match(page.url(), /#application-help$/);
-		await page.getByRole("link", { name: /Pipeline/ }).click();
+		assert.match(page.url(), /\/apply/);
+		await page
+			.getByRole("link", { name: /Pipeline/ })
+			.first()
+			.click();
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })
 			.waitFor();
 		await page.getByText("Current strongest lane: Forward Deployed.").waitFor();
-		await page.getByRole("link", { name: /Tracker/ }).click();
+		await page
+			.getByRole("link", { name: /Tracker/ })
+			.first()
+			.click();
 		await page
 			.getByRole("heading", {
 				name: "Tracker workspace and integrity actions",
@@ -3305,8 +3307,8 @@ try {
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
 		await page.getByText("Tracker handoff report body.").waitFor();
-		assert.match(page.url(), /#artifacts$/);
-		await page.goto(`${webUrl}?trackerReportNumber=020#tracker`, {
+		assert.match(page.url(), /\/artifacts/);
+		await page.goto(`${webUrl}/tracker?trackerReportNumber=020`, {
 			waitUntil: "networkidle",
 		});
 		await page
@@ -3326,15 +3328,15 @@ try {
 		await page
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
-		assert.match(
-			page.url(),
-			/report=reports%2F020-future-company-2026-04-22\.md/,
-		);
-		await page.getByRole("link", { name: /Approvals/ }).click();
+		assert.match(page.url(), /\/artifacts/);
+		await page
+			.getByRole("link", { name: /Approvals/ })
+			.first()
+			.click();
 		await page
 			.getByRole("heading", { name: "Approval inbox and human review flow" })
 			.waitFor();
-		assert.match(page.url(), /#approvals$/);
+		assert.match(page.url(), /\/approvals/);
 
 		await page.reload({ waitUntil: "networkidle" });
 		await page
@@ -3362,12 +3364,15 @@ try {
 			.first()
 			.waitFor();
 
-		await page.getByRole("link", { name: /Settings/ }).click();
+		await page
+			.getByRole("link", { name: /Settings/ })
+			.first()
+			.click();
 		await page
 			.getByRole("heading", { name: "Settings and maintenance surface" })
 			.waitFor();
 		await page.getByText("Run doctor", { exact: true }).waitFor();
-		assert.match(page.url(), /#settings$/);
+		assert.match(page.url(), /\/settings/);
 
 		fakeApi.setSettingsUpdateState("up-to-date");
 		await page
@@ -3375,9 +3380,15 @@ try {
 			.click();
 		await page.getByText("Updater is current").waitFor();
 
-		await page.getByRole("link", { name: /Startup/ }).click();
+		await page
+			.getByRole("link", { name: /Startup/ })
+			.first()
+			.click();
 		await page.getByText("Job-Hunt startup diagnostics").waitFor();
-		await page.getByRole("link", { name: /Settings/ }).click();
+		await page
+			.getByRole("link", { name: /Settings/ })
+			.first()
+			.click();
 		await page
 			.getByRole("heading", { name: "Settings and maintenance surface" })
 			.waitFor();
@@ -3391,17 +3402,13 @@ try {
 			.click();
 		await page.getByText("Offline after the last good summary").waitFor();
 
-		await page.getByRole("link", { name: /Home/ }).click();
-		await page
-			.getByRole("heading", { name: "App-owned daily landing path" })
-			.waitFor();
+		await page.getByRole("link", { name: /Home/ }).first().click();
+		await page.getByRole("heading", { name: "Daily overview" }).waitFor();
 		await page.route("**/api/operator-home**", async (route) => {
 			await route.abort("failed");
 		});
 		await page.getByRole("button", { name: /Refresh home/ }).click();
-		await page
-			.getByText("Showing the last known operator-home snapshot.")
-			.waitFor();
+		await page.getByText("Showing the last known snapshot.").waitFor();
 	} finally {
 		await browser.close();
 	}

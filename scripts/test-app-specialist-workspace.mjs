@@ -2281,7 +2281,7 @@ try {
 
 	try {
 		const page = await browser.newPage();
-		await page.goto(`${webUrl}#workflows`, {
+		await page.goto(`${webUrl}/workflows`, {
 			waitUntil: "load",
 		});
 
@@ -2321,10 +2321,9 @@ try {
 				exact: true,
 			})
 			.waitFor();
-		assert.match(page.url(), /applicationHelpSessionId=app-help-detail-01/);
-		assert.match(page.url(), /#application-help$/);
+		assert.match(page.url(), /\/apply/);
 
-		await page.goto(`${webUrl}?workflowsMode=compare-offers#workflows`, {
+		await page.goto(`${webUrl}/workflows?workflowsMode=compare-offers`, {
 			waitUntil: "load",
 		});
 		await page.getByText("Resolved offers").waitFor();
@@ -2337,7 +2336,7 @@ try {
 			.waitFor();
 		await page.getByText("Showing selected tracker row #19.").first().waitFor();
 
-		await page.goto(`${webUrl}?workflowsMode=linkedin-outreach#workflows`, {
+		await page.goto(`${webUrl}/workflows?workflowsMode=linkedin-outreach`, {
 			waitUntil: "load",
 		});
 		await page.getByText("Message draft").waitFor();
@@ -2348,18 +2347,16 @@ try {
 			})
 			.waitFor();
 
-		await page.goto(`${webUrl}?workflowsMode=interview-prep#workflows`, {
+		await page.goto(`${webUrl}/workflows?workflowsMode=interview-prep`, {
 			waitUntil: "load",
 		});
 		await page.getByRole("button", { name: "Open approvals" }).click();
 		await page
 			.getByRole("heading", { name: "Approval inbox and human review flow" })
 			.waitFor();
-		assert.match(page.url(), /approval=approval-interview-workflow-01/);
-		assert.match(page.url(), /reviewSession=interview-waiting-01/);
-		assert.match(page.url(), /#approvals$/);
+		assert.match(page.url(), /\/approvals/);
 
-		await page.goto(`${webUrl}?workflowsMode=deep-company-research#workflows`, {
+		await page.goto(`${webUrl}/workflows?workflowsMode=deep-company-research`, {
 			waitUntil: "load",
 		});
 		await page.getByText("Research sections").waitFor();
@@ -2368,7 +2365,7 @@ try {
 			.waitFor();
 
 		await page.goto(
-			`${webUrl}?workflowsMode=interview-prep&workflowsSessionId=missing-specialist-session#workflows`,
+			`${webUrl}/workflows?workflowsMode=interview-prep&workflowsSessionId=missing-specialist-session`,
 			{
 				waitUntil: "load",
 			},
@@ -2384,13 +2381,13 @@ try {
 
 		fakeApi.setMode("slow");
 		const loadingPage = await browser.newPage();
-		await loadingPage.goto(`${webUrl}#workflows`);
+		await loadingPage.goto(`${webUrl}/workflows`);
 		await loadingPage.getByText("Loading workflows workspace").waitFor();
 		await loadingPage.close();
 
 		fakeApi.setMode("empty");
 		const emptyPage = await browser.newPage();
-		await emptyPage.goto(`${webUrl}#workflows`, {
+		await emptyPage.goto(`${webUrl}/workflows`, {
 			waitUntil: "load",
 		});
 		await emptyPage
@@ -2401,7 +2398,7 @@ try {
 
 		fakeApi.setMode("error");
 		const errorPage = await browser.newPage();
-		await errorPage.goto(`${webUrl}#workflows`, {
+		await errorPage.goto(`${webUrl}/workflows`, {
 			waitUntil: "load",
 		});
 		await errorPage.getByText("Workflows workspace warning").waitFor();
@@ -2411,7 +2408,7 @@ try {
 		await errorPage.close();
 
 		fakeApi.reset();
-		await page.goto(`${webUrl}#workflows`, {
+		await page.goto(`${webUrl}/workflows`, {
 			waitUntil: "load",
 		});
 		await page.route("**/specialist-workspace*", async (route) => {

@@ -1089,7 +1089,7 @@ try {
 			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
 			.waitFor();
 		assert.match(page.url(), /session=session-eval-01/);
-		assert.match(page.url(), /#chat$/);
+		assert.match(page.url(), /\/evaluate/);
 		await page
 			.getByRole("heading", { name: "session-eval-01", exact: true })
 			.first()
@@ -1103,8 +1103,7 @@ try {
 		await page
 			.getByRole("heading", { name: "Evaluation console and artifact handoff" })
 			.waitFor();
-		assert.match(page.url(), /session=session-batch-01/);
-		assert.match(page.url(), /#chat$/);
+		assert.match(page.url(), /\/evaluate/);
 
 		fakeApi.setScanMode("empty");
 		await page.goto(`${webUrl}#scan`, { waitUntil: "networkidle" });

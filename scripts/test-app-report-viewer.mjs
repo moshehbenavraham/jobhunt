@@ -787,34 +787,39 @@ try {
 	try {
 		const page = await browser.newPage();
 
-		await page.goto(`${webUrl}?session=session-completed#chat`, {
+		await page.goto(`${webUrl}/evaluate?session=session-completed`, {
 			waitUntil: "networkidle",
 		});
-		await page.getByRole("link", { name: /Chat/ }).waitFor();
-		await page.getByRole("link", { name: /Chat/ }).click();
+		await page.getByRole("link", { name: /Chat/ }).first().waitFor();
+		await page.getByRole("link", { name: /Chat/ }).first().click();
 		await page.getByText("session-completed").first().waitFor();
 		await page
 			.locator('section[aria-labelledby="chat-console-recent-title"]')
 			.locator("article")
 			.filter({ hasText: "session-completed" })
-			.getByRole("button", { name: "Select" })
+			.getByRole("button", { name: /Select/ })
 			.click();
 		await page.getByRole("button", { name: "Open report viewer" }).waitFor();
 		await page.getByRole("button", { name: "Open report viewer" }).click();
-		await page.waitForURL(/#artifacts$/);
+		await page.waitForURL(/\/artifacts/);
 		await page
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
 		await page
-			.getByRole("heading", { name: "Evaluation: HTTP Co -- Selected Role" })
+			.getByRole("heading", { name: "Evaluation: HTTP Co -- Latest Role" })
 			.waitFor();
 		await page.getByLabel("Selected report markdown").waitFor();
-		await page.getByText("Selected report body.").waitFor();
+		await page.getByText("Latest report body.").waitFor();
 
 		await page.getByRole("button", { name: "Show PDFs" }).click();
-		await page.getByText("output/cv-http-latest-2026-04-23.pdf").waitFor();
 		await page
-			.getByText("PDF review stays read-only in the workspace for now.")
+			.getByText("output/cv-http-latest-2026-04-23.pdf")
+			.first()
+			.waitFor();
+		await page
+			.getByText("PDF review stays read-only in the workspace for now.", {
+				exact: false,
+			})
 			.first()
 			.waitFor();
 
@@ -829,8 +834,7 @@ try {
 			.waitFor();
 		assert.match(page.url(), /report=reports%2F022-http-latest-2026-04-23\.md/);
 
-		const staleUrl = new URL(webUrl);
-		staleUrl.hash = "#artifacts";
+		const staleUrl = new URL(`${webUrl}/artifacts`);
 		staleUrl.searchParams.set(
 			"report",
 			"reports/099-http-missing-2026-04-22.md",

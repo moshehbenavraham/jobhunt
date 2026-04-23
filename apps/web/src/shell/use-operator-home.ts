@@ -180,6 +180,10 @@ export function useOperatorHome(input: { isActive: boolean }): {
 		}
 
 		wasActiveRef.current = input.isActive;
+
+		return () => {
+			wasActiveRef.current = false;
+		};
 	}, [input.isActive]);
 
 	useEffect(() => {

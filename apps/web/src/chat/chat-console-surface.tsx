@@ -22,24 +22,25 @@ type ChatConsoleSurfaceProps = {
 
 const surfaceStyle: CSSProperties = {
 	display: "grid",
-	gap: "1rem",
+	gap: "var(--jh-space-gap)",
 };
 
 const heroStyle: CSSProperties = {
 	alignItems: "center",
 	display: "flex",
 	flexWrap: "wrap",
-	gap: "1rem",
+	gap: "var(--jh-space-gap)",
 	justifyContent: "space-between",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
+	fontFamily: "var(--jh-font-body)",
 	fontWeight: 700,
 	minHeight: "2.8rem",
 	padding: "0.7rem 1rem",
@@ -47,28 +48,28 @@ const buttonStyle: CSSProperties = {
 
 const twoColumnStyle: CSSProperties = {
 	display: "grid",
-	gap: "1rem",
+	gap: "var(--jh-space-gap)",
 	gridTemplateColumns: "repeat(auto-fit, minmax(20rem, 1fr))",
 };
 
 const rightColumnStyle: CSSProperties = {
 	display: "grid",
-	gap: "1rem",
+	gap: "var(--jh-space-gap)",
 };
 
 const selectedSummaryStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.4rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
-	gap: "0.9rem",
-	padding: "1rem",
+	gap: "var(--jh-space-gap)",
+	padding: "var(--jh-space-padding)",
 };
 
 const artifactWorkspaceStyle: CSSProperties = {
 	alignItems: "start",
 	display: "grid",
-	gap: "1rem",
+	gap: "var(--jh-space-gap)",
 	gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 20rem), 1fr))",
 };
 
@@ -106,7 +107,7 @@ export function ChatConsoleSurface({
 	const startupMessage =
 		chatConsole.state.data?.message ??
 		chatConsole.state.error?.message ??
-		"Chat console summary has not loaded yet.";
+		"Console has not loaded yet.";
 	const isConsoleBusy =
 		chatConsole.state.isRefreshing ||
 		chatConsole.state.evaluationResult.isRefreshing ||
@@ -114,37 +115,45 @@ export function ChatConsoleSurface({
 	const selectedSessionTitle =
 		selectedSession?.session.sessionId ??
 		evaluationSummary?.session?.sessionId ??
-		"No selected session";
+		"No run selected";
 	const selectedSessionBody = evaluationSummary
-		? `Evaluation state ${evaluationSummary.state} with ${evaluationSummary.closeout.state} closeout and ${evaluationSummary.warnings.totalCount} warning${evaluationSummary.warnings.totalCount === 1 ? "" : "s"}.`
+		? `Evaluation ${evaluationSummary.state} -- ${evaluationSummary.closeout.state} closeout, ${evaluationSummary.warnings.totalCount} warning${evaluationSummary.warnings.totalCount === 1 ? "" : "s"}.`
 		: selectedSession
-			? `Workflow ${selectedSession.session.workflow} with ${selectedSession.jobs.length} tracked jobs and ${selectedSession.approvals.length} approvals.`
-			: "Select a recent session to inspect the evaluation handoff, runtime timeline, and next review action in one place.";
+			? `${selectedSession.session.workflow} -- ${selectedSession.jobs.length} tracked job${selectedSession.jobs.length === 1 ? "" : "s"}, ${selectedSession.approvals.length} approval${selectedSession.approvals.length === 1 ? "" : "s"}`
+			: "Select a recent run to see its evaluation, timeline, and next action.";
 
 	return (
 		<section aria-labelledby="chat-console-title" style={surfaceStyle}>
 			<header style={heroStyle}>
 				<div>
-					<p
+					<h2
+						id="chat-console-title"
 						style={{
-							color: "#9a3412",
-							letterSpacing: "0.08em",
+							fontFamily: "var(--jh-font-heading)",
+							fontSize: "var(--jh-text-h2-size)",
+							fontWeight: "var(--jh-text-h2-weight)",
 							marginBottom: "0.35rem",
-							marginTop: 0,
-							textTransform: "uppercase",
 						}}
 					>
-						Phase 04 / Session 02
-					</p>
-					<h2 id="chat-console-title" style={{ marginBottom: "0.35rem" }}>
-						Evaluation console and artifact handoff
+						Evaluation console
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: "0.2rem" }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							fontFamily: "var(--jh-font-body)",
+							marginBottom: "0.2rem",
+						}}
+					>
 						Launch or resume evaluation workflows, then inspect run-to-artifact
-						state without guessing at report, PDF, tracker, or approval
-						readiness in the browser.
+						readiness for reports, PDFs, tracker, or approvals.
 					</p>
-					<p style={{ color: "#94a3b8", margin: 0 }}>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							fontFamily: "var(--jh-font-body)",
+							margin: 0,
+						}}
+					>
 						Last refreshed: {formatTimestamp(chatConsole.state.lastUpdatedAt)}
 					</p>
 				</div>
@@ -209,22 +218,36 @@ export function ChatConsoleSurface({
 						<header>
 							<p
 								style={{
-									color: "#475569",
-									letterSpacing: "0.08em",
+									color: "var(--jh-color-text-secondary)",
+									fontFamily: "var(--jh-font-body)",
+									fontSize: "var(--jh-text-label-sm-size)",
+									fontWeight: "var(--jh-text-label-sm-weight)",
+									letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
 									marginBottom: "0.35rem",
 									marginTop: 0,
 									textTransform: "uppercase",
 								}}
 							>
-								Selected session
+								Selected run
 							</p>
 							<h2
 								id="chat-console-selected-title"
-								style={{ marginBottom: "0.35rem" }}
+								style={{
+									fontFamily: "var(--jh-font-heading)",
+									fontSize: "var(--jh-text-h2-size)",
+									fontWeight: "var(--jh-text-h2-weight)",
+									marginBottom: "0.35rem",
+								}}
 							>
 								{selectedSessionTitle}
 							</h2>
-							<p style={{ color: "#64748b", marginBottom: 0 }}>
+							<p
+								style={{
+									color: "var(--jh-color-text-muted)",
+									fontFamily: "var(--jh-font-body)",
+									marginBottom: 0,
+								}}
+							>
 								{selectedSessionBody}
 							</p>
 						</header>
@@ -233,51 +256,61 @@ export function ChatConsoleSurface({
 							<div
 								style={{
 									display: "grid",
-									gap: "0.8rem",
+									gap: "var(--jh-space-gap)",
 									gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))",
 								}}
 							>
 								<article
 									style={{
-										background: "rgba(248, 250, 252, 0.9)",
-										border: "1px solid rgba(148, 163, 184, 0.2)",
-										borderRadius: "1rem",
-										padding: "0.85rem 0.9rem",
+										background: "var(--jh-color-surface-bg)",
+										border: "var(--jh-border-subtle)",
+										borderRadius: "var(--jh-radius-md)",
+										padding:
+											"var(--jh-space-padding-sm) var(--jh-space-padding)",
 									}}
 								>
 									<p
 										style={{
-											color: "#64748b",
+											color: "var(--jh-color-text-muted)",
+											fontFamily: "var(--jh-font-body)",
+											fontSize: "var(--jh-text-label-sm-size)",
+											fontWeight: "var(--jh-text-label-sm-weight)",
+											letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
 											marginBottom: "0.25rem",
 											marginTop: 0,
 										}}
 									>
-										Route message
+										Input
 									</p>
-									<p style={{ margin: 0 }}>
+									<p style={{ fontFamily: "var(--jh-font-body)", margin: 0 }}>
 										{selectedSession?.route.message ??
 											evaluationSummary?.message ??
-											"No route message recorded yet"}
+											"No input recorded yet"}
 									</p>
 								</article>
 								<article
 									style={{
-										background: "rgba(248, 250, 252, 0.9)",
-										border: "1px solid rgba(148, 163, 184, 0.2)",
-										borderRadius: "1rem",
-										padding: "0.85rem 0.9rem",
+										background: "var(--jh-color-surface-bg)",
+										border: "var(--jh-border-subtle)",
+										borderRadius: "var(--jh-radius-md)",
+										padding:
+											"var(--jh-space-padding-sm) var(--jh-space-padding)",
 									}}
 								>
 									<p
 										style={{
-											color: "#64748b",
+											color: "var(--jh-color-text-muted)",
+											fontFamily: "var(--jh-font-body)",
+											fontSize: "var(--jh-text-label-sm-size)",
+											fontWeight: "var(--jh-text-label-sm-weight)",
+											letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
 											marginBottom: "0.25rem",
 											marginTop: 0,
 										}}
 									>
 										Latest job
 									</p>
-									<p style={{ margin: 0 }}>
+									<p style={{ fontFamily: "var(--jh-font-body)", margin: 0 }}>
 										{selectedSession?.session.job?.jobId ??
 											evaluationSummary?.job?.jobId ??
 											"No job recorded yet"}
@@ -285,22 +318,27 @@ export function ChatConsoleSurface({
 								</article>
 								<article
 									style={{
-										background: "rgba(248, 250, 252, 0.9)",
-										border: "1px solid rgba(148, 163, 184, 0.2)",
-										borderRadius: "1rem",
-										padding: "0.85rem 0.9rem",
+										background: "var(--jh-color-surface-bg)",
+										border: "var(--jh-border-subtle)",
+										borderRadius: "var(--jh-radius-md)",
+										padding:
+											"var(--jh-space-padding-sm) var(--jh-space-padding)",
 									}}
 								>
 									<p
 										style={{
-											color: "#64748b",
+											color: "var(--jh-color-text-muted)",
+											fontFamily: "var(--jh-font-body)",
+											fontSize: "var(--jh-text-label-sm-size)",
+											fontWeight: "var(--jh-text-label-sm-weight)",
+											letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
 											marginBottom: "0.25rem",
 											marginTop: 0,
 										}}
 									>
 										Approval or warnings
 									</p>
-									<p style={{ margin: 0 }}>
+									<p style={{ fontFamily: "var(--jh-font-body)", margin: 0 }}>
 										{evaluationSummary
 											? `${evaluationSummary.warnings.totalCount} warning${evaluationSummary.warnings.totalCount === 1 ? "" : "s"}`
 											: String(
@@ -310,25 +348,30 @@ export function ChatConsoleSurface({
 								</article>
 								<article
 									style={{
-										background: "rgba(248, 250, 252, 0.9)",
-										border: "1px solid rgba(148, 163, 184, 0.2)",
-										borderRadius: "1rem",
-										padding: "0.85rem 0.9rem",
+										background: "var(--jh-color-surface-bg)",
+										border: "var(--jh-border-subtle)",
+										borderRadius: "var(--jh-radius-md)",
+										padding:
+											"var(--jh-space-padding-sm) var(--jh-space-padding)",
 									}}
 								>
 									<p
 										style={{
-											color: "#64748b",
+											color: "var(--jh-color-text-muted)",
+											fontFamily: "var(--jh-font-body)",
+											fontSize: "var(--jh-text-label-sm-size)",
+											fontWeight: "var(--jh-text-label-sm-weight)",
+											letterSpacing: "var(--jh-text-label-sm-letter-spacing)",
 											marginBottom: "0.25rem",
 											marginTop: 0,
 										}}
 									>
 										Closeout
 									</p>
-									<p style={{ margin: 0 }}>
+									<p style={{ fontFamily: "var(--jh-font-body)", margin: 0 }}>
 										{evaluationSummary?.closeout.state ??
 											selectedSession?.session.state ??
-											"No closeout state yet"}
+											"No closeout status yet"}
 									</p>
 								</article>
 							</div>

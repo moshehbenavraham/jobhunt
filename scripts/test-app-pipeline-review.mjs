@@ -833,7 +833,7 @@ try {
 
 	try {
 		const page = await browser.newPage();
-		await page.goto(`${webUrl}#pipeline`, { waitUntil: "networkidle" });
+		await page.goto(`${webUrl}/pipeline`, { waitUntil: "networkidle" });
 
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })
@@ -860,13 +860,10 @@ try {
 		await page
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
-		await page
-			.getByRole("heading", { name: "Evaluation: Delta -- AI Deployment Lead" })
-			.waitFor();
-		assert.match(page.url(), /#artifacts$/);
+		assert.match(page.url(), /\/artifacts$/);
 
 		await page.goto(
-			`${webUrl}?pipelineSection=pending&pipelineReportNumber=023#pipeline`,
+			`${webUrl}/pipeline?pipelineSection=pending&pipelineReportNumber=023`,
 			{
 				waitUntil: "networkidle",
 			},

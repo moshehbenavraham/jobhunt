@@ -139,15 +139,49 @@ These terms must never appear in user-visible UI strings:
 
 ## Local Dev Tools
 
-| Category    | Tool                            | Config             |
-| ----------- | ------------------------------- | ------------------ |
-| Formatter   | Prettier                        | `.prettierrc`      |
-| Linter      | ESLint                          | `eslint.config.*`  |
-| Type Safety | TypeScript strict               | `tsconfig.json`    |
-| Testing     | Vitest                          | `vitest.config.ts` |
-| Bundler     | Vite                            | `vite.config.ts`   |
-| Database    | SQLite (better-sqlite3)         | `apps/api`         |
-| Copy Check  | `scripts/check-app-ui-copy.mjs` | CI + validate      |
+| Category      | Tool                             | Config                                                      |
+| ------------- | -------------------------------- | ----------------------------------------------------------- |
+| Formatter     | Prettier                         | `.prettierrc`                                               |
+| Linter        | ESLint                           | `eslint.config.*`                                           |
+| Type Safety   | TypeScript strict                | `tsconfig.json`                                             |
+| Testing       | Vitest                           | `vitest.config.ts`                                          |
+| Bundler       | Vite                             | `vite.config.ts`                                            |
+| Database      | SQLite (better-sqlite3)          | `apps/api`                                                  |
+| Observability | pino (api), browser logger (web) | `apps/api/src/logger.ts`, `apps/web/src/logger.ts`, `logs/` |
+| Copy Check    | `scripts/check-app-ui-copy.mjs`  | CI + validate                                               |
+
+## CI/CD
+
+| Bundle       | Status     | Workflow                                                         |
+| ------------ | ---------- | ---------------------------------------------------------------- |
+| Code Quality | configured | `.github/workflows/quality.yml`                                  |
+| Build & Test | configured | `.github/workflows/test.yml`                                     |
+| Security     | configured | `codeql.yml`, `dependency-review.yml`, `sbom.yml`                |
+| Integration  | configured | `.github/workflows/integration.yml`                              |
+| Operations   | configured | `deploy.yml`, `release.yml`, `dependabot.yml`, `stale.yml`, etc. |
+
+Platform: GitHub Actions
+Monorepo strategy: single workflows, npm-based task delegation
+
+## Infrastructure
+
+| Component       | Package  | Provider         | Details                                                             |
+| --------------- | -------- | ---------------- | ------------------------------------------------------------------- |
+| Health          | apps/api | Node HTTP server | `/health` endpoint with DB, agent runtime, operational store checks |
+| Health          | apps/web | (not deployed)   | Static SPA -- no server-side health endpoint needed                 |
+| Rate Limiting   | apps/api | In-process       | IP-based, 5 req/10s default, configurable via env vars              |
+| Backup          | (shared) | Local filesystem | `npm run backup:run`, SQLite copy, 7-day retention, `--verify` flag |
+| Backup Schedule | (shared) | Cron             | `npm run backup:install-cron`                                       |
+| Deploy          | (shared) | GitHub Actions   | `.github/workflows/deploy.yml`, webhook trigger on push to main     |
+| Local Dev       | apps/api | tsx              | `npm run app:api:dev` or `npm run app:api:serve`                    |
+| Local Dev       | apps/web | Vite             | `npm run app:web:dev`                                               |
+
+Platform notes:
+
+- No hosting platform configured yet (no Docker, Vercel, Fly, or Coolify)
+- WAF deferred until a hosting platform is selected
+- Deploy workflow gracefully skips when `DEPLOY_WEBHOOK_URL` secret is not set
+- Platform health probes will be configured alongside hosting platform selection
 
 ## When In Doubt
 
@@ -157,10 +191,10 @@ These terms must never appear in user-visible UI strings:
 
 ## Workspace Structure
 
-| Package | Path     | Stack            |
-| ------- | -------- | ---------------- |
-| web     | apps/web | TypeScript React |
-| api     | apps/api | TypeScript Node  |
+| Package | Path     | Stack            | Formatter | Linter | Types | Testing   | Observability  |
+| ------- | -------- | ---------------- | --------- | ------ | ----- | --------- | -------------- |
+| web     | apps/web | TypeScript React | Prettier  | ESLint | tsc   | -         | browser logger |
+| api     | apps/api | TypeScript Node  | Prettier  | ESLint | tsc   | node:test | pino           |
 
 ### Cross-Package Rules
 

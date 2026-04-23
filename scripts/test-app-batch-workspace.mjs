@@ -1098,7 +1098,7 @@ try {
 		await errorPage.close();
 
 		fakeApi.reset();
-		await page.getByRole("link", { name: /Batch/ }).click();
+		await page.getByRole("link", { name: /Batch/ }).first().click();
 		await page.getByRole("heading", { name: "Batch jobs workspace" }).waitFor();
 		await page.route("**/batch-supervisor*", async (route) => {
 			await route.abort("failed");

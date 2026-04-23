@@ -16,30 +16,31 @@ type RecentSessionListProps = {
 };
 
 const panelStyle: CSSProperties = {
-	background: "rgba(255, 255, 255, 0.92)",
-	border: "1px solid rgba(148, 163, 184, 0.2)",
-	borderRadius: "1.4rem",
+	background: "var(--jh-color-surface-bg)",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-lg)",
 	display: "grid",
-	gap: "0.9rem",
-	padding: "1rem",
+	gap: "var(--jh-space-gap)",
+	padding: "var(--jh-space-padding)",
 };
 
 const itemStyle: CSSProperties = {
 	background: "rgba(248, 250, 252, 0.9)",
-	border: "1px solid rgba(148, 163, 184, 0.22)",
-	borderRadius: "1rem",
+	border: "var(--jh-border-subtle)",
+	borderRadius: "var(--jh-radius-md)",
 	display: "grid",
 	gap: "0.6rem",
-	padding: "0.85rem 0.95rem",
+	padding: "var(--jh-space-padding-sm)",
 };
 
 const buttonStyle: CSSProperties = {
-	background: "#0f172a",
+	background: "var(--jh-color-button-bg)",
 	border: 0,
-	borderRadius: "999px",
-	color: "#f8fafc",
+	borderRadius: "var(--jh-radius-pill)",
+	color: "var(--jh-color-button-fg)",
 	cursor: "pointer",
 	font: "inherit",
+	fontFamily: "var(--jh-font-body)",
 	fontWeight: 700,
 	minHeight: "2.4rem",
 	padding: "0.55rem 0.9rem",
@@ -65,33 +66,33 @@ function getStateTone(
 	switch (state) {
 		case "ready":
 			return {
-				background: "#dcfce7",
-				color: "#166534",
+				background: "var(--jh-color-status-ready-bg)",
+				color: "var(--jh-color-status-ready-fg)",
 			};
 		case "running":
 			return {
-				background: "#dbeafe",
-				color: "#1d4ed8",
+				background: "var(--jh-color-status-running-bg)",
+				color: "var(--jh-color-status-running-fg)",
 			};
 		case "waiting-for-approval":
 			return {
-				background: "#fef3c7",
-				color: "#92400e",
+				background: "var(--jh-color-status-paused-bg)",
+				color: "var(--jh-color-status-paused-fg)",
 			};
 		case "tooling-gap":
 			return {
-				background: "#ede9fe",
-				color: "#6d28d9",
+				background: "var(--jh-color-status-tooling-bg)",
+				color: "var(--jh-color-status-tooling-fg)",
 			};
 		case "auth-required":
 			return {
-				background: "#e0f2fe",
-				color: "#0369a1",
+				background: "var(--jh-color-status-auth-required-bg)",
+				color: "var(--jh-color-status-auth-required-fg)",
 			};
 		case "failed":
 			return {
-				background: "#fee2e2",
-				color: "#991b1b",
+				background: "var(--jh-color-status-failed-bg)",
+				color: "var(--jh-color-status-failed-fg)",
 			};
 	}
 }
@@ -103,23 +104,23 @@ function renderEmptyState(status: ChatConsoleViewStatus): {
 	switch (status) {
 		case "loading":
 			return {
-				body: "Reading recent resumable sessions from the operational store.",
-				title: "Loading recent sessions",
+				body: "Loading recent runs.",
+				title: "Loading recent runs",
 			};
 		case "offline":
 			return {
-				body: "The API is unavailable right now, so recent session state cannot refresh.",
-				title: "Recent sessions offline",
+				body: "API offline. Recent runs cannot refresh.",
+				title: "Recent runs offline",
 			};
 		case "error":
 			return {
-				body: "The recent-session request failed before a list could load.",
-				title: "Recent sessions unavailable",
+				body: "Failed to load recent runs.",
+				title: "Recent runs unavailable",
 			};
 		default:
 			return {
-				body: "Launch a workflow to create the first resumable session.",
-				title: "No recent sessions yet",
+				body: "Launch a workflow to create your first run.",
+				title: "No recent runs",
 			};
 	}
 }
@@ -141,22 +142,34 @@ export function RecentSessionList({
 				<header>
 					<p
 						style={{
-							color: "#475569",
+							color: "var(--jh-color-text-secondary)",
+							fontFamily: "var(--jh-font-body)",
 							letterSpacing: "0.08em",
 							marginBottom: "0.35rem",
 							marginTop: 0,
 							textTransform: "uppercase",
 						}}
 					>
-						Recent sessions
+						Recent runs
 					</p>
 					<h2
 						id="chat-console-recent-title"
-						style={{ marginBottom: "0.35rem" }}
+						style={{
+							fontFamily: "var(--jh-font-heading)",
+							marginBottom: "0.35rem",
+						}}
 					>
 						{emptyState.title}
 					</h2>
-					<p style={{ color: "#64748b", marginBottom: 0 }}>{emptyState.body}</p>
+					<p
+						style={{
+							color: "var(--jh-color-text-muted)",
+							fontFamily: "var(--jh-font-body)",
+							marginBottom: 0,
+						}}
+					>
+						{emptyState.body}
+					</p>
 				</header>
 			</section>
 		);
@@ -167,21 +180,33 @@ export function RecentSessionList({
 			<header>
 				<p
 					style={{
-						color: "#475569",
+						color: "var(--jh-color-text-secondary)",
+						fontFamily: "var(--jh-font-body)",
 						letterSpacing: "0.08em",
 						marginBottom: "0.35rem",
 						marginTop: 0,
 						textTransform: "uppercase",
 					}}
 				>
-					Recent sessions
+					Recent runs
 				</p>
-				<h2 id="chat-console-recent-title" style={{ marginBottom: "0.35rem" }}>
+				<h2
+					id="chat-console-recent-title"
+					style={{
+						fontFamily: "var(--jh-font-heading)",
+						marginBottom: "0.35rem",
+					}}
+				>
 					Resume or inspect recent work
 				</h2>
-				<p style={{ color: "#64748b", marginBottom: 0 }}>
-					Session ordering comes from the backend store. Selection and resume
-					controls stay on the same surface.
+				<p
+					style={{
+						color: "var(--jh-color-text-muted)",
+						fontFamily: "var(--jh-font-body)",
+						marginBottom: 0,
+					}}
+				>
+					Runs are ordered by most recent activity.
 				</p>
 			</header>
 
@@ -197,9 +222,7 @@ export function RecentSessionList({
 							key={session.sessionId}
 							style={{
 								...itemStyle,
-								borderColor: isSelected
-									? "rgba(15, 23, 42, 0.48)"
-									: "rgba(148, 163, 184, 0.22)",
+								borderColor: isSelected ? "var(--jh-color-ink)" : undefined,
 								boxShadow: isSelected
 									? "inset 0 0 0 1px rgba(15, 23, 42, 0.18)"
 									: "none",
@@ -215,17 +238,29 @@ export function RecentSessionList({
 								}}
 							>
 								<div>
-									<p style={{ color: "#64748b", margin: 0 }}>
+									<p
+										style={{
+											color: "var(--jh-color-text-muted)",
+											fontFamily: "var(--jh-font-body)",
+											margin: 0,
+										}}
+									>
 										{session.workflow}
 									</p>
-									<h3 style={{ marginBottom: "0.2rem", marginTop: "0.1rem" }}>
+									<h3
+										style={{
+											fontFamily: "var(--jh-font-heading)",
+											marginBottom: "0.2rem",
+											marginTop: "0.1rem",
+										}}
+									>
 										{session.sessionId}
 									</h3>
 								</div>
 								<span
 									style={{
 										...getStateTone(session.state),
-										borderRadius: "999px",
+										borderRadius: "var(--jh-radius-pill)",
 										fontSize: "0.85rem",
 										fontWeight: 700,
 										padding: "0.25rem 0.6rem",
@@ -235,12 +270,24 @@ export function RecentSessionList({
 								</span>
 							</div>
 
-							<p style={{ color: "#475569", margin: 0 }}>
+							<p
+								style={{
+									color: "var(--jh-color-text-secondary)",
+									fontFamily: "var(--jh-font-body)",
+									margin: 0,
+								}}
+							>
 								Updated {formatTimestamp(session.updatedAt)}
 							</p>
 
 							{session.pendingApproval ? (
-								<p style={{ color: "#92400e", margin: 0 }}>
+								<p
+									style={{
+										color: "var(--jh-color-status-paused-fg)",
+										fontFamily: "var(--jh-font-body)",
+										margin: 0,
+									}}
+								>
 									Pending approval:{" "}
 									{session.pendingApproval.title ||
 										session.pendingApproval.approvalId}
@@ -248,7 +295,13 @@ export function RecentSessionList({
 							) : null}
 
 							{session.latestFailure ? (
-								<p style={{ color: "#991b1b", margin: 0 }}>
+								<p
+									style={{
+										color: "var(--jh-color-severity-error-fg)",
+										fontFamily: "var(--jh-font-body)",
+										margin: 0,
+									}}
+								>
 									Latest failure: {session.latestFailure.message}
 								</p>
 							) : null}
@@ -265,7 +318,9 @@ export function RecentSessionList({
 									onClick={() => onSelect(session.sessionId)}
 									style={{
 										...buttonStyle,
-										background: isSelected ? "#334155" : "#0f172a",
+										background: isSelected
+											? "var(--jh-color-text-secondary)"
+											: "var(--jh-color-button-bg)",
 										opacity: isBusy ? 0.7 : 1,
 									}}
 									type="button"
@@ -279,8 +334,8 @@ export function RecentSessionList({
 									onClick={() => onResume(session.sessionId)}
 									style={{
 										...buttonStyle,
-										background: "#f59e0b",
-										color: "#1f2937",
+										background: "var(--jh-color-amber)",
+										color: "var(--jh-color-ink)",
 										opacity:
 											isBusy || !session.resumeAllowed || pendingAction !== null
 												? 0.65

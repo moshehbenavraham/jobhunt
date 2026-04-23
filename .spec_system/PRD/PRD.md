@@ -46,7 +46,7 @@ Replace the current web UX with an operator-grade workbench that:
 | ----- | ------------------------------------- | ---------- | ----------- |
 | 00    | Stop the Bleeding                     | 0 (triage) | Complete    |
 | 01    | Rebuild Foundation and Shell          | 6          | Complete    |
-| 02    | Rebuild Workbench and Review Surfaces | TBD        | Not Started |
+| 02    | Rebuild Workbench and Review Surfaces | 7          | In Progress |
 
 ## Phase 00: Stop the Bleeding
 
@@ -121,7 +121,7 @@ screenshot validation and final spec guardrail updates.
 9. Add screenshot-based UX validation to spec workflow
 10. Update apex-spec frontend guardrails
 
-### Estimated sessions: 6-8
+### Sessions: 7
 
 ## Technical Stack
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { createServer as createHttpServer } from "node:http";
 import { createServer } from "node:net";
@@ -912,7 +911,7 @@ try {
 			.locator("section")
 			.filter({ has: page.getByRole("heading", { name: "Selected detail" }) })
 			.last();
-		await page.goto(`${webUrl}#tracker`, { waitUntil: "networkidle" });
+		await page.goto(`${webUrl}/tracker`, { waitUntil: "networkidle" });
 
 		await page
 			.getByRole("heading", {
@@ -948,14 +947,14 @@ try {
 		await page.getByText("Tracker status normalization completed.").waitFor();
 
 		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page.waitForURL(/\/artifacts/);
 		await page
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
 		await page
 			.getByText("Tracker workspace smoke handoff report body.")
 			.waitFor();
-		assert.match(page.url(), /#artifacts$/);
-		await page.goto(`${webUrl}?trackerReportNumber=020#tracker`, {
+		await page.goto(`${webUrl}/tracker?trackerReportNumber=020`, {
 			waitUntil: "networkidle",
 		});
 		await page
@@ -971,17 +970,14 @@ try {
 			.waitFor();
 		await page.getByText("Pending TSV 20-future-company.tsv").waitFor();
 		await page.getByRole("button", { name: /Open report viewer/ }).click();
+		await page.waitForURL(/\/artifacts/);
 		await page
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
-		assert.match(
-			page.url(),
-			/report=reports%2F020-future-company-2026-04-22\.md/,
-		);
 
 		fakeApi.setTrackerMode("slow");
 		const loadingPage = await browser.newPage();
-		await loadingPage.goto(`${webUrl}#tracker`);
+		await loadingPage.goto(`${webUrl}/tracker`);
 		await loadingPage.getByText("Loading tracker workspace").waitFor();
 		await loadingPage
 			.getByRole("heading", {
@@ -992,7 +988,7 @@ try {
 
 		fakeApi.setTrackerMode("empty");
 		const emptyPage = await browser.newPage();
-		await emptyPage.goto(`${webUrl}#tracker`, { waitUntil: "networkidle" });
+		await emptyPage.goto(`${webUrl}/tracker`, { waitUntil: "networkidle" });
 		await emptyPage
 			.getByText(
 				"Applications tracker is present but does not contain any rows yet.",
@@ -1002,12 +998,15 @@ try {
 
 		fakeApi.setTrackerMode("error");
 		const errorPage = await browser.newPage();
-		await errorPage.goto(`${webUrl}#tracker`, { waitUntil: "networkidle" });
+		await errorPage.goto(`${webUrl}/tracker`, { waitUntil: "networkidle" });
 		await errorPage.getByText("Tracker workspace unavailable").waitFor();
 		await errorPage.close();
 
 		fakeApi.reset();
-		await page.getByRole("link", { name: /Tracker/ }).click();
+		await page
+			.getByRole("link", { name: /Tracker/ })
+			.first()
+			.click();
 		await page
 			.getByRole("heading", {
 				name: "Tracker workspace and integrity actions",

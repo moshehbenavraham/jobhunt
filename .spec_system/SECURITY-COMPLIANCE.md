@@ -1,7 +1,7 @@
 # Security & Compliance
 
-> Cumulative security posture and GDPR compliance record. Updated between phases via /carryforward.
-> **Line budget**: 1000 max | **Last updated**: Phase 00 (2026-04-23)
+> Cumulative security posture and GDPR compliance record. Updated between phases via carryforward.
+> **Line budget**: 1000 max | **Last updated**: Phase 01 (2026-04-23)
 
 ---
 
@@ -14,8 +14,8 @@
 | Open Findings    | 0     |
 | Critical/High    | 0     |
 | Medium/Low       | 0     |
-| Phases Audited   | 0     |
-| Last Clean Phase | --    |
+| Phases Audited   | 1     |
+| Last Clean Phase | P01   |
 
 ---
 
@@ -25,11 +25,11 @@ Active security or GDPR issues requiring attention. Ordered by severity.
 
 ### Critical / High
 
-_No open findings._
+No open findings.
 
 ### Medium / Low
 
-_No open findings._
+No open findings.
 
 ---
 
@@ -37,20 +37,27 @@ _No open findings._
 
 ### Overall: N/A
 
+Phase 01 was a pure frontend UX recovery phase (design tokens, typography, layout, routing, command palette, copy cleanup). No personal data handling was introduced.
+
 ### Personal Data Inventory
 
-_No personal data collected or processed._
+| Data Element | Source | Storage | Purpose | Legal Basis | Retention | Deletion Path | Package | Since |
+| ------------ | ------ | ------- | ------- | ----------- | --------- | ------------- | ------- | ----- |
+
+No personal data collected or processed in Phase 01.
 
 ### Compliance Checklist
 
-| Requirement                            | Status | Notes                    |
-| -------------------------------------- | ------ | ------------------------ |
-| Data collection has documented purpose | N/A    | No data collection yet   |
-| Consent obtained before data storage   | N/A    | No data collection yet   |
-| Data minimization verified             | N/A    | No data collection yet   |
-| Deletion/erasure path exists           | N/A    | No data collection yet   |
-| No PII in application logs             | N/A    | No logging yet           |
-| Third-party transfers documented       | N/A    | No external services yet |
+| Requirement                            | Status | Notes                                              |
+| -------------------------------------- | ------ | -------------------------------------------------- |
+| Data collection has documented purpose | N/A    | No data collection in Phase 01                     |
+| Consent obtained before data storage   | N/A    | No data storage in Phase 01                        |
+| Data minimization verified             | N/A    | No data collection in Phase 01                     |
+| Deletion/erasure path exists           | N/A    | No user data stored in Phase 01                    |
+| No PII in application logs             | N/A    | No logging introduced in Phase 01                  |
+| Third-party transfers documented       | N/A    | Google Fonts CDN is the only external service (\*) |
+
+(\*) Google Fonts CDN loads font files via HTTPS. Google may receive the user's IP address during font requests. Consider self-hosting fonts in a future phase if GDPR compliance becomes a requirement.
 
 ---
 
@@ -58,28 +65,49 @@ _No personal data collected or processed._
 
 ### Current Vulnerabilities
 
-_No dependencies audited yet._
+| Package | Version | Severity | CVE | Status |
+| ------- | ------- | -------- | --- | ------ |
+
+No known vulnerable dependencies. npm audit reported 0 vulnerabilities across all 6 Phase 01 sessions.
+
+### New Dependencies (Phase 01)
+
+| Package      | Version | Purpose             | Package  |
+| ------------ | ------- | ------------------- | -------- |
+| react-router | v7      | Client-side routing | apps/web |
 
 ---
 
 ## Resolved Findings
 
-_No resolved findings yet._
+No resolved findings yet.
 
 ---
 
 ## Phase History
 
-| Phase | Sessions | Security | GDPR | Findings Opened | Findings Closed |
-| ----- | -------- | -------- | ---- | --------------- | --------------- |
-| --    | --       | --       | --   | --              | --              |
+| Phase | Sessions     | Security | GDPR | Findings Opened | Findings Closed |
+| ----- | ------------ | -------- | ---- | --------------- | --------------- |
+| P01   | 6 (apps/web) | PASS     | N/A  | 0               | 0               |
+
+### Phase 01 Session Detail
+
+| Session | Scope                                      | Result | Notes                             |
+| ------- | ------------------------------------------ | ------ | --------------------------------- |
+| S01     | Design token layer (CSS custom properties) | PASS   | No runtime logic, no deps         |
+| S02     | Typography and base styles                 | PASS   | Google Fonts CDN added (HTTPS)    |
+| S03     | Three-zone shell layout (CSS Grid)         | PASS   | No deps, pure presentation        |
+| S04     | Responsive layout and mobile               | PASS   | npm audit clean, no new deps      |
+| S05     | Router and deep-linking                    | PASS   | react-router v7 added, no vulns   |
+| S06     | Command palette and operator copy          | PASS   | No new deps, keyboard events only |
 
 ---
 
 ## Recommendations
 
-_None -- initial setup. Security review begins with first /validate run._
+1. **Google Fonts privacy consideration**: Google Fonts CDN transmits user IP to Google during font loading. If GDPR compliance becomes a hard requirement, self-host the three font families (Space Grotesk, IBM Plex Sans, IBM Plex Mono).
+2. **Dependency monitoring**: react-router v7 is the only new runtime dependency. Monitor for security advisories.
 
 ---
 
-_Auto-generated by /initspec. Updated by /carryforward between phases._
+_Auto-generated by carryforward. Manual edits allowed but may be overwritten._

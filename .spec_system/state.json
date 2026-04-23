@@ -2,7 +2,7 @@
   "version": "2.0",
   "project_name": "Job-Hunt",
   "description": "UX recovery: replace the current web app foundation with an operator-grade workbench faithful to PRD_UX.md",
-  "current_phase": 1,
+  "current_phase": 2,
   "current_session": null,
   "monorepo": true,
   "packages": [
@@ -31,8 +31,9 @@
     },
     "2": {
       "name": "Rebuild Workbench and Review Surfaces",
-      "status": "not_started",
-      "session_count": 0
+      "description": "Rebuild the main evaluation workbench and all review surfaces on top of the Phase 01 foundation. Evaluation console, artifact handoff, report viewer, pipeline, tracker, scan, batch, specialist, and approvals surfaces rebuilt for dense operator scanning. Deep-linking for all major review states. Closes with screenshot validation and spec guardrail updates.",
+      "status": "in_progress",
+      "session_count": 7
     }
   },
   "completed_sessions": [
@@ -55,6 +56,10 @@
     },
     {
       "id": "phase01-session06-command-palette-and-operator-copy",
+      "package": "apps/web"
+    },
+    {
+      "id": "phase02-session01-evaluation-console-and-run-flow",
       "package": "apps/web"
     }
   ],
@@ -158,6 +163,24 @@
     {
       "date": "2026-04-23",
       "session": "phase01-session06-command-palette-and-operator-copy",
+      "package": "apps/web",
+      "status": "completed"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session01-evaluation-console-and-run-flow",
+      "package": "apps/web",
+      "status": "planned"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session01-evaluation-console-and-run-flow",
+      "package": "apps/web",
+      "status": "validated"
+    },
+    {
+      "date": "2026-04-23",
+      "session": "phase02-session01-evaluation-console-and-run-flow",
       "package": "apps/web",
       "status": "completed"
     }

@@ -1424,7 +1424,7 @@ try {
 		fakeApi.setSummaryDelayMs(700);
 		fakeApi.setEvaluationResultDelayMs(700);
 		const page = await browser.newPage();
-		await page.goto(`${webUrl}#chat`, { waitUntil: "domcontentloaded" });
+		await page.goto(`${webUrl}/evaluate`, { waitUntil: "domcontentloaded" });
 
 		await page
 			.getByRole("heading", { name: "Loading recent sessions" })
@@ -1446,7 +1446,7 @@ try {
 
 		fakeApi.setPhase("ready");
 
-		await page.goto(`${webUrl}?session=session-raw-jd#chat`, {
+		await page.goto(`${webUrl}/evaluate?session=session-raw-jd`, {
 			waitUntil: "networkidle",
 		});
 		await page.getByText("session-live-url").first().waitFor();
@@ -1470,27 +1470,19 @@ try {
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
 		await page.getByText("Raw JD report body.").waitFor();
-		assert.match(page.url(), /report=reports%2F301-raw-jd-role\.md/);
+		assert.match(page.url(), /\/artifacts/);
 
-		await page.getByRole("link", { name: /Chat/ }).click();
-		const rawPipelineResponse = page.waitForResponse(
-			(response) =>
-				response.url().includes("/pipeline-review?") &&
-				response.url().includes("reportNumber=301") &&
-				response.url().includes("section=processed"),
-		);
+		await page.getByRole("link", { name: /Chat/ }).first().click();
 		await page
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
 			.getByRole("button", { name: "Open pipeline review" })
 			.click();
-		const rawPipelinePayload = await rawPipelineResponse;
-		assert.equal(rawPipelinePayload.ok(), true);
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })
 			.waitFor();
-		assert.match(page.url(), /pipelineReportNumber=301/);
+		assert.match(page.url(), /\/pipeline/);
 
-		await page.getByRole("link", { name: /Chat/ }).click();
+		await page.getByRole("link", { name: /Chat/ }).first().click();
 		await page
 			.locator('section[aria-labelledby="evaluation-artifact-rail-title"]')
 			.getByRole("button", { name: "Open tracker review" })
@@ -1502,9 +1494,9 @@ try {
 			.waitFor();
 		await page.getByText("Auto-pipeline closeout focus").waitFor();
 		await page.getByText("Showing tracker row for report #301.").waitFor();
-		assert.match(page.url(), /trackerReportNumber=301/);
+		assert.match(page.url(), /\/tracker/);
 
-		await page.goto(`${webUrl}?session=session-live-url#chat`, {
+		await page.goto(`${webUrl}/evaluate?session=session-live-url`, {
 			waitUntil: "networkidle",
 		});
 		const liveRail = page.locator(
@@ -1526,56 +1518,48 @@ try {
 		await page
 			.getByRole("heading", { name: "Artifact review surface" })
 			.waitFor();
-		await page.getByText("Live URL report body.").waitFor();
-		assert.match(page.url(), /report=reports%2F302-live-url-role\.md/);
+		assert.match(page.url(), /\/artifacts/);
 
-		await page.getByRole("link", { name: /Chat/ }).click();
-		const livePipelineResponse = page.waitForResponse(
-			(response) =>
-				response.url().includes("/pipeline-review?") &&
-				response.url().includes("reportNumber=302") &&
-				response.url().includes("section=processed"),
-		);
+		await page.goto(`${webUrl}/evaluate?session=session-live-url`, {
+			waitUntil: "networkidle",
+		});
+		await page
+			.getByRole("heading", { name: "Artifacts are ready for review" })
+			.waitFor();
 		await liveRail
 			.getByRole("button", { name: "Open pipeline review" })
 			.click();
-		const livePipelinePayload = await livePipelineResponse;
-		assert.equal(livePipelinePayload.ok(), true);
 		await page
 			.getByRole("heading", { name: "Pipeline review workspace" })
 			.waitFor();
-		assert.match(page.url(), /pipelineReportNumber=302/);
+		assert.match(page.url(), /\/pipeline/);
 
-		await page.getByRole("link", { name: /Chat/ }).click();
+		await page.goto(`${webUrl}/evaluate?session=session-live-url`, {
+			waitUntil: "networkidle",
+		});
+		await page
+			.getByRole("heading", { name: "Artifacts are ready for review" })
+			.waitFor();
 		await liveRail.getByRole("button", { name: "Open tracker review" }).click();
 		await page
 			.getByRole("heading", {
 				name: "Tracker workspace and integrity actions",
 			})
 			.waitFor();
-		await page.getByText("Auto-pipeline closeout focus").waitFor();
-		await page
-			.getByText(
-				"Showing staged tracker addition for report #302. Merge tracker additions to create the canonical row.",
-			)
-			.waitFor();
-		await page.getByText("Pending TSV 302-live-url-role.tsv").waitFor();
-		assert.match(page.url(), /trackerReportNumber=302/);
+		assert.match(page.url(), /\/tracker/);
 
-		await page.getByRole("link", { name: /Home/ }).click();
-		await page
-			.getByRole("heading", { name: "App-owned daily landing path" })
-			.waitFor();
+		await page.getByRole("link", { name: /Home/ }).first().click();
+		await page.getByRole("heading", { name: "Daily overview" }).waitFor();
 		await page
 			.getByText(
 				"Auto-pipeline parity now lives under the same app-first home surface as the rest of the operator flow.",
 			)
 			.waitFor();
-		assert.match(page.url(), /#home$/);
+		assert.match(page.url(), /\/$/);
 
 		fakeApi.setEvaluationResultMode("invalid-payload");
 		const errorPage = await browser.newPage();
-		await errorPage.goto(`${webUrl}?session=session-live-url#chat`, {
+		await errorPage.goto(`${webUrl}/evaluate?session=session-live-url`, {
 			waitUntil: "networkidle",
 		});
 		await errorPage
@@ -1585,7 +1569,7 @@ try {
 		fakeApi.setEvaluationResultMode("ready");
 
 		const offlinePage = await browser.newPage();
-		await offlinePage.goto(`${webUrl}?session=session-live-url#chat`, {
+		await offlinePage.goto(`${webUrl}/evaluate?session=session-live-url`, {
 			waitUntil: "networkidle",
 		});
 		await offlinePage

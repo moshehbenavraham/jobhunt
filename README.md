@@ -137,6 +137,9 @@ immediately.
 ```text
 .
 |-- AGENTS.md
+|-- apps/
+|   |-- api/         # Node API boot server and runtime
+|   \-- web/         # React operator shell (Vite)
 |-- config/
 |-- profile/
 |-- modes/
@@ -168,6 +171,10 @@ Each significant folder has a `README_<folder-name>.md` with its own documentati
 
 ## Tech Stack
 
+- TypeScript React (Vite) - operator web shell (`apps/web`)
+- TypeScript Node - API boot server and runtime (`apps/api`)
+- CSS custom properties - design token system (mineral paper palette, Space Grotesk / IBM Plex typography)
+- React Router - deep-linkable navigation with 13 operator routes
 - Node.js - core scripts and pipelines
 - Go - dashboard TUI
 - Playwright - posting checks and PDF rendering
