@@ -28,7 +28,8 @@ npm run latex -- output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex output/cv-{can
 ## Operating rules
 
 - This mode is additive and opt-in. Do not replace the existing HTML / Playwright `pdf` flow unless the user explicitly asks for LaTeX.
-- If `pdflatex` is missing on `PATH`, stop and tell the user to install TeX Live or MiKTeX, or upload the generated `.tex` file to Overleaf.
+- Prefer `tectonic` when it is available; otherwise use `pdflatex`.
+- If neither engine is on `PATH`, stop and tell the user to install Tectonic, TeX Live, or MiKTeX, or upload the generated `.tex` file to Overleaf.
 - Keep the LaTeX output ATS-safe:
   - single-column layout
   - standard or localized section headers
@@ -85,6 +86,6 @@ of the following are missing:
 ## Overleaf compatibility
 
 The generated `.tex` file is intended to stay self-contained and uploadable to
-Overleaf. If local `pdflatex` compilation fails because a package is missing,
+Overleaf. If local compilation fails because a package is missing,
 the file can still be used in Overleaf after the placeholders are fully
 resolved.

@@ -162,6 +162,35 @@ func TestParseApplicationsFallbackAndMissing(t *testing.T) {
 	}
 }
 
+func TestParseApplicationsUsesTrackerNumberColumn(t *testing.T) {
+	root := t.TempDir()
+
+	writeTestFile(
+		t,
+		filepath.Join(root, "data", "applications.md"),
+		strings.Join([]string{
+			"# Applications Tracker",
+			"",
+			"| # | Date | Company | Role | Score | Status | PDF | Report | Notes |",
+			"|---|------|---------|------|-------|--------|-----|--------|-------|",
+			"| 140 | 2026-04-16 | Arize AI | AI Engineer, Instrumentation | 4.7/5 | Evaluated | ✅ | [140](reports/140-arize-ai-engineer-instrumentation.md) | Strong fit |",
+			"| 143 | 2026-04-16 | Arize AI | AI Sales Engineer, US | 4.1/5 | Evaluated |  | [143](reports/143-arize-ai-sales-engineer-us.md) | Good fit |",
+			"",
+		}, "\n"),
+	)
+
+	apps := ParseApplications(root)
+	if len(apps) != 2 {
+		t.Fatalf("expected 2 parsed applications, got %d", len(apps))
+	}
+	if apps[0].Number != 140 || apps[1].Number != 143 {
+		t.Fatalf("expected tracker IDs 140 and 143, got %d and %d", apps[0].Number, apps[1].Number)
+	}
+	if apps[0].ReportNumber != "140" || apps[1].ReportNumber != "143" {
+		t.Fatalf("expected report numbers to align with tracker IDs, got %q and %q", apps[0].ReportNumber, apps[1].ReportNumber)
+	}
+}
+
 func TestBatchHelpersAndNormalization(t *testing.T) {
 	root := t.TempDir()
 

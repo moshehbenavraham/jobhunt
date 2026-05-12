@@ -32,7 +32,7 @@ const ROOT = process.env.JOBHUNT_ROOT
   ? resolve(process.env.JOBHUNT_ROOT)
   : resolve(SCRIPT_DIR, '..');
 
-const UPSTREAM_REMOTE = 'upstream';
+const UPDATE_REMOTE = 'origin';
 const CANONICAL_REPO = 'https://github.com/moshehbenavraham/jobhunt.git';
 const RAW_VERSION_URL =
   'https://raw.githubusercontent.com/moshehbenavraham/jobhunt/main/VERSION';
@@ -67,6 +67,10 @@ const SYSTEM_PATHS = [
   'modes/tracker.md',
   'modes/training.md',
   'modes/de/',
+  'modes/fr/',
+  'modes/ja/',
+  'modes/pt/',
+  'modes/ru/',
   'AGENTS.md',
   'batch/batch-prompt.md',
   'batch/batch-runner.sh',
@@ -221,22 +225,22 @@ function addPaths(paths) {
   git('add', '-A', '--', ...paths);
 }
 
-function resolveUpstreamTarget() {
-  const remoteUrl = gitOrNull('remote', 'get-url', UPSTREAM_REMOTE);
+function resolveUpdateTarget() {
+  const remoteUrl = gitOrNull('remote', 'get-url', UPDATE_REMOTE);
   if (remoteUrl) {
-    return { ref: UPSTREAM_REMOTE, url: remoteUrl };
+    return { ref: UPDATE_REMOTE, url: remoteUrl };
   }
 
   return { ref: CANONICAL_REPO, url: CANONICAL_REPO };
 }
 
 function extractTagVersion(ref) {
-  const match = ref.match(/refs\/tags\/v?(\d+\.\d+\.\d+)$/);
+  const match = ref.match(/refs\/tags\/(?:.*?-)?v?(\d+\.\d+\.\d+)$/);
   return match ? match[1] : null;
 }
 
 function latestRemoteTagVersion() {
-  const target = resolveUpstreamTarget();
+  const target = resolveUpdateTarget();
   const refs = gitOrNull('ls-remote', '--refs', '--tags', target.ref);
   if (!refs) return null;
 
@@ -256,6 +260,41 @@ function readVersionFromGitRef(ref) {
 
   const version = text.trim();
   return isSemver(version) ? version : null;
+}
+
+async function latestRemoteVersion() {
+  const versions = [];
+
+  const tagVersion = latestRemoteTagVersion();
+  if (tagVersion) versions.push(tagVersion);
+
+  try {
+    const res = await fetch(RAW_VERSION_URL);
+    if (res.ok) {
+      const version = (await res.text()).trim();
+      if (isSemver(version)) versions.push(version);
+    }
+  } catch {
+    // Keep using any version found through git tags.
+  }
+
+  try {
+    const res = await fetch(RELEASES_API, {
+      headers: { Accept: 'application/vnd.github.v3+json' },
+    });
+    if (res.ok) {
+      const release = await res.json();
+      const tagVersion = extractTagVersion(
+        `refs/tags/${String(release.tag_name || '').trim()}`,
+      );
+      if (tagVersion) versions.push(tagVersion);
+    }
+  } catch {
+    // Release metadata is optional.
+  }
+
+  if (versions.length === 0) return null;
+  return versions.sort(compareVersions).at(-1);
 }
 
 function writeCanonicalVersion(version, updatedPaths) {
@@ -389,12 +428,8 @@ async function check() {
   let remote;
 
   try {
-    remote = latestRemoteTagVersion();
-    if (!remote) {
-      const res = await fetch(RAW_VERSION_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      remote = (await res.text()).trim();
-    }
+    remote = await latestRemoteVersion();
+    if (!remote) throw new Error('no remote version');
   } catch {
     console.log(JSON.stringify({ status: 'offline', local }));
     return;
@@ -433,7 +468,6 @@ async function check() {
 
 async function apply() {
   const local = localVersion();
-  const remote = latestRemoteTagVersion();
   const initialStatusPaths = new Set(
     gitStatusEntries().map((entry) => entry.path),
   );
@@ -474,18 +508,15 @@ async function apply() {
       );
     }
 
-    // 2. Fetch from canonical repo
-    console.log('Fetching latest from upstream...');
-    git('fetch', resolveUpstreamTarget().ref, 'main');
+    // 2. Fetch from the configured update source.
+    console.log('Fetching latest from update source...');
+    git('fetch', resolveUpdateTarget().ref, 'main');
 
     // 3. Checkout system files only
     console.log('Updating system files...');
     const updated = new Set();
     checkoutSystemFilesFromRef('FETCH_HEAD', updated);
-    writeCanonicalVersion(
-      remote || readVersionFromGitRef('FETCH_HEAD'),
-      updated,
-    );
+    writeCanonicalVersion(readVersionFromGitRef('FETCH_HEAD'), updated);
 
     // 4. Validate: check NO user files were touched
     let userFileTouched = false;

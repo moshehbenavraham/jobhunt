@@ -74,6 +74,21 @@ const expired = await livenessModule.checkUrl(
 );
 assert.equal(expired.result, 'expired');
 
+const closedWithApplyControl = await livenessModule.checkUrl(
+  createPage({
+    bodyText: [
+      'Senior Staff Embedded Software Engineer',
+      'Posted 27 Oct 2025    Closed on 26 Nov 2025',
+      'Applications have closed for this job',
+      'Log in to Apply',
+      'Roles and responsibilities '.repeat(30),
+    ].join('\n'),
+    applyControls: ['Log in to Apply'],
+  }),
+  'https://jobs.example.com/closed-with-login-apply',
+);
+assert.equal(closedWithApplyControl.result, 'expired');
+
 const uncertain = await livenessModule.checkUrl(
   createPage({
     bodyText: 'x'.repeat(400),

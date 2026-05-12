@@ -70,6 +70,8 @@ const (
 	filterApplied   = "applied"
 	filterInterview = "interview"
 	filterSkip      = "skip"
+	filterRejected  = "rejected"
+	filterDiscarded = "discarded"
 	filterTop       = "top"
 )
 
@@ -86,6 +88,8 @@ var pipelineTabs = []pipelineTab{
 	{filterInterview, "INTERVIEW", "INT"},
 	{filterTop, "TOP ≥4", "TOP"},
 	{filterSkip, "SKIP", "SKIP"},
+	{filterRejected, "REJECTED", "REJ"},
+	{filterDiscarded, "DISCARDED", "DISC"},
 }
 
 var sortCycle = []string{sortScore, sortDate, sortCompany, sortStatus}
@@ -761,6 +765,7 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 	wc := theme.ClassifyWidth(m.width)
 
 	scoreW := 5
+	numW := 5
 	dateW := 10
 	companyW := 16
 	statusW := 12
@@ -777,8 +782,8 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 		compW = 18
 	}
 
-	// chrome: pad(4) + accent(1) + gauge+space(2) + col widths + inter-col spaces(6)
-	chrome := 4 + 1 + 2 + scoreW + dateW + companyW + statusW + 6
+	// chrome: pad(4) + accent(1) + gauge+space(2) + col widths + inter-col spaces(7)
+	chrome := 4 + 1 + 2 + numW + scoreW + dateW + companyW + statusW + 7
 	if showComp {
 		chrome += compW
 	}
@@ -788,6 +793,12 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 	}
 
 	gauge := m.theme.ScoreGaugeStyle(app.Score)
+
+	numText := "#-"
+	if app.Number > 0 {
+		numText = fmt.Sprintf("#%d", app.Number)
+	}
+	numStyle := lipgloss.NewStyle().Foreground(m.theme.Blue).Bold(true).Width(numW)
 
 	ss := m.scoreStyle(app.Score)
 	score := ss.Render(fmt.Sprintf("%.1f", app.Score))
@@ -809,8 +820,10 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 	statusStyle := lipgloss.NewStyle().Foreground(statusColor).Width(statusW)
 	statusText := statusStyle.Render(statusLabel(norm))
 
-	content := fmt.Sprintf("%s %s %s %s %s %s",
-		gauge, score,
+	content := fmt.Sprintf("%s %s %s %s %s %s %s",
+		gauge,
+		numStyle.Render(truncateRunes(numText, numW)),
+		score,
 		dateStyle.Render(truncateRunes(dateText, dateW)),
 		companyStyle.Render(company),
 		roleStyle.Render(role),

@@ -221,14 +221,19 @@ function runScript(script, sandbox, args = []) {
     'broken',
   );
   writeFile(
+    join(sandbox, 'batch', 'tracker-additions', '007-role-noise.tsv'),
+    '6\t2026-04-07\tAcme\tSenior Data Engineer Remote\tApplied\t4.4/5\t✅\t[006](reports/006.md)\tshares only noisy role tokens\n',
+  );
+  writeFile(
     join(sandbox, 'scripts', 'verify-pipeline.mjs'),
     `import { writeFileSync } from 'node:fs'; writeFileSync(${JSON.stringify(join(sandbox, 'verify-ran.txt'))}, 'yes'); process.exit(0);\n`,
   );
 
   const dryRun = runScript('merge-tracker.mjs', sandbox, ['--dry-run']);
   assert.equal(dryRun.status, 0, dryRun.stderr);
-  assert.match(dryRun.stdout, /Found 6 pending additions/);
+  assert.match(dryRun.stdout, /Found 7 pending additions/);
   assert.match(dryRun.stdout, /Add #2: Beta/);
+  assert.match(dryRun.stdout, /Add #6: Acme/);
   assert.match(dryRun.stdout, /Update: #1 Acme/);
   assert.equal(
     existsSync(join(sandbox, 'batch', 'tracker-additions', 'merged')),
@@ -253,6 +258,10 @@ function runScript(script, sandbox, args = []) {
   assert.match(
     mergedTracker,
     /\| 5 \| 2026-04-06 \| Delta \| ML Engineer \| 4.2\/5 \| Interview \|/,
+  );
+  assert.match(
+    mergedTracker,
+    /\| 6 \| 2026-04-07 \| Acme \| Senior Data Engineer Remote \| 4.4\/5 \| Applied \|/,
   );
   assert.match(mergedTracker, /Re-eval 2026-04-03 \(4→4.7\)\. higher score/);
   assert.equal(
@@ -315,8 +324,15 @@ function runScript(script, sandbox, args = []) {
   );
 
   const passedWithAuth = runScript('doctor.mjs', passing);
-  assert.equal(passedWithAuth.status, 0, passedWithAuth.stdout + passedWithAuth.stderr);
-  assert.match(passedWithAuth.stdout, /OpenAI account auth ready \(acct-doctor\)/);
+  assert.equal(
+    passedWithAuth.status,
+    0,
+    passedWithAuth.stdout + passedWithAuth.stderr,
+  );
+  assert.match(
+    passedWithAuth.stdout,
+    /OpenAI account auth ready \(acct-doctor\)/,
+  );
 
   rmSync(failing, { recursive: true, force: true });
   rmSync(passing, { recursive: true, force: true });
@@ -327,18 +343,15 @@ function runScript(script, sandbox, args = []) {
   mkdirSync(join(sandbox, 'scripts', 'lib', 'openai-account-auth'), {
     recursive: true,
   });
-  writeFile(join(sandbox, 'scripts', 'doctor.mjs'), readFileSync(join(ROOT, 'scripts', 'doctor.mjs'), 'utf8'));
+  writeFile(
+    join(sandbox, 'scripts', 'doctor.mjs'),
+    readFileSync(join(ROOT, 'scripts', 'doctor.mjs'), 'utf8'),
+  );
   for (const authLibFile of ['common.mjs', 'storage.mjs']) {
     writeFile(
       join(sandbox, 'scripts', 'lib', 'openai-account-auth', authLibFile),
       readFileSync(
-        join(
-          ROOT,
-          'scripts',
-          'lib',
-          'openai-account-auth',
-          authLibFile,
-        ),
+        join(ROOT, 'scripts', 'lib', 'openai-account-auth', authLibFile),
         'utf8',
       ),
     );
@@ -355,7 +368,10 @@ function runScript(script, sandbox, args = []) {
 
   assert.equal(preinstall.status, 1, preinstall.stdout + preinstall.stderr);
   assert.match(preinstall.stdout, /Dependencies not installed/);
-  assert.doesNotMatch(preinstall.stdout + preinstall.stderr, /@openai\/agents-core/);
+  assert.doesNotMatch(
+    preinstall.stdout + preinstall.stderr,
+    /@openai\/agents-core/,
+  );
 
   rmSync(sandbox, { recursive: true, force: true });
 }

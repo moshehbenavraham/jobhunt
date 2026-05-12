@@ -15,8 +15,8 @@ jobs:
     steps:
       - uses: actions/first-interaction@v3
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          pr-message: |
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_message: |
             Welcome to jobhunt, @${{ github.actor }}! Thanks for your first PR.
 
             A few things to know:
@@ -24,7 +24,7 @@ jobs:
             - Make sure you've linked a related issue (required for features)
             - Read [CONTRIBUTING.md](https://github.com/moshehbenavraham/jobhunt/blob/main/docs/CONTRIBUTING.md) if you haven't
 
-          issue-message: |
+          issue_message: |
             Thanks for opening your first issue, @${{ github.actor }}! We'll take a look soon.
 
             In the meantime:

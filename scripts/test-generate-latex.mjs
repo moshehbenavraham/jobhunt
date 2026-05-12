@@ -196,11 +196,11 @@ try {
       assert.equal(
         result.compiled,
         false,
-        'compile should fail without pdflatex',
+        'compile should fail without a LaTeX engine',
       );
       assert.match(
         result.compileError,
-        /pdflatex is not available on PATH/,
+        /No LaTeX engine is available on PATH/,
         'compile error should explain the missing toolchain',
       );
     } finally {

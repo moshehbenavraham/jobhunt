@@ -6,12 +6,12 @@
  * Usage:
  *   node scripts/generate-latex.mjs <input.tex> [output.pdf]
  *
- * Requires: pdflatex (TeX Live, MiKTeX, or equivalent) on PATH.
+ * Requires: tectonic or pdflatex (TeX Live, MiKTeX, or equivalent) on PATH.
  */
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync } from 'node:fs';
-import { copyFile, readFile, rm, stat } from 'node:fs/promises';
+import { copyFile, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -246,22 +246,27 @@ export async function validateLatexFile(inputPath) {
   return report;
 }
 
-function checkPdflatexAvailable() {
-  try {
-    execFileSync('pdflatex', ['--version'], {
-      stdio: 'pipe',
-      timeout: 15000,
-    });
-    return null;
-  } catch (error) {
-    if (error && error.code === 'ENOENT') {
-      return (
-        'pdflatex is not available on PATH. Install TeX Live (Linux/macOS) or ' +
-        'MiKTeX (Windows), or upload the generated .tex file to Overleaf.'
-      );
+function detectLatexEngine() {
+  for (const engine of ['tectonic', 'pdflatex']) {
+    try {
+      execFileSync(engine, ['--version'], {
+        stdio: 'pipe',
+        timeout: 15000,
+      });
+      return engine;
+    } catch {
+      // Try the next supported engine.
     }
-    return `Unable to execute pdflatex: ${error.message}`;
   }
+
+  return null;
+}
+
+function missingLatexEngineMessage() {
+  return (
+    'No LaTeX engine is available on PATH. Install Tectonic, TeX Live, or ' +
+    'MiKTeX, or upload the generated .tex file to Overleaf.'
+  );
 }
 
 async function extractCompileError(logPath, fallbackMessage) {
@@ -305,13 +310,11 @@ export async function compileLatex(inputPath, outputPath) {
   const targetPdfPath = outputPath
     ? resolve(outputPath)
     : resolve(defaultPdfPath);
-  const logPath = join(texDir, `${texBase}.log`);
-
-  const pdflatexError = checkPdflatexAvailable();
-  if (pdflatexError) {
+  const engine = detectLatexEngine();
+  if (!engine) {
     return {
       compiled: false,
-      compileError: pdflatexError,
+      compileError: missingLatexEngineMessage(),
     };
   }
 
@@ -319,40 +322,64 @@ export async function compileLatex(inputPath, outputPath) {
     mkdirSync(dirname(targetPdfPath), { recursive: true });
   }
 
-  const pdflatexArgs = [
-    '-no-shell-escape',
-    '-interaction=nonstopmode',
-    '-halt-on-error',
-    `-output-directory=${texDir}`,
-    absoluteInputPath,
-  ];
+  let compilePath = absoluteInputPath;
+  let compileBase = texBase;
+  if (engine === 'tectonic') {
+    const content = await readFile(absoluteInputPath, 'utf8');
+    const patched = content
+      .replace(/\\pdfgentounicode\s*=\s*\d+[^\n]*\n?/g, '')
+      .replace(/\\input\{glyphtounicode\}[^\n]*\n?/g, '');
+    compilePath = join(texDir, `${texBase}._tectonic.tex`);
+    compileBase = basename(compilePath, '.tex');
+    await writeFile(compilePath, patched, 'utf8');
+  }
 
   try {
-    execFileSync('pdflatex', pdflatexArgs, {
-      cwd: texDir,
-      stdio: 'pipe',
-      timeout: 120000,
-    });
-    execFileSync('pdflatex', pdflatexArgs, {
-      cwd: texDir,
-      stdio: 'pipe',
-      timeout: 120000,
-    });
+    if (engine === 'tectonic') {
+      execFileSync('tectonic', ['--outdir', texDir, compilePath], {
+        cwd: texDir,
+        stdio: 'pipe',
+        timeout: 120000,
+      });
+    } else {
+      const pdflatexArgs = [
+        '-no-shell-escape',
+        '-interaction=nonstopmode',
+        '-halt-on-error',
+        `-output-directory=${texDir}`,
+        absoluteInputPath,
+      ];
+      execFileSync('pdflatex', pdflatexArgs, {
+        cwd: texDir,
+        stdio: 'pipe',
+        timeout: 120000,
+      });
+      execFileSync('pdflatex', pdflatexArgs, {
+        cwd: texDir,
+        stdio: 'pipe',
+        timeout: 120000,
+      });
+    }
   } catch (error) {
     return {
       compiled: false,
-      compileError: await extractCompileError(logPath, error.message),
+      compileError: await extractCompileError(
+        join(texDir, `${compileBase}.log`),
+        error.message,
+      ),
     };
   }
 
   const result = {
     compiled: true,
+    engine,
   };
 
   try {
-    if (resolve(defaultPdfPath) !== resolve(targetPdfPath)) {
-      await copyFile(defaultPdfPath, targetPdfPath);
-      await rm(defaultPdfPath).catch(() => {});
+    const compiledPdfPath = join(texDir, `${compileBase}.pdf`);
+    if (resolve(compiledPdfPath) !== resolve(targetPdfPath)) {
+      await copyFile(compiledPdfPath, targetPdfPath);
+      await rm(compiledPdfPath).catch(() => {});
     }
 
     const pdfStats = await stat(targetPdfPath);
@@ -366,8 +393,13 @@ export async function compileLatex(inputPath, outputPath) {
   }
 
   if (result.compiled) {
-    for (const extension of AUXILIARY_EXTENSIONS) {
-      await rm(join(texDir, `${texBase}${extension}`)).catch(() => {});
+    for (const base of new Set([texBase, compileBase])) {
+      for (const extension of AUXILIARY_EXTENSIONS) {
+        await rm(join(texDir, `${base}${extension}`)).catch(() => {});
+      }
+    }
+    if (engine === 'tectonic') {
+      await rm(compilePath).catch(() => {});
     }
   }
 

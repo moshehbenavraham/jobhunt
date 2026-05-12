@@ -112,36 +112,49 @@ function initRepo(path) {
 }
 
 {
-  const upstream = mkdtempSync(join(tmpdir(), 'jobhunt-update-upstream-'));
-  initRepo(upstream);
-  writeFile(join(upstream, 'VERSION'), '1.0.1\n');
-  writeFile(join(upstream, '.gitignore'), 'portals.yml\nconfig/portals.yml\n');
+  const origin = mkdtempSync(join(tmpdir(), 'jobhunt-update-origin-'));
+  initRepo(origin);
+  writeFile(join(origin, 'VERSION'), '1.0.1\n');
+  writeFile(join(origin, '.gitignore'), 'portals.yml\nconfig/portals.yml\n');
   writeFile(
-    join(upstream, 'package.json'),
+    join(origin, 'package.json'),
     '{"name":"jobhunt","version":"1.0.1"}\n',
   );
   writeFile(
-    join(upstream, 'config', 'portals.example.yml'),
+    join(origin, 'config', 'portals.example.yml'),
     '# new portals template\n',
   );
   writeFile(
-    join(upstream, 'scripts', 'openai-account-auth.mjs'),
+    join(origin, 'scripts', 'openai-account-auth.mjs'),
     '#!/usr/bin/env node\nconsole.log("auth");\n',
   );
   writeFile(
-    join(upstream, 'scripts', 'openai-codex-smoke.mjs'),
+    join(origin, 'scripts', 'openai-codex-smoke.mjs'),
     '#!/usr/bin/env node\nconsole.log("codex");\n',
   );
   writeFile(
-    join(upstream, 'scripts', 'openai-agents-codex-smoke.mjs'),
+    join(origin, 'scripts', 'openai-agents-codex-smoke.mjs'),
     '#!/usr/bin/env node\nconsole.log("agents");\n',
   );
   writeFile(
-    join(upstream, 'scripts', 'lib', 'openai-account-auth', 'common.mjs'),
+    join(origin, 'scripts', 'lib', 'openai-account-auth', 'common.mjs'),
     'export const marker = "auth-lib";\n',
   );
-  git(upstream, 'add', '.');
-  git(upstream, 'commit', '-m', 'upstream init');
+  git(origin, 'add', '.');
+  git(origin, 'commit', '-m', 'origin init');
+
+  const decoyUpstream = mkdtempSync(
+    join(tmpdir(), 'jobhunt-update-decoy-upstream-'),
+  );
+  initRepo(decoyUpstream);
+  writeFile(join(decoyUpstream, 'VERSION'), '9.9.9\n');
+  writeFile(
+    join(decoyUpstream, 'package.json'),
+    '{"name":"career-ops","version":"9.9.9"}\n',
+  );
+  git(decoyUpstream, 'add', '.');
+  git(decoyUpstream, 'commit', '-m', 'decoy upstream init');
+  git(decoyUpstream, 'tag', 'career-ops-v9.9.9');
 
   const sandbox = mkdtempSync(join(tmpdir(), 'jobhunt-update-apply-'));
   initRepo(sandbox);
@@ -163,10 +176,13 @@ function initRepo(path) {
     'templates/portals.example.yml',
   );
   git(sandbox, 'commit', '-m', 'local init');
-  git(sandbox, 'remote', 'add', 'upstream', upstream);
+  git(sandbox, 'remote', 'add', 'origin', origin);
+  git(sandbox, 'remote', 'add', 'upstream', decoyUpstream);
 
   const apply = runUpdate(sandbox, ['apply']);
   assert.equal(apply.status, 0, apply.stdout + apply.stderr);
+  assert.match(apply.stdout, /Update complete: v1\.0\.0 -> v1\.0\.1/);
+  assert.doesNotMatch(apply.stdout, /9\.9\.9/);
   assert.equal(
     existsSync(join(sandbox, 'templates', 'portals.example.yml')),
     false,
@@ -199,7 +215,8 @@ function initRepo(path) {
     /!! portals\.yml/,
   );
 
-  rmSync(upstream, { recursive: true, force: true });
+  rmSync(origin, { recursive: true, force: true });
+  rmSync(decoyUpstream, { recursive: true, force: true });
   rmSync(sandbox, { recursive: true, force: true });
 }
 
