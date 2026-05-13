@@ -21,7 +21,7 @@ jobs:
         # unavailable. fail-on-severity: high remains configured, but it will
         # not block while continue-on-error is true.
         continue-on-error: true
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
           comment-summary-in-pr: always
