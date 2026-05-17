@@ -13,6 +13,8 @@ runtime policy, app boot surfaces, and repo reference material.
 - [Customization Guide](CUSTOMIZATION.md)
 - [Scripts Reference](SCRIPTS.md)
 - [OpenAI Account Auth](OPENAI_ACCOUNT_AUTH.md)
+- [OpenAI Codex Agent Runtime](OPENAI_CODEX_AGENT_RUNTIME.md) - canonical maintainer guide for account auth, Codex transport, provider bootstrap, API readiness, and orchestration
+- [Standalone OpenAI Codex Agent Runtime](STANDALONE_OPENAI_CODEX_AGENT_RUNTIME.md) - extraction guide for reusing the pattern in another project
 - [App Boot Runbook](runbooks/README_runbooks.md)
 - [Cutover Note](CUTOVER.md)
 
@@ -34,6 +36,8 @@ runtime policy, app boot surfaces, and repo reference material.
 - [Architecture](ARCHITECTURE.md)
 - [Dashboard README](../dashboard/README-dashboard.md)
 - [API Docs](api/README_api.md)
+- [OpenAI Codex Agent Runtime Examples](examples/openai-codex-agent-runtime.md)
+- [OpenAI Codex Agent Runtime Runbook](runbooks/openai-codex-agent-runtime.md)
 - [Environments](environments.md)
 - [Deployment](deployment.md)
 - [Credits](CREDITS.md)

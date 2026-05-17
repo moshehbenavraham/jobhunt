@@ -87,13 +87,31 @@ npm run agents:codex:smoke -- --json
 ### 6. Start the app surface
 
 ```bash
+npm run app:start
+```
+
+`npm run app:start` is the preferred one-command local launch path. It clears
+the configured app ports, starts the API and web servers, waits for the boot
+health checks, and prints the local URLs.
+
+Use the split commands when you are developing one side of the app:
+
+```bash
+npm run app:api:serve
+npm run app:web:dev
+```
+
+Run validation separately when you want checks without keeping servers up:
+
+```bash
 npm run app:validate
 ```
 
 The app surface gives you the primary local operator runtime:
 
-- `npm run app:web:dev` for the React shell
-- `npm run app:api:serve` for the long-lived API server
+- `npm run app:start` for the one-command local launch path
+- `npm run app:web:dev` for the React shell only
+- `npm run app:api:serve` for the long-lived API server only
 - `npm run app:boot:test` for the live repo-root smoke test
 
 The shell now includes the operator home landing, onboarding repair, approval
@@ -105,6 +123,11 @@ job-search operations, and the dashboard still exists as a secondary review
 path, but the app surface is now the preferred boot path for the local runtime
 contract.
 
+For the auth and model-runtime internals, see
+[OpenAI Codex Agent Runtime](OPENAI_CODEX_AGENT_RUNTIME.md). For reusing the
+same pattern in another project, see
+[Standalone OpenAI Codex Agent Runtime](STANDALONE_OPENAI_CODEX_AGENT_RUNTIME.md).
+
 ## Follow-up Verification
 
 Run these after the initial setup path is working:
@@ -115,6 +138,8 @@ npm run verify
 npm run app:boot:test
 npm run app:validate
 npm run auth:openai -- status
+npm run codex:smoke -- --json
+npm run agents:codex:smoke -- --json
 ```
 
 ## Optional Secondary Dashboard

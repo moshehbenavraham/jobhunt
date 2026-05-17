@@ -12,6 +12,7 @@ exposed via `npm run <name>`. Repo-local shell helpers such as
 | `npm run backup:install-cron` | `scripts/install-backup-cron.mjs`                                                                                                                                                                                                                                  | Install repo-managed daily backup cron      |
 | `npm run doctor`              | `scripts/doctor.mjs`                                                                                                                                                                                                                                               | Validate setup prerequisites                |
 | `npm run app:check`           | `npm run app:web:check && npm run app:api:check`                                                                                                                                                                                                                   | Validate the web and API app packages       |
+| `npm run app:start`           | `scripts/start-app.sh`                                                                                                                                                                                                                                             | Start the local API and web app together    |
 | `npm run app:boot:test`       | `scripts/test-app-bootstrap.mjs`                                                                                                                                                                                                                                   | Verify the live app boot surface            |
 | `npm run app:validate`        | `npm run app:check && npm run app:api:test:runtime && npm run app:api:test:agent-runtime && npm run app:api:test:approval-runtime && npm run app:api:test:observability && npm run app:api:test:job-runner && npm run app:api:test:store && npm run app:boot:test` | Run the full app validation stack           |
 | `npm run test:quick`          | `node scripts/test-all.mjs --quick`                                                                                                                                                                                                                                | Run the repo quick regression gate          |
@@ -128,6 +129,9 @@ Notes:
 
 **Exit codes:** `0` success, `1` command failure or missing auth state for
 commands that require stored credentials.
+
+See [OpenAI Codex Agent Runtime](OPENAI_CODEX_AGENT_RUNTIME.md) for the full
+runtime flow, readiness states, and validation ladder.
 
 ---
 
@@ -329,6 +333,34 @@ npm run test:quick
 The quick gate exercises the shell, chat console, report viewer, pipeline
 review, tracker workspace, and auto-pipeline parity smoke scripts in addition
 to the broader repo checks.
+
+## app:start
+
+Starts the app-owned local runtime from the repo root.
+
+```bash
+npm run app:start
+```
+
+The script clears the configured API and web ports, starts
+`npm run app:api:serve` and `npm run app:web:dev`, waits for health checks, and
+prints the local URLs. Defaults are:
+
+- API host: `127.0.0.1`
+- API port: `5172`
+- web host: `0.0.0.0`
+- web port: `4175`
+- runtime logs: `tmp/app/`
+
+Useful overrides:
+
+```bash
+JOBHUNT_API_PORT=6172 JOBHUNT_WEB_PORT=6175 npm run app:start
+JOBHUNT_APP_RUNTIME_DIR=tmp/app-smoke npm run app:start
+```
+
+Use `npm run app:api:serve` and `npm run app:web:dev` separately when you need
+independent terminals during development.
 
 ---
 

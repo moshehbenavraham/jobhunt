@@ -119,6 +119,20 @@ Phase 02.
   SSE transport to `chatgpt.com/backend-api/codex/responses`.
 - `scripts/lib/openai-account-auth/agents-provider.mjs` adapts that transport
   into the `@openai/agents` provider surface.
+- `apps/api/src/agent-runtime/openai-account-provider.ts` imports the auth
+  stack through a typed bridge and maps stored credential status to
+  `auth-required`, `invalid-auth`, `expired-auth`, and `ready`.
+- `apps/api/src/agent-runtime/agent-runtime-service.ts` combines auth
+  readiness, prompt readiness, provider bootstrap, provider caching, and
+  provider cleanup.
+- `apps/api/src/server/startup-status.ts` maps agent runtime readiness into
+  `/health` and `/startup` status.
+- `apps/api/src/server/settings-summary.ts` exposes the bounded auth and
+  runtime config summary used by the settings surface.
+- Full maintainer docs live in
+  [OpenAI Codex Agent Runtime](OPENAI_CODEX_AGENT_RUNTIME.md); standalone
+  extraction docs live in
+  [Standalone OpenAI Codex Agent Runtime](STANDALONE_OPENAI_CODEX_AGENT_RUNTIME.md).
 
 ## App Boot Surface
 
@@ -135,6 +149,10 @@ The app contract keeps the runtime read-first:
 
 The server and web shell inspect the existing repo contract, but they do not
 create or mutate user-layer files outside explicit repair actions.
+
+Use `npm run app:start` for the preferred one-command local launch path. Use
+`npm run app:api:serve` and `npm run app:web:dev` separately when you are
+developing one package at a time.
 
 ## Data Flow
 

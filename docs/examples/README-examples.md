@@ -9,6 +9,7 @@ Reference files that demonstrate jobhunt data formats and conventions. None of t
 | `cv-example.md`                   | How to structure `profile/cv.md` -- sections, metrics formatting, and proof-point style for a fictional AI engineer (Alex Chen)                                                                   |
 | `article-digest-example.md`       | How to write `profile/article-digest.md` -- compact proof points with hero metrics, architecture summaries, and key decisions per project                                                         |
 | `sample-report.md`                | The A-F evaluation report format produced by the evaluation pipeline, with all six blocks (Role Summary through Interview Plan)                                                                   |
+| `openai-codex-agent-runtime.md`   | Documentation-only snippets for raw Codex transport, `@openai/agents` provider registration, readiness states, fake auth fixtures, and fake backend fixtures                                      |
 | `dual-track-engineer-instructor/` | Complete profile config for a candidate with two primary archetypes (engineer + instructor), including `cv.md`, `profile.yml`, and a README explaining when and how to use the dual-track pattern |
 
 ## Usage

@@ -64,6 +64,8 @@ npm run validate:tools
 - Workflow bootstrap routes expose the app-owned launch and resume helpers for
   the operator shell.
 
+Detailed route payload notes live in [API Docs](../../docs/api/README_api.md).
+
 When you are working from the repo root, the corresponding aliases are
 `npm run app:api:dev`, `npm run app:api:serve`, `npm run app:api:build`,
 `npm run app:api:test:runtime`, `npm run app:api:test:agent-runtime`,
@@ -102,6 +104,10 @@ When you are working from the repo root, the corresponding aliases are
 - Agent-runtime readiness is separate from boot readiness. `/health` and
   `/startup` may stay available while stored OpenAI account auth is missing,
   invalid, or expired.
+- Stored OpenAI account auth lives in `data/openai-account-auth.json` by
+  default; app-owned runtime state lives in `.jobhunt-app/`.
+- Startup diagnostics read stored auth and prompt prerequisites but do not
+  refresh credentials and do not contact the Codex backend.
 
 ## Agent Runtime
 
@@ -114,6 +120,23 @@ When you are working from the repo root, the corresponding aliases are
 - Use `JOBHUNT_API_OPENAI_AUTH_PATH`, `JOBHUNT_API_OPENAI_BASE_URL`,
   `JOBHUNT_API_OPENAI_ORIGINATOR`, and `JOBHUNT_API_OPENAI_MODEL` when you
   need deterministic test fixtures or backend overrides.
+- Auth states are `auth-required`, `invalid-auth`, `expired-auth`, and
+  `ready`.
+- Prompt states are `missing`, `empty`, `unsupported-workflow`, and `ready`.
+- Aggregate readiness states are `auth-required`, `invalid-auth`,
+  `expired-auth`, `prompt-failure`, and `ready`.
+- Bootstrap error codes are `auth-required`, `invalid-auth`, `expired-auth`,
+  `prompt-missing`, `prompt-empty`, `unsupported-workflow`, and
+  `provider-bootstrap-failed`.
+- `/health` exposes a compact `agentRuntime` object. `/startup` exposes
+  `diagnostics.agentRuntime`. `/settings` exposes `auth`.
+- `/orchestration` reports blocked runtime launches through
+  `runtime.status: "blocked"` plus the auth or prompt code.
+
+Canonical maintainer documentation lives in
+[OpenAI Codex Agent Runtime](../../docs/OPENAI_CODEX_AGENT_RUNTIME.md). Keep
+that guide as the source of truth for auth flow, config, state mapping,
+validation, tests, and runbooks.
 
 ## Durable Job Runner
 

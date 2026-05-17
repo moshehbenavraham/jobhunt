@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.49",
+  "version": "1.5.50",
   "description": "AI-powered job search pipeline",
   "workspaces": [
     "apps/web",

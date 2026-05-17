@@ -20,6 +20,7 @@ cp config/portals.example.yml config/portals.yml
 cp profile/cv.example.md profile/cv.md
 npm run doctor
 npm run auth:openai -- login
+npm run app:start
 npm run app:validate
 ```
 
@@ -34,7 +35,10 @@ See the [Setup Guide](docs/SETUP.md) for the detailed walkthrough.
 
 After it passes, the normal next step is the app-owned runtime:
 
-- run `npm run app:validate`, then `npm run app:web:dev` and `npm run app:api:serve`
+- run `npm run app:start` for the one-command local launch path
+- run `npm run app:validate` when you want checks without keeping servers up
+- use `npm run app:web:dev` and `npm run app:api:serve` separately when
+  developing one side of the app
 - if you want repo-owned OpenAI runtime flows, run `npm run auth:openai -- login` once from the repo root
 - if you already have a job URL or JD and intentionally want the legacy CLI workflow, launch `codex` from the repo root and paste it
 - if you need discovery first, run `npm run scan`, then review `data/pipeline.md -> ## Shortlist` and start with the top 3 roles
@@ -60,6 +64,7 @@ The standard user-layer inputs are:
 - `npm run pdf` - generate an ATS-friendly PDF
 - `npm run latex` - validate and compile an optional LaTeX / Overleaf CV
 - `npm run dashboard` - build and launch the secondary Go dashboard
+- `npm run app:start` - clear app ports, start the API and web servers, and print local URLs
 - `npm run app:validate` - run the app workspace checks plus the boot smoke test
 - `npm run app:boot:test` - verify the live API boot surface from the repo root
 - `npm run app:api:serve` - start the long-lived API boot server
@@ -85,6 +90,7 @@ review, batch workspace, specialist workspace, application-help, deep-link
 detail pages for runs, reports, workflows, batches, and scans, and the
 long-lived API boot server.
 
+- `npm run app:start` - preferred one-command local launch path
 - `npm run app:web:dev` - start the React shell with Vite
 - `npm run app:web:build` - build the web scaffold into `apps/web/dist`
 - `npm run app:api:dev` - run the diagnostics entrypoint with `tsx`
@@ -105,6 +111,12 @@ workflow bootstrap routes used by the web shell. The web package renders those
 operator surfaces and keeps them read-first against the repo-owned contract,
 with the operator home acting as the default daily landing path once startup is
 ready.
+
+The app runtime uses the repo-owned OpenAI Codex account-auth subsystem. See
+[OpenAI Codex Agent Runtime](docs/OPENAI_CODEX_AGENT_RUNTIME.md) for the
+maintainer guide and
+[Standalone OpenAI Codex Agent Runtime](docs/STANDALONE_OPENAI_CODEX_AGENT_RUNTIME.md)
+for the extraction guide.
 
 `npm run scan` is currently an API-first scanner. It uses
 `tracked_companies`, `title_filter.positive`, and `title_filter.negative` from
@@ -160,6 +172,8 @@ immediately.
 - [Setup Guide](docs/SETUP.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Scripts Reference](docs/SCRIPTS.md)
+- [OpenAI Codex Agent Runtime](docs/OPENAI_CODEX_AGENT_RUNTIME.md)
+- [Standalone OpenAI Codex Agent Runtime](docs/STANDALONE_OPENAI_CODEX_AGENT_RUNTIME.md)
 - [Contributing](CONTRIBUTING.md)
 - [Docs Index](docs/README-docs.md)
 - [Cutover Note](docs/CUTOVER.md)

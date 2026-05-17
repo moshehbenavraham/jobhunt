@@ -2,6 +2,10 @@
 
 This document defines the repo's supported OpenAI runtime contract.
 
+For the full maintainer view that connects this auth layer to the API runtime,
+startup diagnostics, settings summary, prompt bootstrap, and orchestration, see
+[OpenAI Codex Agent Runtime](OPENAI_CODEX_AGENT_RUNTIME.md).
+
 ## Contract
 
 Jobhunt uses OpenAI account authentication for all repo-owned OpenAI runtime
