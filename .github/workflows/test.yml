@@ -16,4 +16,5 @@ jobs:
         with:
           go-version: '1.22'
       - run: npm install
+      - run: npx playwright install chromium
       - run: node scripts/test-all.mjs --quick
