@@ -13,11 +13,11 @@
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import yaml from 'js-yaml';
+import * as yamlModule from 'js-yaml';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const projectRoot = resolve(SCRIPT_DIR, '..');
-const parseYaml = yaml.load;
+const parseYaml = (yamlModule.default ?? yamlModule).load;
 
 const warnings = [];
 const errors = [];

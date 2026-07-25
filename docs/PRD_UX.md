@@ -569,7 +569,7 @@ lighter = closer to the operator. This is honest to the medium.
 ## 11. Component Patterns
 
 | Component         | Used In                    | Behavior                                                                                                                                                                 |
-| ----------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| ----------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Header Bar        | Pipeline, Progress, Viewer | Full-width Surface background. Left-aligned bold title in screen accent color. Right-aligned stats/position in Subtext. Padding(0, 2).                                   |
 | Tab Row           | Pipeline                   | Horizontal tab labels with count badges. Active tab: bold + accent color + heavy underline. Inactive: Subtext + thin underline. Padding(0, 1).                           |
 | Metrics Ribbon    | Pipeline                   | Full-width Surface background. Inline status counts colored by status semantics. Compact single-line format.                                                             |
@@ -579,7 +579,7 @@ lighter = closer to the operator. This is honest to the medium.
 | Preview Pane      | Pipeline                   | Below a thin divider. Shows 2-4 lines of report summary (archetype, TL;DR, comp, remote) with Sky bold labels and Text values. Falls back to notes or loading indicator. |
 | Help Bar          | Pipeline, Progress, Viewer | Full-width Surface background. Key hints: bold Text for key, Subtext for description. Brand text right-aligned in Overlay. Padding(0, 1).                                |
 | Bar Chart         | Progress                   | Full-block characters scaled proportionally. Color per-bar based on semantic meaning (funnel stage, score range). Label left-aligned, bar center, count right.           |
-| Conversion Rates  | Progress                   | Inline label + bold colored value. Rates separated by `                                                                                                                  | ` in Overlay. Color thresholds: >=30% green, >=15% yellow, >=5% peach, <5% red. |
+| Conversion Rates  | Progress                   | Inline label + bold colored value. Rates separated by a vertical bar in Overlay. Color thresholds: >=30% green, >=15% yellow, >=5% peach, <5% red.                       |
 | Status Picker     | Pipeline (overlay)         | Appended to body. Title in Blue bold. Options with `>` cursor and Overlay background on selected. Width 30 chars.                                                        |
 | Markdown Renderer | Viewer                     | H1/H2/H3 with color + bold. Blockquotes with vertical bar. Bold inline segments in Yellow. Tables with full box-drawing borders.                                         |
 | Box-Drawing Table | Viewer                     | Corner pieces, T-junctions, cross pieces. Header row in Sky bold. Column widths auto-computed from content with intelligent truncation.                                  |
