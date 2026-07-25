@@ -31,6 +31,13 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Seed example user setup
+        run: |
+          cp profile/cv.example.md profile/cv.md
+          cp config/profile.example.yml config/profile.yml
+          cp config/portals.example.yml config/portals.yml
+          cp modes/_profile.template.md modes/_profile.md
+
       - name: Repo doctor
         run: npm run doctor
 
