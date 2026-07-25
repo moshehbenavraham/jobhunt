@@ -1083,9 +1083,30 @@ for (const check of contributorMetadataChecks) {
 
 console.log('\n11. Validator runtime contract');
 
+const doctorContractRoot = mkdtempSync(
+  join(tmpdir(), 'jobhunt-doctor-contract-'),
+);
+mkdirSync(join(doctorContractRoot, 'node_modules'), { recursive: true });
+mkdirSync(join(doctorContractRoot, 'profile'), { recursive: true });
+mkdirSync(join(doctorContractRoot, 'config'), { recursive: true });
+mkdirSync(join(doctorContractRoot, 'fonts'), { recursive: true });
+writeFileSync(join(doctorContractRoot, 'profile', 'cv.md'), '# Test CV\n');
+writeFileSync(
+  join(doctorContractRoot, 'config', 'profile.yml'),
+  'full_name: "Test User"\n',
+);
+writeFileSync(
+  join(doctorContractRoot, 'config', 'portals.yml'),
+  'companies: []\n',
+);
+writeFileSync(join(doctorContractRoot, 'fonts', 'test-font.ttf'), 'font');
+
 const doctorOutput = run('npm', ['run', 'doctor'], {
+  env: { ...process.env, JOBHUNT_ROOT: doctorContractRoot },
   stdio: ['pipe', 'pipe', 'pipe'],
 });
+rmSync(doctorContractRoot, { recursive: true, force: true });
+
 if (doctorOutput === null) {
   fail('npm run doctor failed');
 } else {

@@ -51,9 +51,7 @@ export function fromBase64Url(value) {
 
 export function generatePkcePair() {
   const verifier = toBase64Url(randomBytes(32));
-  const challenge = toBase64Url(
-    createHash('sha256').update(verifier).digest(),
-  );
+  const challenge = toBase64Url(createHash('sha256').update(verifier).digest());
   return { verifier, challenge };
 }
 
