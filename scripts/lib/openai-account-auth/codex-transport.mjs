@@ -43,10 +43,7 @@ export class CodexTransportError extends Error {
 }
 
 export function createCodexRequestId() {
-  if (typeof randomUUID === 'function') {
-    return randomUUID();
-  }
-  return `codex_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+  return randomUUID();
 }
 
 export function resolveCodexResponsesUrl(

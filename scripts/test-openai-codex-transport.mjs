@@ -19,6 +19,7 @@ const authModule = await import(
 
 const {
   CodexTransportError,
+  createCodexRequestId,
   loadStoredCredentials,
   parseCodexErrorResponse,
   requestCodexResponse,
@@ -30,6 +31,11 @@ const sandbox = mkdtempSync(join(tmpdir(), 'jobhunt-codex-transport-'));
 const authPath = join(sandbox, 'data', 'openai-account-auth.json');
 
 try {
+  assert.match(
+    createCodexRequestId(),
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+  );
+
   const successServer = await startCodexServer();
   await saveStoredCredentials(
     {

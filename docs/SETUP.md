@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Codex CLI installed and available on your PATH
-- Node.js 18 or newer
+- Node.js 20 or newer
 - Optional: Go 1.21 or newer for the dashboard TUI
 
 ## Quick Start

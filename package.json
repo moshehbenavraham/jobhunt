@@ -43,9 +43,12 @@
     "automation"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "@openai/agents": "^0.13.0",
-    "js-yaml": "^5.2.1",
+    "@openai/agents": "^0.13.5",
+    "js-yaml": "^5.2.2",
     "playwright": "^1.59.1",
     "zod": "^4.4.3"
   },
@@ -53,5 +56,8 @@
     "@biomejs/biome": "^2.5.2",
     "c8": "^11.0.0",
     "prettier": "^3.9.4"
+  },
+  "overrides": {
+    "@hono/node-server": "2.0.11"
   }
 }

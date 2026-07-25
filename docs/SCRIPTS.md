@@ -60,7 +60,7 @@ Notes:
 
 ## doctor
 
-Validates that all prerequisites are in place: Node.js >= 18, dependencies
+Validates that all prerequisites are in place: Node.js >= 20, dependencies
 installed, Playwright chromium, required files (`profile/cv.md`,
 `config/profile.yml`, `config/portals.yml`), fonts directory, and auto-creates
 `data/`, `output/`, `reports/` if missing. It also reports whether stored
