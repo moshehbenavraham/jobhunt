@@ -1058,9 +1058,7 @@ export async function runScan(args = process.argv.slice(2)) {
   const filterCompany = companyValue ? companyValue.toLowerCase() : null;
 
   if (!existsSync(PORTALS_PATH)) {
-    console.error(
-      'Error: config/portals.yml not found. Run onboarding first.',
-    );
+    console.error('Error: config/portals.yml not found. Run onboarding first.');
     process.exit(1);
   }
 

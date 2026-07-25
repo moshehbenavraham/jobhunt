@@ -13,8 +13,9 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
 
 const authModule = await import(
-  pathToFileURL(join(ROOT, 'scripts', 'lib', 'openai-account-auth', 'index.mjs'))
-    .href,
+  pathToFileURL(
+    join(ROOT, 'scripts', 'lib', 'openai-account-auth', 'index.mjs'),
+  ).href
 );
 
 const {

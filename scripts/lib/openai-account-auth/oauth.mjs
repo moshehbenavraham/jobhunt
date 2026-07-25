@@ -161,7 +161,11 @@ export async function login(options) {
       }
 
       const finalServerResult = await serverPromise;
-      return await finishLoginFromServerResult(finalServerResult.value, flow, options);
+      return await finishLoginFromServerResult(
+        finalServerResult.value,
+        flow,
+        options,
+      );
     }
 
     const serverResult = await server.waitForResult();
@@ -200,7 +204,9 @@ export async function startCallbackServer(options = {}) {
     ...options,
   };
   const redirect = new URL(redirectUri);
-  const port = Number(redirect.port || (redirect.protocol === 'https:' ? 443 : 80));
+  const port = Number(
+    redirect.port || (redirect.protocol === 'https:' ? 443 : 80),
+  );
   const callbackPath = redirect.pathname;
 
   let settleResult;
@@ -260,7 +266,9 @@ export async function startCallbackServer(options = {}) {
     } catch (error) {
       response.statusCode = 500;
       response.setHeader('content-type', 'text/html; charset=utf-8');
-      response.end(createErrorHtml('Internal error while handling the callback.'));
+      response.end(
+        createErrorHtml('Internal error while handling the callback.'),
+      );
       settleResult({
         type: 'error',
         message:
@@ -387,7 +395,11 @@ async function finishLoginFromServerResult(serverResult, flow, options) {
     throw new Error(serverResult.message);
   }
 
-  return exchangeAuthorizationCode(serverResult.code, flow.verifier, flow.config);
+  return exchangeAuthorizationCode(
+    serverResult.code,
+    flow.verifier,
+    flow.config,
+  );
 }
 
 async function finishLoginFromManualInput(
