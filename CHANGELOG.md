@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.37](https://github.com/moshehbenavraham/jobhunt/compare/jobhunt-v1.5.36...jobhunt-v1.5.37) (2026-07-25)
+
+
+### Bug Fixes
+
+* **security:** remediate dependency and randomness alerts ([7345ee6](https://github.com/moshehbenavraham/jobhunt/commit/7345ee69cfb8782b4d449630f07833c322f9698f))
+
 ## [1.5.36](https://github.com/moshehbenavraham/jobhunt/compare/jobhunt-v1.5.35...jobhunt-v1.5.36) (2026-07-25)
 
 ### Bug Fixes
