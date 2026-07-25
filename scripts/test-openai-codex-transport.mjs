@@ -12,8 +12,9 @@ const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
 
 const authModule = await import(
-  pathToFileURL(join(ROOT, 'scripts', 'lib', 'openai-account-auth', 'index.mjs'))
-    .href
+  pathToFileURL(
+    join(ROOT, 'scripts', 'lib', 'openai-account-auth', 'index.mjs'),
+  ).href
 );
 
 const {
@@ -139,7 +140,10 @@ try {
   const missingCliPayload = JSON.parse(missingCli.stdout);
   assert.equal(missingCliPayload.ok, false);
   assert.equal(missingCliPayload.error.code, 'missing_auth');
-  assert.equal(missingCliPayload.recovery.commands[0], 'npm run auth:openai -- login');
+  assert.equal(
+    missingCliPayload.recovery.commands[0],
+    'npm run auth:openai -- login',
+  );
 
   const errorResponse = new Response(
     JSON.stringify({
@@ -202,10 +206,7 @@ async function startCodexServer(options = {}) {
       });
       assert.equal(request.headers.accept, 'text/event-stream');
       assert.equal(request.headers['content-type'], 'application/json');
-      assert.equal(
-        request.headers['openai-beta'],
-        'responses=experimental',
-      );
+      assert.equal(request.headers['openai-beta'], 'responses=experimental');
       assert.equal(body.stream, true);
       assert.equal(body.store, false);
       assert.ok(typeof body.instructions === 'string');
@@ -274,7 +275,6 @@ async function startCodexServer(options = {}) {
 
   const address = server.address();
   return {
-    refreshCount,
     seenRequests,
     url: `http://127.0.0.1:${address.port}`,
     close: () =>
