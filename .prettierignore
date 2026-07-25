@@ -9,4 +9,5 @@ output/
 interview-prep/
 jds/
 node_modules/
+CHANGELOG.md
 .spec_system/archive/
