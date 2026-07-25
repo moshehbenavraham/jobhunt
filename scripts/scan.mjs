@@ -23,7 +23,7 @@ import {
 } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import yaml from 'js-yaml';
+import * as yamlModule from 'js-yaml';
 import {
   detectApi,
   fetchJson,
@@ -33,7 +33,7 @@ import {
   parseLever,
 } from './ats-core.mjs';
 
-const parseYaml = yaml.load;
+const parseYaml = (yamlModule.default ?? yamlModule).load;
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const SCRIPT_DIR = dirname(SCRIPT_PATH);
