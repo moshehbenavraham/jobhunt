@@ -15,7 +15,9 @@ import {
 } from './lib/openai-account-auth/index.mjs';
 
 async function main() {
-  const { command, json, noBrowser, authPath } = parseArgs(process.argv.slice(2));
+  const { command, json, noBrowser, authPath } = parseArgs(
+    process.argv.slice(2),
+  );
 
   if (!command || command === 'help' || command === '--help') {
     printUsage();
@@ -209,8 +211,6 @@ Options:
 }
 
 main().catch((error) => {
-  stderr.write(
-    `${error instanceof Error ? error.message : String(error)}\n`,
-  );
+  stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
   exit(1);
 });

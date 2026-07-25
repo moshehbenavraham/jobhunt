@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "9decc89bf762035e401988fe7542069205bac026",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "jobhunt",
+      "version-file": "VERSION",
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "package-lock.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "package-lock.json",
+          "jsonpath": "$.packages[\"\"].version"
+        }
+      ]
+    }
+  }
+}

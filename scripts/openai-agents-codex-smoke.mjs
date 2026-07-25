@@ -86,14 +86,14 @@ function emitResult(result) {
   }
 
   stdout.write(
-    [
+    `${[
       'OpenAI Agents Codex smoke test complete.',
       `Auth path: ${result.authPath}`,
       `Mode: ${result.mode}`,
       `Model: ${result.model}`,
       `Response ID: ${result.lastResponseId || 'unknown'}`,
       `Text: ${result.text}`,
-    ].join('\n') + '\n',
+    ].join('\n')}\n`,
   );
 }
 
