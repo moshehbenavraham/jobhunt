@@ -2,8 +2,8 @@
 # Copy this file to config/portals.yml, then tune it for your lane.
 #
 # Current zero-token scanner behavior:
-# - scans enabled tracked_companies with detectable supported ATS APIs
-# - supports Greenhouse, Ashby, and Lever
+# - scans enabled tracked_companies through the provider registry
+# - supports Greenhouse, Ashby, and Lever plus explicit zero-key job boards
 # - filters only on title_filter.positive and title_filter.negative
 # - ignores search_queries, seniority_boost, scan_method, and scan_query
 # - detects ATS families from explicit api: or ATS-shaped careers_url values
@@ -42,6 +42,31 @@ title_filter:
     - 'Customer Success'
     - 'Research'
     - 'Scientist'
+
+# Optional field-aware filters. Unknown fields default to allow; choose reject
+# only when you intentionally prefer false negatives over unverified matches.
+scan_filters:
+  cooldown_days:
+  company_blacklist: []
+  title_blacklist: []
+  seniority:
+    include: []
+    exclude: []
+  description:
+    include: []
+    exclude: []
+    unknown: allow
+  salary:
+    min_annual:
+    currencies: []
+    unknown: allow
+  posting:
+    max_age_days:
+    unknown: allow
+  visa:
+    require_sponsorship: false
+    exclude_no_sponsorship: false
+    unknown: allow
 
 # Optional manual discovery notes.
 # The current zero-token scanner does not execute these queries.
@@ -87,4 +112,39 @@ tracked_companies:
     scan_method: websearch
     scan_query: 'site:example.com/careers "Solutions Engineer"'
     notes: 'This will be skipped until the scanner supports broader discovery.'
+    enabled: false
+
+  # Explicit, guarded Playwright fallback for boards without a supported API.
+  # Browser-backed targets run sequentially and never submit forms.
+  - name: Example JS-heavy Board
+    careers_url: https://careers.example.com/jobs
+    provider: browser
+    enabled: false
+
+# Optional global/regional feeds. Explicit provider IDs are resolved through
+# scripts/providers/. Each provider is isolated: one failed feed does not stop
+# the rest of the scan.
+job_boards:
+  - name: Remotive
+    provider: remotive
+    enabled: false
+
+  - name: RemoteOK
+    provider: remoteok
+    enabled: false
+
+  - name: Arbeitnow
+    provider: arbeitnow
+    enabled: false
+
+  - name: Himalayas
+    provider: himalayas
+    enabled: false
+
+  - name: Jobicy
+    provider: jobicy
+    enabled: false
+
+  - name: The Muse
+    provider: themuse
     enabled: false

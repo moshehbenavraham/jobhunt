@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "technical-ai-pm",
+  "synthetic": true,
+  "jd": "Senior AI Product Manager — Cobalt. Run discovery, write PRDs, own the roadmap, define success metrics, and align engineering, research, and go-to-market teams. This is a product role, not a model-training role; technical fluency supports prioritization and stakeholder decisions.",
+  "expected": {
+    "archetype": "Technical AI PM",
+    "score": 3.8,
+    "final_decision": "consider",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "not_evaluated",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

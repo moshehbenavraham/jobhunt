@@ -1,0 +1,23 @@
+# Directional defaults only. Copy to config/benchmarks.yml to customize.
+# These broad ranges are illustrative, not live market statistics.
+benchmarks:
+  response_rate:
+    range_pct: [10, 40]
+    typical_pct: 25
+    source: 'Illustrative Job-Hunt default; replace with a candidate-relevant source'
+    year: 2026
+    caveat: 'Role, geography, seniority, channel mix, and targeting quality materially change this rate.'
+
+  application_to_interview:
+    range_pct: [5, 25]
+    typical_pct: 12
+    source: 'Illustrative Job-Hunt default; replace with a candidate-relevant source'
+    year: 2026
+    caveat: 'Interview definitions and application quality vary; use only as a directional calibration.'
+
+  interview_to_offer:
+    range_pct: [10, 40]
+    typical_pct: 25
+    source: 'Illustrative Job-Hunt default; replace with a candidate-relevant source'
+    year: 2026
+    caveat: 'Round depth, company selectivity, and sample composition make cross-candidate comparisons unreliable.'

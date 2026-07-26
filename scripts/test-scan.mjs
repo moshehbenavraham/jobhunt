@@ -421,6 +421,12 @@ const seenUrls = scanModule.loadSeenUrls();
 assert.ok(seenUrls.has('https://jobs.example.com/duplicate-url'));
 assert.ok(seenUrls.has('https://jobs.example.com/pipeline-existing'));
 assert.ok(seenUrls.has('https://jobs.example.com/application-inline'));
+const cooldownSeenUrls = scanModule.loadSeenUrls({
+  cooldownDays: 30,
+  now: Date.UTC(2026, 6, 26),
+});
+assert.ok(!cooldownSeenUrls.has('https://jobs.example.com/duplicate-url'));
+assert.ok(cooldownSeenUrls.has('https://jobs.example.com/pipeline-existing'));
 
 const seenCompanyRoles = scanModule.loadSeenCompanyRoles();
 assert.ok(seenCompanyRoles.has('greenhouseco::data engineer'));
@@ -473,8 +479,40 @@ assert.match(
   readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
   /manual\t2026-04-15\tgreenhouse-api\tManual Engineer\tManualCo\tadded/,
 );
+assert.match(
+  readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
+  /^url\tfirst_seen\tportal\ttitle\tcompany\tstatus\ttrust_score\ttrust_level\ttrust_flags/m,
+);
+assert.ok(
+  existsSync(join(sandbox, 'data', 'scan-history.tsv.pre-fingerprints.bak')),
+);
 
-const dryRun = await withCapturedLogs(() => scanModule.runScan(['--dry-run']));
+scanModule.appendToPipeline([
+  {
+    url: 'https://remotive.com/remote-jobs/software-dev/trusted-role-1',
+    company: 'TrustCo',
+    title: 'Trusted Engineer',
+    source: 'remotive-feed',
+    trustScore: 85,
+    trustLevel: 'medium',
+    trustFlags: ['company_domain_mismatch'],
+  },
+]);
+assert.match(
+  readFileSync(join(sandbox, 'data', 'pipeline.md'), 'utf8'),
+  /Scan trust: 85\/100 \(medium\); flags: company_domain_mismatch; source: remotive-feed/,
+);
+
+const localFetchJson = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  return response.json();
+};
+const scanDependencies = { fetchJsonImpl: localFetchJson, providersImpl: null };
+
+const dryRun = await withCapturedLogs(() =>
+  scanModule.runScan(['--dry-run'], scanDependencies),
+);
 assert.match(dryRun.output, /dry run/);
 assert.match(dryRun.output, /Companies configured:\s+14/);
 assert.match(dryRun.output, /Companies scanned:\s+2/);
@@ -515,7 +553,9 @@ assert.doesNotMatch(
   /new-role/,
 );
 
-const liveRun = await withCapturedLogs(() => scanModule.runScan([]));
+const liveRun = await withCapturedLogs(() =>
+  scanModule.runScan([], scanDependencies),
+);
 assert.match(liveRun.output, /Errors \(1\)/);
 assert.match(liveRun.output, /BrokenCo/);
 assert.match(
@@ -530,9 +570,21 @@ assert.match(
   readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
   /https:\/\/jobs\.example\.com\/new-role\t\d{4}-\d{2}-\d{2}\tgreenhouse-api\tSenior Platform Engineer\tGreenhouseCo\tadded/,
 );
+assert.match(
+  readFileSync(join(sandbox, 'data', 'portal-health.tsv'), 'utf8'),
+  /\tGreenhouseCo\tgreenhouse\tsuccess\t/,
+);
+assert.match(
+  readFileSync(join(sandbox, 'data', 'portal-health.tsv'), 'utf8'),
+  /\tBrokenCo\tgreenhouse\tfailure\t/,
+);
+assert.match(
+  readFileSync(join(sandbox, 'data', 'scan-runs.tsv'), 'utf8'),
+  /^scan-\d+-[a-f0-9]{8}\t/m,
+);
 
 const compareCleanRun = await withCapturedLogs(() =>
-  scanModule.runScan(['--compare-clean']),
+  scanModule.runScan(['--compare-clean'], scanDependencies),
 );
 assert.match(compareCleanRun.output, /compare-clean mode/);
 assert.match(compareCleanRun.output, /New offers added:\s+3/);
@@ -570,7 +622,9 @@ const freshScanModule = await import(
 assert.equal(existsSync(join(freshSandbox, 'data', 'pipeline.md')), false);
 assert.equal(existsSync(join(freshSandbox, 'data', 'scan-history.tsv')), false);
 
-const freshRun = await withCapturedLogs(() => freshScanModule.runScan([]));
+const freshRun = await withCapturedLogs(() =>
+  freshScanModule.runScan([], scanDependencies),
+);
 assert.match(freshRun.output, /Companies configured:\s+1/);
 assert.ok(existsSync(join(freshSandbox, 'data', 'pipeline.md')));
 assert.ok(existsSync(join(freshSandbox, 'data', 'scan-history.tsv')));

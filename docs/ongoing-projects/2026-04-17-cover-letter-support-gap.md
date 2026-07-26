@@ -1,5 +1,23 @@
 # 2026-04-17 Cover Letter Support Gap
 
+**Status:** Implemented on 2026-07-26.
+
+The shipped implementation is:
+
+- `modes/cover-letter.md`
+- `scripts/cover-letter-core.mjs`
+- `scripts/build-cover-letter.mjs`
+- `scripts/validate-cover-letter.mjs`
+- `templates/cover-letter-build.schema.json`
+- `templates/cover-letter-template.html`
+- `scripts/test-cover-letter.mjs`
+
+It closes all four proposed phases together. The implementation improves the
+original proposal with evidence-linked paragraphs, numeric-claim validation,
+candidate/JD/source freshness hashes, collision-resistant role-aware naming,
+symlink/path-containment guards, protected human edits, staged publication, and
+a required `draft`/human-review manifest state.
+
 ## Context
 
 The URL auto-pipeline review on 2026-04-17 found a gap between repo policy and

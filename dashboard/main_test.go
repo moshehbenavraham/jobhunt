@@ -231,3 +231,37 @@ func TestAppModelUpdateAndViewTransitions(t *testing.T) {
 		t.Fatalf("expected status update to persist, got %q", string(got))
 	}
 }
+
+func TestSafeExternalURLCommandAllowsOnlyAbsoluteHTTPURLs(t *testing.T) {
+	for _, candidate := range []string{
+		"javascript:alert(1)",
+		"file:///etc/passwd",
+		"https://example.com/\n--flag",
+		"//example.com/path",
+		"https://",
+	} {
+		if _, err := safeExternalURLCommand(candidate, "linux"); err == nil {
+			t.Fatalf("expected unsafe URL to be rejected: %q", candidate)
+		}
+	}
+
+	linux, err := safeExternalURLCommand("https://jobs.example.com/role?id=7", "linux")
+	if err != nil {
+		t.Fatalf("expected safe Linux URL command, got %v", err)
+	}
+	if filepath.Base(linux.Path) != "xdg-open" ||
+		len(linux.Args) != 2 ||
+		linux.Args[1] != "https://jobs.example.com/role?id=7" {
+		t.Fatalf("unexpected Linux open command: %#v", linux.Args)
+	}
+
+	windows, err := safeExternalURLCommand("https://jobs.example.com/role", "windows")
+	if err != nil {
+		t.Fatalf("expected safe Windows URL command, got %v", err)
+	}
+	if filepath.Base(windows.Path) != "rundll32" ||
+		len(windows.Args) != 3 ||
+		windows.Args[1] != "url.dll,FileProtocolHandler" {
+		t.Fatalf("unexpected Windows open command: %#v", windows.Args)
+	}
+}

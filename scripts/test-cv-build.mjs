@@ -10,6 +10,7 @@ import {
   renderCvBuild,
   shortDisplayUrl,
 } from './cv-build-core.mjs';
+import { resolveDocumentTemplate } from './document-templates.mjs';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(SCRIPT_DIR, '..');
@@ -68,6 +69,37 @@ assert.equal(
   ),
   'example.com',
 );
+
+const optionalSections = clone(fixture);
+optionalSections.projects = [];
+optionalSections.education = [];
+optionalSections.job.requirements = optionalSections.job.requirements.map(
+  (requirement) => ({
+    ...requirement,
+    includedSections: requirement.includedSections.filter(
+      (section) => !['projects', 'education'].includes(section),
+    ),
+  }),
+);
+const optionalParsed = await parseAndValidateCvBuild(optionalSections, {
+  root: ROOT,
+});
+const optionalHtml = renderCvBuild(optionalParsed.build, template);
+assert.doesNotMatch(optionalHtml, /class="section projects"/);
+assert.doesNotMatch(optionalHtml, /class="section education"/);
+assert.match(optionalHtml, /class="section experience"/);
+
+const cjkTemplatePath = resolveDocumentTemplate({
+  root: ROOT,
+  kind: 'cv',
+  name: 'cjk-minimal',
+}).path;
+const cjkTemplate = await readFile(cjkTemplatePath, 'utf8');
+const cjkHtml = renderCvBuild(optionalParsed.build, cjkTemplate);
+assert.doesNotMatch(cjkHtml, /\{\{[^}]+\}\}/);
+assert.match(cjkHtml, /Noto Sans CJK SC/);
+assert.match(cjkHtml, /profile-photo-policy:\s*prohibited/);
+assert.doesNotMatch(cjkHtml, /class="section projects"/);
 
 const unsupportedLeak = clone(fixture);
 unsupportedLeak.summary += ' Kubernetes';

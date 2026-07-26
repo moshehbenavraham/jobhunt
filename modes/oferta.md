@@ -58,6 +58,12 @@ Use WebSearch for:
 
 Present the data in a table with cited sources. If data is unavailable, say so instead of inventing it.
 
+Before interpreting a number, classify company and compensation evidence with
+`scripts/evidence-reliability.mjs`. Distinguish `first_party`,
+`reliable_third_party`, `inferred`, and `unknown`; preserve source URLs and
+conflicts. Never blend the JD's verbatim advertised figure with researched
+market estimates.
+
 ## Block E -- Personalization plan
 
 | #   | Section | Current state | Proposed change | Why |
@@ -156,17 +162,51 @@ Also include:
 
 Always do the following after generating Blocks A-G.
 
+### 0. Add normalized summaries
+
+Directly after Block G, add `## Risk Summary` with every row below in this fixed
+order. A missing check is `— not evaluated`; do not omit it.
+
+| Signal                        | Status | Source |
+| ----------------------------- | ------ | ------ |
+| Posting legitimacy            | ...    | ...    |
+| Remote/location contradiction | ...    | ...    |
+| Employment classification     | ...    | ...    |
+| Compensation reliability      | ...    | ...    |
+| AI claims vs. infrastructure  | ...    | ...    |
+| Country/benefit terminology   | ...    | ...    |
+| Third-party tags              | ...    | ...    |
+| Culture screen                | ...    | ...    |
+| Interview red flags           | ...    | ...    |
+
+Use `✅ clear — {finding}`, `⚠️ flagged — {finding}`, or
+`— not evaluated`. Every evaluated row names its evidence source.
+
+Every new report also needs exactly one versioned `## Machine Summary` YAML
+fence directly after the header. Its authoritative schema and example live in
+`batch/batch-prompt.md`; the checked-in validator is
+`scripts/evaluation-summary.mjs`. It contains the fixed normalized risks above,
+company/compensation evidence tiers and sources, output language, market
+ruleset, dimension scores, and decision fields.
+
 ### 1. Save the report
 
 Save the full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 
-- `{###}` = next sequential report number, zero-padded to 3 digits
+- Reserve `{###}` atomically with
+  `node scripts/reserve-report-ids.mjs`; do not calculate it by listing files
+  or reading the last tracker row.
+- Keep the hidden reservation until the report and its tracker-addition TSV are
+  durable, then run
+  `node scripts/reserve-report-ids.mjs --release {###}`. If processing is
+  interrupted, leave the sentinel for safe garbage collection.
+- `{###}` is zero-padded to a minimum of 3 digits and may exceed `999`.
 - `{company-slug}` = lowercase company name with hyphens
 - `{YYYY-MM-DD}` = current date
 
 **Report format:**
 
-```markdown
+````markdown
 # Evaluation: {Company} -- {Role}
 
 **Date:** {YYYY-MM-DD}
@@ -177,6 +217,13 @@ Save the full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 **PDF:** {path or pending}
 
 ---
+
+## Machine Summary
+
+```yaml
+{ versioned summary following batch/batch-prompt.md }
+```
+````
 
 ## A) Role Summary
 
@@ -206,6 +253,10 @@ Save the full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 
 ...
 
+## Risk Summary
+
+...
+
 ## H) Draft Application Answers
 
 ...(only if score >= 4.5)
@@ -215,7 +266,17 @@ Save the full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 ## Extracted Keywords
 
 ...
-```
+
+````
+
+Before registering the report, run:
+
+```bash
+node scripts/evaluation-summary.mjs reports/{###}-{company-slug}-{YYYY-MM-DD}.md
+````
+
+A validation failure is a partial evaluation; repair it before claiming the
+report complete.
 
 ### 2. Register it in the tracker flow
 

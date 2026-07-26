@@ -1,0 +1,215 @@
+<!doctype html>
+<!-- jobhunt-template
+name: CJK Minimal
+version: 1.0.0
+profile-photo-policy: prohibited
+-->
+<html lang="{{LANG}}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{DOCUMENT_TITLE}}</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-variant-ligatures: none;
+        font-feature-settings:
+          'liga' 0,
+          'clig' 0,
+          'dlig' 0;
+      }
+
+      html {
+        color: #172033;
+        background: #fff;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      body {
+        font-family:
+          'Noto Sans CJK SC', 'Noto Sans CJK JP', 'Source Han Sans SC',
+          'Source Han Sans JP', 'PingFang SC', 'Hiragino Sans GB', 'Yu Gothic',
+          'Microsoft YaHei', 'Arial Unicode MS', Arial, sans-serif;
+        font-size: 10.5px;
+        line-height: 1.58;
+        color: #172033;
+      }
+
+      .page {
+        width: 100%;
+        max-width: {{PAGE_WIDTH}};
+        margin: 0 auto;
+      }
+
+      .header {
+        margin-bottom: 14px;
+        padding-bottom: 9px;
+        border-bottom: 1px solid #172033;
+      }
+
+      .header h1 {
+        margin-bottom: 6px;
+        font-size: 24px;
+        line-height: 1.18;
+        letter-spacing: 0;
+      }
+
+      .header-gradient {
+        display: none;
+      }
+
+      .contact-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+        color: #42506a;
+      }
+
+      .contact-item {
+        color: inherit;
+        overflow-wrap: anywhere;
+        text-decoration: none;
+      }
+
+      .section {
+        margin-bottom: 12px;
+        break-inside: auto;
+      }
+
+      .section-title {
+        margin-bottom: 6px;
+        padding-bottom: 2px;
+        border-bottom: 1px solid #bbc4d4;
+        color: #174a7e;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.35;
+        letter-spacing: 0.02em;
+        text-transform: none;
+      }
+
+      .summary-text {
+        line-height: 1.68;
+      }
+
+      .competencies-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px 12px;
+      }
+
+      .competency-tag {
+        border: 0;
+        background: none;
+        color: #25334c;
+        font-size: 10px;
+      }
+
+      .job,
+      .project,
+      .edu-item,
+      .cert-item {
+        margin-bottom: 9px;
+        break-inside: avoid;
+      }
+
+      .job-header,
+      .edu-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .job-company,
+      .project-title,
+      .edu-title,
+      .cert-title {
+        color: #172033;
+        font-size: 10.7px;
+        font-weight: 700;
+      }
+
+      .job-period,
+      .edu-year,
+      .cert-year {
+        color: #5d687c;
+        white-space: nowrap;
+      }
+
+      .job-role {
+        display: flex;
+        justify-content: space-between;
+        color: #34425b;
+        font-weight: 600;
+      }
+
+      .job-location {
+        color: #6c7585;
+        font-weight: 400;
+      }
+
+      ul {
+        margin-top: 3px;
+        padding-left: 17px;
+      }
+
+      li {
+        margin-bottom: 2px;
+      }
+
+      .project-title a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .project-badge {
+        margin-left: 7px;
+        color: #174a7e;
+        font-size: 9px;
+        font-weight: 600;
+      }
+
+      .project-desc,
+      .edu-desc {
+        margin-top: 2px;
+      }
+
+      .project-tech {
+        color: #536079;
+        font-size: 9.5px;
+      }
+
+      .skills-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3px 14px;
+      }
+
+      .skill-category {
+        color: #24314a;
+        font-weight: 700;
+      }
+
+      @page {
+        size: auto;
+        margin: 0.48in 0.55in;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="header avoid-break">
+        <h1>{{NAME}}</h1>
+        <div class="header-gradient"></div>
+        <address class="contact-row">{{CONTACT_ITEMS}}</address>
+      </header>
+      {{SUMMARY_SECTION}} {{COMPETENCIES_SECTION}} {{EXPERIENCE_SECTION}}
+      {{PROJECTS_SECTION}} {{EDUCATION_SECTION}} {{CERTIFICATIONS_SECTION}}
+      {{SKILLS_SECTION}}
+    </main>
+  </body>
+</html>

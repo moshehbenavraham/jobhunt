@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="{{LANGUAGE}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cover Letter — {{NAME}} — {{COMPANY}}</title>
+    <style>
+      @font-face {
+        font-family: 'DM Sans';
+        src: url('./fonts/dm-sans-latin.woff2') format('woff2');
+        font-style: normal;
+        font-weight: 400 700;
+        font-display: swap;
+      }
+
+      @font-face {
+        font-family: 'Space Grotesk';
+        src: url('./fonts/space-grotesk-latin.woff2') format('woff2');
+        font-style: normal;
+        font-weight: 600 700;
+        font-display: swap;
+      }
+
+      * {
+        box-sizing: border-box;
+        font-variant-ligatures: none;
+        font-feature-settings:
+          'liga' 0,
+          'clig' 0,
+          'dlig' 0;
+      }
+
+      html {
+        color: #172033;
+        background: #ffffff;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'DM Sans', Arial, sans-serif;
+        font-size: 10.25pt;
+        line-height: 1.52;
+      }
+
+      main {
+        width: 100%;
+      }
+
+      header {
+        padding-bottom: 12pt;
+        border-bottom: 1.2pt solid #3b5bdb;
+      }
+
+      h1,
+      h2 {
+        font-family: 'Space Grotesk', Arial, sans-serif;
+        color: #10204a;
+      }
+
+      h1 {
+        margin: 0 0 4pt;
+        font-size: 20pt;
+        line-height: 1.1;
+        letter-spacing: -0.25pt;
+      }
+
+      .contact {
+        color: #4c5875;
+        font-size: 8.75pt;
+        line-height: 1.35;
+      }
+
+      .contact a {
+        color: #314fb6;
+        text-decoration: none;
+      }
+
+      .contact-separator {
+        color: #9aa3b8;
+      }
+
+      .letter-heading {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18pt;
+        align-items: end;
+        margin: 18pt 0 16pt;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 13pt;
+        line-height: 1.25;
+      }
+
+      .company {
+        color: #3b5bdb;
+      }
+
+      .dateline {
+        color: #66708a;
+        font-size: 8.75pt;
+        white-space: nowrap;
+      }
+
+      .greeting {
+        margin-bottom: 10pt;
+        font-weight: 600;
+      }
+
+      .letter-body p {
+        margin: 0 0 9pt;
+        orphans: 3;
+        widows: 3;
+      }
+
+      .signoff {
+        margin-top: 14pt;
+      }
+
+      .signature {
+        margin-top: 14pt;
+        font-family: 'Space Grotesk', Arial, sans-serif;
+        font-weight: 700;
+        color: #10204a;
+      }
+
+      @media print {
+        a {
+          color: inherit;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- jobhunt: draft artifact; human review and editing required before submission -->
+    <main>
+      <header>
+        <h1>{{NAME}}</h1>
+        <div class="contact">{{CONTACT_LINE}}</div>
+      </header>
+
+      <div class="letter-heading">
+        <h2>
+          Cover Letter: {{ROLE}} at <span class="company">{{COMPANY}}</span>
+        </h2>
+        <div class="dateline">{{DATELINE}}</div>
+      </div>
+
+      <div class="greeting">{{GREETING}}</div>
+      <div class="letter-body">{{PARAGRAPHS}}</div>
+      <div class="signoff">{{SIGN_OFF}}</div>
+      <div class="signature">{{NAME}}</div>
+    </main>
+  </body>
+</html>

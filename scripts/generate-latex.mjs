@@ -186,8 +186,16 @@ export function validateLatexContent(content, filePath = '') {
   const sectionHeadings = new Set(
     parseSectionHeadings(content).map(normalizeSectionHeading).filter(Boolean),
   );
+  const omittedOptionalSections = new Set(
+    [
+      ...content.matchAll(
+        /^\s*%\s*jobhunt-optional-section-(education|projects)\s*:\s*omitted\s*$/gim,
+      ),
+    ].map((match) => match[1].toLowerCase()),
+  );
 
   for (const section of REQUIRED_SECTIONS) {
+    if (omittedOptionalSections.has(section.key)) continue;
     const acceptedHeadings = new Set(
       [...section.aliases, ...(configuredAliases[section.key] || [])]
         .map(normalizeSectionHeading)
@@ -208,7 +216,10 @@ export function validateLatexContent(content, filePath = '') {
   if (counts.resumeItems === 0) {
     issues.push('Missing command usage: \\resumeItem');
   }
-  if (counts.projectHeadings === 0) {
+  if (
+    counts.projectHeadings === 0 &&
+    !omittedOptionalSections.has('projects')
+  ) {
     issues.push('Missing command usage: \\resumeProjectHeading');
   }
 

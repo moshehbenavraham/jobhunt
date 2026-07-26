@@ -11,6 +11,12 @@ const livenessModule = await import(
   pathToFileURL(join(ROOT, 'scripts', 'check-liveness.mjs')).href
 );
 
+const allowNetwork = {
+  assertSafeUrlImpl: async () => {},
+  installNetworkGuardImpl: async () => async () => {},
+  apiCheckImpl: async () => null,
+};
+
 function createPage({
   status = 200,
   finalUrl = 'https://jobs.example.com/role',
@@ -62,6 +68,7 @@ const active = await livenessModule.checkUrl(
     applyControls: ['Apply now'],
   }),
   'https://jobs.example.com/active',
+  allowNetwork,
 );
 assert.equal(active.result, 'active');
 
@@ -71,6 +78,7 @@ const expired = await livenessModule.checkUrl(
     bodyText: 'not found',
   }),
   'https://jobs.example.com/expired',
+  allowNetwork,
 );
 assert.equal(expired.result, 'expired');
 
@@ -86,6 +94,7 @@ const closedWithApplyControl = await livenessModule.checkUrl(
     applyControls: ['Log in to Apply'],
   }),
   'https://jobs.example.com/closed-with-login-apply',
+  allowNetwork,
 );
 assert.equal(closedWithApplyControl.result, 'expired');
 
@@ -95,6 +104,7 @@ const uncertain = await livenessModule.checkUrl(
     applyControls: [],
   }),
   'https://jobs.example.com/uncertain',
+  allowNetwork,
 );
 assert.equal(uncertain.result, 'uncertain');
 
@@ -103,9 +113,30 @@ const navigationError = await livenessModule.checkUrl(
     error: 'socket hang up',
   }),
   'https://jobs.example.com/error',
+  allowNetwork,
 );
-assert.equal(navigationError.result, 'expired');
+assert.equal(navigationError.result, 'uncertain');
 assert.match(navigationError.reason, /navigation error/);
+
+let browserVisited = false;
+const apiActive = await livenessModule.checkUrl(
+  {
+    async goto() {
+      browserVisited = true;
+    },
+  },
+  'https://job-boards.greenhouse.io/acme/jobs/123',
+  {
+    ...allowNetwork,
+    apiCheckImpl: async () => ({
+      result: 'active',
+      reason: 'API proof',
+      strategy: 'api',
+    }),
+  },
+);
+assert.equal(apiActive.result, 'active');
+assert.equal(browserVisited, false);
 
 function createBrowser(page) {
   let closed = false;
@@ -133,6 +164,7 @@ const successCode = await livenessModule.runChecks({
   args: ['https://jobs.example.com/one'],
   launchBrowser: async () => successBrowser,
   stdout: (line) => successLogs.push(line),
+  checkUrlImpl: (page, url) => livenessModule.checkUrl(page, url, allowNetwork),
 });
 assert.equal(successCode, 0);
 assert.equal(successBrowser.closed, true);
@@ -150,6 +182,7 @@ const failureCode = await livenessModule.runChecks({
   readText: async () => 'https://jobs.example.com/two\n',
   launchBrowser: async () => failureBrowser,
   stdout: (line) => failureLogs.push(line),
+  checkUrlImpl: (page, url) => livenessModule.checkUrl(page, url, allowNetwork),
 });
 assert.equal(failureCode, 1);
 assert.equal(failureBrowser.closed, true);

@@ -16,6 +16,30 @@ candidate:
   # The ID starts with "D" and is 11 characters long.
   # canva_resume_design_id: "DAxxxxxxxxx"
 
+# Optional named templates. "standard" resolves to the canonical base
+# templates; named values resolve to templates/cv-template.<name>.html and
+# templates/cover-letter-template.<name>.html after placeholder/path checks.
+documents:
+  cv_template: "standard"
+  cover_letter_template: "standard"
+  # Deterministic ATS CVs never embed profile photos. If a market-specific
+  # visual CV is explicitly requested, keep it as a separate reviewed artifact.
+  profile_photo_policy: "never"
+
+# Evaluation model effort. The batch runner maps these model-agnostic tiers to
+# low/medium/high Codex reasoning effort and records the resolved policy in a
+# token-usage manifest. Existing profiles default to standard.
+spend_tier: standard
+
+# Report language and market heuristics are independent. A German report can,
+# for example, still use US compensation/classification rules.
+language:
+  output: en
+market:
+  ruleset: us
+  country: "United States"
+  currency: USD
+
 target_roles:
   # Your North Star roles — what you're optimizing for
   primary:

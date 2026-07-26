@@ -2,7 +2,8 @@
 
 AI-powered job search pipeline driven by `AGENTS.md`, checked-in Codex skills, and the repo-owned scripts.
 
-It also includes a Go-based terminal dashboard for browsing and updating the job-search pipeline.
+It also includes a Go terminal dashboard and a tracked local React operator app
+for browsing and running the same guarded job-search workflows.
 
 ## Please Do Not Delete This Line. This is a fork of: https://github.com/santifer/career-ops/
 
@@ -52,10 +53,20 @@ The standard user-layer inputs are:
 - `npm run verify` - check tracker integrity
 - `npm run merge` - merge batch tracker additions
 - `npm run cv:build` - generate and validate an evidence-backed ATS PDF
+- `npm run cover-letter` - generate an evidence-backed editable cover-letter draft
+- `npm run cover-letter:validate` - validate a cover-letter artifact set and freshness
 - `npm run pdf:validate` - validate a finished PDF and freshness manifest
 - `npm run pdf` - low-level validated HTML-to-PDF rendering
 - `npm run latex` - validate and compile an optional LaTeX / Overleaf CV
 - `npm run dashboard` - build and launch the Go dashboard
+- `npm run app:api:dev` - start the local TypeScript API in watch mode
+- `npm run app:web:dev` - start the React operator workbench
+- `npm run app:validate` - type-check, test, and bootstrap-check the app
+- `npm run app:build` - build the API and web production bundles
+- `npm run model:evaluate -- <provider> ...` - run a guarded Gemini, Ollama, or OpenRouter evaluation draft
+- `npm run locales:test` - verify canonical EN/DE/FR/JA workflow parity
+- `npm run container:test` - verify the pinned container contract
+- `npm run backup:run` - back up the ignored local operational store
 - `npm run scan` - scan portals for roles
 - `npm run scan-state -- --archive-pipeline` - archive or reset scan artifacts
 - `npm run codex:smoke -- --json` - validate the raw Codex transport with stored account auth
@@ -93,7 +104,39 @@ cron entry at `06:00` local host time, calling the checked-in
 To launch the dashboard from the repo root, run `npm run dashboard`. It wraps
 `./scripts/ux.sh`, builds `dashboard/career-dashboard`, and defaults `--path`
 to the repo root so the TUI can read the current tracker and reports
-immediately.
+immediately. Add `-- --lang de`, `fr`, or `ja` to localize the operator chrome
+without translating tracker values or report content.
+
+Optional Gemini, Ollama, and OpenRouter evaluation runs share one guarded
+adapter and the same Machine Summary/Risk Summary validator:
+
+```bash
+npm run model:evaluate -- gemini \
+  --model=<model-id> \
+  --jd-file=jds/posting.txt \
+  --url=https://jobs.example.com/role \
+  --report-id=042 \
+  --output=reports/042-company-role.md
+```
+
+Use the matching `GEMINI_API_KEY`, `OPENROUTER_API_KEY`, or local Ollama
+configuration. Model IDs are explicit rather than stale hardcoded defaults.
+Without `--output`, the validated draft is printed only. With `--output`, the
+runner writes a report plus measured-usage manifest under `reports/`; it never
+touches the tracker, builds a PDF, sends a message, or submits an application.
+
+For a pinned Node/Go/Chromium environment:
+
+```bash
+docker compose build
+docker compose up -d workspace
+docker compose exec workspace npm run doctor
+docker compose --profile smoke run --rm smoke
+```
+
+The image build excludes user-layer files. Compose bind-mounts the current
+checkout so CV, profile, tracker, reports, output, and local app state remain
+on the host.
 
 ## Repository Layout
 
@@ -107,6 +150,7 @@ immediately.
 |-- scripts/
 |-- batch/
 |-- dashboard/
+|-- apps/
 |-- docs/
 |-- data/
 |-- reports/
@@ -119,6 +163,7 @@ immediately.
 - [Setup Guide](docs/SETUP.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Scripts Reference](docs/SCRIPTS.md)
+- [Localization](docs/LOCALIZATION.md)
 - [Contributing](CONTRIBUTING.md)
 - [Docs Index](docs/README-docs.md)
 
@@ -130,5 +175,6 @@ Each significant folder has a `README_<folder-name>.md` with its own documentati
 
 - Node.js - core scripts and pipelines
 - Go - dashboard TUI
+- TypeScript, React, Vite - local operator app
 - Playwright - posting checks and PDF rendering
 - Markdown/YAML - prompts, modes, profiles, and tracker metadata

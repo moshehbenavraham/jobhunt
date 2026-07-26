@@ -45,7 +45,9 @@ batch/
 4. For each pending URL:
    a. click the role in Chrome and read JD text from the DOM
    b. save the JD to `/tmp/batch-jd-{id}.txt`
-   c. calculate the next sequential report number
+   c. reserve the report number with
+   `node scripts/reserve-report-ids.mjs` and release it only after durable
+   report/tracker output
    d. resolve `batch/batch-prompt.md` with `URL`, `JD_FILE`, `REPORT_NUM`, `DATE`, `ID`, and `RESULT_FILE`
    e. run the worker via Bash
    f. read `batch/logs/{report_num}-{id}.result.json` and update `batch-state.tsv`

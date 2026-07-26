@@ -23,6 +23,42 @@
 
 ---
 
+## Evaluation Runtime Policy
+
+Resolve the shared policy once before an evaluation:
+
+```bash
+node scripts/evaluation-policy.mjs --profile=config/profile.yml --json
+```
+
+- `spend_tier` defaults to `standard`. `economy`, `standard`, and `premium`
+  map to low, medium, and high reasoning effort without hardcoding a model name.
+- `language.output` controls human-facing report language.
+- `market.ruleset` controls compensation, benefits, classification, location,
+  and terminology heuristics. It never selects the report language.
+- Machine Summary keys and enum values remain fixed English literals.
+
+Batch executions record runner-measured usage in
+`batch/logs/{report}-{id}.usage.json`; a model must never estimate or invent
+its own token counts.
+
+## Evidence Reliability
+
+Classify both company and compensation evidence by provenance:
+
+| Tier                   | Meaning                                                   |
+| ---------------------- | --------------------------------------------------------- |
+| `first_party`          | Employer posting/site/disclosure or official salary grade |
+| `reliable_third_party` | Government source, established salary DB, reputable media |
+| `inferred`             | Job board, recruiter, employee report, snippet, inference |
+| `unknown`              | No usable evidence; do not infer                          |
+
+Preserve conflicts separately; first-party evidence can still conflict with
+another source. Use `scripts/evidence-reliability.mjs` for deterministic
+classification and carry sources into the Machine Summary.
+
+---
+
 ## Scoring System
 
 The evaluation uses 6 blocks (A-F) with a global score of 1-5:
@@ -103,7 +139,10 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 
 ### ALWAYS
 
-0. **Cover letter:** If the form allows it and the current workflow has a checked-in cover-letter generation path, include one. Otherwise flag it as a manual follow-up item; do not pretend it was generated.
+0. **Cover letter:** If the user requests one or the form allows/requires it,
+   run `modes/cover-letter.md`. Treat it as generated only when its sibling
+   manifest is fresh and valid. Otherwise flag `cover-letter: manual-pending`;
+   never pretend it was generated.
 1. Read `profile/cv.md` (legacy root `cv.md` also accepted during migration), `_profile.md`, and `profile/article-digest.md` (if exists; legacy root also accepted) before evaluating
    1b. **First evaluation of each session:** Run `node scripts/cv-sync-check.mjs`. If warnings, notify user.
 2. Detect the role archetype and adapt framing per \_profile.md
@@ -111,7 +150,8 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 4. Use WebSearch for comp and company data
 5. Register in tracker after evaluating. Mark PDF `Yes` only when its manifest
    is present, fresh, and valid.
-6. Generate content in the language of the JD (EN default)
+6. Generate human-facing content in `language.output` (EN default), independent
+   of the configured market ruleset and the JD language.
 7. Be direct and actionable -- no fluff
 8. Native tech English for generated text. Short sentences, action verbs, no passive voice.
    8b. Case study URLs in PDF Professional Summary (recruiter may only read this).

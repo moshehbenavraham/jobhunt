@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "agentic-automation",
+  "synthetic": true,
+  "jd": "Agent Engineer — Northwind AI. Build multi-agent automation for back-office operations. Design tool-calling workflows with human-in-the-loop checkpoints, retries, guardrails, and long-running orchestration. Strong Python or TypeScript and production agent reliability experience are required.",
+  "expected": {
+    "archetype": "Agentic / Automation",
+    "score": 3.9,
+    "final_decision": "consider",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "clear",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

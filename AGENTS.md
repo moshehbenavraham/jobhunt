@@ -98,32 +98,44 @@ Treat a pasted JD or job URL as full auto-pipeline unless the user explicitly as
 
 Always read `modes/_shared.md` first, then `modes/_profile.md`, then the relevant mode:
 
-| User intent                      | Mode file                 |
-| -------------------------------- | ------------------------- |
-| Raw JD text or job URL           | `modes/auto-pipeline.md`  |
-| Single evaluation only           | `modes/oferta.md`         |
-| Compare offers                   | `modes/ofertas.md`        |
-| Scan portals                     | `modes/scan.md`           |
-| Generate ATS PDF                 | `modes/pdf.md`            |
-| Live application help            | `modes/apply.md`          |
-| Process `data/pipeline.md`       | `modes/pipeline.md`       |
-| Tracker status                   | `modes/tracker.md`        |
-| Deep company research            | `modes/deep.md`           |
-| LinkedIn outreach                | `modes/contacto.md`       |
-| Interview prep                   | `modes/interview-prep.md` |
-| Training or certification review | `modes/training.md`       |
-| Project idea review              | `modes/project.md`        |
-| Batch evaluation                 | `modes/batch.md`          |
-| Rejection pattern analysis       | `modes/patterns.md`       |
-| Follow-up cadence                | `modes/followup.md`       |
+| User intent                       | Mode file                     |
+| --------------------------------- | ----------------------------- |
+| Raw JD text or job URL            | `modes/auto-pipeline.md`      |
+| Single evaluation only            | `modes/oferta.md`             |
+| Compare offers                    | `modes/ofertas.md`            |
+| Scan portals                      | `modes/scan.md`               |
+| Generate ATS PDF                  | `modes/pdf.md`                |
+| Generate cover letter             | `modes/cover-letter.md`       |
+| Live application help             | `modes/apply.md`              |
+| Formal application email          | `modes/email.md`              |
+| Durable inbound review queue      | `modes/agent-inbox.md`        |
+| Process `data/pipeline.md`        | `modes/pipeline.md`           |
+| Tracker status                    | `modes/tracker.md`            |
+| Deep company research             | `modes/deep.md`               |
+| LinkedIn outreach                 | `modes/contacto.md`           |
+| Interview prep                    | `modes/interview-prep.md`     |
+| Interview plan                    | `modes/interview/plan.md`     |
+| Interview practice                | `modes/interview/practice.md` |
+| Interview debrief                 | `modes/interview/debrief.md`  |
+| Interview risk review             | `modes/interview-redflag.md`  |
+| Offer and negotiation prep        | `modes/offer-prep.md`         |
+| Skill-gap/upskill report          | `modes/upskill.md`            |
+| Funnel/velocity/channel analytics | `modes/analytics.md`          |
+| Training or certification review  | `modes/training.md`           |
+| Project idea review               | `modes/project.md`            |
+| Batch evaluation                  | `modes/batch.md`              |
+| Rejection pattern analysis        | `modes/patterns.md`           |
+| Follow-up cadence                 | `modes/followup.md`           |
 
 ## Operating Rules
 
 - Never submit an application for the user.
 - Strongly discourage low-fit applications. Below `4.0/5`, recommend against applying unless the user explicitly overrides.
-- Keep output in the JD language or the user’s requested language.
+- Resolve `language.output` and `market.ruleset` independently through
+  `scripts/evaluation-policy.mjs`. The configured output language wins; market
+  rules never select report language.
 - Use `npm run doctor` for setup validation when needed.
-- Use `docs/ARCHITECTURE.md`, `docs/SCRIPTS.md`, and `batch/README.md` for repo mechanics instead of copying their contents into new instructions.
+- Use `docs/ARCHITECTURE.md`, `docs/SCRIPTS.md`, and `batch/README-batch.md` for repo mechanics instead of copying their contents into new instructions.
 
 ## Job Verification
 
@@ -147,9 +159,15 @@ Rules:
 - TSV column order is:
   `num	date	company	role	status	score	pdf	report	notes`
 - Do not create duplicate company+role entries. Update the existing row if the company and role already exist.
-- You may edit existing tracker rows to update status or notes.
+- Update existing tracker statuses with `node scripts/set-status.mjs`; it
+  validates `templates/states.yml`, serializes the write, and records
+  `data/status-log.tsv`. Use direct maintenance scripts only for normalization
+  or deduplication.
 - Status values must come from `templates/states.yml`.
 - Every report must include `**URL:**` and `**Legitimacy:**` in the header.
+- Every new evaluation report must pass
+  `node scripts/evaluation-summary.mjs <report>` and include the versioned
+  Machine Summary plus fixed-order, source-attributed Risk Summary.
 - Default tailored PDFs must be built with `scripts/build-cv.mjs`. Mark a
   tracker PDF as present only when its sibling manifest exists, is fresh, and
   has `validation.valid: true`.
@@ -159,6 +177,10 @@ Rules:
   node scripts/merge-tracker.mjs
   node scripts/verify-pipeline.mjs
   ```
+
+- After batch processing also run
+  `node scripts/reconcile-pipeline.mjs`; it removes pending inbox entries only
+  when batch state, report, and tracker evidence agree.
 
 - Use `node scripts/normalize-statuses.mjs` or `node scripts/dedup-tracker.mjs` when cleanup is needed.
 

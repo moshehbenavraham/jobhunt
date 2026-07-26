@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "platform-llmops",
+  "synthetic": true,
+  "jd": "Senior AI Platform Engineer — Meridian Labs. Own observability, offline and online evals, regression monitoring, routing reliability, latency dashboards, and cost-per-request visibility for production LLM services. Strong Python and production ML or LLM monitoring experience are required.",
+  "expected": {
+    "archetype": "AI Platform / LLMOps",
+    "score": 4.1,
+    "final_decision": "apply",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "clear",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

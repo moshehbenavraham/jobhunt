@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "case_id": "forward-deployed",
+  "model": "cheap-stub",
+  "summary": {
+    "archetype": "AI Forward Deployed",
+    "score": 4.3,
+    "final_decision": "apply",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "not_evaluated",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

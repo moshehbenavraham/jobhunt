@@ -1,0 +1,406 @@
+/* tokens.css -- PRD design token vocabulary (single source of truth)
+   Convention: --jh-{category}-{name}
+   Source: docs/PRD_UX.md section 10 "Design System" */
+
+:root {
+  /* ----------------------------------------------------------------
+     COLOR: PRD palette
+     ---------------------------------------------------------------- */
+
+  /* Dominant surface -- quiet white operator canvas */
+  --jh-color-paper: #ffffff;
+
+  /* Secondary surfaces (25 %) */
+  --jh-color-stone: #dfe3e8;
+  --jh-color-fog: #f3f5f7;
+  --jh-color-ink: #17191d;
+
+  /* Accent (10 %) -- cobalt */
+  --jh-color-accent: #155eef;
+
+  /* Signal colors (5 %) */
+  --jh-color-verdigris: #13745b;
+  --jh-color-amber: #9a6700;
+  --jh-color-coral: #b42318;
+  --jh-color-mulberry: #7b4ed8;
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- shell
+     ---------------------------------------------------------------- */
+  --jh-color-shell-bg: var(--jh-color-paper);
+  --jh-color-surface-bg: #ffffff;
+  --jh-color-surface-border: #dfe3e8;
+  --jh-color-input-bg: #fff;
+
+  --jh-color-text-primary: var(--jh-color-ink);
+  --jh-color-text-secondary: #3f4650;
+  --jh-color-text-muted: #69717d;
+  --jh-color-text-on-ink: #ffffff;
+
+  --jh-color-nav-bg: #ffffff;
+  --jh-color-nav-text: #24272d;
+  --jh-color-nav-muted: #69717d;
+  --jh-color-nav-border: #dfe3e8;
+  --jh-color-nav-item-bg: transparent;
+  --jh-color-nav-item-selected-bg: #eef4ff;
+  --jh-color-nav-item-selected-border: #155eef;
+  --jh-color-nav-accent: #155eef;
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- status tones
+     ---------------------------------------------------------------- */
+  --jh-color-status-ready-bg: #dcfce7;
+  --jh-color-status-ready-fg: #166534;
+  --jh-color-status-ready-border: #22c55e;
+
+  --jh-color-status-setup-bg: #ffedd5;
+  --jh-color-status-setup-fg: #9a3412;
+  --jh-color-status-setup-border: #fdba74;
+
+  --jh-color-status-error-bg: #fee2e2;
+  --jh-color-status-error-fg: #991b1b;
+
+  --jh-color-status-auth-bg: #dbeafe;
+  --jh-color-status-auth-fg: #1d4ed8;
+
+  --jh-color-status-expired-bg: #fed7aa;
+  --jh-color-status-expired-fg: #7c2d12;
+
+  --jh-color-status-prompt-bg: #ede9fe;
+  --jh-color-status-prompt-fg: #7c3aed;
+
+  --jh-color-status-warning-bg: #fff7ed;
+  --jh-color-status-warning-border: #fed7aa;
+
+  --jh-color-status-error-border: #fecaca;
+
+  --jh-color-status-offline-bg: #fef3c7;
+  --jh-color-status-offline-border: #fcd34d;
+
+  /* Run status tones -- evaluation console (T003, T016) */
+  --jh-color-status-completed-bg: #bbf7d0;
+  --jh-color-status-completed-fg: #166534;
+  --jh-color-status-completed-border: #22c55e;
+
+  --jh-color-status-running-bg: #bfdbfe;
+  --jh-color-status-running-fg: #1d4ed8;
+  --jh-color-status-running-border: #60a5fa;
+
+  --jh-color-status-paused-bg: #fde68a;
+  --jh-color-status-paused-fg: #92400e;
+  --jh-color-status-paused-border: #f59e0b;
+
+  --jh-color-status-failed-bg: #fecaca;
+  --jh-color-status-failed-fg: #991b1b;
+  --jh-color-status-failed-border: #ef4444;
+
+  --jh-color-status-degraded-bg: #fed7aa;
+  --jh-color-status-degraded-fg: #9a3412;
+  --jh-color-status-degraded-border: #f97316;
+
+  --jh-color-status-pending-bg: #dbeafe;
+  --jh-color-status-pending-fg: #1d4ed8;
+  --jh-color-status-pending-border: #60a5fa;
+
+  --jh-color-status-blocked-bg: #e2e8f0;
+  --jh-color-status-blocked-fg: #475569;
+  --jh-color-status-blocked-border: #94a3b8;
+
+  --jh-color-status-tooling-bg: #ddd6fe;
+  --jh-color-status-tooling-fg: #6d28d9;
+  --jh-color-status-tooling-border: #8b5cf6;
+
+  --jh-color-status-auth-required-bg: #bae6fd;
+  --jh-color-status-auth-required-fg: #0369a1;
+  --jh-color-status-auth-required-border: #38bdf8;
+
+  /* Timeline severity tones */
+  --jh-color-severity-info-bg: #dbeafe;
+  --jh-color-severity-info-fg: #1d4ed8;
+
+  --jh-color-severity-warn-bg: #fef3c7;
+  --jh-color-severity-warn-fg: #92400e;
+
+  --jh-color-severity-error-bg: #fee2e2;
+  --jh-color-severity-error-fg: #991b1b;
+
+  /* Closeout tones */
+  --jh-color-closeout-review-ready-bg: #dcfce7;
+  --jh-color-closeout-review-ready-fg: #166534;
+
+  --jh-color-closeout-in-progress-bg: #dbeafe;
+  --jh-color-closeout-in-progress-fg: #1d4ed8;
+
+  --jh-color-closeout-attention-bg: #ffedd5;
+  --jh-color-closeout-attention-fg: #9a3412;
+
+  --jh-color-closeout-not-ready-bg: #e2e8f0;
+  --jh-color-closeout-not-ready-fg: #475569;
+
+  /* Report viewer -- reading surface and metadata rail */
+  --jh-color-report-reading-bg: var(--jh-color-paper);
+  --jh-color-report-reading-fg: var(--jh-color-ink);
+  --jh-color-report-meta-bg: var(--jh-color-surface-bg);
+  --jh-color-report-meta-border: var(--jh-color-surface-border);
+  --jh-color-report-toc-accent: var(--jh-color-accent);
+  --jh-color-report-toc-active-bg: rgba(44, 99, 255, 0.08);
+  --jh-color-report-section-border: var(--jh-color-stone);
+
+  /* Pipeline queue state tones */
+  --jh-color-pipeline-pending-bg: var(--jh-color-status-pending-bg);
+  --jh-color-pipeline-pending-fg: var(--jh-color-status-pending-fg);
+  --jh-color-pipeline-processed-bg: var(--jh-color-status-completed-bg);
+  --jh-color-pipeline-processed-fg: var(--jh-color-status-completed-fg);
+  --jh-color-pipeline-malformed-bg: var(--jh-color-status-warning-bg);
+  --jh-color-pipeline-malformed-fg: var(--jh-color-severity-warn-fg);
+
+  /* Pipeline row and selection */
+  --jh-color-pipeline-row-bg: rgba(248, 250, 252, 0.9);
+  --jh-color-pipeline-row-border: var(--jh-color-surface-border);
+  --jh-color-pipeline-row-selected-bg: rgba(219, 234, 254, 0.7);
+  --jh-color-pipeline-row-selected-border: rgba(37, 99, 235, 0.35);
+
+  /* Pipeline shortlist card */
+  --jh-color-pipeline-card-bg: rgba(248, 250, 252, 0.9);
+  --jh-color-pipeline-card-border: var(--jh-color-surface-border);
+
+  /* Pipeline campaign guidance */
+  --jh-color-pipeline-guidance-bg: var(--jh-color-status-warning-bg);
+  --jh-color-pipeline-guidance-border: var(--jh-color-status-warning-border);
+
+  /* Pipeline warning tones */
+  --jh-color-pipeline-warn-low-score-bg: #ffedd5;
+  --jh-color-pipeline-warn-low-score-fg: #9a3412;
+  --jh-color-pipeline-warn-suspicious-bg: #fee2e2;
+  --jh-color-pipeline-warn-suspicious-fg: #991b1b;
+  --jh-color-pipeline-warn-caution-bg: #fef3c7;
+  --jh-color-pipeline-warn-caution-fg: #92400e;
+
+  /* Pipeline legitimacy tones */
+  --jh-color-pipeline-legit-high-bg: var(--jh-color-status-ready-bg);
+  --jh-color-pipeline-legit-high-fg: var(--jh-color-status-ready-fg);
+  --jh-color-pipeline-legit-caution-bg: var(
+    --jh-color-pipeline-warn-caution-bg
+  );
+  --jh-color-pipeline-legit-caution-fg: var(
+    --jh-color-pipeline-warn-caution-fg
+  );
+  --jh-color-pipeline-legit-suspicious-bg: var(
+    --jh-color-pipeline-warn-suspicious-bg
+  );
+  --jh-color-pipeline-legit-suspicious-fg: var(
+    --jh-color-pipeline-warn-suspicious-fg
+  );
+
+  /* Pipeline stale selection */
+  --jh-color-pipeline-stale-bg: var(--jh-color-pipeline-warn-low-score-bg);
+  --jh-color-pipeline-stale-border: var(--jh-color-status-warning-border);
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- tracker surface
+     ---------------------------------------------------------------- */
+  --jh-color-tracker-row-bg: rgba(248, 250, 252, 0.9);
+  --jh-color-tracker-row-border: var(--jh-color-surface-border);
+  --jh-color-tracker-row-selected-bg: rgba(219, 234, 254, 0.7);
+  --jh-color-tracker-row-selected-border: rgba(37, 99, 235, 0.35);
+  --jh-color-tracker-filter-bar-bg: var(--jh-color-surface-bg);
+  --jh-color-tracker-filter-bar-border: var(--jh-color-surface-border);
+  --jh-dense-row-height: 2.75rem;
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- scan surface
+     ---------------------------------------------------------------- */
+  --jh-color-scan-row-bg: rgba(248, 250, 252, 0.9);
+  --jh-color-scan-row-border: var(--jh-color-surface-border);
+  --jh-color-scan-row-selected-bg: #eff6ff;
+  --jh-color-scan-row-selected-border: #60a5fa;
+
+  /* Badge tones */
+  --jh-color-badge-attention-bg: #fde68a;
+  --jh-color-badge-attention-fg: #7c2d12;
+
+  --jh-color-badge-info-bg: #bfdbfe;
+  --jh-color-badge-info-fg: #1d4ed8;
+
+  --jh-color-badge-neutral-bg: #e2e8f0;
+  --jh-color-badge-neutral-fg: #334155;
+
+  --jh-color-badge-positive-bg: #bbf7d0;
+  --jh-color-badge-positive-fg: #166534;
+
+  /* ----------------------------------------------------------------
+     COLOR: semantic aliases -- interactive / button
+     ---------------------------------------------------------------- */
+  --jh-color-button-bg: #155eef;
+  --jh-color-button-fg: #ffffff;
+  --jh-color-button-subtle-bg: #f3f5f7;
+  --jh-color-selected-border: #aeb5c0;
+  --jh-color-selected-highlight-border: #155eef;
+  --jh-color-selected-highlight-shadow: rgba(21, 94, 239, 0.08);
+
+  /* Session / heading label */
+  --jh-color-label-fg: #155eef;
+
+  /* ----------------------------------------------------------------
+     SPACING: 4px base unit scale (PRD_UX.md section 10)
+     ---------------------------------------------------------------- */
+  --jh-space-1: 4px;
+  --jh-space-2: 8px;
+  --jh-space-3: 12px;
+  --jh-space-4: 16px;
+  --jh-space-6: 24px;
+  --jh-space-8: 32px;
+  --jh-space-12: 48px;
+  --jh-space-16: 64px;
+  --jh-space-24: 96px;
+
+  /* Named spacing aliases */
+  --jh-space-gap: var(--jh-space-4);
+  --jh-space-section-gap: var(--jh-space-6);
+  --jh-space-padding: var(--jh-space-4);
+  --jh-space-padding-sm: var(--jh-space-3);
+  --jh-space-padding-lg: var(--jh-space-6);
+
+  /* ----------------------------------------------------------------
+     RADIUS
+     ---------------------------------------------------------------- */
+  --jh-radius-sm: 0.125rem;
+  --jh-radius-md: 0.25rem;
+  --jh-radius-lg: 0.375rem;
+  --jh-radius-xl: 0.5rem;
+  --jh-radius-2xl: 0.5rem;
+  --jh-radius-pill: 999px;
+
+  /* ----------------------------------------------------------------
+     BORDER
+     ---------------------------------------------------------------- */
+  --jh-border-width: 1px;
+  --jh-border-color: var(--jh-color-surface-border);
+  --jh-border-subtle: var(--jh-border-width) solid var(--jh-border-color);
+
+  /* ----------------------------------------------------------------
+     SHADOW
+     ---------------------------------------------------------------- */
+  --jh-shadow-sm: none;
+  --jh-shadow-md: none;
+  --jh-shadow-lg: 0 12px 36px rgba(23, 25, 29, 0.12);
+
+  /* ----------------------------------------------------------------
+     TYPOGRAPHY: font families (PRD_UX.md)
+     ---------------------------------------------------------------- */
+  --jh-font-heading:
+    'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+  --jh-font-body:
+    Inter, 'IBM Plex Sans', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --jh-font-mono:
+    'IBM Plex Mono', ui-monospace, 'Cascadia Code', 'Fira Code', monospace;
+
+  /* ----------------------------------------------------------------
+     TYPOGRAPHY: font weights
+     ---------------------------------------------------------------- */
+  --jh-font-weight-regular: 400;
+  --jh-font-weight-medium: 500;
+  --jh-font-weight-semibold: 600;
+  --jh-font-weight-bold: 700;
+
+  /* ----------------------------------------------------------------
+     TYPOGRAPHY: typographic scale (1.25 ratio, 16px base)
+     Each step defines size, weight, line-height, letter-spacing.
+     ---------------------------------------------------------------- */
+
+  /* display -- 39px (16 * 1.25^5, rounded) */
+  --jh-text-display-size: 2.441rem;
+  --jh-text-display-weight: var(--jh-font-weight-bold);
+  --jh-text-display-line-height: 1.15;
+  --jh-text-display-letter-spacing: -0.02em;
+
+  /* h1 -- 31px (16 * 1.25^4, rounded) */
+  --jh-text-h1-size: 1.953rem;
+  --jh-text-h1-weight: var(--jh-font-weight-regular);
+  --jh-text-h1-line-height: 1.2;
+  --jh-text-h1-letter-spacing: -0.015em;
+
+  /* h2 -- 25px (16 * 1.25^3, rounded) */
+  --jh-text-h2-size: 1.563rem;
+  --jh-text-h2-weight: var(--jh-font-weight-regular);
+  --jh-text-h2-line-height: 1.25;
+  --jh-text-h2-letter-spacing: -0.01em;
+
+  /* h3 -- 20px (16 * 1.25^2) */
+  --jh-text-h3-size: 1.25rem;
+  --jh-text-h3-weight: var(--jh-font-weight-medium);
+  --jh-text-h3-line-height: 1.3;
+  --jh-text-h3-letter-spacing: -0.005em;
+
+  /* h4 -- 18px */
+  --jh-text-h4-size: 1.125rem;
+  --jh-text-h4-weight: var(--jh-font-weight-medium);
+  --jh-text-h4-line-height: 1.35;
+  --jh-text-h4-letter-spacing: 0;
+
+  /* body-lg -- 18px */
+  --jh-text-body-lg-size: 1.125rem;
+  --jh-text-body-lg-weight: var(--jh-font-weight-regular);
+  --jh-text-body-lg-line-height: 1.6;
+  --jh-text-body-lg-letter-spacing: 0;
+
+  /* body -- 16px (base) */
+  --jh-text-body-size: 1rem;
+  --jh-text-body-weight: var(--jh-font-weight-regular);
+  --jh-text-body-line-height: 1.6;
+  --jh-text-body-letter-spacing: 0;
+
+  /* body-sm -- 14px */
+  --jh-text-body-sm-size: 0.875rem;
+  --jh-text-body-sm-weight: var(--jh-font-weight-regular);
+  --jh-text-body-sm-line-height: 1.5;
+  --jh-text-body-sm-letter-spacing: 0.005em;
+
+  /* caption -- 12px */
+  --jh-text-caption-size: 0.75rem;
+  --jh-text-caption-weight: var(--jh-font-weight-regular);
+  --jh-text-caption-line-height: 1.4;
+  --jh-text-caption-letter-spacing: 0.01em;
+
+  /* mono -- 14px */
+  --jh-text-mono-size: 0.875rem;
+  --jh-text-mono-weight: var(--jh-font-weight-regular);
+  --jh-text-mono-line-height: 1.5;
+  --jh-text-mono-letter-spacing: 0;
+
+  /* mono-sm -- 12px */
+  --jh-text-mono-sm-size: 0.75rem;
+  --jh-text-mono-sm-weight: var(--jh-font-weight-regular);
+  --jh-text-mono-sm-line-height: 1.4;
+  --jh-text-mono-sm-letter-spacing: 0;
+
+  /* label -- 14px */
+  --jh-text-label-size: 0.875rem;
+  --jh-text-label-weight: var(--jh-font-weight-medium);
+  --jh-text-label-line-height: 1.3;
+  --jh-text-label-letter-spacing: 0.02em;
+
+  /* label-sm -- 11px */
+  --jh-text-label-sm-size: 0.688rem;
+  --jh-text-label-sm-weight: var(--jh-font-weight-medium);
+  --jh-text-label-sm-line-height: 1.3;
+  --jh-text-label-sm-letter-spacing: 0.04em;
+
+  /* ----------------------------------------------------------------
+     BREAKPOINTS: reference values for JS and documentation
+     (CSS media queries use raw px values since custom properties
+     cannot appear in @media conditions)
+     ---------------------------------------------------------------- */
+  --jh-bp-mobile: 768px;
+  --jh-bp-tablet: 1200px;
+  --jh-bp-wide: 1600px;
+
+  /* ----------------------------------------------------------------
+     LAYOUT: responsive zone dimensions
+     ---------------------------------------------------------------- */
+  --jh-zone-rail-collapsed-width: 56px;
+  --jh-zone-drawer-width: 320px;
+  --jh-zone-bottom-nav-height: 56px;
+  --jh-zone-drawer-transition: 250ms ease-out;
+  --jh-color-drawer-backdrop: rgba(15, 23, 42, 0.5);
+}

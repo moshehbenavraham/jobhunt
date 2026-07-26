@@ -13,6 +13,9 @@ STATE_FILE="$BATCH_DIR/batch-state.tsv"
 PROMPT_FILE="$BATCH_DIR/batch-prompt.md"
 RESULT_SCHEMA_FILE="$BATCH_DIR/worker-result.schema.json"
 PDF_VALIDATOR_FILE="$PROJECT_DIR/scripts/validate-pdf.mjs"
+EVALUATION_POLICY_FILE="$PROJECT_DIR/scripts/evaluation-policy.mjs"
+TOKEN_USAGE_FILE="$PROJECT_DIR/scripts/token-usage.mjs"
+PROFILE_FILE="$PROJECT_DIR/config/profile.yml"
 LOGS_DIR="$BATCH_DIR/logs"
 TRACKER_DIR="$BATCH_DIR/tracker-additions"
 REPORTS_DIR="$PROJECT_DIR/reports"
@@ -29,6 +32,9 @@ RETRY_FAILED=false
 START_FROM=0
 MAX_RETRIES=2
 MIN_SCORE=0
+SPEND_TIER_OVERRIDE=""
+RESOLVED_SPEND_TIER="standard"
+REASONING_EFFORT="medium"
 
 usage() {
   cat << 'USAGE'
@@ -44,6 +50,7 @@ Options:
   --start-from N       Start from offer ID N (skip earlier IDs)
   --max-retries N      Max retry attempts per offer (default: 2)
   --min-score N        Skip PDF/tracker for offers scoring below N (default: 0 = off)
+  --spend-tier T       Override profile tier: economy, standard, or premium
   -h, --help           Show this help
 
 Files:
@@ -95,6 +102,10 @@ while [[ $# -gt 0 ]]; do
       MIN_SCORE="$2"
       shift 2
       ;;
+    --spend-tier)
+      SPEND_TIER_OVERRIDE="$2"
+      shift 2
+      ;;
     -h | --help)
       usage
       exit 0
@@ -122,6 +133,21 @@ acquire_lock() {
     fi
   fi
   echo "$MAIN_PID" > "$LOCK_FILE"
+}
+
+resolve_runtime_policy() {
+  if [[ ! -f "$EVALUATION_POLICY_FILE" || ! -f "$PROFILE_FILE" ]]; then
+    return
+  fi
+
+  local -a policy_args=("--profile=$PROFILE_FILE" "--json")
+  if [[ -n "$SPEND_TIER_OVERRIDE" ]]; then
+    policy_args+=("--tier=$SPEND_TIER_OVERRIDE")
+  fi
+  local policy_json
+  policy_json=$(node "$EVALUATION_POLICY_FILE" "${policy_args[@]}")
+  RESOLVED_SPEND_TIER=$(jq -r '.spendTier' <<< "$policy_json")
+  REASONING_EFFORT=$(jq -r '.reasoningEffort' <<< "$policy_json")
 }
 
 release_lock() {
@@ -277,35 +303,6 @@ get_error() {
   echo "${error:--}"
 }
 
-# Calculate next report number.
-# Caller must hold STATE_LOCK_DIR while this runs.
-next_report_num_unlocked() {
-  local max_num=0
-  if [[ -d "$REPORTS_DIR" ]]; then
-    for f in "$REPORTS_DIR"/*.md; do
-      [[ -f "$f" ]] || continue
-      local basename
-      basename=$(basename "$f")
-      local num="${basename%%-*}"
-      num=$((10#$num)) # Remove leading zeros for arithmetic
-      if ((num > max_num)); then
-        max_num=$num
-      fi
-    done
-  fi
-  # Also check state file for assigned report numbers
-  if [[ -f "$STATE_FILE" ]]; then
-    while IFS=$'\t' read -r _ _ _ _ _ rnum _ _ _; do
-      [[ "$rnum" == "report_num" || "$rnum" == "-" || -z "$rnum" ]] && continue
-      local n=$((10#$rnum))
-      if ((n > max_num)); then
-        max_num=$n
-      fi
-    done < "$STATE_FILE"
-  fi
-  printf '%03d' $((max_num + 1))
-}
-
 # Update or insert state for an offer.
 # Caller must hold STATE_LOCK_DIR while this runs.
 update_state_unlocked() {
@@ -350,7 +347,7 @@ reserve_report_num_unlocked() {
   local id="$1" url="$2" started="$3" retries="$4"
 
   local report_num=""
-  if report_num=$(next_report_num_unlocked); then
+  if report_num=$(node "$PROJECT_DIR/scripts/reserve-report-ids.mjs"); then
     update_state_unlocked "$id" "$url" "processing" "$started" "-" "$report_num" "-" "-" "$retries"
   fi
 
@@ -359,6 +356,12 @@ reserve_report_num_unlocked() {
 
 reserve_report_num() {
   run_with_state_lock reserve_report_num_unlocked "$@"
+}
+
+release_report_reservation() {
+  local report_num="$1"
+  node "$PROJECT_DIR/scripts/reserve-report-ids.mjs" \
+    --release "$report_num" > /dev/null
 }
 
 escape_sed_replacement() {
@@ -691,6 +694,7 @@ process_offer() {
   local result_file="$LOGS_DIR/${report_num}-${id}.result.json"
   local last_message_file="$LOGS_DIR/${report_num}-${id}.last-message.json"
   local event_log_file="$LOGS_DIR/${report_num}-${id}.log"
+  local usage_file="$LOGS_DIR/${report_num}-${id}.usage.json"
   local resolved_prompt
   resolved_prompt=$(mktemp "$BATCH_DIR/.resolved-prompt-${id}-${report_num}-XXXXXX.md")
 
@@ -720,6 +724,7 @@ process_offer() {
   local exit_code=0
   codex exec \
     -C "$PROJECT_DIR" \
+    -c "model_reasoning_effort=\"$REASONING_EFFORT\"" \
     --dangerously-bypass-approvals-and-sandbox \
     --output-schema "$RESULT_SCHEMA_FILE" \
     --output-last-message "$last_message_file" \
@@ -728,6 +733,17 @@ process_offer() {
 
   # Cleanup resolved prompt
   rm -f "$resolved_prompt"
+
+  if [[ -f "$TOKEN_USAGE_FILE" ]]; then
+    node "$TOKEN_USAGE_FILE" \
+      "$event_log_file" \
+      "--output=$usage_file" \
+      "--spend-tier=$RESOLVED_SPEND_TIER" \
+      "--effort=$REASONING_EFFORT" \
+      "--worker-id=$id" \
+      "--report-id=$report_num" ||
+      echo "    Warning: token usage could not be recorded"
+  fi
 
   local completed_at
   completed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -764,6 +780,7 @@ process_offer() {
     if [[ "$score" != "-" && -n "$score" ]] && (($(echo "$MIN_SCORE > 0" | bc -l))); then
       if (($(echo "$score < $MIN_SCORE" | bc -l))); then
         update_state "$id" "$url" "skipped" "$started_at" "$completed_at" "$report_num" "$score" "below-min-score" "$retries"
+        release_report_reservation "$report_num"
         echo "    Skipped (score: $score < min-score: $MIN_SCORE)"
         return
       fi
@@ -790,6 +807,7 @@ process_offer() {
         ;;
       *)
         echo "    ERROR: Unhandled final state $final_status"
+        release_report_reservation "$report_num"
         return 1
         ;;
     esac
@@ -804,6 +822,7 @@ process_offer() {
       echo "    Failed (terminal infrastructure failure, attempt $retries, exit code $exit_code)"
     fi
   fi
+  release_report_reservation "$report_num"
 }
 
 # Merge tracker additions into applications.md
@@ -814,12 +833,19 @@ merge_tracker() {
   echo ""
   echo "=== Verifying pipeline integrity ==="
   node "$PROJECT_DIR/scripts/verify-pipeline.mjs" || echo "Warning: Verification found issues (see above)"
+  echo ""
+  echo "=== Reconciling pipeline inbox ==="
+  node "$PROJECT_DIR/scripts/reconcile-pipeline.mjs"
 }
 
 # Print summary
 print_summary() {
   echo ""
   echo "=== Batch Summary ==="
+  if [[ -f "$TOKEN_USAGE_FILE" ]]; then
+    node "$TOKEN_USAGE_FILE" --aggregate --root="$PROJECT_DIR" || true
+    echo ""
+  fi
 
   if [[ ! -f "$STATE_FILE" ]]; then
     echo "No state file found."
@@ -872,6 +898,7 @@ print_summary() {
 # Main
 main() {
   check_prerequisites
+  resolve_runtime_policy
 
   if [[ "$DRY_RUN" == "false" ]]; then
     acquire_lock
@@ -890,7 +917,7 @@ main() {
   fi
 
   echo "=== jobhunt batch runner ==="
-  echo "Parallel: $PARALLEL | Max retries: $MAX_RETRIES"
+  echo "Parallel: $PARALLEL | Max retries: $MAX_RETRIES | Spend tier: $RESOLVED_SPEND_TIER ($REASONING_EFFORT reasoning)"
   echo "Input: $total_input offers"
   echo ""
 

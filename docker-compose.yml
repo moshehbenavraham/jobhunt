@@ -1,0 +1,39 @@
+name: jobhunt
+
+services:
+  workspace:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jobhunt:1.5.38
+    working_dir: /workspace
+    command: ['sleep', 'infinity']
+    environment:
+      NODE_ENV: development
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+      JOBHUNT_LANG: ${JOBHUNT_LANG:-en}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://127.0.0.1:11434}
+    ports:
+      - '127.0.0.1:5172:5172'
+      - '127.0.0.1:4175:4175'
+    shm_size: 1gb
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/workspace
+      - node-modules:/workspace/node_modules
+
+  smoke:
+    extends:
+      service: workspace
+    command: ['bash', 'scripts/container-smoke.sh']
+    ports: []
+    profiles: ['smoke']
+
+volumes:
+  node-modules:

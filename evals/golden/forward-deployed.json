@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "forward-deployed",
+  "synthetic": true,
+  "jd": "Forward Deployed AI Engineer — Ridgeline. Embed directly with customers, discover workflows, prototype in days, and deploy into customer environments. Own the last mile from ambiguous problem to production result. Regular customer travel and excellent technical communication are required.",
+  "expected": {
+    "archetype": "AI Forward Deployed",
+    "score": 4.4,
+    "final_decision": "apply",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "not_evaluated",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "case_id": "agentic-automation",
+  "model": "cheap-stub",
+  "summary": {
+    "archetype": "Agentic / Automation",
+    "score": 4.0,
+    "final_decision": "consider",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "clear",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

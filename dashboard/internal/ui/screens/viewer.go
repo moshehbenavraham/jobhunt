@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
+	"github.com/moshehbenavraham/jobhunt/dashboard/internal/i18n"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/theme"
 )
 
@@ -23,21 +24,34 @@ type ViewerModel struct {
 	width        int
 	height       int
 	theme        theme.Theme
+	catalog      i18n.Catalog
+}
+
+func (m ViewerModel) locale() i18n.Catalog {
+	if m.catalog.Code == "" {
+		return i18n.En
+	}
+	return m.catalog
 }
 
 // NewViewerModel creates a new file viewer for the given path.
-func NewViewerModel(t theme.Theme, path, title string, width, height int) ViewerModel {
+func NewViewerModel(t theme.Theme, path, title string, width, height int, catalogs ...i18n.Catalog) ViewerModel {
+	catalog := i18n.En
+	if len(catalogs) > 0 {
+		catalog = catalogs[0]
+	}
 	content, err := os.ReadFile(path)
 	if err != nil {
-		content = []byte("Error reading file: " + err.Error())
+		content = []byte(catalog.ViewerReadError + err.Error())
 	}
 
 	return ViewerModel{
-		lines:  strings.Split(string(content), "\n"),
-		title:  title,
-		width:  width,
-		height: height,
-		theme:  t,
+		lines:   strings.Split(string(content), "\n"),
+		title:   title,
+		width:   width,
+		height:  height,
+		theme:   t,
+		catalog: catalog,
 	}
 }
 
@@ -143,13 +157,13 @@ func (m ViewerModel) scrollIndicator() string {
 	}
 	maxScroll := len(m.lines) - m.bodyHeight()
 	if maxScroll <= 0 {
-		return "Top"
+		return m.locale().ViewerTop
 	}
 	if m.scrollOffset == 0 {
-		return "Top"
+		return m.locale().ViewerTop
 	}
 	if m.scrollOffset >= maxScroll {
-		return "End"
+		return m.locale().ViewerEnd
 	}
 	return fmt.Sprintf("%d%%", m.scrollOffset*100/maxScroll)
 }
@@ -159,7 +173,7 @@ func (m ViewerModel) renderBody() string {
 	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	if len(m.lines) == 0 {
-		return padStyle.Render(m.theme.Supporting().Render("(empty file)"))
+		return padStyle.Render(m.theme.Supporting().Render(m.locale().ViewerEmpty))
 	}
 
 	end := m.scrollOffset + bh
@@ -482,8 +496,8 @@ func (m ViewerModel) renderFooter() string {
 	descStyle := m.theme.Supporting()
 
 	return style.Render(
-		keyStyle.Render("↑↓") + descStyle.Render(" scroll  ") +
-			keyStyle.Render("PgUp/Dn") + descStyle.Render(" page  ") +
-			keyStyle.Render("g/G") + descStyle.Render(" top/end  ") +
-			keyStyle.Render("Esc") + descStyle.Render(" back"))
+		keyStyle.Render("↑↓") + descStyle.Render(" "+m.locale().HelpScroll+"  ") +
+			keyStyle.Render("PgUp/Dn") + descStyle.Render(" "+m.locale().HelpPage+"  ") +
+			keyStyle.Render("g/G") + descStyle.Render(" "+m.locale().HelpTopEnd+"  ") +
+			keyStyle.Render("Esc") + descStyle.Render(" "+m.locale().HelpBack))
 }

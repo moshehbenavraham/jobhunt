@@ -209,8 +209,8 @@ export const CvBuildSchema = z
     summaryEvidenceIds: evidenceRefsSchema,
     competencies: z.array(competencySchema).min(1),
     experience: z.array(experienceSchema).min(1),
-    projects: z.array(projectSchema).min(1),
-    education: z.array(educationSchema).min(1),
+    projects: z.array(projectSchema).default([]),
+    education: z.array(educationSchema).default([]),
     certifications: z.array(certificationSchema).default([]),
     skills: z.array(skillGroupSchema).min(1),
     evidence: z.array(evidenceSchema).min(1),
@@ -878,16 +878,22 @@ export function renderCvBuild(build, template) {
       renderExperience(build),
       'experience',
     ),
-    PROJECTS_SECTION: renderSection(
-      build.labels.projects,
-      renderProjects(build),
-      'projects',
-    ),
-    EDUCATION_SECTION: renderSection(
-      build.labels.education,
-      renderEducation(build),
-      'education',
-    ),
+    PROJECTS_SECTION:
+      build.projects.length > 0
+        ? renderSection(
+            build.labels.projects,
+            renderProjects(build),
+            'projects',
+          )
+        : '',
+    EDUCATION_SECTION:
+      build.education.length > 0
+        ? renderSection(
+            build.labels.education,
+            renderEducation(build),
+            'education',
+          )
+        : '',
     CERTIFICATIONS_SECTION:
       build.certifications.length > 0
         ? renderSection(
@@ -914,8 +920,8 @@ export function getRequiredHeadings(build) {
     build.labels.summary,
     build.labels.competencies,
     build.labels.experience,
-    build.labels.projects,
-    build.labels.education,
+    ...(build.projects.length > 0 ? [build.labels.projects] : []),
+    ...(build.education.length > 0 ? [build.labels.education] : []),
     ...(build.certifications.length > 0 ? [build.labels.certifications] : []),
     build.labels.skills,
   ];

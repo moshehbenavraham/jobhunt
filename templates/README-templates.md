@@ -4,12 +4,36 @@ System-layer template files used by jobhunt scripts and modes. These files are a
 
 ## Files
 
-| File                   | Used By                                                                                      | Purpose                                              |
-| ---------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `cv-build.schema.json` | `scripts/build-cv.mjs`                                                                       | Structured CV, evidence, and JD requirement contract |
-| `cv-template.html`     | `scripts/cv-build-core.mjs`, `scripts/generate-pdf.mjs`                                      | Semantic HTML/CSS for ATS-optimized CV PDFs          |
-| `cv-template.tex`      | `scripts/generate-latex.mjs`                                                                 | LaTeX / Overleaf template for ATS-optimized CV PDFs  |
-| `states.yml`           | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases       |
+| File                             | Used By                                                                                      | Purpose                                              |
+| -------------------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `cover-letter-build.schema.json` | `scripts/build-cover-letter.mjs`                                                             | Structured letter, trigger, and evidence contract    |
+| `cover-letter-template.html`     | `scripts/cover-letter-core.mjs`, `scripts/generate-pdf.mjs`                                  | Semantic one-page cover-letter template              |
+| `cv-build.schema.json`           | `scripts/build-cv.mjs`                                                                       | Structured CV, evidence, and JD requirement contract |
+| `cv-template.html`               | `scripts/cv-build-core.mjs`, `scripts/generate-pdf.mjs`                                      | Semantic HTML/CSS for ATS-optimized CV PDFs          |
+| `cv-template.tex`                | `scripts/generate-latex.mjs`                                                                 | LaTeX / Overleaf template for ATS-optimized CV PDFs  |
+| `states.yml`                     | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases       |
+
+### cover-letter-build.schema.json
+
+The machine-readable contract for deterministic cover-letter builds. It
+requires an explicit generation trigger, observed form status, exact source
+evidence for every non-closing paragraph, and `humanReviewRequired: true`.
+Generate or refresh it with:
+
+```bash
+npm run cover-letter -- --write-schema=templates/cover-letter-build.schema.json
+```
+
+See `scripts/test-fixtures/cover-letter-build.json` for a synthetic example.
+
+### cover-letter-template.html
+
+The semantic one-page template for optional cover-letter PDFs. It uses the same
+self-hosted font and ATS text rules as the CV pipeline while keeping Markdown
+as the editable source of truth.
+
+Keep all renderer tokens intact and run `npm run cover-letter:test` after
+changing the template.
 
 ### cv-build.schema.json
 
@@ -52,6 +76,9 @@ npm run latex -- output/cv-name-company-date.tex output/cv-name-company-date.pdf
 
 ### states.yml
 
-Defines the 8 canonical application states (`Evaluated`, `Applied`, `Responded`, `Interview`, `Offer`, `Rejected`, `Discarded`, `SKIP`) with aliases for common variants. All pipeline scripts validate statuses against this file.
+Defines the 9 canonical application states (`Evaluated`, `Applied`,
+`Responded`, `Interview`, `Offer`, `Hired`, `Rejected`, `Discarded`, `SKIP`)
+with aliases for common variants. Node and dashboard writers validate status
+transitions against this file.
 
 **Do not rename states** -- the dashboard and all scripts depend on these exact IDs. You can add aliases if you encounter new variants that should map to an existing state.

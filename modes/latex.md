@@ -9,7 +9,8 @@ The default ATS-first flow remains `pdf`.
 2. Read `config/profile.yml` for candidate identity and contact info.
 3. Ask the user for the JD if it is not already in context (text or URL).
 4. Extract 15-20 JD keywords.
-5. Detect the JD language and match the CV language (English by default).
+5. Resolve `language.output` through `scripts/evaluation-policy.mjs` and use it
+   for the CV (English by default); do not infer language from market rules.
 6. Detect the role archetype and adapt the framing.
 7. Rewrite the Professional Summary using JD keywords without inventing skills.
 8. Select the 3-4 most relevant projects.

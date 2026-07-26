@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "transformation",
+  "synthetic": true,
+  "jd": "AI Adoption Lead — Calderon Industries. Drive change management, employee training, internal champions, playbooks, and adoption across a large enterprise. The outcome is behavior change and measurable uptake rather than model development or hands-on software delivery.",
+  "expected": {
+    "archetype": "AI Transformation",
+    "score": 3.3,
+    "final_decision": "skip",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "not_evaluated",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

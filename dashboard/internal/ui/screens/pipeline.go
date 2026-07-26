@@ -2,7 +2,6 @@ package screens
 
 import (
 	"fmt"
-	"path/filepath"
 	"sort"
 	"strings"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/data"
+	"github.com/moshehbenavraham/jobhunt/dashboard/internal/i18n"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/model"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/theme"
 )
@@ -94,10 +94,10 @@ var pipelineTabs = []pipelineTab{
 
 var sortCycle = []string{sortScore, sortDate, sortCompany, sortStatus}
 
-var statusOptions = []string{"Evaluated", "Applied", "Responded", "Interview", "Offer", "Rejected", "Discarded", "SKIP"}
+var statusOptions = []string{"Evaluated", "Applied", "Responded", "Interview", "Offer", "Hired", "Rejected", "Discarded", "SKIP"}
 
 // statusGroupOrder defines display order for grouped view.
-var statusGroupOrder = []string{"interview", "offer", "responded", "applied", "evaluated", "skip", "rejected", "discarded"}
+var statusGroupOrder = []string{"hired", "interview", "offer", "responded", "applied", "evaluated", "skip", "rejected", "discarded"}
 
 // PipelineModel implements the career pipeline dashboard screen.
 type PipelineModel struct {
@@ -111,15 +111,22 @@ type PipelineModel struct {
 	viewMode      string // "grouped" or "flat"
 	width, height int
 	theme         theme.Theme
+	catalog       i18n.Catalog
 	careerOpsPath string
 	reportCache   map[string]reportSummary
+	searchActive  bool
+	searchQuery   string
 	// Status picker sub-state
 	statusPicker bool
 	statusCursor int
 }
 
 // NewPipelineModel creates a new pipeline screen.
-func NewPipelineModel(t theme.Theme, apps []model.CareerApplication, metrics model.PipelineMetrics, careerOpsPath string, width, height int) PipelineModel {
+func NewPipelineModel(t theme.Theme, apps []model.CareerApplication, metrics model.PipelineMetrics, careerOpsPath string, width, height int, catalogs ...i18n.Catalog) PipelineModel {
+	catalog := i18n.En
+	if len(catalogs) > 0 {
+		catalog = catalogs[0]
+	}
 	m := PipelineModel{
 		apps:          apps,
 		metrics:       metrics,
@@ -129,6 +136,7 @@ func NewPipelineModel(t theme.Theme, apps []model.CareerApplication, metrics mod
 		width:         width,
 		height:        height,
 		theme:         t,
+		catalog:       catalog,
 		careerOpsPath: careerOpsPath,
 		reportCache:   make(map[string]reportSummary),
 	}
@@ -182,10 +190,12 @@ func (m PipelineModel) WithReloadedData(apps []model.CareerApplication, metrics 
 		selectedRole = app.Role
 	}
 
-	reloaded := NewPipelineModel(m.theme, apps, metrics, m.careerOpsPath, m.width, m.height)
+	reloaded := NewPipelineModel(m.theme, apps, metrics, m.careerOpsPath, m.width, m.height, m.catalog)
 	reloaded.sortMode = m.sortMode
 	reloaded.activeTab = m.activeTab
 	reloaded.viewMode = m.viewMode
+	reloaded.searchActive = m.searchActive
+	reloaded.searchQuery = m.searchQuery
 	reloaded.applyFilterAndSort()
 	reloaded.CopyReportCache(&m)
 
@@ -232,6 +242,9 @@ func (m PipelineModel) Update(msg tea.Msg) (PipelineModel, tea.Cmd) {
 		if m.statusPicker {
 			return m.handleStatusPicker(msg)
 		}
+		if m.searchActive {
+			return m.handleSearchInput(msg)
+		}
 		return m.handleKey(msg)
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
@@ -245,6 +258,16 @@ func (m PipelineModel) handleKey(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
 	switch msg.String() {
 	case "q", "esc":
 		return m, func() tea.Msg { return PipelineClosedMsg{} }
+
+	case "/":
+		m.searchActive = true
+		return m, nil
+
+	case "ctrl+l":
+		m.searchQuery = ""
+		m.applyFilterAndSort()
+		m.cursor = 0
+		m.scrollOffset = 0
 
 	case "down", "j":
 		if len(m.filtered) > 0 {
@@ -305,7 +328,10 @@ func (m PipelineModel) handleKey(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
 
 	case "enter":
 		if app, ok := m.CurrentApp(); ok && app.ReportPath != "" {
-			fullPath := filepath.Join(m.careerOpsPath, app.ReportPath)
+			fullPath, resolveErr := data.ResolveReportPath(m.careerOpsPath, app.ReportPath)
+			if resolveErr != nil {
+				return m, nil
+			}
 			title := fmt.Sprintf("%s — %s", app.Company, app.Role)
 			jobURL := app.JobURL
 			return m, func() tea.Msg {
@@ -378,6 +404,27 @@ func (m PipelineModel) handleKey(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
 	return m, nil
 }
 
+func (m PipelineModel) handleSearchInput(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
+	switch msg.Type {
+	case tea.KeyEsc, tea.KeyEnter:
+		m.searchActive = false
+	case tea.KeyBackspace, tea.KeyDelete:
+		runes := []rune(m.searchQuery)
+		if len(runes) > 0 {
+			m.searchQuery = string(runes[:len(runes)-1])
+		}
+	case tea.KeyCtrlU:
+		m.searchQuery = ""
+	case tea.KeyRunes:
+		m.searchQuery += string(msg.Runes)
+	}
+
+	m.applyFilterAndSort()
+	m.cursor = 0
+	m.scrollOffset = 0
+	return m, nil
+}
+
 func (m PipelineModel) handleStatusPicker(msg tea.KeyMsg) (PipelineModel, tea.Cmd) {
 	switch msg.String() {
 	case "esc", "q":
@@ -434,6 +481,9 @@ func (m *PipelineModel) applyFilterAndSort() {
 	currentFilter := pipelineTabs[m.activeTab].filter
 	for _, app := range m.apps {
 		norm := data.NormalizeStatus(app.Status)
+		if !m.matchesSearch(app) {
+			continue
+		}
 		switch currentFilter {
 		case filterAll:
 			filtered = append(filtered, app)
@@ -491,6 +541,37 @@ func (m *PipelineModel) applyFilterAndSort() {
 	}
 
 	m.filtered = filtered
+}
+
+func (m PipelineModel) matchesSearch(app model.CareerApplication) bool {
+	query := strings.ToLower(strings.TrimSpace(m.searchQuery))
+	if query == "" {
+		return true
+	}
+
+	fields := []string{
+		app.Company,
+		app.Role,
+		app.Location,
+		app.Via,
+		app.Compensation,
+		app.Contact,
+		app.Status,
+		app.Date,
+		app.Notes,
+		app.JobURL,
+		app.ReportPath,
+	}
+	if summary, ok := m.reportCache[app.ReportPath]; ok {
+		fields = append(fields, summary.archetype, summary.tldr, summary.remote, summary.comp)
+	}
+	haystack := strings.ToLower(strings.Join(fields, "\n"))
+	for _, token := range strings.Fields(query) {
+		if !strings.Contains(haystack, token) {
+			return false
+		}
+	}
+	return true
 }
 
 // adjustScroll updates scrollOffset so the cursor stays visible.
@@ -602,8 +683,8 @@ func (m PipelineModel) renderHeader() string {
 	shelf := m.theme.Shelf(m.width)
 
 	info := m.theme.Supporting().Render(
-		fmt.Sprintf("%d offers | Avg %.1f/5", m.metrics.Total, m.metrics.AvgScore))
-	title := m.theme.Display(m.theme.Blue).Render("CAREER PIPELINE")
+		fmt.Sprintf(m.catalog.ApplicationsSummary, m.metrics.Total, m.metrics.AvgScore))
+	title := m.theme.Display(m.theme.Blue).Render(m.catalog.AppTitle)
 
 	gap := m.width - lipgloss.Width(title) - lipgloss.Width(info) - 4
 	if gap < 1 {
@@ -621,9 +702,9 @@ func (m PipelineModel) renderTabs() string {
 
 	for i, tab := range pipelineTabs {
 		count := m.countForFilter(tab.filter)
-		tabLabel := tab.label
+		tabLabel, abbreviation := m.tabLabels(tab.filter)
 		if wc == theme.WidthMinimum {
-			tabLabel = tab.abbrev
+			tabLabel = abbreviation
 		}
 		label := fmt.Sprintf(" %s (%d) ", tabLabel, count)
 
@@ -648,6 +729,27 @@ func (m PipelineModel) renderTabs() string {
 
 	padStyle := lipgloss.NewStyle().Padding(0, 1)
 	return padStyle.Render(row) + "\n" + padStyle.Render(underline)
+}
+
+func (m PipelineModel) tabLabels(filter string) (string, string) {
+	switch filter {
+	case filterEvaluated:
+		return m.catalog.TabEvaluated, m.catalog.AbbrevEvaluated
+	case filterApplied:
+		return m.catalog.TabApplied, m.catalog.AbbrevApplied
+	case filterInterview:
+		return m.catalog.TabInterview, m.catalog.AbbrevInterview
+	case filterTop:
+		return m.catalog.TabTop, m.catalog.AbbrevTop
+	case filterSkip:
+		return m.catalog.TabSkip, m.catalog.AbbrevSkip
+	case filterRejected:
+		return m.catalog.TabRejected, m.catalog.AbbrevRejected
+	case filterDiscarded:
+		return m.catalog.TabDiscarded, m.catalog.AbbrevDiscarded
+	default:
+		return m.catalog.TabAll, m.catalog.AbbrevAll
+	}
 }
 
 func (m PipelineModel) countForFilter(filter string) int {
@@ -680,11 +782,11 @@ func (m PipelineModel) renderMetrics() string {
 			continue
 		}
 		s := lipgloss.NewStyle().Foreground(m.theme.StatusColor(status))
-		parts = append(parts, s.Render(fmt.Sprintf("%s:%d", statusLabel(status), count)))
+		parts = append(parts, s.Render(fmt.Sprintf("%s:%d", m.catalog.StatusLabel(status), count)))
 	}
 	if m.metrics.WithPDF > 0 {
 		pdfMetrics := fmt.Sprintf(
-			"PDF ✓%d !%d ?%d",
+			m.catalog.PDFMetricsFormat,
 			m.metrics.FreshPDF,
 			m.metrics.StalePDF,
 			m.metrics.LegacyPDF,
@@ -701,11 +803,17 @@ func (m PipelineModel) renderSortBar() string {
 		Width(m.width).
 		Padding(0, 2)
 
-	sortLabel := fmt.Sprintf("[Sort: %s]", m.sortMode)
-	viewLabel := fmt.Sprintf("[View: %s]", m.viewMode)
-	count := fmt.Sprintf("%d shown", len(m.filtered))
+	sortLabel := fmt.Sprintf(m.catalog.SortFormat, m.catalog.SortLabel(m.sortMode))
+	viewLabel := fmt.Sprintf(m.catalog.ViewFormat, m.catalog.ViewLabel(m.viewMode))
+	count := fmt.Sprintf(m.catalog.ShownFormat, len(m.filtered))
+	searchLabel := m.catalog.SearchIdle
+	if m.searchActive {
+		searchLabel = fmt.Sprintf(m.catalog.SearchActive, m.searchQuery)
+	} else if m.searchQuery != "" {
+		searchLabel = fmt.Sprintf(m.catalog.SearchClosed, m.searchQuery)
+	}
 
-	return style.Render(fmt.Sprintf("%s  %s  %s", sortLabel, viewLabel, count))
+	return style.Render(fmt.Sprintf("%s  %s  %s  %s", sortLabel, viewLabel, searchLabel, count))
 }
 
 func (m PipelineModel) renderBody() string {
@@ -728,8 +836,8 @@ func (m PipelineModel) renderBody() string {
 				Foreground(m.theme.Subtext)
 			lines = append(lines, padStyle.Render(
 				headerStyle.Render(fmt.Sprintf("── %s (%d) %s",
-					strings.ToUpper(statusLabel(norm)), count,
-					strings.Repeat("─", max(0, m.width-30-len(statusLabel(norm)))))),
+					strings.ToUpper(m.catalog.StatusLabel(norm)), count,
+					strings.Repeat("─", max(0, m.width-30-len([]rune(m.catalog.StatusLabel(norm))))))),
 			))
 			prevStatus = norm
 		}
@@ -750,9 +858,9 @@ func (m PipelineModel) renderEmptyState() string {
 
 	var msg string
 	if len(m.apps) == 0 {
-		msg = "No applications tracked yet.\n\nPaste a job description or URL to get started.\nRun a portal scan to find opportunities."
+		msg = m.catalog.NoApplications
 	} else {
-		msg = "No offers match this filter."
+		msg = m.catalog.NoMatches
 	}
 
 	msgStyle := lipgloss.NewStyle().
@@ -827,7 +935,7 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 	norm := data.NormalizeStatus(app.Status)
 	statusColor := m.theme.StatusColor(norm)
 	statusStyle := lipgloss.NewStyle().Foreground(statusColor).Width(statusW)
-	statusValue := statusLabel(norm)
+	statusValue := m.catalog.StatusLabel(norm)
 	if marker := pdfStatusMarker(app.PDFStatus); marker != "" {
 		statusValue += " " + marker
 	}
@@ -881,36 +989,54 @@ func (m PipelineModel) renderPreview() string {
 	wc := theme.ClassifyWidth(m.width)
 
 	if app.HasPDF {
-		pdfText := pdfStatusLabel(app.PDFStatus)
+		pdfText := m.pdfStatusLabel(app.PDFStatus)
 		if app.PDFIssue != "" {
 			pdfText += " — " + app.PDFIssue
 		}
 		lines = append(lines, padStyle.Render(
-			labelStyle.Render("PDF: ")+valueStyle.Render(truncateRunes(pdfText, m.width-10))))
+			labelStyle.Render(m.catalog.LabelPDF)+valueStyle.Render(truncateRunes(pdfText, m.width-10))))
 	}
 
 	if summary, ok := m.reportCache[app.ReportPath]; ok {
 		if wc >= theme.WidthStandard && summary.archetype != "" {
 			lines = append(lines, padStyle.Render(
-				labelStyle.Render("Archetype: ")+valueStyle.Render(summary.archetype)))
+				labelStyle.Render(m.catalog.LabelArchetype)+valueStyle.Render(summary.archetype)))
 		}
 		if summary.tldr != "" {
 			lines = append(lines, padStyle.Render(
-				labelStyle.Render("TL;DR: ")+valueStyle.Render(summary.tldr)))
+				labelStyle.Render(m.catalog.LabelTLDR)+valueStyle.Render(summary.tldr)))
 		}
 		if wc >= theme.WidthStandard && summary.comp != "" {
 			lines = append(lines, padStyle.Render(
-				labelStyle.Render("Comp: ")+valueStyle.Render(summary.comp)))
+				labelStyle.Render(m.catalog.LabelComp)+valueStyle.Render(summary.comp)))
 		}
 		if wc >= theme.WidthComfortable && summary.remote != "" {
 			lines = append(lines, padStyle.Render(
-				labelStyle.Render("Remote: ")+valueStyle.Render(summary.remote)))
+				labelStyle.Render(m.catalog.LabelRemote)+valueStyle.Render(summary.remote)))
 		}
-	} else if app.Notes != "" {
+	}
+	if app.Location != "" {
+		lines = append(lines, padStyle.Render(
+			labelStyle.Render(m.catalog.LabelLocation)+valueStyle.Render(app.Location)))
+	}
+	if app.Compensation != "" {
+		lines = append(lines, padStyle.Render(
+			labelStyle.Render(m.catalog.LabelCompensation)+valueStyle.Render(app.Compensation)))
+	}
+	if app.Contact != "" || app.Via != "" {
+		contact := app.Contact
+		if contact == "" {
+			contact = app.Via
+		}
+		lines = append(lines, padStyle.Render(
+			labelStyle.Render(m.catalog.LabelContact)+valueStyle.Render(contact)))
+	}
+	if _, ok := m.reportCache[app.ReportPath]; !ok && app.Notes != "" {
 		notes := truncateRunes(app.Notes, m.width-10)
 		lines = append(lines, padStyle.Render(dimStyle.Render(notes)))
-	} else {
-		lines = append(lines, padStyle.Render(dimStyle.Render("Loading preview...")))
+	} else if _, ok := m.reportCache[app.ReportPath]; !ok && app.Notes == "" &&
+		app.Location == "" && app.Compensation == "" && app.Contact == "" && app.Via == "" {
+		lines = append(lines, padStyle.Render(dimStyle.Render(m.catalog.LoadingPreview)))
 	}
 
 	return strings.Join(lines, "\n")
@@ -924,23 +1050,31 @@ func (m PipelineModel) renderHelp() string {
 
 	if m.statusPicker {
 		return style.Render(
-			keyStyle.Render("↑↓/jk") + descStyle.Render(" navigate  ") +
-				keyStyle.Render("Enter") + descStyle.Render(" confirm  ") +
-				keyStyle.Render("Esc") + descStyle.Render(" cancel"))
+			keyStyle.Render("↑↓/jk") + descStyle.Render(" "+m.catalog.HelpNavigate+"  ") +
+				keyStyle.Render("Enter") + descStyle.Render(" "+m.catalog.HelpConfirm+"  ") +
+				keyStyle.Render("Esc") + descStyle.Render(" "+m.catalog.HelpCancel))
+	}
+	if m.searchActive {
+		return style.Render(
+			keyStyle.Render("type") + descStyle.Render(" "+m.catalog.HelpSearch+"  ") +
+				keyStyle.Render("Backspace") + descStyle.Render(" "+m.catalog.HelpEdit+"  ") +
+				keyStyle.Render("Ctrl+U") + descStyle.Render(" "+m.catalog.HelpClear+"  ") +
+				keyStyle.Render("Enter/Esc") + descStyle.Render(" "+m.catalog.HelpClose))
 	}
 
 	brand := m.theme.Supporting().Render("jobhunt by aiwithapex.com")
 
-	keys := keyStyle.Render("↑↓/jk") + descStyle.Render(" nav  ") +
-		keyStyle.Render("←→/hl") + descStyle.Render(" tabs  ") +
-		keyStyle.Render("s") + descStyle.Render(" sort  ") +
-		keyStyle.Render("r") + descStyle.Render(" refresh  ") +
-		keyStyle.Render("Enter") + descStyle.Render(" report  ") +
-		keyStyle.Render("o") + descStyle.Render(" open URL  ") +
-		keyStyle.Render("c") + descStyle.Render(" change  ") +
-		keyStyle.Render("v") + descStyle.Render(" view  ") +
-		keyStyle.Render("p") + descStyle.Render(" progress  ") +
-		keyStyle.Render("Esc") + descStyle.Render(" quit")
+	keys := keyStyle.Render("↑↓/jk") + descStyle.Render(" "+m.catalog.HelpNavigate+"  ") +
+		keyStyle.Render("←→/hl") + descStyle.Render(" "+m.catalog.HelpTabs+"  ") +
+		keyStyle.Render("s") + descStyle.Render(" "+m.catalog.HelpSort+"  ") +
+		keyStyle.Render("/") + descStyle.Render(" "+m.catalog.HelpSearch+"  ") +
+		keyStyle.Render("r") + descStyle.Render(" "+m.catalog.HelpRefresh+"  ") +
+		keyStyle.Render("Enter") + descStyle.Render(" "+m.catalog.HelpReport+"  ") +
+		keyStyle.Render("o") + descStyle.Render(" "+m.catalog.HelpOpenURL+"  ") +
+		keyStyle.Render("c") + descStyle.Render(" "+m.catalog.HelpChange+"  ") +
+		keyStyle.Render("v") + descStyle.Render(" "+m.catalog.HelpView+"  ") +
+		keyStyle.Render("p") + descStyle.Render(" "+m.catalog.HelpProgress+"  ") +
+		keyStyle.Render("Esc") + descStyle.Render(" "+m.catalog.HelpQuit)
 
 	gap := m.width - lipgloss.Width(keys) - lipgloss.Width(brand) - 2
 	if gap < 1 {
@@ -961,7 +1095,7 @@ func (m PipelineModel) overlayStatusPicker(body string) string {
 		Bold(true)
 
 	var picker []string
-	picker = append(picker, padStyle.Render(borderStyle.Render("Change status:")))
+	picker = append(picker, padStyle.Render(borderStyle.Render(m.catalog.ChangeStatus)))
 
 	for i, opt := range statusOptions {
 		style := lipgloss.NewStyle().Foreground(m.theme.Text).Width(pickerWidth)
@@ -972,7 +1106,7 @@ func (m PipelineModel) overlayStatusPicker(body string) string {
 		if i == m.statusCursor {
 			prefix = "> "
 		}
-		picker = append(picker, padStyle.Render(style.Render(prefix+opt)))
+		picker = append(picker, padStyle.Render(style.Render(prefix+m.catalog.StatusLabel(data.NormalizeStatus(opt)))))
 	}
 
 	// Append picker to body
@@ -1020,26 +1154,7 @@ func truncateRunes(s string, maxRunes int) string {
 }
 
 func statusLabel(norm string) string {
-	switch norm {
-	case "interview":
-		return "Interview"
-	case "offer":
-		return "Offer"
-	case "responded":
-		return "Responded"
-	case "applied":
-		return "Applied"
-	case "evaluated":
-		return "Evaluated"
-	case "skip":
-		return "Skip"
-	case "rejected":
-		return "Rejected"
-	case "discarded":
-		return "Discarded"
-	default:
-		return norm
-	}
+	return i18n.En.StatusLabel(norm)
 }
 
 func pdfStatusMarker(status string) string {
@@ -1057,19 +1172,19 @@ func pdfStatusMarker(status string) string {
 	}
 }
 
-func pdfStatusLabel(status string) string {
+func (m PipelineModel) pdfStatusLabel(status string) string {
 	switch status {
 	case "fresh":
-		return "Fresh and validated"
+		return m.catalog.PDFFresh
 	case "stale":
-		return "Stale — regenerate"
+		return m.catalog.PDFStale
 	case "legacy":
-		return "Legacy / unverified"
+		return m.catalog.PDFLegacy
 	case "invalid":
-		return "Invalid"
+		return m.catalog.PDFInvalid
 	case "missing":
-		return "Missing"
+		return m.catalog.PDFMissing
 	default:
-		return "Not generated"
+		return m.catalog.PDFNotBuilt
 	}
 }

@@ -58,6 +58,12 @@ RESULT_FILE: {{RESULT_FILE}}
 
 Read `profile/cv.md` (legacy root `cv.md` also accepted during migration) and execute all evaluation blocks.
 
+Resolve `scripts/evaluation-policy.mjs --profile=config/profile.yml --json`
+first. Use its `outputLanguage` for every human-facing section and its
+`market.ruleset` for compensation, benefit, classification, location, and
+terminology heuristics. These two settings are independent. The runner already
+applies the resolved spend tier to Codex reasoning effort.
+
 #### Step 0 -- Archetype detection
 
 Classify the role into one of these 6 archetypes. If it is hybrid, name the 2 closest.
@@ -200,6 +206,27 @@ But include an explicit note:
 
 If there are too few reliable signals, default to `Proceed with Caution` and explain why.
 
+#### Normalized evidence and risk
+
+Classify company and compensation evidence as `first_party`,
+`reliable_third_party`, `inferred`, or `unknown` with
+`scripts/evidence-reliability.mjs`. Preserve each source and any conflicts.
+
+Create a `## Risk Summary` table after Block G with these exact rows and order:
+
+1. Posting legitimacy
+2. Remote/location contradiction
+3. Employment classification
+4. Compensation reliability
+5. AI claims vs. infrastructure
+6. Country/benefit terminology
+7. Third-party tags
+8. Culture screen
+9. Interview red flags
+
+Each status begins with `✅ clear`, `⚠️ flagged`, or `— not evaluated`.
+Evaluated rows must name their source; unavailable checks remain explicit.
+
 #### Global Score
 
 | Dimension            | Score     |
@@ -223,7 +250,7 @@ Where `{company-slug}` is the lowercase company name with hyphens.
 
 **Report format:**
 
-```markdown
+````markdown
 # Evaluation: {Company} -- {Role}
 
 **Date:** {{DATE}}
@@ -236,6 +263,118 @@ Where `{company-slug}` is the lowercase company name with hyphens.
 **Batch ID:** {{ID}}
 
 ---
+
+## Machine Summary
+
+```yaml
+schema_version: 1
+report_id: '{{REPORT_NUM}}'
+date: '{{DATE}}'
+url: '{{URL}}'
+company: '{company}'
+role: '{role}'
+score: { X.X }
+dimension_scores:
+  cv_match: { X.X }
+  north_star_alignment: { X.X }
+  compensation: { X.X }
+  culture_working_model: { X.X }
+  red_flag_adjustment: { -X.X or 0 }
+legitimacy_tier: '{High Confidence | Proceed with Caution | Suspicious}'
+archetype: '{detected}'
+final_decision: '{apply | consider | research_first | skip}'
+risk_level: '{low | medium | high}'
+confidence: '{low | medium | high}'
+next_action: '{one concrete next step}'
+hard_stops: []
+soft_gaps: []
+top_strengths: []
+discard_reasons: []
+via: null
+company_confidential: false
+advertised_comp: null
+output_language: '{resolved language.output}'
+market_ruleset: '{global | us | canada | uk | eu | israel | india | apac | latam}'
+company_evidence:
+  tier: '{first_party | reliable_third_party | inferred | unknown}'
+  conflicts: false
+  sources: []
+compensation_evidence:
+  tier: '{first_party | reliable_third_party | inferred | unknown}'
+  conflicts: false
+  sources: []
+risk_summary:
+  legitimacy:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+  remote_contradiction:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+  employment_classification:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+  compensation_reliability:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+  ai_infrastructure:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+  country_benefit_terminology:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+  third_party_tags:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+  culture:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+  interview_redflags:
+    {
+      status: '{clear | flagged | not_evaluated}',
+      severity: '{none | low | medium | high | unknown}',
+      source: '{source kind}',
+      evidence: '{finding or null}',
+    }
+```
+
+For each evidence source use
+`{kind: live_posting|job_description|employer_site|platform_listing|government_source|salary_database|web_research|tracker_history|interview_notes|model_inference|not_available, label: "...", url: "https://..." or null}`.
+For an evaluated risk, `source` cannot be `not_available` and `evidence` cannot
+be null. `clear` requires severity `none`; `flagged` requires
+`low|medium|high`; `not_evaluated` requires severity `unknown`, source
+`not_available`, and null evidence.
 
 ## A) Role Summary
 
@@ -265,13 +404,42 @@ Where `{company-slug}` is the lowercase company name with hyphens.
 
 (full content)
 
+## Risk Summary
+
+| Signal                        | Status | Source |
+| ----------------------------- | ------ | ------ |
+| Posting legitimacy            | ...    | ...    |
+| Remote/location contradiction | ...    | ...    |
+| Employment classification     | ...    | ...    |
+| Compensation reliability      | ...    | ...    |
+| AI claims vs. infrastructure  | ...    | ...    |
+| Country/benefit terminology   | ...    | ...    |
+| Third-party tags              | ...    | ...    |
+| Culture screen                | ...    | ...    |
+| Interview red flags           | ...    | ...    |
+
+## I) Cover Letter
+
+- Cover letter allowed/requested: unknown
+- Generation trigger: —
+- Draft generated: no
+- Editable draft: —
+- Upload PDF: not requested
+- Manifest: —
+- Validation: not generated
+- Status: form inspection required; human review required if generated later
+
 ---
 
 ## Requirement-Evidence Matrix
 
 (Every material must-have and nice-to-have requirement, its supported or
 unsupported status, exact evidence, intended CV sections, and explicit gaps.)
-```
+````
+
+Run
+`node scripts/evaluation-summary.mjs reports/{{REPORT_NUM}}-{company-slug}-{{DATE}}.md`
+after saving. Repair every error before returning a completed worker result.
 
 ### Step 4 -- Generate the PDF
 
@@ -282,7 +450,8 @@ unsupported status, exact evidence, intended CV sections, and explicit gaps.)
 3. For each requirement, record:
    - `supported` with exact evidence IDs and intended CV sections, or
    - `unsupported` with no evidence/sections and an explicit gap.
-4. Detect the JD language and match the CV language (English by default).
+4. Use the resolved `language.output` for the CV; do not infer it from the
+   market ruleset or JD language.
 5. Detect company location -> paper format:
    - US/Canada -> `letter`
    - everything else -> `a4`
@@ -356,14 +525,14 @@ batch/tracker-additions/{{ID}}.tsv
 Format: one line, no header, 9 tab-separated columns:
 
 ```text
-{next_num}\t{{DATE}}\t{company}\t{role}\t{status}\t{score}/5\t{pdf_emoji}\t[{{REPORT_NUM}}](reports/{{REPORT_NUM}}-{company-slug}-{{DATE}}.md)\t{one_sentence_note}
+{{REPORT_NUM}}\t{{DATE}}\t{company}\t{role}\t{status}\t{score}/5\t{pdf_emoji}\t[{{REPORT_NUM}}](reports/{{REPORT_NUM}}-{company-slug}-{{DATE}}.md)\t{one_sentence_note}
 ```
 
 **TSV columns (exact order):**
 
 | #   | Field   | Type       | Example                  | Validation                                   |
 | --- | ------- | ---------- | ------------------------ | -------------------------------------------- |
-| 1   | num     | int        | `647`                    | sequential, max existing + 1                 |
+| 1   | num     | int        | `647`                    | exactly the runner-reserved `{{REPORT_NUM}}` |
 | 2   | date    | YYYY-MM-DD | `2026-03-14`             | evaluation date                              |
 | 3   | company | string     | `Datadog`                | short company name                           |
 | 4   | role    | string     | `Staff AI Engineer`      | role title                                   |
@@ -375,9 +544,16 @@ Format: one line, no header, 9 tab-separated columns:
 
 **IMPORTANT:** In the TSV, status comes before score (col 5 -> status, col 6 -> score). In `applications.md`, the order is reversed. `scripts/merge-tracker.mjs` handles that conversion.
 
-**Valid canonical statuses:** `Evaluated`, `Applied`, `Responded`, `Interview`, `Offer`, `Rejected`, `Discarded`, `SKIP`
+Batch workers cannot inspect the application form. Include
+`cover-letter: manual-pending` in notes for roles the user should apply to, so
+the live application workflow can resolve the unknown form state. For roles
+that should not be pursued, use `cover-letter: not-applicable`.
 
-Calculate `{next_num}` from the last row in `data/applications.md`.
+**Valid canonical statuses:** `Evaluated`, `Applied`, `Responded`, `Interview`, `Offer`, `Hired`, `Rejected`, `Discarded`, `SKIP`
+
+Never recalculate the report/tracker number. The runner has already reserved
+`{{REPORT_NUM}}` across reports, the tracker, pending TSVs, batch state, and
+concurrent evaluators.
 
 ### Step 6 -- Final output
 
@@ -462,6 +638,7 @@ If the pipeline fails semantically before completion:
 2. Detect the role archetype and adapt the framing
 3. Cite exact CV lines when claiming a match
 4. Use WebSearch for compensation and company context
-5. Generate output in the language of the JD (English by default)
+5. Generate human-facing output in resolved `language.output`; use the market
+   ruleset only for market-specific heuristics.
 6. Be direct and actionable; no fluff
 7. When writing English text (PDF summaries, bullets, STAR stories), use native technical English: short sentences, action verbs, no unnecessary passive voice, no "in order to", no "utilized"

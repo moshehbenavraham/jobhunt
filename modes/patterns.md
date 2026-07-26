@@ -14,7 +14,7 @@ Analyze all tracked applications to find patterns in outcomes and surface action
 
 ## Minimum Threshold
 
-Before running analysis, check: does `data/applications.md` have at least 5 entries with status beyond "Evaluated" (i.e., Applied, Responded, Interview, Offer, Rejected, Discarded, SKIP)?
+Before running analysis, check: does `data/applications.md` have at least 5 entries with status beyond "Evaluated" (i.e., Applied, Responded, Interview, Offer, Hired, Rejected, Discarded, SKIP)?
 
 If not, tell the user:
 
@@ -153,9 +153,9 @@ If the user agrees:
 
 For reference, outcomes are classified as:
 
-| Status                               | Outcome                                        |
-| ------------------------------------ | ---------------------------------------------- |
-| Interview, Offer, Responded, Applied | **Positive** (invested effort or got traction) |
-| Rejected, Discarded                  | **Negative** (company said no or offer closed) |
-| SKIP                                 | **Self-filtered** (user decided not to apply)  |
-| Evaluated                            | **Pending** (no action taken yet)              |
+| Status                                      | Outcome                                        |
+| ------------------------------------------- | ---------------------------------------------- |
+| Hired, Offer, Interview, Responded, Applied | **Positive** (invested effort or got traction) |
+| Rejected, Discarded                         | **Negative** (company said no or offer closed) |
+| SKIP                                        | **Self-filtered** (user decided not to apply)  |
+| Evaluated                                   | **Pending** (no action taken yet)              |

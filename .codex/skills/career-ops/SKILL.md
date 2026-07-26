@@ -77,7 +77,12 @@ Map the user request to the smallest matching mode set.
 - Compare multiple offers: read `modes/_shared.md` and `modes/ofertas.md`.
 - Portal scan: read `modes/_shared.md` and `modes/scan.md`.
 - ATS PDF generation: read `modes/_shared.md` and `modes/pdf.md`.
+- Cover-letter generation: read `modes/_shared.md` and
+  `modes/cover-letter.md`.
+- Formal application-email drafting: read `modes/_shared.md` and
+  `modes/email.md`.
 - Live application assistance: read `modes/_shared.md` and `modes/apply.md`.
+- Durable inbound work queue: read `modes/agent-inbox.md`.
 - Pipeline inbox processing: read `modes/_shared.md` and `modes/pipeline.md`.
 - LinkedIn outreach: read `modes/_shared.md` and `modes/contacto.md`.
 - Tracker status or tracker review: read `modes/tracker.md`.
@@ -85,6 +90,15 @@ Map the user request to the smallest matching mode set.
 - Training or certification review: read `modes/training.md`.
 - Portfolio project evaluation: read `modes/project.md`.
 - Interview preparation: read `modes/interview-prep.md`.
+- Time-blocked interview planning: read `modes/interview/plan.md`.
+- Mock interview practice: read `modes/interview/practice.md`.
+- Completed-interview debrief: read `modes/interview/debrief.md`.
+- Interview/company risk review: read `modes/interview-redflag.md`.
+- Offer and negotiation preparation: read `modes/offer-prep.md`.
+- Skill-gap aggregation or single-JD learning priorities: read
+  `modes/upskill.md`.
+- Funnel, stage-velocity, ATS, or intermediary analytics: read
+  `modes/analytics.md`.
 - Rejection-pattern analysis: read `modes/patterns.md`.
 - Follow-up cadence or draft generation: read `modes/followup.md`.
 - No concrete task: show a short command/menu summary and ask what the user wants to run.
@@ -93,21 +107,14 @@ Treat unrecognized free text as `auto-pipeline` when it looks like a job descrip
 
 ## Language Variants
 
-Default to `modes/` in English.
+Always use the canonical files under `modes/`; do not route to copied locale
+directories. Resolve human-facing prose from `config/profile.yml ->
+language.output` or the user's explicit request. EN, DE, FR, and JA parity is
+verified by `npm run locales:test`.
 
-Switch to a language-specific modes directory when one of these is true:
-
-- The user explicitly asks for German, French, or Japanese modes.
-- `config/profile.yml` sets `language.modes_dir`.
-- The task is clearly for a German-, French-, or Japanese-language hiring flow and the user wants output in that language.
-
-Use:
-
-- `modes/de/` for German
-- `modes/fr/` for French
-- `modes/ja/` for Japanese
-
-If the role is in English, keep the English modes even if the company is in a non-English market.
+Keep output language independent from `market.ruleset` and the JD language.
+Machine Summary keys, enum values, tracker statuses, paths, and commands remain
+canonical in every language. See `docs/LOCALIZATION.md`.
 
 ## Execution Rules
 

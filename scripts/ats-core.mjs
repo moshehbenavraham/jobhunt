@@ -1,3 +1,5 @@
+import { safeFetch, safeFetchJson, safeFetchText } from './network-policy.mjs';
+
 const ATS_FETCH_TIMEOUT_MS = 10_000;
 const GREENHOUSE_HOSTS = new Set([
   'boards.greenhouse.io',
@@ -333,30 +335,50 @@ function buildLeverDescriptionText(job) {
 
 async function fetchWithTimeout(
   url,
-  { fetchImpl = fetch, timeoutMs = ATS_FETCH_TIMEOUT_MS } = {},
+  { fetchImpl, timeoutMs = ATS_FETCH_TIMEOUT_MS, ...options } = {},
 ) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetchImpl(url, { signal: controller.signal });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+  if (fetchImpl) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetchImpl(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      return response;
+    } finally {
+      clearTimeout(timer);
     }
-    return response;
-  } finally {
-    clearTimeout(timer);
   }
+
+  const response = await safeFetch(url, { ...options, timeoutMs });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response;
 }
 
 export async function fetchJson(url, options = {}) {
-  const response = await fetchWithTimeout(url, options);
-  return response.json();
+  if (!options.fetchImpl) {
+    return safeFetchJson(url, {
+      ...options,
+      timeoutMs: options.timeoutMs ?? ATS_FETCH_TIMEOUT_MS,
+    });
+  }
+  return (await fetchWithTimeout(url, options)).json();
 }
 
 export async function fetchText(url, options = {}) {
-  const response = await fetchWithTimeout(url, options);
-  return response.text();
+  if (!options.fetchImpl) {
+    return safeFetchText(url, {
+      ...options,
+      timeoutMs: options.timeoutMs ?? ATS_FETCH_TIMEOUT_MS,
+    });
+  }
+  return (await fetchWithTimeout(url, options)).text();
 }
 
 export function detectApi(company) {

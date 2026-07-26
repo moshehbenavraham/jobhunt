@@ -1,0 +1,16 @@
+# Optional reverse-ATS / portfolio discovery seeds.
+# Copy to config/ats-seeds.yml, then add only boards you intentionally want to
+# scan. A seed can point to any supported hosted ATS provider.
+
+seed_sets:
+  - name: Example AI portfolio
+    source_url: https://example.org/portfolio
+    enabled: false
+    entries:
+      - name: Example Greenhouse Company
+        careers_url: https://job-boards.greenhouse.io/example
+        enabled: true
+
+      - name: Example Ashby Company
+        careers_url: https://jobs.ashbyhq.com/example
+        enabled: true

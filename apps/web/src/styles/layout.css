@@ -1,0 +1,182 @@
+/* layout.css -- layout zone custom properties and grid composition
+   for the three-zone shell (left rail, center canvas, evidence rail) */
+
+:root {
+  /* Zone widths */
+  --jh-zone-rail-width: 14.5rem;
+  --jh-zone-rail-min-width: 13rem;
+  --jh-zone-canvas-min-width: 34rem;
+  --jh-zone-evidence-rail-width: 19rem;
+
+  /* Zone gaps */
+  --jh-zone-gap: 0;
+  --jh-zone-section-gap: var(--jh-space-section-gap);
+
+  /* Frame */
+  --jh-frame-max-width: none;
+  --jh-frame-padding-x: 0;
+  --jh-frame-padding-y: 0;
+
+  /* Breakpoints (reference values for JS or future media queries) */
+  --jh-bp-mobile: 768px;
+  --jh-bp-tablet: 1200px;
+  --jh-bp-desktop: 1200px;
+  --jh-bp-wide: 1600px;
+}
+
+/* Shell frame: status strip above, shell body below */
+.jh-shell-frame {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: var(--jh-frame-max-width);
+  min-height: 100vh;
+}
+
+/* Shell body: single-column stack by default (mobile-first) */
+.jh-shell-body {
+  display: grid;
+  flex: 1;
+  gap: var(--jh-zone-gap);
+  grid-template-columns: 1fr;
+  min-height: 0;
+}
+
+/* Tablet: collapsed rail + canvas, evidence in drawer (768px-1199px) */
+@media (min-width: 768px) and (max-width: 1199px) {
+  .jh-shell-body {
+    align-items: stretch;
+    grid-template-columns: var(--jh-zone-rail-collapsed-width) minmax(0, 1fr);
+  }
+
+  .jh-shell-body > .jh-evidence-rail--inline {
+    display: none;
+  }
+}
+
+/* Desktop: three-zone grid when viewport >= 1200px */
+@media (min-width: 1200px) {
+  .jh-shell-body {
+    align-items: stretch;
+    grid-template-columns:
+      var(--jh-zone-rail-width)
+      minmax(0, 1fr)
+      var(--jh-zone-evidence-rail-width);
+  }
+}
+
+/* Pipeline two-zone: queue list + context detail side by side on desktop */
+@media (min-width: 1200px) {
+  .jh-pipeline-two-zone {
+    grid-template-columns: minmax(0, 1fr) var(--jh-zone-evidence-rail-width);
+  }
+}
+
+/* Mobile: single-column with bottom nav padding (< 768px) */
+@media (max-width: 767px) {
+  .jh-shell-body {
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - var(--jh-zone-bottom-nav-height));
+    padding-bottom: calc(var(--jh-zone-bottom-nav-height) + 2.25rem);
+  }
+
+  .jh-shell-body > .jh-nav-rail--inline {
+    display: none;
+  }
+
+  .jh-shell-body > .jh-evidence-rail--inline {
+    display: none;
+  }
+}
+
+.jh-shell-surface {
+  background: var(--jh-color-surface-bg);
+  min-height: 100%;
+  overflow: hidden;
+  padding: clamp(1.25rem, 2.4vw, 2.25rem);
+}
+
+.jh-nav-rail--inline {
+  border-right: var(--jh-border-subtle);
+  min-width: 0;
+}
+
+.jh-evidence-rail--inline {
+  border-left: var(--jh-border-subtle);
+  min-width: 0;
+}
+
+.jh-status-strip {
+  bottom: 0;
+  position: sticky;
+  z-index: 50;
+}
+
+.jh-tracker-detail-grid {
+  display: grid;
+  gap: var(--jh-space-6);
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+}
+
+.jh-tracker-filter-form {
+  align-items: end;
+  display: grid;
+  gap: var(--jh-space-3);
+  grid-template-columns: minmax(12rem, 1fr) minmax(11rem, 14rem) auto;
+}
+
+.jh-tracker-row-meta {
+  align-items: center;
+  display: grid;
+  gap: var(--jh-space-2);
+  grid-template-columns: auto minmax(4rem, auto) auto auto;
+  justify-items: end;
+}
+
+@media (max-width: 980px) {
+  .jh-tracker-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .jh-tracker-filter-form {
+    grid-template-columns: minmax(0, 1fr) minmax(10rem, 13rem);
+  }
+
+  .jh-tracker-filter-form > button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
+@media (max-width: 767px) {
+  .jh-shell-surface {
+    padding: 1.1rem 1rem 1.5rem;
+  }
+
+  .jh-status-strip {
+    bottom: var(--jh-zone-bottom-nav-height);
+    left: 0;
+    position: fixed;
+    right: 0;
+  }
+
+  .jh-status-strip > div:first-child {
+    display: none !important;
+  }
+
+  .jh-tracker-filter-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .jh-tracker-filter-form > button {
+    grid-column: auto;
+    width: 100%;
+  }
+
+  .jh-tracker-row-meta {
+    grid-column: 2 / -1;
+    grid-template-columns: repeat(4, auto);
+    justify-content: start;
+    justify-items: start;
+  }
+}

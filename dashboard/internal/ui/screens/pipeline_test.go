@@ -86,6 +86,7 @@ func TestWithReloadedDataPreservesStateAndSelection(t *testing.T) {
 	pm.sortMode = sortCompany
 	pm.activeTab = 0
 	pm.viewMode = "flat"
+	pm.searchQuery = "beta"
 	pm.applyFilterAndSort()
 	pm.cursor = 1
 	pm.reportCache["reports/002-beta.md"] = reportSummary{tldr: "cached"}
@@ -110,14 +111,78 @@ func TestWithReloadedDataPreservesStateAndSelection(t *testing.T) {
 	if reloaded.viewMode != "flat" {
 		t.Fatalf("expected view mode to stay flat, got %q", reloaded.viewMode)
 	}
-	if got := len(reloaded.filtered); got != 3 {
-		t.Fatalf("expected 3 filtered apps after refresh, got %d", got)
+	if reloaded.searchQuery != "beta" {
+		t.Fatalf("expected search query to survive refresh, got %q", reloaded.searchQuery)
+	}
+	if got := len(reloaded.filtered); got != 1 {
+		t.Fatalf("expected 1 searched app after refresh, got %d", got)
 	}
 	if app, ok := reloaded.CurrentApp(); !ok || app.ReportPath != "reports/002-beta.md" {
 		t.Fatalf("expected selection to stay on beta app, got %+v (ok=%v)", app, ok)
 	}
 	if reloaded.reportCache["reports/002-beta.md"].tldr != "cached" {
 		t.Fatal("expected cached report summaries to survive refresh")
+	}
+}
+
+func TestPipelineSearchFiltersAcrossOperationalFields(t *testing.T) {
+	apps := pipelineFixtureApps()
+	apps[1].Location = "Tel Aviv"
+	apps[1].Contact = "Recruiter Maya"
+	pm := NewPipelineModel(
+		theme.NewTheme("catppuccin-mocha"),
+		apps,
+		model.PipelineMetrics{Total: len(apps)},
+		"..",
+		120,
+		40,
+	)
+
+	updated, _ := pm.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("/")})
+	if !updated.searchActive {
+		t.Fatal("expected slash to enter search mode")
+	}
+	updated, _ = updated.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("maya tel")})
+	if len(updated.filtered) != 1 || updated.filtered[0].Company != "Beta" {
+		t.Fatalf("expected multi-token contact/location search to isolate Beta, got %+v", updated.filtered)
+	}
+	if !strings.Contains(updated.renderSortBar(), "Search: maya tel") {
+		t.Fatalf("expected active search in sort bar, got %q", updated.renderSortBar())
+	}
+
+	updated, _ = updated.Update(tea.KeyMsg{Type: tea.KeyEnter})
+	if updated.searchActive {
+		t.Fatal("expected enter to close search mode")
+	}
+	updated, _ = updated.Update(tea.KeyMsg{Type: tea.KeyCtrlL})
+	if updated.searchQuery != "" || len(updated.filtered) != len(apps) {
+		t.Fatalf("expected Ctrl+L to clear search, query=%q filtered=%d", updated.searchQuery, len(updated.filtered))
+	}
+}
+
+func TestPipelinePreviewShowsStructuredLocationPayAndContact(t *testing.T) {
+	app := model.CareerApplication{
+		Company:      "Acme",
+		Role:         "Platform Engineer",
+		Location:     "Remote — Israel",
+		Compensation: "$180k-$210k",
+		Contact:      "A. Recruiter",
+		Status:       "Interview",
+		Score:        4.4,
+	}
+	pm := NewPipelineModel(
+		theme.NewTheme("catppuccin-mocha"),
+		[]model.CareerApplication{app},
+		model.PipelineMetrics{Total: 1},
+		"..",
+		120,
+		40,
+	)
+	preview := pm.renderPreview()
+	for _, expected := range []string{"Remote — Israel", "$180k-$210k", "A. Recruiter"} {
+		if !strings.Contains(preview, expected) {
+			t.Fatalf("expected preview to contain %q, got %q", expected, preview)
+		}
 	}
 }
 

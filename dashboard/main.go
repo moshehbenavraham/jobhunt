@@ -4,13 +4,16 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"net/url"
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/data"
+	"github.com/moshehbenavraham/jobhunt/dashboard/internal/i18n"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/model"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/theme"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/ui/screens"
@@ -39,7 +42,15 @@ type appModel struct {
 	state           viewState
 	careerOpsPath   string
 	theme           theme.Theme
+	catalog         i18n.Catalog
 	progressMetrics model.ProgressMetrics
+}
+
+func (m appModel) currentCatalog() i18n.Catalog {
+	if m.catalog.Code == "" {
+		return i18n.En
+	}
+	return m.catalog
 }
 
 func (m *appModel) reloadPipelineData() {
@@ -93,6 +104,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.theme,
 			msg.Path, msg.Title,
 			m.pipeline.Width(), m.pipeline.Height(),
+			m.currentCatalog(),
 		)
 		m.state = viewReport
 		return m, nil
@@ -106,6 +118,7 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.theme,
 			m.progressMetrics,
 			m.pipeline.Width(), m.pipeline.Height(),
+			m.currentCatalog(),
 		)
 		m.state = viewProgress
 		return m, nil
@@ -115,19 +128,12 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case screens.PipelineOpenURLMsg:
-		url := msg.URL
+		cmd, openErr := safeExternalURLCommand(msg.URL, runtime.GOOS)
+		if openErr != nil {
+			fmt.Fprintf(os.Stderr, "WARN: refused URL open: %v\n", openErr)
+			return m, nil
+		}
 		return m, func() tea.Msg {
-			var cmd *exec.Cmd
-			switch runtime.GOOS {
-			case "darwin":
-				cmd = exec.Command("open", url)
-			case "linux":
-				cmd = exec.Command("xdg-open", url)
-			case "windows":
-				cmd = exec.Command("cmd", "/c", "start", "", url)
-			default:
-				cmd = exec.Command("xdg-open", url)
-			}
 			_ = cmd.Run()
 			return nil
 		}
@@ -149,6 +155,28 @@ func (m appModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
+func safeExternalURLCommand(rawURL, goos string) (*exec.Cmd, error) {
+	if strings.TrimSpace(rawURL) != rawURL || strings.ContainsAny(rawURL, "\r\n\x00") {
+		return nil, fmt.Errorf("URL contains unsafe whitespace or control characters")
+	}
+	parsed, err := url.ParseRequestURI(rawURL)
+	if err != nil {
+		return nil, fmt.Errorf("invalid URL: %w", err)
+	}
+	if (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.Host == "" {
+		return nil, fmt.Errorf("only absolute http(s) URLs may be opened")
+	}
+
+	switch goos {
+	case "darwin":
+		return exec.Command("open", rawURL), nil
+	case "windows":
+		return exec.Command("rundll32", "url.dll,FileProtocolHandler", rawURL), nil
+	default:
+		return exec.Command("xdg-open", rawURL), nil
+	}
+}
+
 func (m appModel) View() string {
 	switch m.state {
 	case viewReport:
@@ -161,6 +189,10 @@ func (m appModel) View() string {
 }
 
 func run(careerOpsPath string) error {
+	return runLocalized(careerOpsPath, i18n.En)
+}
+
+func runLocalized(careerOpsPath string, catalog i18n.Catalog) error {
 	// Load applications
 	apps := data.ParseApplications(careerOpsPath)
 	if apps == nil {
@@ -177,7 +209,7 @@ func run(careerOpsPath string) error {
 
 	// Batch-load all report summaries
 	t := theme.NewTheme("auto")
-	pm := screens.NewPipelineModel(t, apps, metrics, careerOpsPath, 120, 40)
+	pm := screens.NewPipelineModel(t, apps, metrics, careerOpsPath, 120, 40, catalog)
 
 	for _, app := range apps {
 		if app.ReportPath == "" {
@@ -193,6 +225,7 @@ func run(careerOpsPath string) error {
 		pipeline:        pm,
 		careerOpsPath:   careerOpsPath,
 		theme:           t,
+		catalog:         catalog,
 		progressMetrics: progressMetrics,
 	}
 
@@ -205,9 +238,19 @@ func run(careerOpsPath string) error {
 
 func main() {
 	pathFlag := flag.String("path", ".", "Path to jobhunt directory")
+	defaultLanguage := os.Getenv("JOBHUNT_LANG")
+	if defaultLanguage == "" {
+		defaultLanguage = "en"
+	}
+	langFlag := flag.String("lang", defaultLanguage, "Dashboard language: en, de, fr, or ja")
 	flag.Parse()
 
-	if err := run(*pathFlag); err != nil {
+	catalog, languageErr := i18n.Resolve(*langFlag)
+	if languageErr != nil {
+		fmt.Fprintf(os.Stderr, "Error: %v\n", languageErr)
+		os.Exit(2)
+	}
+	if err := runLocalized(*pathFlag, catalog); err != nil {
 		if !errors.Is(err, flag.ErrHelp) {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		}

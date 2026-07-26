@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "systemPaths": [],
+  "requiredPaths": [
+    "scripts/update-system.mjs",
+    "scripts/update-manifest.json"
+  ],
+  "migrations": []
+}

@@ -24,7 +24,12 @@ function writeFile(path, content) {
 }
 
 function createSandbox(prefix) {
-  return mkdtempSync(join(tmpdir(), prefix));
+  const sandbox = mkdtempSync(join(tmpdir(), prefix));
+  writeFile(
+    join(sandbox, 'templates', 'states.yml'),
+    readFileSync(join(ROOT, 'templates', 'states.yml'), 'utf8'),
+  );
+  return sandbox;
 }
 
 function runScript(script, sandbox, args = []) {
@@ -371,9 +376,63 @@ function sha256(value) {
     existsSync(
       join(sandbox, 'batch', 'tracker-additions', 'merged', '006-bad.tsv'),
     ),
+    false,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'batch', 'tracker-additions', '006-bad.tsv')),
     true,
   );
 
+  rmSync(sandbox, { recursive: true, force: true });
+}
+
+{
+  const sandbox = createSandbox('jobhunt-header-aware-maintenance-');
+  writeFile(
+    join(sandbox, 'data', 'applications.md'),
+    [
+      '# Applications Tracker',
+      '',
+      '| Company | Notes | Status | # | Role | Date | Report | Score | PDF | Location |',
+      '| ------- | ----- | ------ | - | ---- | ---- | ------ | ----- | --- | -------- |',
+      '| Acme | primary | Evaluada | 10 | Senior Data Platform Engineer | 2026-07-25 | [010](reports/010-acme.md) | **4.5/5** | | Remote |',
+      '| Acme | duplicate | Entrevista | 11 | Data Platform Engineer | 2026-07-24 | [011](reports/011-acme.md) | 4.1/5 | | Berlin |',
+      '',
+    ].join('\n'),
+  );
+  writeFile(join(sandbox, 'reports', '010-acme.md'), '# report\n');
+  writeFile(join(sandbox, 'reports', '011-acme.md'), '# report\n');
+
+  const normalized = runScript('normalize-statuses.mjs', sandbox);
+  assert.equal(normalized.status, 0, normalized.stderr);
+  const deduped = runScript('dedup-tracker.mjs', sandbox);
+  assert.equal(deduped.status, 0, deduped.stderr);
+
+  writeFile(
+    join(sandbox, 'batch', 'tracker-additions', '012-beta.tsv'),
+    '12\t2026-07-26\tBeta\tAI Engineer\tHired\t4.8/5\t\t[012](reports/012-beta.md)\taccepted\n',
+  );
+  writeFile(join(sandbox, 'reports', '012-beta.md'), '# report\n');
+  const merged = runScript('merge-tracker.mjs', sandbox);
+  assert.equal(merged.status, 0, merged.stderr);
+
+  const content = readFileSync(
+    join(sandbox, 'data', 'applications.md'),
+    'utf8',
+  );
+  assert.match(
+    content,
+    /\| Acme \| primary \| Interview \| 10 \| Senior Data Platform Engineer \|/,
+  );
+  assert.doesNotMatch(content, /\| 11 \|/);
+  assert.match(
+    content,
+    /\| Beta \| accepted \| Hired \| 12 \| AI Engineer \| 2026-07-26 \|/,
+  );
+
+  const verified = runScript('verify-pipeline.mjs', sandbox);
+  assert.equal(verified.status, 0, verified.stdout + verified.stderr);
+  assert.match(verified.stdout, /All tracker numbers are unique/);
   rmSync(sandbox, { recursive: true, force: true });
 }
 
@@ -549,7 +608,7 @@ function sha256(value) {
   );
   assert.equal(
     readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
-    'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n',
+    'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\ttrust_score\ttrust_level\ttrust_flags\tcanonical_url\tidentity_fingerprint\tcontent_fingerprint\tlisting_status\tmatched_url\n',
   );
   assert.equal(existsSync(join(sandbox, 'tmp', 'scan-state')), true);
 
@@ -611,7 +670,7 @@ function sha256(value) {
   assert.match(resetHistory.stdout, /Reset data\/scan-history\.tsv ->/);
   assert.equal(
     readFileSync(join(sandbox, 'data', 'scan-history.tsv'), 'utf8'),
-    'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n',
+    'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\ttrust_score\ttrust_level\ttrust_flags\tcanonical_url\tidentity_fingerprint\tcontent_fingerprint\tlisting_status\tmatched_url\n',
   );
 
   rmSync(sandbox, { recursive: true, force: true });

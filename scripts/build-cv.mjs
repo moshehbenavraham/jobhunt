@@ -12,7 +12,13 @@ import {
   parseAndValidateCvBuild,
   renderCvBuild,
 } from './cv-build-core.mjs';
+import { resolveDocumentTemplate } from './document-templates.mjs';
 import { generatePDF, normalizeTextForATS } from './generate-pdf.mjs';
+import {
+  assertContainedPath,
+  ensureContainedDirectory,
+  pathIsInside,
+} from './path-policy.mjs';
 import { formatValidationReport, validatePdf } from './pdf-validation-core.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
@@ -27,7 +33,8 @@ function usage() {
     '',
     'Options:',
     '  --root=<path>          Project root (default: repository root)',
-    '  --template=<path>      HTML template path',
+    '  --template=<path>      Explicit HTML template under templates/',
+    '  --template-name=<name> Named template (or profile default)',
     '  --max-pages=<n>        Maximum PDF pages (default: 2)',
     '  --require-tika         Require Apache Tika parser agreement',
     '  --tika-jar=<path>      Path to tika-app JAR',
@@ -43,6 +50,8 @@ function parseArgs(args) {
       options.root = arg.slice('--root='.length);
     } else if (arg.startsWith('--template=')) {
       options.template = arg.slice('--template='.length);
+    } else if (arg.startsWith('--template-name=')) {
+      options.templateName = arg.slice('--template-name='.length);
     } else if (arg.startsWith('--max-pages=')) {
       options.maxPages = Number.parseInt(arg.slice('--max-pages='.length), 10);
     } else if (arg === '--require-tika') {
@@ -73,21 +82,16 @@ async function hashFile(path) {
   return sha256(await readFile(path));
 }
 
-function resolveInsideRoot(root, path) {
-  const absoluteRoot = resolve(root);
-  const absolute = isAbsolute(path)
-    ? resolve(path)
-    : resolve(absoluteRoot, path);
-  const rel = relative(absoluteRoot, absolute);
-  if (rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
-    throw new Error(`Path escapes project root: ${path}`);
-  }
-  return absolute;
+function resolveInsideRoot(root, path, options = {}) {
+  return assertContainedPath(root, path, {
+    mustExist: options.mustExist ?? false,
+    label: options.label || 'Path',
+  });
 }
 
 function manifestPath(root, path) {
   const rel = relative(resolve(root), resolve(path));
-  if (rel !== '..' && !rel.startsWith(`..${sep}`) && !isAbsolute(rel)) {
+  if (pathIsInside(root, path, { allowRoot: true })) {
     return rel.replaceAll(sep, '/');
   }
   return resolve(path);
@@ -131,20 +135,34 @@ async function writeSchema(path) {
 export async function buildCv(options) {
   const root = resolve(options.root || DEFAULT_ROOT);
   const inputBuildPath = resolve(options.buildPath);
-  const outputPdfPath = resolve(options.pdfPath);
+  const outputRoot = ensureContainedDirectory(root, 'output');
+  const requestedPdfPath = isAbsolute(options.pdfPath)
+    ? resolve(options.pdfPath)
+    : String(options.pdfPath).replaceAll('\\', '/').startsWith('output/')
+      ? resolve(root, options.pdfPath)
+      : resolve(outputRoot, options.pdfPath);
+  const outputPdfPath = assertContainedPath(outputRoot, requestedPdfPath, {
+    label: 'CV output path',
+  });
   if (!outputPdfPath.toLowerCase().endsWith('.pdf')) {
     throw new Error('Output path must end in .pdf');
   }
 
   const rawBuild = JSON.parse(await readFile(inputBuildPath, 'utf8'));
   const { build, coverage } = await parseAndValidateCvBuild(rawBuild, { root });
-  const templatePath = options.template
-    ? resolveInsideRoot(root, options.template)
-    : resolve(root, 'templates', 'cv-template.html');
+  const resolvedTemplate = resolveDocumentTemplate({
+    root,
+    kind: 'cv',
+    name: options.templateName,
+    explicitPath: options.template,
+  });
+  const templatePath = resolvedTemplate.path;
   const template = await readFile(templatePath, 'utf8');
   const html = normalizeTextForATS(renderCvBuild(build, template)).html;
 
-  mkdirSync(dirname(outputPdfPath), { recursive: true });
+  ensureContainedDirectory(outputRoot, dirname(outputPdfPath), {
+    allowRoot: true,
+  });
   const base = outputPdfPath.slice(0, -'.pdf'.length);
   const sidecarBuildPath = `${base}.cv-build.json`;
   const htmlPath = `${base}.html`;
@@ -192,6 +210,7 @@ export async function buildCv(options) {
       buildPath: manifestPath(root, sidecarBuildPath),
       buildSha256: await hashFile(sidecarBuildPath),
       templatePath: manifestPath(root, templatePath),
+      templateName: resolvedTemplate.name,
       templateSha256: await hashFile(templatePath),
       sources: sourceHashes,
     },

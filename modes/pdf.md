@@ -18,7 +18,8 @@ This is the default CV generation mode. Only switch to `modes/latex.md` and
    - `unsupported`: leave evidence and included sections empty and record it as
      an explicit gap
    - never include a term declared unsupported anywhere in the CV
-5. Detect the JD language and match the CV language (English by default).
+5. Resolve `language.output` through `scripts/evaluation-policy.mjs` and use it
+   for the CV (English by default); do not infer language from market rules.
 6. Detect the company location and choose the page format:
    - US/Canada -> `letter`
    - everywhere else -> `a4`

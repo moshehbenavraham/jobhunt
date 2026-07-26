@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "id": "solutions-architect",
+  "synthetic": true,
+  "jd": "AI Solutions Architect — Northwind Enterprise. Own reference architecture, enterprise integration patterns, security decisions, and systems design for large-customer AI deployments. Translate business constraints into designs that engineering teams can implement and customers can operate.",
+  "expected": {
+    "archetype": "AI Solutions Architect",
+    "score": 4.3,
+    "final_decision": "apply",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "clear",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

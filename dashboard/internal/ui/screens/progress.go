@@ -7,6 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
+	"github.com/moshehbenavraham/jobhunt/dashboard/internal/i18n"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/model"
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/theme"
 )
@@ -21,15 +22,21 @@ type ProgressModel struct {
 	width        int
 	height       int
 	theme        theme.Theme
+	catalog      i18n.Catalog
 }
 
 // NewProgressModel creates a new progress screen.
-func NewProgressModel(t theme.Theme, metrics model.ProgressMetrics, width, height int) ProgressModel {
+func NewProgressModel(t theme.Theme, metrics model.ProgressMetrics, width, height int, catalogs ...i18n.Catalog) ProgressModel {
+	catalog := i18n.En
+	if len(catalogs) > 0 {
+		catalog = catalogs[0]
+	}
 	return ProgressModel{
 		metrics: metrics,
 		width:   width,
 		height:  height,
 		theme:   t,
+		catalog: catalog,
 	}
 }
 
@@ -97,10 +104,10 @@ func (m ProgressModel) maxScrollOffset() int {
 	} else {
 		lines++ // "No data"
 	}
-	lines++ // blank separator
+	lines++    // blank separator
 	lines += 3 // rates header + rate line + active info
-	lines++ // blank separator
-	lines++ // weekly activity header
+	lines++    // blank separator
+	lines++    // weekly activity header
 	if n := len(m.metrics.WeeklyActivity); n > 0 {
 		lines += n
 	} else {
@@ -167,13 +174,13 @@ func (m ProgressModel) View() string {
 
 func (m ProgressModel) renderHeader() string {
 	style := m.theme.Shelf(m.width)
-	title := m.theme.Display(m.theme.Mauve).Render("SEARCH PROGRESS")
+	title := m.theme.Display(m.theme.Mauve).Render(m.catalog.ProgressTitle)
 
 	totalCount := 0
 	if len(m.metrics.FunnelStages) > 0 {
 		totalCount = m.metrics.FunnelStages[0].Count
 	}
-	info := m.theme.Supporting().Render(fmt.Sprintf("%d evaluated | %.1f avg score", totalCount, m.metrics.AvgScore))
+	info := m.theme.Supporting().Render(fmt.Sprintf(m.catalog.ProgressSummary, totalCount, m.metrics.AvgScore))
 
 	gap := m.width - lipgloss.Width(title) - lipgloss.Width(info) - 4
 	if gap < 1 {
@@ -187,10 +194,10 @@ func (m ProgressModel) renderFunnel() string {
 	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	var lines []string
-	lines = append(lines, padStyle.Render(m.theme.Section().Render("Pipeline Funnel")))
+	lines = append(lines, padStyle.Render(m.theme.Section().Render(m.catalog.PipelineFunnel)))
 
 	if len(m.metrics.FunnelStages) == 0 {
-		lines = append(lines, padStyle.Render(m.theme.Supporting().Render("No data")))
+		lines = append(lines, padStyle.Render(m.theme.Supporting().Render(m.catalog.NoData)))
 		return strings.Join(lines, "\n")
 	}
 
@@ -259,10 +266,10 @@ func (m ProgressModel) renderScoreDistribution() string {
 	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	var lines []string
-	lines = append(lines, padStyle.Render(m.theme.Section().Render("Score Distribution")))
+	lines = append(lines, padStyle.Render(m.theme.Section().Render(m.catalog.ScoreDistribution)))
 
 	if len(m.metrics.ScoreBuckets) == 0 {
-		lines = append(lines, padStyle.Render(m.theme.Supporting().Render("No data")))
+		lines = append(lines, padStyle.Render(m.theme.Supporting().Render(m.catalog.NoData)))
 		return strings.Join(lines, "\n")
 	}
 
@@ -320,25 +327,25 @@ func (m ProgressModel) renderRates() string {
 	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	var lines []string
-	lines = append(lines, padStyle.Render(m.theme.Section().Render("Conversion Rates")))
+	lines = append(lines, padStyle.Render(m.theme.Section().Render(m.catalog.ConversionRates)))
 
 	labelStyle := m.theme.Body()
 	valueStyle := lipgloss.NewStyle().Bold(true)
 	sep := m.theme.Structural().Render("  |  ")
 
-	rates := labelStyle.Render("Response Rate: ") +
+	rates := labelStyle.Render(m.catalog.ResponseRate) +
 		valueStyle.Foreground(m.rateColor(m.metrics.ResponseRate)).Render(fmt.Sprintf("%.1f%%", m.metrics.ResponseRate)) +
 		sep +
-		labelStyle.Render("Interview Rate: ") +
+		labelStyle.Render(m.catalog.InterviewRate) +
 		valueStyle.Foreground(m.rateColor(m.metrics.InterviewRate)).Render(fmt.Sprintf("%.1f%%", m.metrics.InterviewRate)) +
 		sep +
-		labelStyle.Render("Offer Rate: ") +
+		labelStyle.Render(m.catalog.OfferRate) +
 		valueStyle.Foreground(m.rateColor(m.metrics.OfferRate)).Render(fmt.Sprintf("%.1f%%", m.metrics.OfferRate))
 
 	lines = append(lines, padStyle.Render(rates))
 
 	activeInfo := m.theme.Supporting().Render(fmt.Sprintf(
-		"%d active applications | %d total offers",
+		m.catalog.ActiveSummary,
 		m.metrics.ActiveApps, m.metrics.TotalOffers,
 	))
 	lines = append(lines, padStyle.Render(activeInfo))
@@ -350,10 +357,10 @@ func (m ProgressModel) renderWeeklyActivity() string {
 	padStyle := lipgloss.NewStyle().Padding(0, theme.SpaceSM)
 
 	var lines []string
-	lines = append(lines, padStyle.Render(m.theme.Section().Render("Weekly Activity")))
+	lines = append(lines, padStyle.Render(m.theme.Section().Render(m.catalog.WeeklyActivity)))
 
 	if len(m.metrics.WeeklyActivity) == 0 {
-		lines = append(lines, padStyle.Render(m.theme.Supporting().Render("No data")))
+		lines = append(lines, padStyle.Render(m.theme.Supporting().Render(m.catalog.NoData)))
 		return strings.Join(lines, "\n")
 	}
 
@@ -426,9 +433,9 @@ func (m ProgressModel) renderHelp() string {
 	descStyle := m.theme.Supporting()
 	brand := m.theme.Supporting().Render("jobhunt by aiwithapex.com")
 
-	keys := keyStyle.Render("\u2191\u2193") + descStyle.Render(" scroll  ") +
-		keyStyle.Render("PgUp/Dn") + descStyle.Render(" page  ") +
-		keyStyle.Render("Esc") + descStyle.Render(" back")
+	keys := keyStyle.Render("\u2191\u2193") + descStyle.Render(" "+m.catalog.HelpScroll+"  ") +
+		keyStyle.Render("PgUp/Dn") + descStyle.Render(" "+m.catalog.HelpPage+"  ") +
+		keyStyle.Render("Esc") + descStyle.Render(" "+m.catalog.HelpBack)
 
 	gap := m.width - lipgloss.Width(keys) - lipgloss.Width(brand) - 2
 	if gap < 1 {

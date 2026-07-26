@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "candidate": {
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "phone": "+1-555-0123",
+    "location": "San Francisco, CA",
+    "linkedin": "linkedin.com/in/janesmith",
+    "github": "github.com/janesmith"
+  },
+  "job": {
+    "company": "Example Corporation",
+    "role": "Senior AI Engineer",
+    "location": "San Francisco, CA",
+    "date": "2026-07-26",
+    "language": "en",
+    "format": "letter",
+    "jdText": "Example Corporation is hiring a Senior AI Engineer to build end-to-end ML pipelines, reduce inference latency, and partner with stakeholders. The role owns production delivery from discovery through reliable deployment."
+  },
+  "application": {
+    "trigger": "form-required",
+    "fieldStatus": "required"
+  },
+  "letter": {
+    "greeting": "Dear Hiring Team,",
+    "paragraphs": [
+      {
+        "kind": "motivation",
+        "text": "I am applying for the Senior AI Engineer role because its ownership of production delivery matches the work I want to lead next.",
+        "evidenceIds": ["jd.role", "profile.headline"]
+      },
+      {
+        "kind": "evidence",
+        "text": "My Project Alpha work reduced inference latency by 40%, giving me direct experience with one of the outcomes your team is pursuing.",
+        "evidenceIds": ["profile.project-alpha", "jd.latency"]
+      },
+      {
+        "kind": "approach",
+        "text": "I would start by mapping the current ML pipeline and stakeholder constraints, then prioritize the smallest production change that improves reliability and speed.",
+        "evidenceIds": [
+          "profile.pipeline",
+          "profile.stakeholder",
+          "jd.delivery"
+        ]
+      },
+      {
+        "kind": "closing",
+        "text": "I would welcome a conversation about the role and the outcomes Example Corporation wants this team to deliver.",
+        "evidenceIds": []
+      }
+    ],
+    "signOff": "Sincerely,"
+  },
+  "evidence": [
+    {
+      "id": "jd.role",
+      "source": "job.jd",
+      "sourceText": "Senior AI Engineer"
+    },
+    {
+      "id": "jd.latency",
+      "source": "job.jd",
+      "sourceText": "reduce inference latency"
+    },
+    {
+      "id": "jd.delivery",
+      "source": "job.jd",
+      "sourceText": "production delivery from discovery through reliable deployment"
+    },
+    {
+      "id": "profile.headline",
+      "source": "config/profile.yml",
+      "sourceText": "ML Engineer turned AI product builder"
+    },
+    {
+      "id": "profile.project-alpha",
+      "source": "config/profile.yml",
+      "sourceText": "Reduced inference latency 40%"
+    },
+    {
+      "id": "profile.pipeline",
+      "source": "config/profile.yml",
+      "sourceText": "End-to-end ML pipelines"
+    },
+    {
+      "id": "profile.stakeholder",
+      "source": "profile/cv.md",
+      "sourceText": "stakeholder management"
+    }
+  ],
+  "sourceFiles": ["profile/cv.md", "config/profile.yml", "modes/_profile.md"],
+  "review": {
+    "humanReviewRequired": true
+  }
+}

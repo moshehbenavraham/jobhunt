@@ -19,11 +19,29 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { classifyLiveness } from './liveness-core.mjs';
+import { checkApiLiveness } from './liveness-api.mjs';
+import {
+  assertSafeUrl,
+  installPlaywrightNetworkGuard,
+} from './network-policy.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 
-export async function checkUrl(page, url) {
+export async function checkUrl(
+  page,
+  url,
+  {
+    assertSafeUrlImpl = assertSafeUrl,
+    installNetworkGuardImpl = installPlaywrightNetworkGuard,
+    apiCheckImpl = checkApiLiveness,
+  } = {},
+) {
+  let removeGuard = async () => {};
   try {
+    await assertSafeUrlImpl(url);
+    const apiResult = await apiCheckImpl(url);
+    if (apiResult) return apiResult;
+    removeGuard = await installNetworkGuardImpl(page);
     const response = await page.goto(url, {
       waitUntil: 'domcontentloaded',
       timeout: 15000,
@@ -35,6 +53,7 @@ export async function checkUrl(page, url) {
     await page.waitForTimeout(2000);
 
     const finalUrl = page.url();
+    await assertSafeUrlImpl(finalUrl);
     const bodyText = await page.evaluate(() => document.body?.innerText ?? '');
     const applyControls = await page.evaluate(() => {
       const candidates = Array.from(
@@ -77,9 +96,11 @@ export async function checkUrl(page, url) {
     return classifyLiveness({ status, finalUrl, bodyText, applyControls });
   } catch (err) {
     return {
-      result: 'expired',
+      result: 'uncertain',
       reason: `navigation error: ${err.message.split('\n')[0]}`,
     };
+  } finally {
+    await removeGuard();
   }
 }
 
@@ -103,6 +124,7 @@ export async function runChecks({
   launchBrowser = () => chromium.launch({ headless: true }),
   readText = readFile,
   stdout = console.log,
+  checkUrlImpl = checkUrl,
 } = {}) {
   const urls = await resolveUrls(args, readText);
 
@@ -117,7 +139,7 @@ export async function runChecks({
 
   // Sequential — project rule: never Playwright in parallel
   for (const url of urls) {
-    const { result, reason } = await checkUrl(page, url);
+    const { result, reason } = await checkUrlImpl(page, url);
     const icon = { active: '✅', expired: '❌', uncertain: '⚠️' }[result];
     stdout(`${icon} ${result.padEnd(10)} ${url}`);
     if (result !== 'active') stdout(`           ${reason}`);

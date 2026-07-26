@@ -11,15 +11,17 @@
  * Run: node scripts/normalize-statuses.mjs [--dry-run]
  */
 
-import {
-  readFileSync,
-  writeFileSync,
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-} from 'node:fs';
+import { readFileSync, copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseTracker } from './tracker-parse.mjs';
+import {
+  loadCanonicalStates,
+  openTrackerTransaction,
+  rebuildRow,
+  resolveCanonicalState,
+  resolveTrackerPath,
+} from './tracker-utils.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const SCRIPT_DIR = dirname(SCRIPT_PATH);
@@ -27,16 +29,17 @@ const CAREER_OPS = process.env.JOBHUNT_ROOT
   ? resolve(process.env.JOBHUNT_ROOT)
   : resolve(SCRIPT_DIR, '..');
 // Support both layouts: data/applications.md (boilerplate) and applications.md (original)
-const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
-  ? join(CAREER_OPS, 'data/applications.md')
-  : join(CAREER_OPS, 'applications.md');
+const APPS_FILE = resolveTrackerPath(CAREER_OPS);
 const DRY_RUN = process.argv.includes('--dry-run');
+const STATE_DEFINITIONS = loadCanonicalStates(
+  join(CAREER_OPS, 'templates/states.yml'),
+);
 
 // Ensure required directories exist (fresh setup)
 mkdirSync(join(CAREER_OPS, 'data'), { recursive: true });
 
 // Canonical status mapping
-function normalizeStatus(raw) {
+export function normalizeStatus(raw) {
   // Strip markdown bold
   const s = raw.replace(/\*\*/g, '').trim();
   const lower = s.toLowerCase();
@@ -77,19 +80,8 @@ function normalizeStatus(raw) {
   if (s === '—' || s === '-' || s === '') return { status: 'Discarded' };
 
   // Already canonical (English, per states.yml) — just fix casing/bold
-  const canonical = [
-    'Evaluated',
-    'Applied',
-    'Responded',
-    'Interview',
-    'Offer',
-    'Rejected',
-    'Discarded',
-    'SKIP',
-  ];
-  for (const c of canonical) {
-    if (lower === c.toLowerCase()) return { status: c };
-  }
+  const canonical = resolveCanonicalState(s, STATE_DEFINITIONS);
+  if (canonical) return { status: canonical };
 
   // Spanish aliases → English canonicals
   if (['evaluada'].includes(lower)) return { status: 'Evaluated' };
@@ -111,77 +103,89 @@ if (!existsSync(APPS_FILE)) {
   console.log('No applications.md found. Nothing to normalize.');
   process.exit(0);
 }
-const content = readFileSync(APPS_FILE, 'utf-8');
-const lines = content.split('\n');
+const transaction = DRY_RUN ? null : await openTrackerTransaction(APPS_FILE);
+let closeError = null;
+try {
+  const content = transaction
+    ? transaction.read()
+    : readFileSync(APPS_FILE, 'utf-8');
+  const parsed = parseTracker(content);
+  const lines = [...parsed.lines];
 
-let changes = 0;
-const unknowns = [];
+  let changes = 0;
+  const unknowns = [];
 
-for (let i = 0; i < lines.length; i++) {
-  const line = lines[i];
-  if (!line.startsWith('|')) continue;
+  for (const row of parsed.rows) {
+    const parts = [...row.parts];
+    const rawStatus = row.status;
+    const result = normalizeStatus(rawStatus);
 
-  const parts = line.split('|').map((s) => s.trim());
-  // Format: ['', '#', 'fecha', 'empresa', 'rol', 'score', 'STATUS', 'pdf', 'report', 'notas', '']
-  if (parts.length < 9) continue;
-  if (parts[1] === '#' || parts[1] === '---' || parts[1] === '') continue;
-
-  const num = parseInt(parts[1], 10);
-  if (Number.isNaN(num)) continue;
-
-  const rawStatus = parts[6];
-  const result = normalizeStatus(rawStatus);
-
-  if (result.unknown) {
-    unknowns.push({ num, rawStatus, line: i + 1 });
-    continue;
-  }
-
-  if (result.status === rawStatus) continue; // Already canonical
-
-  // Apply change
-  const oldStatus = rawStatus;
-  parts[6] = result.status;
-
-  // Move DUPLICADO info to notes if needed
-  if (result.moveToNotes && parts[9]) {
-    const existing = parts[9] || '';
-    if (!existing.includes(result.moveToNotes)) {
-      parts[9] = result.moveToNotes + (existing ? `. ${existing}` : '');
+    if (result.unknown) {
+      unknowns.push({
+        num: row.num,
+        rawStatus,
+        line: row.lineIndex + 1,
+      });
+      continue;
     }
-  } else if (result.moveToNotes && !parts[9]) {
-    parts[9] = result.moveToNotes;
+
+    const cleanScore = row.score.replace(/\*\*/g, '');
+    const statusChanged = result.status !== rawStatus;
+    const scoreChanged = cleanScore !== row.score;
+    let noteChanged = false;
+
+    parts[parsed.columns.status] = result.status;
+    if (parsed.columns.score !== undefined) {
+      parts[parsed.columns.score] = cleanScore;
+    }
+
+    if (result.moveToNotes) {
+      if (parsed.columns.notes === undefined) {
+        unknowns.push({
+          num: row.num,
+          rawStatus,
+          line: row.lineIndex + 1,
+          reason: 'tracker has no Notes column',
+        });
+        continue;
+      }
+      const existing = row.notes || '';
+      if (!existing.includes(result.moveToNotes)) {
+        parts[parsed.columns.notes] =
+          result.moveToNotes + (existing ? `. ${existing}` : '');
+        noteChanged = true;
+      }
+    }
+    if (!statusChanged && !scoreChanged && !noteChanged) continue;
+
+    lines[row.lineIndex] = rebuildRow(parts);
+    changes++;
+    console.log(`#${row.num}: "${rawStatus}" → "${result.status}"`);
   }
 
-  // Also strip bold from score field
-  if (parts[5]) {
-    parts[5] = parts[5].replace(/\*\*/g, '');
+  if (unknowns.length > 0) {
+    console.log(`\n⚠️  ${unknowns.length} unknown statuses:`);
+    for (const unknown of unknowns) {
+      console.log(
+        `  #${unknown.num} (line ${unknown.line}): "${unknown.rawStatus}"${
+          unknown.reason ? ` — ${unknown.reason}` : ''
+        }`,
+      );
+    }
   }
 
-  // Reconstruct line
-  const newLine = `| ${parts.slice(1, -1).join(' | ')} |`;
-  lines[i] = newLine;
-  changes++;
+  console.log(`\n📊 ${changes} statuses normalized`);
 
-  console.log(`#${num}: "${oldStatus}" → "${result.status}"`);
-}
-
-if (unknowns.length > 0) {
-  console.log(`\n⚠️  ${unknowns.length} unknown statuses:`);
-  for (const u of unknowns) {
-    console.log(`  #${u.num} (line ${u.line}): "${u.rawStatus}"`);
+  if (transaction && changes > 0) {
+    copyFileSync(APPS_FILE, `${APPS_FILE}.bak`);
+    transaction.replace(lines.join('\n'));
+    console.log('✅ Written to applications.md (backup: applications.md.bak)');
+  } else if (DRY_RUN) {
+    console.log('(dry-run — no changes written)');
+  } else {
+    console.log('✅ No changes needed');
   }
+} finally {
+  if (transaction) closeError = transaction.close();
 }
-
-console.log(`\n📊 ${changes} statuses normalized`);
-
-if (!DRY_RUN && changes > 0) {
-  // Backup first
-  copyFileSync(APPS_FILE, `${APPS_FILE}.bak`);
-  writeFileSync(APPS_FILE, lines.join('\n'));
-  console.log('✅ Written to applications.md (backup: applications.md.bak)');
-} else if (DRY_RUN) {
-  console.log('(dry-run — no changes written)');
-} else {
-  console.log('✅ No changes needed');
-}
+if (closeError) throw closeError;

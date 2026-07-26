@@ -9,6 +9,11 @@ When the user asks to prep for an interview at a specific company+role, or when 
 3. **Story bank** at `interview-prep/story-bank.md` — read for existing prepared stories. If it does not exist yet, the user can bootstrap from `interview-prep/story-bank.example.md`.
 4. **CV** at `profile/cv.md` + `profile/article-digest.md` — read for proof points (legacy root `article-digest.md` also accepted)
 5. **Profile** at `config/profile.yml` + `modes/_profile.md` — read for candidate context
+6. **Structured sessions** under `interview-prep/sessions/` — prior
+   candidate-reviewed gaps and red-flag evidence outrank inferred risks
+7. **Salary observations** from `npm run salary:observations` — keep any prior
+   stated amount/currency/round consistent unless the candidate explicitly
+   changes it
 
 ## Step 1 — Research
 
@@ -144,5 +149,11 @@ After delivering the report:
 - **NEVER fabricate Glassdoor ratings or statistics.** If the data isn't there, say so.
 - **Cite everything.** Every question, every stat, every claim gets a source or an `[inferred]` tag.
 - Use this mode for preparation only. Actual interviews should be genuine live discussion between interviewer and candidate, not hidden real-time assistance.
-- Generate in the language of the JD (EN default).
+- For a scheduled plan, practice session, completed-interview debrief, or
+  structured risk review, route to `modes/interview/plan.md`,
+  `modes/interview/practice.md`, `modes/interview/debrief.md`, or
+  `modes/interview-redflag.md`, then persist the typed artifact with
+  `npm run interview:session`.
+- Generate in resolved `language.output` (EN default), independent of JD
+  language and market rules.
 - Be direct. This is a working prep document, not a pep talk.

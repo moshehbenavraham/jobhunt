@@ -20,6 +20,22 @@ Interactive mode for when the candidate is filling out an application form in Ch
 8. PRESENT    -> Show clean copy-paste-ready answers
 ```
 
+Before drafting, capture the visible form as a versioned JSON snapshot and run:
+
+```bash
+node scripts/application-preflight.mjs \
+  --snapshot=/tmp/application-form.json \
+  --expected-company="{company}" \
+  --expected-role="{role}" \
+  --pdf=output/{validated-cv}.pdf
+```
+
+The typed preflight normalizes Greenhouse, Ashby, Lever, Workday, and generic
+forms; classifies fields; blocks unanswered knockout questions; detects
+company/role drift and repeat-company history; validates selected PDFs; and
+hard-codes no-submit/no-terms guards. Knockout and consent values require
+explicit human input.
+
 ## Step 1 -- Detect the role
 
 **With Playwright:** snapshot the active page and read the visible title, URL, and content.
@@ -73,11 +89,24 @@ For each question:
 4. reference something concrete from the visible JD or application context
 5. include a jobhunt proof point when there is a strong fit and the question allows it
 
-If the visible form includes a cover-letter field, call it out explicitly in the
-final notes. Until the repo has a checked-in cover-letter generator and storage
-path, treat it as a manual follow-up item rather than a completed artifact.
+If the visible form includes a cover-letter field or upload:
+
+1. classify it as `required` or `optional`
+2. run `modes/cover-letter.md` with the matching `form-required` or
+   `form-optional` trigger
+3. request the PDF branch only for an upload field
+4. record the validated artifact paths in the report and final notes
+
+If generation cannot be completed or validated, record
+`cover-letter: manual-pending`. Never present an unvalidated artifact as ready.
 
 These are first drafts for the candidate to review and personalize before submission. The system assumes human review of every final answer, even when the application page contains anti-AI language.
+
+After the user reviews the fields, store their exact values, selected files,
+provenance, and review states with `scripts/application-answers.mjs`. The
+versioned JSON sidecar and idempotent report section must always declare
+`submissionPerformedByTool: false`. Only record `submitted_by_user` after the
+user explicitly confirms submission.
 
 **Output format:**
 
@@ -101,7 +130,7 @@ Based on: Report #NNN | Score: X.X/5 | Archetype: [type]
 Notes:
 
 - [Role-change or context note]
-- [Cover-letter manual follow-up note, if applicable]
+- [Cover-letter artifact and validation note, if applicable]
 - [Any final customization suggestion]
 ```
 
@@ -112,6 +141,8 @@ If the candidate confirms they submitted the application:
 1. update the existing row in `data/applications.md` from `Evaluated` to `Applied`
 2. update the saved report with the final submitted answers when useful
 3. suggest the next step: LinkedIn outreach via `modes/contacto.md`
+4. `scripts/set-status.mjs` automatically seeds the first append-only follow-up
+   pin; use `--applied-date=YYYY-MM-DD` when the submission date is known
 
 ## Scroll handling
 

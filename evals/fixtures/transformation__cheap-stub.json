@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "case_id": "transformation",
+  "model": "cheap-stub",
+  "summary": {
+    "archetype": "AI Transformation",
+    "score": 3.2,
+    "final_decision": "skip",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "not_evaluated",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

@@ -14,15 +14,15 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseTracker as parseTrackerDocument } from './tracker-parse.mjs';
+import { resolveTrackerPath } from './tracker-utils.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const SCRIPT_DIR = dirname(SCRIPT_PATH);
 const CAREER_OPS = process.env.JOBHUNT_ROOT
   ? resolve(process.env.JOBHUNT_ROOT)
   : resolve(SCRIPT_DIR, '..');
-const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
-  ? join(CAREER_OPS, 'data/applications.md')
-  : join(CAREER_OPS, 'applications.md');
+const APPS_FILE = resolveTrackerPath(CAREER_OPS);
 const _REPORTS_DIR = join(CAREER_OPS, 'reports');
 
 // --- CLI args ---
@@ -51,6 +51,10 @@ const ALIASES = {
   respondido: 'responded',
   entrevista: 'interview',
   oferta: 'offer',
+  contratado: 'hired',
+  contratada: 'hired',
+  accepted: 'hired',
+  accept: 'hired',
   rechazado: 'rejected',
   rechazada: 'rejected',
   descartado: 'discarded',
@@ -75,7 +79,7 @@ function normalizeStatus(raw) {
 
 function classifyOutcome(status) {
   const s = normalizeStatus(status);
-  if (['interview', 'offer', 'responded', 'applied'].includes(s))
+  if (['hired', 'interview', 'offer', 'responded', 'applied'].includes(s))
     return 'positive';
   if (['rejected', 'discarded'].includes(s)) return 'negative';
   if (['skip'].includes(s)) return 'self_filtered';
@@ -86,26 +90,7 @@ function classifyOutcome(status) {
 function parseTracker() {
   if (!existsSync(APPS_FILE)) return [];
   const content = readFileSync(APPS_FILE, 'utf-8');
-  const entries = [];
-  for (const line of content.split('\n')) {
-    if (!line.startsWith('|')) continue;
-    const parts = line.split('|').map((s) => s.trim());
-    if (parts.length < 9) continue;
-    const num = parseInt(parts[1], 10);
-    if (Number.isNaN(num)) continue;
-    entries.push({
-      num,
-      date: parts[2],
-      company: parts[3],
-      role: parts[4],
-      score: parts[5],
-      status: parts[6],
-      pdf: parts[7],
-      report: parts[8],
-      notes: parts[9] || '',
-    });
-  }
-  return entries;
+  return parseTrackerDocument(content).rows;
 }
 
 // --- Parse a single report file ---

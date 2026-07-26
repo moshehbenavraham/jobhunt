@@ -12,6 +12,7 @@ runtime policy, and repo reference material.
 - [Customization Guide](CUSTOMIZATION.md)
 - [Scripts Reference](SCRIPTS.md)
 - [OpenAI Account Auth](OPENAI_ACCOUNT_AUTH.md)
+- [Localization](LOCALIZATION.md)
 
 ## Contributor and Support
 

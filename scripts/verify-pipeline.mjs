@@ -27,6 +27,11 @@ import {
   sep,
 } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  extractTrackerLocalReportPaths,
+  parseTracker,
+} from './tracker-parse.mjs';
+import { loadCanonicalStates, resolveTrackerPath } from './tracker-utils.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const SCRIPT_DIR = dirname(SCRIPT_PATH);
@@ -34,13 +39,11 @@ const CAREER_OPS = process.env.JOBHUNT_ROOT
   ? resolve(process.env.JOBHUNT_ROOT)
   : resolve(SCRIPT_DIR, '..');
 // Support both layouts: data/applications.md (boilerplate) and applications.md (original)
-const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
-  ? join(CAREER_OPS, 'data/applications.md')
-  : join(CAREER_OPS, 'applications.md');
+const APPS_FILE = resolveTrackerPath(CAREER_OPS);
 const ADDITIONS_DIR = join(CAREER_OPS, 'batch/tracker-additions');
 const REPORTS_DIR = join(CAREER_OPS, 'reports');
 const OUTPUT_DIR = join(CAREER_OPS, 'output');
-const _STATES_FILE = existsSync(join(CAREER_OPS, 'templates/states.yml'))
+const STATES_FILE = existsSync(join(CAREER_OPS, 'templates/states.yml'))
   ? join(CAREER_OPS, 'templates/states.yml')
   : join(CAREER_OPS, 'states.yml');
 
@@ -48,18 +51,20 @@ const _STATES_FILE = existsSync(join(CAREER_OPS, 'templates/states.yml'))
 mkdirSync(join(CAREER_OPS, 'data'), { recursive: true });
 mkdirSync(REPORTS_DIR, { recursive: true });
 
-const CANONICAL_STATUSES = [
-  'evaluated',
-  'applied',
-  'responded',
-  'interview',
-  'offer',
-  'rejected',
-  'discarded',
-  'skip',
-];
+const STATE_DEFINITIONS = loadCanonicalStates(STATES_FILE);
+const CANONICAL_STATUSES = STATE_DEFINITIONS.map((state) =>
+  state.label.toLowerCase(),
+);
 
 const ALIASES = {
+  ...Object.fromEntries(
+    STATE_DEFINITIONS.flatMap((state) =>
+      state.aliases.map((alias) => [
+        alias.toLowerCase(),
+        state.label.toLowerCase(),
+      ]),
+    ),
+  ),
   evaluada: 'evaluated',
   condicional: 'evaluated',
   hold: 'evaluated',
@@ -290,27 +295,8 @@ if (!existsSync(APPS_FILE)) {
   process.exit(0);
 }
 const content = readFileSync(APPS_FILE, 'utf-8');
-const lines = content.split('\n');
-
-const entries = [];
-for (const line of lines) {
-  if (!line.startsWith('|')) continue;
-  const parts = line.split('|').map((s) => s.trim());
-  if (parts.length < 9) continue;
-  const num = parseInt(parts[1], 10);
-  if (Number.isNaN(num)) continue;
-  entries.push({
-    num,
-    date: parts[2],
-    company: parts[3],
-    role: parts[4],
-    score: parts[5],
-    status: parts[6],
-    pdf: parts[7],
-    report: parts[8],
-    notes: parts[9] || '',
-  });
-}
+const tracker = parseTracker(content);
+const { lines, rows: entries } = tracker;
 
 console.log(`\n📊 Checking ${entries.length} entries in applications.md\n`);
 
@@ -363,15 +349,32 @@ for (const [_key, group] of companyRoleMap) {
 }
 if (dupes === 0) ok('No exact duplicates found');
 
+const numberMap = new Map();
+let duplicateNumbers = 0;
+for (const entry of entries) {
+  if (!numberMap.has(entry.num)) numberMap.set(entry.num, []);
+  numberMap.get(entry.num).push(entry);
+}
+for (const [number, group] of numberMap) {
+  if (group.length < 2) continue;
+  error(
+    `Duplicate tracker number #${number}: ${group
+      .map((entry) => `${entry.company} — ${entry.role}`)
+      .join('; ')}`,
+  );
+  duplicateNumbers++;
+}
+if (duplicateNumbers === 0) ok('All tracker numbers are unique');
+
 // --- Check 3: Report links ---
 let brokenReports = 0;
 for (const e of entries) {
-  const match = e.report.match(/\]\(([^)]+)\)/);
-  if (!match) continue;
-  const reportPath = join(CAREER_OPS, match[1]);
-  if (!existsSync(reportPath)) {
-    error(`#${e.num}: Report not found: ${match[1]}`);
-    brokenReports++;
+  for (const relativePath of extractTrackerLocalReportPaths(e.report)) {
+    const reportPath = join(CAREER_OPS, relativePath);
+    if (!existsSync(reportPath)) {
+      error(`#${e.num}: Report not found: ${relativePath}`);
+      brokenReports++;
+    }
   }
 }
 if (brokenReports === 0) ok('All report links valid');
@@ -390,11 +393,13 @@ if (badScores === 0) ok('All scores valid');
 // --- Check 5: Row format ---
 let badRows = 0;
 for (const line of lines) {
-  if (!line.startsWith('|')) continue;
-  if (line.includes('---') || line.includes('Empresa')) continue;
-  const parts = line.split('|');
-  if (parts.length < 9) {
-    error(`Row with <9 columns: ${line.substring(0, 80)}...`);
+  if (!line.trimStart().startsWith('|')) continue;
+  if (/^\s*\|(?:\s*[-:]+\s*\|)+\s*$/.test(line)) continue;
+  const parts = line.split('|').map((part) => part.trim());
+  if (!/^\d+$/.test(parts[tracker.columns.num] || '')) continue;
+  const row = tracker.rows.find((entry) => entry.raw === line);
+  if (!row) {
+    error(`Malformed tracker row: ${line.substring(0, 80)}...`);
     badRows++;
   }
 }

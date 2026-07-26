@@ -52,6 +52,7 @@ async function copyFixtureRoot(destination) {
   });
   for (const path of [
     'templates/cv-template.html',
+    'templates/cv-template.cjk-minimal.html',
     'profile/cv.example.md',
     'config/profile.example.yml',
     'modes/_profile.template.md',
@@ -82,6 +83,28 @@ function makeA4Fixture(letterFixture) {
     certifications: 'Certificaciones',
     skills: 'Habilidades',
   };
+  return fixture;
+}
+
+function makeCjkFixture(letterFixture) {
+  const fixture = structuredClone(letterFixture);
+  fixture.candidate.name = '测试候选人';
+  fixture.candidate.location = '中国 · 杭州 | 日本語対応';
+  fixture.job.company = '示例智能系统';
+  fixture.job.role = '高级人工智能工程师';
+  fixture.job.location = '杭州';
+  fixture.job.language = 'zh-CN';
+  fixture.job.format = 'a4';
+  fixture.labels = {
+    summary: '个人简介',
+    competencies: '核心能力',
+    experience: '工作经历',
+    projects: '精选项目',
+    education: '教育经历',
+    certifications: '专业认证',
+    skills: '技术栈',
+  };
+  fixture.summary = `全栈工程师，负责 AI Agent 工作流与生产部署。${fixture.summary}`;
   return fixture;
 }
 
@@ -271,6 +294,9 @@ try {
   const a4Fixture = makeA4Fixture(letterFixture);
   const a4BuildPath = join(temporaryRoot, 'cv-build-a4.json');
   await writeFile(a4BuildPath, `${JSON.stringify(a4Fixture, null, 2)}\n`);
+  const cjkFixture = makeCjkFixture(letterFixture);
+  const cjkBuildPath = join(temporaryRoot, 'cv-build-cjk.json');
+  await writeFile(cjkBuildPath, `${JSON.stringify(cjkFixture, null, 2)}\n`);
 
   const requireTika = process.env.PDF_VALIDATION_REQUIRE_TIKA === '1';
   const letter = await buildCv({
@@ -297,8 +323,21 @@ try {
     requireTika,
     tikaJar: process.env.TIKA_APP_JAR,
   });
+  const cjk = await buildCv({
+    root: temporaryRoot,
+    buildPath: cjkBuildPath,
+    pdfPath: join(
+      temporaryRoot,
+      'output',
+      'cv-li-ming-example-2026-07-26.pdf',
+    ),
+    templateName: 'cjk-minimal',
+    maxPages: 2,
+    requireTika,
+    tikaJar: process.env.TIKA_APP_JAR,
+  });
 
-  for (const result of [letter, a4]) {
+  for (const result of [letter, a4, cjk]) {
     assert.equal(result.validation.valid, true);
     assert.equal(result.coverage.unsupportedIncludedCount, 0);
     assert.ok((await stat(result.pdfPath)).size > 10_000);
@@ -384,6 +423,10 @@ try {
   assert.doesNotMatch(a4Html, /\+1-555-0123/);
   assert.match(a4Html, /Educación/);
   assert.match(a4Html, /Madrid, España/);
+  const cjkHtml = await readFile(cjk.htmlPath, 'utf8');
+  assert.match(cjkHtml, /测试候选人/);
+  assert.match(cjkHtml, /AI Agent 工作流/);
+  assert.match(cjkHtml, /Noto Sans CJK SC/);
 
   const maxPageFailure = await validatePdf({
     pdfPath: letter.pdfPath,

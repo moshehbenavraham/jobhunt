@@ -55,7 +55,9 @@ function tokenize(value) {
     String(value)
       .normalize('NFKC')
       .toLowerCase()
-      .match(/[\p{L}\p{N}+#.$%/-]+/gu) || []
+      .match(
+        /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]|[\p{L}\p{N}+#.$%/-]+/gu,
+      ) || []
   );
 }
 

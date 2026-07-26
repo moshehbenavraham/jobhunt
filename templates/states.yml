@@ -37,6 +37,12 @@ states:
     description: Offer received
     dashboard_group: offer
 
+  - id: hired
+    label: Hired
+    aliases: [contratado, contratada, accepted, accept]
+    description: Offer accepted and role secured
+    dashboard_group: hired
+
   - id: rejected
     label: Rejected
     aliases: [rechazado, rechazada]

@@ -34,6 +34,12 @@ const MOCK_PDF_VALIDATOR_SOURCE = join(
   'test-fixtures',
   'mock-pdf-validator.mjs',
 );
+const RESERVATION_SOURCES = [
+  'reserve-report-ids.mjs',
+  'tracker-parse.mjs',
+  'tracker-utils.mjs',
+  'tracker-aliases.json',
+];
 
 const COMPLETED_FIXTURE = join(
   ROOT,
@@ -118,6 +124,12 @@ function createSandbox({ inputRows, stateRows = [] }) {
   );
   copyExecutable(MOCK_CODEX_SOURCE, join(binDir, 'codex'));
   copyFileSync(MOCK_PDF_VALIDATOR_SOURCE, join(scriptsDir, 'validate-pdf.mjs'));
+  for (const name of RESERVATION_SOURCES) {
+    writeFile(
+      join(scriptsDir, name),
+      readFileSync(join(ROOT, 'scripts', name), 'utf8'),
+    );
+  }
 
   writeFile(
     join(batchDir, 'batch-input.tsv'),
@@ -147,6 +159,7 @@ function createSandbox({ inputRows, stateRows = [] }) {
 
   writeFile(join(scriptsDir, 'merge-tracker.mjs'), 'process.exit(0);\n');
   writeFile(join(scriptsDir, 'verify-pipeline.mjs'), 'process.exit(0);\n');
+  writeFile(join(scriptsDir, 'reconcile-pipeline.mjs'), 'process.exit(0);\n');
 
   return root;
 }

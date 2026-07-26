@@ -25,6 +25,11 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as yamlModule from 'js-yaml';
 import {
+  canonicalizeListingUrl,
+  classifyListingAgainstHistory,
+  enrichListingFingerprint,
+} from './fingerprint-core.mjs';
+import {
   detectApi,
   fetchJson,
   PARSERS,
@@ -32,6 +37,14 @@ import {
   parseGreenhouse,
   parseLever,
 } from './ats-core.mjs';
+import { extractBrowserJobBoard } from './browser-extract.mjs';
+import { parseTracker } from './tracker-parse.mjs';
+import { resolveTrackerPath } from './tracker-utils.mjs';
+import { fetchNormalized } from './providers/_contract.mjs';
+import { makeHttpContext } from './providers/_http.mjs';
+import { loadProviders, resolveProvider } from './providers/_registry.mjs';
+import { createScanRunId, recordScanLedgers } from './scan-ledger.mjs';
+import { buildScanFilter } from './scan-policy.mjs';
 
 const parseYaml = (yamlModule.default ?? yamlModule).load;
 
@@ -46,7 +59,8 @@ const PORTALS_PATH = resolve(PROJECT_ROOT, 'config', 'portals.yml');
 const PROFILE_PATH = resolve(PROJECT_ROOT, 'config', 'profile.yml');
 const SCAN_HISTORY_PATH = resolve(DATA_DIR, 'scan-history.tsv');
 const PIPELINE_PATH = resolve(DATA_DIR, 'pipeline.md');
-const APPLICATIONS_PATH = resolve(DATA_DIR, 'applications.md');
+const APPLICATIONS_PATH = resolveTrackerPath(PROJECT_ROOT);
+const PROVIDERS_DIR = resolve(SCRIPT_DIR, 'providers');
 
 const CONCURRENCY = 10;
 const PIPELINE_TEMPLATE = [
@@ -61,7 +75,23 @@ const PIPELINE_TEMPLATE = [
   '## Processed',
   '',
 ].join('\n');
-const SCAN_HISTORY_HEADER = 'url\tfirst_seen\tportal\ttitle\tcompany\tstatus\n';
+const SCAN_HISTORY_COLUMNS = [
+  'url',
+  'first_seen',
+  'portal',
+  'title',
+  'company',
+  'status',
+  'trust_score',
+  'trust_level',
+  'trust_flags',
+  'canonical_url',
+  'identity_fingerprint',
+  'content_fingerprint',
+  'listing_status',
+  'matched_url',
+];
+const SCAN_HISTORY_HEADER = `${SCAN_HISTORY_COLUMNS.join('\t')}\n`;
 const REMOTE_POLICIES = new Set([
   'unrestricted',
   'remote_only',
@@ -185,7 +215,48 @@ function ensurePipelineFile() {
 function ensureScanHistoryFile() {
   if (!existsSync(SCAN_HISTORY_PATH)) {
     writeFileSync(SCAN_HISTORY_PATH, SCAN_HISTORY_HEADER, 'utf-8');
+    return;
   }
+
+  const current = readFileSync(SCAN_HISTORY_PATH, 'utf-8');
+  const lines = current.split(/\r?\n/);
+  const columns = lines[0].split('\t');
+  const missing = SCAN_HISTORY_COLUMNS.filter(
+    (column) => !columns.includes(column),
+  );
+  if (missing.length === 0) return;
+  const upgradedColumns = [...columns, ...missing];
+  const upgraded = [
+    upgradedColumns.join('\t'),
+    ...lines.slice(1).map((line) => {
+      if (!line) return '';
+      return `${line}${'\t'.repeat(missing.length)}`;
+    }),
+  ].join('\n');
+  const backupPath = `${SCAN_HISTORY_PATH}.pre-fingerprints.bak`;
+  if (!existsSync(backupPath)) {
+    writeFileSync(backupPath, current, 'utf-8');
+  }
+  writeFileSync(SCAN_HISTORY_PATH, upgraded, 'utf-8');
+}
+
+function sanitizeTsv(value) {
+  return String(value ?? '')
+    .replace(/[\t\r\n]+/g, ' ')
+    .trim();
+}
+
+function renderPipelineOffer(offer) {
+  const line = `- [ ] ${offer.url} | ${offer.company} | ${offer.title}`;
+  if (!Number.isFinite(offer.trustScore)) return line;
+  const flags =
+    Array.isArray(offer.trustFlags) && offer.trustFlags.length > 0
+      ? `; flags: ${offer.trustFlags.join(', ')}`
+      : '';
+  const listing = offer.listingStatus
+    ? `\n  - Listing status: ${offer.listingStatus}${offer.matchedUrl ? `; matched: ${offer.matchedUrl}` : ''}`
+    : '';
+  return `${line}\n  - Scan trust: ${offer.trustScore}/100 (${offer.trustLevel})${flags}; source: ${offer.source}${listing}`;
 }
 
 function ensureScanArtifacts() {
@@ -478,45 +549,81 @@ function buildTitleFilter(titleFilter) {
   };
 }
 
-function loadSeenUrls() {
+function loadSeenUrls({
+  cooldownDays = Number.POSITIVE_INFINITY,
+  now = Date.now(),
+} = {}) {
   const seen = new Set();
 
   if (existsSync(SCAN_HISTORY_PATH)) {
     const lines = readFileSync(SCAN_HISTORY_PATH, 'utf-8').split('\n');
     for (const line of lines.slice(1)) {
-      const url = line.split('\t')[0];
-      if (url) seen.add(url);
+      const [url, firstSeen] = line.split('\t');
+      if (Number.isFinite(cooldownDays)) {
+        const seenAt = Date.parse(firstSeen);
+        if (
+          Number.isFinite(seenAt) &&
+          now - seenAt > cooldownDays * 86_400_000
+        ) {
+          continue;
+        }
+      }
+      if (url) seen.add(canonicalizeListingUrl(url) || url);
     }
   }
 
   if (existsSync(PIPELINE_PATH)) {
     const text = readFileSync(PIPELINE_PATH, 'utf-8');
     for (const match of text.matchAll(/- \[[ x]\] (https?:\/\/\S+)/g)) {
-      seen.add(match[1]);
+      seen.add(canonicalizeListingUrl(match[1]) || match[1]);
     }
   }
 
   if (existsSync(APPLICATIONS_PATH)) {
     const text = readFileSync(APPLICATIONS_PATH, 'utf-8');
     for (const match of text.matchAll(/https?:\/\/[^\s|)]+/g)) {
-      seen.add(match[0]);
+      seen.add(canonicalizeListingUrl(match[0]) || match[0]);
     }
   }
 
   return seen;
 }
 
+function loadFingerprintHistory() {
+  if (!existsSync(SCAN_HISTORY_PATH)) return [];
+  const lines = readFileSync(SCAN_HISTORY_PATH, 'utf8').split(/\r?\n/);
+  const columns = lines[0].split('\t');
+  return lines
+    .slice(1)
+    .filter(Boolean)
+    .map((line) => {
+      const values = line.split('\t');
+      const row = Object.fromEntries(
+        columns.map((column, index) => [column, values[index] || '']),
+      );
+      return {
+        url: row.url,
+        firstSeen: row.first_seen,
+        company: row.company,
+        title: row.title,
+        canonicalUrl:
+          row.canonical_url || canonicalizeListingUrl(row.url) || row.url,
+        identityFingerprint: row.identity_fingerprint,
+        contentFingerprint: row.content_fingerprint,
+        listingStatus: row.listing_status,
+      };
+    });
+}
+
 function loadSeenCompanyRoles() {
   const seen = new Set();
   if (!existsSync(APPLICATIONS_PATH)) return seen;
 
-  const text = readFileSync(APPLICATIONS_PATH, 'utf-8');
-  for (const match of text.matchAll(
-    /\|[^|]+\|[^|]+\|\s*([^|]+)\s*\|\s*([^|]+)\s*\|/g,
-  )) {
-    const company = match[1].trim().toLowerCase();
-    const role = match[2].trim().toLowerCase();
-    if (company && role && company !== 'company') {
+  const tracker = parseTracker(readFileSync(APPLICATIONS_PATH, 'utf-8'));
+  for (const row of tracker.rows) {
+    const company = row.company.trim().toLowerCase();
+    const role = row.role.trim().toLowerCase();
+    if (company && role) {
       seen.add(`${company}::${role}`);
     }
   }
@@ -536,27 +643,13 @@ function appendToPipeline(offers) {
   if (idx === -1) {
     const processedIdx = text.indexOf('## Processed');
     const insertAt = processedIdx === -1 ? text.length : processedIdx;
-    const block =
-      `\n${marker}\n\n` +
-      offers
-        .map(
-          (offer) => `- [ ] ${offer.url} | ${offer.company} | ${offer.title}`,
-        )
-        .join('\n') +
-      '\n\n';
+    const block = `\n${marker}\n\n${offers.map(renderPipelineOffer).join('\n')}\n\n`;
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
   } else {
     const afterMarker = idx + marker.length;
     const nextSection = text.indexOf('\n## ', afterMarker);
     const insertAt = nextSection === -1 ? text.length : nextSection;
-    const block =
-      '\n' +
-      offers
-        .map(
-          (offer) => `- [ ] ${offer.url} | ${offer.company} | ${offer.title}`,
-        )
-        .join('\n') +
-      '\n';
+    const block = `\n${offers.map(renderPipelineOffer).join('\n')}\n`;
     text = text.slice(0, insertAt) + block + text.slice(insertAt);
   }
 
@@ -568,10 +661,27 @@ function appendToScanHistory(offers, date) {
 
   ensureScanHistoryFile();
   const lines = `${offers
-    .map(
-      (offer) =>
-        `${offer.url}\t${date}\t${offer.source}\t${offer.title}\t${offer.company}\tadded`,
-    )
+    .map((offer) => {
+      const enriched = enrichListingFingerprint(offer);
+      return [
+        enriched.url,
+        date,
+        enriched.source,
+        enriched.title,
+        enriched.company,
+        enriched.historyStatus || 'added',
+        Number.isFinite(enriched.trustScore) ? enriched.trustScore : '',
+        enriched.trustLevel || '',
+        Array.isArray(enriched.trustFlags) ? enriched.trustFlags.join(',') : '',
+        enriched.canonicalUrl,
+        enriched.identityFingerprint,
+        enriched.contentFingerprint,
+        enriched.listingStatus || 'new',
+        enriched.matchedUrl || '',
+      ]
+        .map(sanitizeTsv)
+        .join('\t');
+    })
     .join('\n')}\n`;
   appendFileSync(SCAN_HISTORY_PATH, lines, 'utf-8');
 }
@@ -617,12 +727,21 @@ function getSectionRange(text, marker) {
 }
 
 function normalizePendingOffer(offer) {
-  return {
+  const normalized = {
     url: String(offer.url || '').trim(),
     company: String(offer.company || '').trim(),
     title: String(offer.title || '').trim(),
     location: String(offer.location || '').trim(),
   };
+  if (offer.source) normalized.source = String(offer.source).trim();
+  if (Number.isFinite(Number(offer.trustScore))) {
+    normalized.trustScore = Number(offer.trustScore);
+    normalized.trustLevel = String(offer.trustLevel || '').trim();
+    normalized.trustFlags = Array.isArray(offer.trustFlags)
+      ? [...offer.trustFlags]
+      : [];
+  }
+  return normalized;
 }
 
 function parsePendingOffersFromPipeline(text) {
@@ -783,6 +902,16 @@ function scoreOfferForShortlist(offer, shortlistContext) {
     if (!includesNormalizedTerm(normalizedTitle, hint.term)) continue;
     score -= hint.penalty;
     why.push(hint.reason);
+  }
+
+  if (Number.isFinite(offer.trustScore) && offer.trustScore < 90) {
+    const trustPenalty = offer.trustScore < 60 ? 2 : 0.75;
+    score -= trustPenalty;
+    why.push(
+      offer.trustScore < 60
+        ? 'low-trust source requires verification'
+        : 'source trust flags require review',
+    );
   }
 
   const primaryKeyword = matchedKeywords[0] || '';
@@ -1017,7 +1146,7 @@ function collectInactiveConfigNotes(config, scopedCompanies) {
   return notes;
 }
 
-function buildCompanyLists(companies, filterCompany) {
+function buildCompanyLists(companies, filterCompany, providers = null) {
   const scopedCompanies = companies.filter(
     (company) =>
       !filterCompany || company.name.toLowerCase().includes(filterCompany),
@@ -1031,6 +1160,27 @@ function buildCompanyLists(companies, filterCompany) {
         name: company.name,
         reason: 'disabled in config/portals.yml',
       });
+      continue;
+    }
+
+    if (providers) {
+      const resolvedProvider = resolveProvider(company, providers);
+      if (resolvedProvider?.error) {
+        skipped.push({
+          name: company.name,
+          reason: resolvedProvider.error,
+        });
+        continue;
+      }
+      if (!resolvedProvider) {
+        skipped.push({
+          name: company.name,
+          reason:
+            'no supported provider detected from provider/api/careers_url',
+        });
+        continue;
+      }
+      targets.push({ ...company, _provider: resolvedProvider.provider });
       continue;
     }
 
@@ -1049,7 +1199,16 @@ function buildCompanyLists(companies, filterCompany) {
   return { scopedCompanies, skipped, targets };
 }
 
-export async function runScan(args = process.argv.slice(2)) {
+export async function runScan(
+  args = process.argv.slice(2),
+  {
+    fetchJsonImpl = fetchJson,
+    providersImpl,
+    browserExtractImpl = extractBrowserJobBoard,
+  } = {},
+) {
+  const startedAt = new Date();
+  const runId = createScanRunId({ timestamp: startedAt.toISOString() });
   const dryRunRequested = args.includes('--dry-run');
   const compareClean = args.includes('--compare-clean');
   const dryRun = dryRunRequested || compareClean;
@@ -1065,13 +1224,26 @@ export async function runScan(args = process.argv.slice(2)) {
   const config = parseYaml(readFileSync(PORTALS_PATH, 'utf-8')) || {};
   const profileConfig = loadProfileConfig();
   const discoveryConfig = buildDiscoveryConfig(profileConfig);
-  const companies = Array.isArray(config.tracked_companies)
-    ? config.tracked_companies
-    : [];
+  const companies = [
+    ...(Array.isArray(config.tracked_companies)
+      ? config.tracked_companies
+      : []),
+    ...(Array.isArray(config.job_boards) ? config.job_boards : []),
+  ];
+  const providers =
+    providersImpl === undefined
+      ? await loadProviders(PROVIDERS_DIR, {
+          onError(error) {
+            console.error(`Provider load error: ${error.message}`);
+          },
+        })
+      : providersImpl;
   const titleFilter = buildTitleFilter(config.title_filter);
+  const richFilter = buildScanFilter(config.scan_filters || {});
   const { scopedCompanies, skipped, targets } = buildCompanyLists(
     companies,
     filterCompany,
+    providers,
   );
   const inactiveConfigNotes = collectInactiveConfigNotes(
     config,
@@ -1091,17 +1263,30 @@ export async function runScan(args = process.argv.slice(2)) {
   }
   if (dryRun) console.log('(dry run - no files will be written)\n');
 
-  const seenUrls = compareClean ? new Set() : loadSeenUrls();
+  const seenUrls = compareClean
+    ? new Set()
+    : loadSeenUrls({
+        cooldownDays:
+          config.scan_filters?.cooldown_days === undefined
+            ? Number.POSITIVE_INFINITY
+            : Number(config.scan_filters.cooldown_days),
+      });
   const seenCompanyRoles = compareClean ? new Set() : loadSeenCompanyRoles();
+  const fingerprintHistory = compareClean ? [] : loadFingerprintHistory();
 
   const date = new Date().toISOString().slice(0, 10);
   let totalFound = 0;
   let totalFiltered = 0;
+  let totalPolicyFiltered = 0;
   let totalLocationFiltered = 0;
   let totalDupes = 0;
+  let totalCrossListings = 0;
   const newOffers = [];
   const errors = [];
   const locationRejections = [];
+  const policyRejections = [];
+  const portalEvents = [];
+  const listingEvents = [];
   const discoverySummary = formatDiscoverySummary(discoveryConfig);
   const shortlistContext = {
     positiveKeywords: normalizeStringList(config.title_filter?.positive),
@@ -1110,15 +1295,37 @@ export async function runScan(args = process.argv.slice(2)) {
   };
 
   const tasks = targets.map((company) => async () => {
-    const { type, url } = company._api;
+    const taskStarted = performance.now();
+    const providerId = company._provider?.id || company._api.type;
     try {
-      const json = await fetchJson(url);
-      const jobs = PARSERS[type](json, company.name);
+      const type = providerId;
+      const jobs = company._provider
+        ? await fetchNormalized(
+            company._provider,
+            company,
+            makeHttpContext({
+              fetchJson: fetchJsonImpl,
+              browserExtract: browserExtractImpl,
+            }),
+          )
+        : PARSERS[type](await fetchJsonImpl(company._api.url), company.name);
       totalFound += jobs.length;
 
       for (const job of jobs) {
+        Object.assign(job, enrichListingFingerprint(job));
         if (!titleFilter(job.title)) {
           totalFiltered++;
+          continue;
+        }
+
+        const policyDecision = richFilter(job);
+        if (!policyDecision.allowed) {
+          totalPolicyFiltered++;
+          policyRejections.push({
+            company: job.company,
+            title: job.title,
+            reasons: policyDecision.reasons,
+          });
           continue;
         }
 
@@ -1136,7 +1343,39 @@ export async function runScan(args = process.argv.slice(2)) {
           continue;
         }
 
-        if (seenUrls.has(job.url)) {
+        const fingerprintMatch = classifyListingAgainstHistory(
+          job,
+          fingerprintHistory,
+        );
+        if (fingerprintMatch?.kind === 'cross_listing') {
+          totalCrossListings++;
+          listingEvents.push({
+            ...job,
+            source:
+              company._provider?.kind === 'source'
+                ? `${type}-feed`
+                : `${type}-api`,
+            historyStatus: 'skipped_cross_listing',
+            listingStatus: fingerprintMatch.kind,
+            matchedUrl: fingerprintMatch.row.url,
+          });
+          continue;
+        }
+        if (
+          fingerprintMatch &&
+          ['relisted', 'materially_changed', 'possible_repost'].includes(
+            fingerprintMatch.kind,
+          )
+        ) {
+          job.listingStatus = fingerprintMatch.kind;
+          job.matchedUrl = fingerprintMatch.row.url;
+        }
+
+        const canonicalUrl = job.canonicalUrl || job.url;
+        if (
+          fingerprintMatch?.kind === 'cosmetic_duplicate' ||
+          seenUrls.has(canonicalUrl)
+        ) {
           totalDupes++;
           continue;
         }
@@ -1147,20 +1386,86 @@ export async function runScan(args = process.argv.slice(2)) {
           continue;
         }
 
-        seenUrls.add(job.url);
+        seenUrls.add(canonicalUrl);
         seenCompanyRoles.add(companyRoleKey);
-        newOffers.push({ ...job, source: `${type}-api` });
+        const accepted = {
+          ...job,
+          source:
+            company._provider?.kind === 'source'
+              ? `${type}-feed`
+              : `${type}-api`,
+        };
+        newOffers.push(accepted);
+        fingerprintHistory.push({ ...accepted, firstSeen: date });
       }
+      portalEvents.push({
+        timestamp: new Date().toISOString(),
+        run_id: runId,
+        portal: company.name,
+        provider: providerId,
+        outcome: 'success',
+        duration_ms: Math.round(performance.now() - taskStarted),
+        jobs_found: jobs.length,
+        error: '',
+      });
     } catch (error) {
       errors.push({ company: company.name, error: error.message });
+      portalEvents.push({
+        timestamp: new Date().toISOString(),
+        run_id: runId,
+        portal: company.name,
+        provider: providerId,
+        outcome: 'failure',
+        duration_ms: Math.round(performance.now() - taskStarted),
+        jobs_found: 0,
+        error: error.message,
+      });
     }
   });
 
-  await parallelFetch(tasks, CONCURRENCY);
+  const regularTasks = tasks.filter(
+    (_task, index) => targets[index]._provider?.id !== 'browser',
+  );
+  const browserTasks = tasks.filter(
+    (_task, index) => targets[index]._provider?.id === 'browser',
+  );
+  await parallelFetch(regularTasks, CONCURRENCY);
+  for (const task of browserTasks) {
+    await task();
+  }
 
-  if (!dryRun && newOffers.length > 0) {
-    appendToPipeline(newOffers);
-    appendToScanHistory(newOffers, date);
+  if (!dryRun && (newOffers.length > 0 || listingEvents.length > 0)) {
+    if (newOffers.length > 0) appendToPipeline(newOffers);
+    appendToScanHistory([...newOffers, ...listingEvents], date);
+  }
+
+  if (!dryRun) {
+    const completedAt = new Date();
+    try {
+      recordScanLedgers(PROJECT_ROOT, {
+        run: {
+          run_id: runId,
+          started_at: startedAt.toISOString(),
+          completed_at: completedAt.toISOString(),
+          mode: 'live',
+          configured: scopedCompanies.length,
+          targeted: targets.length,
+          skipped: skipped.length,
+          succeeded: portalEvents.filter((event) => event.outcome === 'success')
+            .length,
+          failed: portalEvents.filter((event) => event.outcome === 'failure')
+            .length,
+          jobs_found: totalFound,
+          filtered: totalFiltered + totalPolicyFiltered + totalLocationFiltered,
+          duplicates: totalDupes,
+          cross_listings: totalCrossListings,
+          new_offers: newOffers.length,
+        },
+        portals: portalEvents,
+      });
+    } catch (error) {
+      console.error(`Scan ledger error: ${error.message}`);
+    }
   }
 
   const shortlistOffers = compareClean
@@ -1182,8 +1487,10 @@ export async function runScan(args = process.argv.slice(2)) {
   console.log(`Companies skipped:    ${skipped.length}`);
   console.log(`Total jobs found:     ${totalFound}`);
   console.log(`Filtered by title:    ${totalFiltered} removed`);
+  console.log(`Filtered by policy:   ${totalPolicyFiltered} removed`);
   console.log(`Filtered by location: ${totalLocationFiltered} removed`);
   console.log(`Duplicates:           ${totalDupes} skipped`);
+  console.log(`Cross-listings:       ${totalCrossListings} skipped`);
   console.log(`New offers added:     ${newOffers.length}`);
 
   if (targets.length > 0) {
@@ -1191,7 +1498,9 @@ export async function runScan(args = process.argv.slice(2)) {
     for (const company of [...targets].sort((a, b) =>
       a.name.localeCompare(b.name),
     )) {
-      console.log(`  - ${company.name} (${company._api.type})`);
+      console.log(
+        `  - ${company.name} (${company._provider?.id || company._api.type})`,
+      );
     }
   }
 
@@ -1223,6 +1532,30 @@ export async function runScan(args = process.argv.slice(2)) {
     console.log(`\nLocation rejections (${locationRejections.length}):`);
     for (const line of rejectionSummary) {
       console.log(`  - ${line}`);
+    }
+  }
+
+  if (policyRejections.length > 0) {
+    const counts = new Map();
+    for (const rejection of policyRejections) {
+      for (const reason of rejection.reasons) {
+        counts.set(reason, (counts.get(reason) || 0) + 1);
+      }
+    }
+    console.log(`\nPolicy rejections (${policyRejections.length}):`);
+    for (const [reason, count] of [...counts].sort((a, b) =>
+      a[0].localeCompare(b[0]),
+    )) {
+      console.log(`  - ${reason}: ${count}`);
+    }
+  }
+
+  if (listingEvents.length > 0) {
+    console.log(`\nCross-listings (${listingEvents.length}):`);
+    for (const event of listingEvents) {
+      console.log(
+        `  - ${event.company} | ${event.title} -> ${event.matchedUrl}`,
+      );
     }
   }
 
@@ -1289,6 +1622,7 @@ export {
   fetchJson,
   formatDiscoverySummary,
   loadPendingPipelineOffers,
+  loadFingerprintHistory,
   loadSeenCompanyRoles,
   loadSeenUrls,
   loadProfileConfig,

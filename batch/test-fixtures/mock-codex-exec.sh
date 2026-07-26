@@ -29,6 +29,9 @@ while [[ $# -gt 0 ]]; do
       output_schema="$2"
       shift 2
       ;;
+    -c | --config)
+      shift 2
+      ;;
     -o | --output-last-message)
       last_message_file="$2"
       shift 2

@@ -27,21 +27,40 @@ function buildResolvedTemplate(overrides = {}) {
     '{{{LINKEDIN_DISPLAY}}}': 'linkedin.com/in/test-user',
     '{{{GITHUB_URL}}}': 'https://github.com/test-user',
     '{{{GITHUB_DISPLAY}}}': 'github.com/test-user',
-    '{{EDUCATION}}':
+    '{{SUMMARY_SECTION}}':
+      '\\section{Professional Summary}\\nBuilt reliable systems.',
+    '{{COMPETENCIES_SECTION}}':
+      '\\section{Core Competencies}\\nPlatform engineering',
+    '{{EDUCATION_SECTION}}': [
+      '\\section{Education}',
+      '\\resumeSubHeadingListStart',
       '\\resumeSubheading{Test University}{2018 -- 2022}{B.S. Computer Science}{Remote}',
-    '{{EXPERIENCE}}': [
+      '\\resumeSubHeadingListEnd',
+    ].join('\n'),
+    '{{EXPERIENCE_SECTION}}': [
+      '\\section{Work Experience}',
+      '\\resumeSubHeadingListStart',
       '\\resumeSubheading{Example Corp}{2022 -- Present}{Software Engineer}{Remote}',
       '\\resumeItemListStart',
       '\\resumeItem{Built ATS-safe resume tooling for tailored applications.}',
       '\\resumeItemListEnd',
+      '\\resumeSubHeadingListEnd',
     ].join('\n'),
-    '{{PROJECTS}}': [
+    '{{PROJECTS_SECTION}}': [
+      '\\section{Personal Projects}',
+      '\\resumeSubHeadingListStart',
       '\\resumeProjectHeading{\\textbf{Jobhunt} $|$ Node.js}{2026}',
       '\\resumeItemListStart',
       '\\resumeItem{Added LaTeX validation coverage without disturbing the HTML PDF path.}',
       '\\resumeItemListEnd',
+      '\\resumeSubHeadingListEnd',
     ].join('\n'),
-    '{{SKILLS}}': '\\textbf{Languages}{: JavaScript, SQL, HTML}',
+    '{{SKILLS_SECTION}}': [
+      '\\section{Technical Skills}',
+      '\\begin{itemize}[leftmargin=0.15in, label={}]',
+      '\\small{\\item{\\textbf{Languages}{: JavaScript, SQL, HTML}}}',
+      '\\end{itemize}',
+    ].join('\n'),
     ...overrides,
   };
 

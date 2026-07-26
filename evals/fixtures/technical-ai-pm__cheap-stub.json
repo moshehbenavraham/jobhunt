@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "case_id": "technical-ai-pm",
+  "model": "cheap-stub",
+  "summary": {
+    "archetype": "Technical AI PM",
+    "score": 3.7,
+    "final_decision": "consider",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "not_evaluated",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

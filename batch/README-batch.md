@@ -1,7 +1,7 @@
 # Batch Processing
 
 Process multiple job offers through repo-owned orchestration and `codex exec`
-workers. The runner keeps the existing input TSV, report numbering, tracker
+workers. The runner keeps the existing input TSV, atomic report reservations, tracker
 merge flow, and resumable state file; only the worker runtime and result
 contract changed.
 
@@ -29,12 +29,22 @@ For the high-level system view, see [Architecture](../docs/ARCHITECTURE.md).
    ./batch/batch-runner.sh
    ```
 
+   The runner resolves `spend_tier` from `config/profile.yml`
+   (`economy|standard|premium`) and explicitly applies low/medium/high Codex
+   reasoning effort. Override one run with
+   `--spend-tier economy|standard|premium`.
+
 4. If the run reports retryable infrastructure failures, retry only those
    rows:
 
    ```bash
    ./batch/batch-runner.sh --retry-failed
    ```
+
+   Each attempted worker also writes
+   `batch/logs/{report}-{id}.usage.json`. This sidecar contains measured Codex
+   JSONL token totals and explicit zero-token local steps. Run
+   `npm run tokens:report` to aggregate the manifests.
 
 5. Re-run the closeout scripts manually if you need to inspect or recover the
    batch after editing tracker additions:
@@ -111,7 +121,8 @@ The summary line prints `Retryable Failed` for rows stored as `failed` whose
 ## Runtime Flow
 
 1. `batch/batch-runner.sh` reads `batch-input.tsv` and `batch-state.tsv`.
-2. For each runnable row, it reserves the next report number and writes a
+2. For each runnable row, it reserves the next report number through the shared
+   tracker-locked allocator and writes a
    `processing` row to `batch-state.tsv`.
 3. It resolves `batch/batch-prompt.md` placeholders into a temporary prompt
    file, including the final result path under `batch/logs/`.

@@ -69,9 +69,18 @@ If the final score is `>= 4.5`, generate draft answers for the application form:
 3. Treat them as working drafts for human review and editing, not final copy to submit unchanged.
 4. Save them in the report under `## H) Draft Application Answers`.
 
-If the form exposes a cover-letter field or upload, record that as a manual
-follow-up item in the report. Do not claim a cover letter was generated unless
-this workflow has a checked-in cover-letter artifact path.
+If the form exposes a cover-letter field or upload, run
+`modes/cover-letter.md` after the draft answers:
+
+- use `form-required` or `form-optional` as the trigger
+- generate markdown for a textarea
+- also generate the one-page PDF for an upload field
+- append the `## I) Cover Letter` report block
+- add `cover-letter: generated-valid` to tracker notes only after manifest
+  validation passes; otherwise add `cover-letter: manual-pending`
+
+When the form cannot be inspected, record the field status as `unknown`. Do not
+silently generate a letter solely because the role scored `>= 4.5`.
 
 Application-form anti-AI language is not a reason to skip this step. The workflow assumes the candidate will review, personalize, and own the final submission before sending it.
 
@@ -103,7 +112,8 @@ Application-form anti-AI language is not a reason to skip this step. The workflo
 - **Good fit?** -> "I sit at the intersection of [A] and [B], which is exactly where this role lives."
 - **How did you hear?** -> Be honest. "Found through [portal/scan], evaluated against my criteria, and it scored highest."
 
-Always generate answers in the language of the JD (English by default).
+Generate answers in resolved `language.output` (English by default), regardless
+of the JD language or market ruleset.
 
 ## Step 5 -- Update the tracker
 

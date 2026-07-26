@@ -24,6 +24,20 @@ const PROMPT_SOURCE = join(ROOT, 'batch', 'batch-prompt.md');
 const SCHEMA_SOURCE = join(ROOT, 'batch', 'worker-result.schema.json');
 const MERGE_SOURCE = join(ROOT, 'scripts', 'merge-tracker.mjs');
 const VERIFY_SOURCE = join(ROOT, 'scripts', 'verify-pipeline.mjs');
+const TRACKER_PARSE_SOURCE = join(ROOT, 'scripts', 'tracker-parse.mjs');
+const TRACKER_UTILS_SOURCE = join(ROOT, 'scripts', 'tracker-utils.mjs');
+const TRACKER_ALIASES_SOURCE = join(ROOT, 'scripts', 'tracker-aliases.json');
+const REPORT_RESERVATION_SOURCE = join(
+  ROOT,
+  'scripts',
+  'reserve-report-ids.mjs',
+);
+const RECONCILE_PIPELINE_SOURCE = join(
+  ROOT,
+  'scripts',
+  'reconcile-pipeline.mjs',
+);
+const STATES_SOURCE = join(ROOT, 'templates', 'states.yml');
 const MOCK_PDF_VALIDATOR_SOURCE = join(
   ROOT,
   'batch',
@@ -50,6 +64,9 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --output-schema)
+      shift 2
+      ;;
+    -c|--config)
       shift 2
       ;;
     -o|--output-last-message)
@@ -202,6 +219,7 @@ function createSandbox({ existingReportNums = [] } = {}) {
   const dataDir = join(root, 'data');
   const reportsDir = join(root, 'reports');
   const outputDir = join(root, 'output');
+  const templatesDir = join(root, 'templates');
   const binDir = join(root, 'bin');
 
   mkdirSync(join(batchDir, 'logs'), { recursive: true });
@@ -209,6 +227,7 @@ function createSandbox({ existingReportNums = [] } = {}) {
   mkdirSync(dataDir, { recursive: true });
   mkdirSync(reportsDir, { recursive: true });
   mkdirSync(outputDir, { recursive: true });
+  mkdirSync(templatesDir, { recursive: true });
   mkdirSync(scriptsDir, { recursive: true });
   mkdirSync(binDir, { recursive: true });
 
@@ -228,6 +247,30 @@ function createSandbox({ existingReportNums = [] } = {}) {
   writeFile(
     join(scriptsDir, 'verify-pipeline.mjs'),
     readFileSync(VERIFY_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(scriptsDir, 'tracker-parse.mjs'),
+    readFileSync(TRACKER_PARSE_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(scriptsDir, 'tracker-utils.mjs'),
+    readFileSync(TRACKER_UTILS_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(scriptsDir, 'tracker-aliases.json'),
+    readFileSync(TRACKER_ALIASES_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(scriptsDir, 'reserve-report-ids.mjs'),
+    readFileSync(REPORT_RESERVATION_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(scriptsDir, 'reconcile-pipeline.mjs'),
+    readFileSync(RECONCILE_PIPELINE_SOURCE, 'utf8'),
+  );
+  writeFile(
+    join(templatesDir, 'states.yml'),
+    readFileSync(STATES_SOURCE, 'utf8'),
   );
   copyFileSync(MOCK_PDF_VALIDATOR_SOURCE, join(scriptsDir, 'validate-pdf.mjs'));
   writeFile(join(binDir, 'codex'), MOCK_CODEX_SCRIPT);

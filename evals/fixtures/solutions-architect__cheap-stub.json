@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "case_id": "solutions-architect",
+  "model": "cheap-stub",
+  "summary": {
+    "archetype": "AI Solutions Architect",
+    "score": 4.2,
+    "final_decision": "apply",
+    "legitimacy_tier": "Proceed with Caution",
+    "risk_summary": {
+      "legitimacy": "flagged",
+      "ai_infrastructure": "clear",
+      "employment_classification": "not_evaluated"
+    }
+  }
+}

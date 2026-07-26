@@ -44,7 +44,10 @@
           "minLength": 1
         }
       },
-      "required": ["name", "email"],
+      "required": [
+        "name",
+        "email"
+      ],
       "additionalProperties": false
     },
     "job": {
@@ -69,7 +72,10 @@
         },
         "format": {
           "type": "string",
-          "enum": ["letter", "a4"]
+          "enum": [
+            "letter",
+            "a4"
+          ]
         },
         "jdText": {
           "type": "string",
@@ -92,11 +98,17 @@
               },
               "importance": {
                 "type": "string",
-                "enum": ["must-have", "nice-to-have"]
+                "enum": [
+                  "must-have",
+                  "nice-to-have"
+                ]
               },
               "status": {
                 "type": "string",
-                "enum": ["supported", "unsupported"]
+                "enum": [
+                  "supported",
+                  "unsupported"
+                ]
               },
               "terms": {
                 "minItems": 1,
@@ -240,7 +252,10 @@
             }
           }
         },
-        "required": ["label", "evidenceIds"],
+        "required": [
+          "label",
+          "evidenceIds"
+        ],
         "additionalProperties": false
       }
     },
@@ -286,17 +301,25 @@
                   }
                 }
               },
-              "required": ["text", "evidenceIds"],
+              "required": [
+                "text",
+                "evidenceIds"
+              ],
               "additionalProperties": false
             }
           }
         },
-        "required": ["company", "role", "period", "bullets"],
+        "required": [
+          "company",
+          "role",
+          "period",
+          "bullets"
+        ],
         "additionalProperties": false
       }
     },
     "projects": {
-      "minItems": 1,
+      "default": [],
       "type": "array",
       "items": {
         "type": "object",
@@ -335,12 +358,17 @@
             }
           }
         },
-        "required": ["name", "description", "technologies", "evidenceIds"],
+        "required": [
+          "name",
+          "description",
+          "technologies",
+          "evidenceIds"
+        ],
         "additionalProperties": false
       }
     },
     "education": {
-      "minItems": 1,
+      "default": [],
       "type": "array",
       "items": {
         "type": "object",
@@ -371,7 +399,11 @@
             }
           }
         },
-        "required": ["degree", "institution", "evidenceIds"],
+        "required": [
+          "degree",
+          "institution",
+          "evidenceIds"
+        ],
         "additionalProperties": false
       }
     },
@@ -403,7 +435,10 @@
             }
           }
         },
-        "required": ["name", "evidenceIds"],
+        "required": [
+          "name",
+          "evidenceIds"
+        ],
         "additionalProperties": false
       }
     },
@@ -435,7 +470,11 @@
             }
           }
         },
-        "required": ["category", "items", "evidenceIds"],
+        "required": [
+          "category",
+          "items",
+          "evidenceIds"
+        ],
         "additionalProperties": false
       }
     },
@@ -463,12 +502,20 @@
             "minLength": 1
           }
         },
-        "required": ["id", "source", "sourceText"],
+        "required": [
+          "id",
+          "source",
+          "sourceText"
+        ],
         "additionalProperties": false
       }
     },
     "sourceFiles": {
-      "default": ["profile/cv.md", "config/profile.yml", "modes/_profile.md"],
+      "default": [
+        "profile/cv.md",
+        "config/profile.yml",
+        "modes/_profile.md"
+      ],
       "minItems": 1,
       "type": "array",
       "items": {

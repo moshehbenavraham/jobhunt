@@ -170,6 +170,52 @@ func TestParseApplicationsFallbackAndMissing(t *testing.T) {
 	}
 }
 
+func TestParseApplicationsReadsOptionalLocationPayAndContactColumns(t *testing.T) {
+	root := t.TempDir()
+	writeTestFile(
+		t,
+		filepath.Join(root, "data", "applications.md"),
+		strings.Join([]string{
+			"| # | Company | Role | Location | Compensation | Recruiter | Via | Score | Status |",
+			"|---|---------|------|----------|--------------|-----------|-----|-------|--------|",
+			"| 7 | Acme | Platform Engineer | Remote | $180k-$210k | Maya | Agency A | 4.4/5 | Interview |",
+			"",
+		}, "\n"),
+	)
+
+	apps := ParseApplications(root)
+	if len(apps) != 1 {
+		t.Fatalf("expected one application, got %d", len(apps))
+	}
+	app := apps[0]
+	if app.Location != "Remote" || app.Compensation != "$180k-$210k" ||
+		app.Contact != "Maya" || app.Via != "Agency A" {
+		t.Fatalf("optional operational fields were not preserved: %+v", app)
+	}
+}
+
+func TestResolveReportPathRejectsEscapes(t *testing.T) {
+	root := t.TempDir()
+	full, err := ResolveReportPath(root, "reports/001-acme.md")
+	if err != nil {
+		t.Fatalf("expected contained report path, got %v", err)
+	}
+	if full != filepath.Join(root, "reports", "001-acme.md") {
+		t.Fatalf("unexpected resolved report path: %q", full)
+	}
+
+	for _, candidate := range []string{
+		"../profile/cv.md",
+		"reports/../../profile/cv.md",
+		filepath.Join(root, "reports", "001.md"),
+		"output/cv.pdf",
+	} {
+		if _, err := ResolveReportPath(root, candidate); err == nil {
+			t.Fatalf("expected report path rejection for %q", candidate)
+		}
+	}
+}
+
 func TestParseApplicationsUsesTrackerNumberColumn(t *testing.T) {
 	root := t.TempDir()
 

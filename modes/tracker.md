@@ -15,11 +15,15 @@ Possible statuses come from `templates/states.yml`, including:
 - `Responded`
 - `Interview`
 - `Offer`
+- `Hired`
 - `Rejected`
 - `Discarded`
 - `SKIP`
 
-If the user asks to update a status, edit the existing row accordingly.
+If the user asks to update a status, run
+`node scripts/set-status.mjs <#num|report:num|company> <state>` so the tracker
+write is serialized and the transition is recorded in `data/status-log.tsv`.
+Use `--role` to disambiguate and `--note` when the user supplied a note.
 
 Also show:
 

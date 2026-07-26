@@ -325,7 +325,7 @@ This section is separate from the main checklist on purpose.
   conversion, and weekly activity.
 - `12D. After response`
   The dashboard becomes the operational UI for moving roles through
-  `Responded`, `Interview`, `Offer`, or `Rejected`.
+  `Responded`, `Interview`, `Offer`, `Hired`, or `Rejected`.
 - `D1. Boundary`
   The dashboard is a UI over the same repo data. It does not replace Codex
   modes, the tracker contract, or the main `1-12` checklist.

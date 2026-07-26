@@ -6,6 +6,7 @@ import {
   existsSync,
   mkdtempSync,
   mkdirSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -140,6 +141,40 @@ function initRepo(path) {
     join(origin, 'scripts', 'lib', 'openai-account-auth', 'common.mjs'),
     'export const marker = "auth-lib";\n',
   );
+  writeFile(
+    join(origin, 'scripts', 'update-system.mjs'),
+    "import './update-helper.mjs';\n",
+  );
+  writeFile(
+    join(origin, 'scripts', 'update-helper.mjs'),
+    'export const updateHelper = true;\n',
+  );
+  writeFile(
+    join(origin, 'scripts', 'new-runtime', 'feature.mjs'),
+    'export const feature = true;\n',
+  );
+  writeFile(
+    join(origin, 'scripts', 'update-manifest.json'),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        systemPaths: ['scripts/'],
+        requiredPaths: [
+          'scripts/update-system.mjs',
+          'scripts/update-helper.mjs',
+          'scripts/new-runtime/feature.mjs',
+        ],
+        migrations: [
+          {
+            operation: 'remove-system-path',
+            path: 'templates/legacy-system.txt',
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
   git(origin, 'add', '.');
   git(origin, 'commit', '-m', 'origin init');
 
@@ -167,6 +202,10 @@ function initRepo(path) {
     join(sandbox, 'templates', 'portals.example.yml'),
     '# old template\n',
   );
+  writeFile(
+    join(sandbox, 'templates', 'legacy-system.txt'),
+    'restore me on rollback\n',
+  );
   writeFile(join(sandbox, 'portals.yml'), 'tracked_companies: []\n');
   git(
     sandbox,
@@ -174,6 +213,7 @@ function initRepo(path) {
     'VERSION',
     'package.json',
     'templates/portals.example.yml',
+    'templates/legacy-system.txt',
   );
   git(sandbox, 'commit', '-m', 'local init');
   git(sandbox, 'remote', 'add', 'origin', origin);
@@ -190,6 +230,15 @@ function initRepo(path) {
   assert.equal(
     existsSync(join(sandbox, 'config', 'portals.example.yml')),
     true,
+  );
+  assert.equal(existsSync(join(sandbox, 'scripts', 'update-helper.mjs')), true);
+  assert.equal(
+    existsSync(join(sandbox, 'scripts', 'new-runtime', 'feature.mjs')),
+    true,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'templates', 'legacy-system.txt')),
+    false,
   );
   assert.equal(
     existsSync(join(sandbox, 'scripts', 'openai-account-auth.mjs')),
@@ -215,9 +264,71 @@ function initRepo(path) {
     /!! portals\.yml/,
   );
 
+  const rollbackApplied = runUpdate(sandbox, ['rollback']);
+  assert.equal(
+    rollbackApplied.status,
+    0,
+    rollbackApplied.stdout + rollbackApplied.stderr,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'scripts', 'new-runtime', 'feature.mjs')),
+    false,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'scripts', 'update-helper.mjs')),
+    false,
+  );
+  assert.equal(
+    existsSync(join(sandbox, 'templates', 'legacy-system.txt')),
+    true,
+  );
+  assert.equal(existsSync(join(sandbox, 'portals.yml')), true);
+
+  writeFile(join(origin, 'VERSION'), '1.0.2\n');
+  writeFile(
+    join(origin, 'scripts', 'update-manifest.json'),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        systemPaths: ['scripts/'],
+        requiredPaths: ['scripts/does-not-exist.mjs'],
+        migrations: [],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  git(origin, 'add', '.');
+  git(origin, 'commit', '-m', 'broken target manifest');
+
+  const failureSandbox = mkdtempSync(
+    join(tmpdir(), 'jobhunt-update-manifest-failure-'),
+  );
+  initRepo(failureSandbox);
+  writeFile(join(failureSandbox, 'VERSION'), '1.0.1\n');
+  writeFile(
+    join(failureSandbox, 'package.json'),
+    '{"name":"jobhunt","version":"1.0.1"}\n',
+  );
+  git(failureSandbox, 'add', '.');
+  git(failureSandbox, 'commit', '-m', 'local init');
+  git(failureSandbox, 'remote', 'add', 'origin', origin);
+  const failedApply = runUpdate(failureSandbox, ['apply']);
+  assert.equal(failedApply.status, 1);
+  assert.match(
+    failedApply.stdout + failedApply.stderr,
+    /Target manifest requires missing ref path/,
+  );
+  assert.equal(
+    readFileSync(join(failureSandbox, 'VERSION'), 'utf8'),
+    '1.0.1\n',
+  );
+  assert.equal(existsSync(join(failureSandbox, '.update-lock')), false);
+
   rmSync(origin, { recursive: true, force: true });
   rmSync(decoyUpstream, { recursive: true, force: true });
   rmSync(sandbox, { recursive: true, force: true });
+  rmSync(failureSandbox, { recursive: true, force: true });
 }
 
 console.log('update-system regression tests pass');

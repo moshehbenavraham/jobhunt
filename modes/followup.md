@@ -1,5 +1,21 @@
 # Mode: followup -- Follow-up Cadence Tracker
 
+When a tracker row transitions to `Applied`, `scripts/set-status.mjs` seeds an
+idempotent `- next #N DATE (...)` directive in `data/follow-ups.md`. This pin is
+a schedule, not a claim that contact occurred. `scripts/followup-cadence.mjs`
+uses the last pin per application.
+
+Manual and exceptional variants:
+
+```bash
+node scripts/followup-seed.mjs 42 --date=2026-07-26
+node scripts/followup-seed.mjs 42 --variant=ats_failure --days=2 --force
+node scripts/followup-seed.mjs 42 --variant=no_show --days=1 --force
+```
+
+Formal ATS-failure and confirmed-time no-show wording is drafted through
+`modes/email.md`; it is never sent automatically.
+
 ## Purpose
 
 Track follow-up cadence for active applications. Flag overdue follow-ups, extract contacts from notes, and generate tailored follow-up email/LinkedIn drafts using report context.
