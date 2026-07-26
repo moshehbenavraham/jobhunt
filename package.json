@@ -1,6 +1,6 @@
 {
   "name": "jobhunt",
-  "version": "1.5.37",
+  "version": "1.5.38",
   "description": "AI-powered job search pipeline",
   "scripts": {
     "cron:install": "node scripts/install-scan-cron.mjs",
@@ -17,6 +17,9 @@
     "dedup": "node scripts/dedup-tracker.mjs",
     "merge": "node scripts/merge-tracker.mjs",
     "pdf": "node scripts/generate-pdf.mjs",
+    "pdf:validate": "node scripts/validate-pdf.mjs",
+    "pdf:test": "node scripts/test-pdf-pipeline.mjs",
+    "cv:build": "node scripts/build-cv.mjs",
     "latex": "node scripts/generate-latex.mjs",
     "dashboard": "./scripts/ux.sh",
     "sync-check": "node scripts/cv-sync-check.mjs",
@@ -49,6 +52,7 @@
   "dependencies": {
     "@openai/agents": "^0.13.5",
     "js-yaml": "^5.2.2",
+    "pdfjs-dist": "5.1.91",
     "playwright": "^1.59.1",
     "zod": "^4.4.3"
   },

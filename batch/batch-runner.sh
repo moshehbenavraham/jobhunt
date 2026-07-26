@@ -12,6 +12,7 @@ INPUT_FILE="$BATCH_DIR/batch-input.tsv"
 STATE_FILE="$BATCH_DIR/batch-state.tsv"
 PROMPT_FILE="$BATCH_DIR/batch-prompt.md"
 RESULT_SCHEMA_FILE="$BATCH_DIR/worker-result.schema.json"
+PDF_VALIDATOR_FILE="$PROJECT_DIR/scripts/validate-pdf.mjs"
 LOGS_DIR="$BATCH_DIR/logs"
 TRACKER_DIR="$BATCH_DIR/tracker-additions"
 REPORTS_DIR="$PROJECT_DIR/reports"
@@ -146,6 +147,11 @@ check_prerequisites() {
 
   if [[ ! -f "$RESULT_SCHEMA_FILE" ]]; then
     echo "ERROR: $RESULT_SCHEMA_FILE not found."
+    exit 1
+  fi
+
+  if [[ ! -f "$PDF_VALIDATOR_FILE" ]]; then
+    echo "ERROR: $PDF_VALIDATOR_FILE not found."
     exit 1
   fi
 
@@ -614,6 +620,61 @@ validate_worker_result_contract() {
   fi
 }
 
+validate_worker_pdf_artifact() {
+  local result_file="$1"
+  local pdf_path
+  pdf_path=$(jq -r '.pdf // empty' "$result_file")
+  if [[ -z "$pdf_path" ]]; then
+    return 0
+  fi
+
+  if [[ "$pdf_path" != output/*.pdf || "$pdf_path" == *".."* ]]; then
+    echo "Worker PDF path is unsafe: $pdf_path"
+    return 1
+  fi
+
+  local absolute_pdf="$PROJECT_DIR/$pdf_path"
+  local manifest_path="${absolute_pdf%.pdf}.manifest.json"
+  if [[ ! -s "$absolute_pdf" ]]; then
+    echo "Worker PDF is missing or empty: $pdf_path"
+    return 1
+  fi
+  if [[ ! -s "$manifest_path" ]]; then
+    echo "Worker PDF manifest is missing: ${pdf_path%.pdf}.manifest.json"
+    return 1
+  fi
+  if ! jq -e '.validation.valid == true' "$manifest_path" > /dev/null 2>&1; then
+    echo "Worker PDF manifest is not valid: ${pdf_path%.pdf}.manifest.json"
+    return 1
+  fi
+  if ! node "$PDF_VALIDATOR_FILE" \
+    "$absolute_pdf" \
+    "--manifest=$manifest_path" \
+    --quiet; then
+    echo "Worker PDF failed finished-file validation: $pdf_path"
+    return 1
+  fi
+}
+
+quarantine_worker_tracker() {
+  local result_file="$1" report_num="$2" id="$3"
+  local tracker_path
+  tracker_path=$(jq -r '.tracker // empty' "$result_file" 2> /dev/null || true)
+  if [[ -z "$tracker_path" ]]; then
+    return
+  fi
+  if [[ "$tracker_path" != batch/tracker-additions/*.tsv || "$tracker_path" == *".."* ]]; then
+    return
+  fi
+
+  local absolute_tracker="$PROJECT_DIR/$tracker_path"
+  if [[ -f "$absolute_tracker" ]]; then
+    local quarantine_path="$LOGS_DIR/${report_num}-${id}.invalid-tracker.tsv"
+    mv "$absolute_tracker" "$quarantine_path"
+    echo "    Quarantined tracker addition after PDF validation failure: $quarantine_path"
+  fi
+}
+
 # Process a single offer
 process_offer() {
   local id="$1" url="$2" source="$3" notes="$4"
@@ -682,6 +743,15 @@ process_offer() {
     local worker_status
     if ! worker_status=$(classify_structured_result "$result_file"); then
       contract_error="$worker_status"
+      exit_code=1
+    fi
+  fi
+
+  if [[ $exit_code -eq 0 ]]; then
+    local pdf_error=""
+    if ! pdf_error=$(validate_worker_pdf_artifact "$result_file"); then
+      contract_error="$pdf_error"
+      quarantine_worker_tracker "$result_file" "$report_num" "$id"
       exit_code=1
     fi
   fi

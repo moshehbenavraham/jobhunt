@@ -109,7 +109,8 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 2. Detect the role archetype and adapt framing per \_profile.md
 3. Cite exact lines from CV when matching
 4. Use WebSearch for comp and company data
-5. Register in tracker after evaluating
+5. Register in tracker after evaluating. Mark PDF `Yes` only when its manifest
+   is present, fresh, and valid.
 6. Generate content in the language of the JD (EN default)
 7. Be direct and actionable -- no fluff
 8. Native tech English for generated text. Short sentences, action verbs, no passive voice.
@@ -120,16 +121,16 @@ After detecting archetype, read `modes/_profile.md` for the user's specific fram
 
 ### Tools
 
-| Tool       | Use                                                                                                                                  |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| WebSearch  | Comp research, trends, company culture, LinkedIn contacts, fallback for JDs                                                          |
-| WebFetch   | Fallback for extracting JDs from static pages                                                                                        |
-| Playwright | Verify offers (browser_navigate + browser_snapshot). **NEVER 2+ agents with Playwright in parallel.**                                |
-| Read       | `profile/cv.md` (legacy root `cv.md` also accepted during migration), `_profile.md`, `profile/article-digest.md`, `cv-template.html` |
-| Write      | Temporary HTML for PDF, applications.md, reports .md                                                                                 |
-| Edit       | Update tracker                                                                                                                       |
-| Canva MCP  | Optional visual CV generation. Duplicate base design, edit text, export PDF. Requires `canva_resume_design_id` in profile.yml.       |
-| Bash       | `node scripts/generate-pdf.mjs`                                                                                                      |
+| Tool       | Use                                                                                                                                      |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| WebSearch  | Comp research, trends, company culture, LinkedIn contacts, fallback for JDs                                                              |
+| WebFetch   | Fallback for extracting JDs from static pages                                                                                            |
+| Playwright | Verify offers (browser_navigate + browser_snapshot). **NEVER 2+ agents with Playwright in parallel.**                                    |
+| Read       | `profile/cv.md` (legacy root `cv.md` also accepted during migration), `_profile.md`, `profile/article-digest.md`, `cv-build.schema.json` |
+| Write      | Structured CV build JSON, generated PDF sidecars, tracker TSV additions, reports .md                                                     |
+| Edit       | Update tracker                                                                                                                           |
+| Canva MCP  | Optional visual CV generation. Duplicate base design, edit text, export PDF. Requires `canva_resume_design_id` in profile.yml.           |
+| Bash       | `npm run cv:build`, `npm run pdf:validate`                                                                                               |
 
 ### Time-to-offer priority
 

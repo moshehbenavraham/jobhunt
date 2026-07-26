@@ -12,14 +12,16 @@ You are a batch worker evaluating a job posting for the candidate (read the cand
 
 ## Sources Of Truth (read before evaluating)
 
-| File                         | Absolute path                                                                                | When                                 |
-| ---------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------ |
-| `profile/cv.md`              | `profile/cv.md` (legacy root `cv.md` also accepted during migration)                         | ALWAYS                               |
-| `llms.txt`                   | `llms.txt` (if present)                                                                      | ALWAYS                               |
-| `profile/article-digest.md`  | `profile/article-digest.md` (legacy root `article-digest.md` also accepted during migration) | ALWAYS for proof points              |
-| `i18n.ts`                    | `i18n.ts` (if present, optional)                                                             | Only for interview/deep text helpers |
-| `templates/cv-template.html` | `templates/cv-template.html`                                                                 | For PDF generation                   |
-| `scripts/generate-pdf.mjs`   | `scripts/generate-pdf.mjs`                                                                   | For PDF generation                   |
+| File                             | Absolute path                                                                                | When                                 |
+| -------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `profile/cv.md`                  | `profile/cv.md` (legacy root `cv.md` also accepted during migration)                         | ALWAYS                               |
+| `llms.txt`                       | `llms.txt` (if present)                                                                      | ALWAYS                               |
+| `profile/article-digest.md`      | `profile/article-digest.md` (legacy root `article-digest.md` also accepted during migration) | ALWAYS for proof points              |
+| `config/profile.yml`             | `config/profile.yml`                                                                         | ALWAYS for identity and targeting    |
+| `modes/_profile.md`              | `modes/_profile.md`                                                                          | ALWAYS for candidate framing         |
+| `i18n.ts`                        | `i18n.ts` (if present, optional)                                                             | Only for interview/deep text helpers |
+| `templates/cv-build.schema.json` | `templates/cv-build.schema.json`                                                             | PDF build contract                   |
+| `scripts/build-cv.mjs`           | `scripts/build-cv.mjs`                                                                       | Validated PDF generation             |
 
 **RULE:** Never write to `profile/cv.md`, legacy `cv.md`, `i18n.ts`, or portfolio/source files. Treat them as read-only.
 
@@ -230,7 +232,7 @@ Where `{company-slug}` is the lowercase company name with hyphens.
 **Score:** {X/5}
 **Legitimacy:** {High Confidence | Proceed with Caution | Suspicious}
 **Verification:** unconfirmed (batch mode)
-**PDF:** output/cv-candidate-{company-slug}-{{DATE}}.pdf
+**PDF:** output/cv-{candidate-slug}-{company-slug}-{{DATE}}.pdf
 **Batch ID:** {{ID}}
 
 ---
@@ -265,37 +267,49 @@ Where `{company-slug}` is the lowercase company name with hyphens.
 
 ---
 
-## Extracted Keywords
+## Requirement-Evidence Matrix
 
-(15-20 JD keywords for ATS optimization)
+(Every material must-have and nice-to-have requirement, its supported or
+unsupported status, exact evidence, intended CV sections, and explicit gaps.)
 ```
 
 ### Step 4 -- Generate the PDF
 
-1. Read `profile/cv.md` (legacy root `cv.md` also accepted during migration) and `i18n.ts` if present.
-2. Extract 15-20 JD keywords.
-3. Detect the JD language and match the CV language (English by default).
-4. Detect company location -> paper format:
+1. Read all candidate sources listed above. Resolve the candidate name from
+   `config/profile.yml` and normalize it to `{candidate-slug}`.
+2. Extract every material JD requirement. Classify each as `must-have` or
+   `nice-to-have`.
+3. For each requirement, record:
+   - `supported` with exact evidence IDs and intended CV sections, or
+   - `unsupported` with no evidence/sections and an explicit gap.
+4. Detect the JD language and match the CV language (English by default).
+5. Detect company location -> paper format:
    - US/Canada -> `letter`
    - everything else -> `a4`
-5. Detect the archetype and adapt the framing.
-6. Rewrite the Professional Summary using JD keywords.
-7. Select the top 3-4 most relevant projects.
-8. Reorder experience bullets by JD relevance.
-9. Build a competency grid (6-8 keyword phrases).
-10. Inject keywords into real achievements. **Never invent.**
-11. Generate the full HTML from `templates/cv-template.html`.
-12. Write the HTML to `/tmp/cv-candidate-{company-slug}.html`.
-13. Run:
+6. Detect the archetype and adapt the framing.
+7. Tailor the content. Every summary, competency, experience bullet, project,
+   education item, certification, and skill group must carry `evidenceIds`.
+   Every evidence record must include an exact `sourceText` excerpt that exists
+   in its checked-in or user-layer source file.
+8. Never insert a term declared unsupported. Metrics in summaries, experience
+   bullets, and project descriptions must appear in their linked evidence.
+9. Write the structured contract to
+   `/tmp/cv-build-{candidate-slug}-{company-slug}.json` following
+   `templates/cv-build.schema.json`.
+10. Run:
 
 ```bash
-node scripts/generate-pdf.mjs \
-  /tmp/cv-candidate-{company-slug}.html \
-  output/cv-candidate-{company-slug}-{{DATE}}.pdf \
-  --format={letter|a4}
+npm run cv:build -- \
+  /tmp/cv-build-{candidate-slug}-{company-slug}.json \
+  output/cv-{candidate-slug}-{company-slug}-{{DATE}}.pdf \
+  --max-pages=2
 ```
 
-14. Report the PDF path, page count, and keyword coverage estimate.
+11. A non-zero exit is a PDF failure. Do not return the PDF path or write `Yes`
+    in the tracker unless the sibling manifest exists and
+    `validation.valid` is `true`.
+12. Record the exact page count, must-have coverage, nice-to-have coverage,
+    unsupported gaps, and validator warnings from the manifest.
 
 **ATS rules**
 
@@ -304,7 +318,7 @@ node scripts/generate-pdf.mjs \
 - no critical text inside images or SVGs
 - no critical text in headers or footers
 - UTF-8, selectable text
-- distribute keywords across summary, early bullets, and skills
+- use only supported JD vocabulary, distributed naturally
 
 **Design**
 
@@ -317,7 +331,7 @@ node scripts/generate-pdf.mjs \
 - margins: 0.6in
 - white background
 
-**Ethical keyword injection**
+**Evidence-backed reformulation**
 
 - reformulate real experience using the JD's vocabulary
 - never add skills the candidate does not actually have
@@ -325,33 +339,11 @@ node scripts/generate-pdf.mjs \
   JD says "RAG pipelines" and the CV says "LLM workflows with retrieval" ->
   "RAG pipeline design and LLM orchestration workflows"
 
-**Template placeholders (`cv-template.html`)**
-
-| Placeholder                  | Content                                             |
-| ---------------------------- | --------------------------------------------------- |
-| `{{LANG}}`                   | `en` or `es`                                        |
-| `{{PAGE_WIDTH}}`             | `8.5in` or `210mm`                                  |
-| `{{NAME}}`                   | from profile.yml                                    |
-| `{{EMAIL}}`                  | from profile.yml                                    |
-| `{{LINKEDIN_URL}}`           | from profile.yml                                    |
-| `{{LINKEDIN_DISPLAY}}`       | from profile.yml                                    |
-| `{{PORTFOLIO_URL}}`          | from profile.yml                                    |
-| `{{PORTFOLIO_DISPLAY}}`      | from profile.yml                                    |
-| `{{LOCATION}}`               | from profile.yml                                    |
-| `{{SECTION_SUMMARY}}`        | Professional Summary / localized equivalent         |
-| `{{SUMMARY_TEXT}}`           | keyword-tailored summary                            |
-| `{{SECTION_COMPETENCIES}}`   | Core Competencies / localized equivalent            |
-| `{{COMPETENCIES}}`           | `<span class="competency-tag">keyword</span>` x 6-8 |
-| `{{SECTION_EXPERIENCE}}`     | Work Experience / localized equivalent              |
-| `{{EXPERIENCE}}`             | HTML for each job with reordered bullets            |
-| `{{SECTION_PROJECTS}}`       | Projects / localized equivalent                     |
-| `{{PROJECTS}}`               | HTML for the top 3-4 projects                       |
-| `{{SECTION_EDUCATION}}`      | Education / localized equivalent                    |
-| `{{EDUCATION}}`              | education HTML                                      |
-| `{{SECTION_CERTIFICATIONS}}` | Certifications / localized equivalent               |
-| `{{CERTIFICATIONS}}`         | certifications HTML                                 |
-| `{{SECTION_SKILLS}}`         | Skills / localized equivalent                       |
-| `{{SKILLS}}`                 | skills HTML                                         |
+The builder validates the Zod schema and evidence, renders semantic HTML
+deterministically, generates a tagged/outlined PDF, and gates the finished file
+with qpdf, Poppler, PDF.js, font, page, text-retention, placeholder, layout, and
+freshness checks. It saves the canonical `.cv-build.json`, final `.html`, and
+`.manifest.json` beside the PDF.
 
 ### Step 5 -- Tracker line
 
@@ -377,7 +369,7 @@ Format: one line, no header, 9 tab-separated columns:
 | 4   | role    | string     | `Staff AI Engineer`      | role title                                   |
 | 5   | status  | canonical  | `Evaluated`              | must be canonical per `templates/states.yml` |
 | 6   | score   | X.XX/5     | `4.55/5`                 | or `N/A` if not evaluable                    |
-| 7   | pdf     | yes/no     | `Yes` or `No`            | whether the PDF was generated                |
+| 7   | pdf     | yes/no     | `Yes` or `No`            | `Yes` only for a valid, fresh PDF manifest   |
 | 8   | report  | md link    | `[647](reports/647-...)` | relative report link                         |
 | 9   | notes   | string     | `Apply high-priority...` | one-sentence summary                         |
 

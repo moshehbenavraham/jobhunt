@@ -11,10 +11,15 @@
  */
 
 import { chromium } from 'playwright';
-import { resolve, dirname } from 'node:path';
-import { readFile } from 'node:fs/promises';
+import { basename, resolve, dirname, join } from 'node:path';
+import { readFile, rename, unlink, writeFile } from 'node:fs/promises';
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import {
+  formatValidationReport,
+  inspectHtmlPage,
+  validatePdf,
+} from './pdf-validation-core.mjs';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const SCRIPT_DIR = dirname(SCRIPT_PATH);
@@ -109,21 +114,32 @@ export async function generatePDF(args = process.argv.slice(2)) {
   // Parse arguments
   let inputPath,
     outputPath,
-    format = 'a4';
+    format = 'a4',
+    maxPages = 2,
+    requireTika = false,
+    tikaJar;
 
   for (const arg of args) {
     if (arg.startsWith('--format=')) {
       format = arg.split('=')[1].toLowerCase();
+    } else if (arg.startsWith('--max-pages=')) {
+      maxPages = Number.parseInt(arg.split('=')[1], 10);
+    } else if (arg === '--require-tika') {
+      requireTika = true;
+    } else if (arg.startsWith('--tika-jar=')) {
+      tikaJar = arg.slice('--tika-jar='.length);
     } else if (!inputPath) {
       inputPath = arg;
     } else if (!outputPath) {
       outputPath = arg;
+    } else {
+      throw new Error(`Unknown argument: ${arg}`);
     }
   }
 
   if (!inputPath || !outputPath) {
     console.error(
-      'Usage: node scripts/generate-pdf.mjs <input.html> <output.pdf> [--format=letter|a4]',
+      'Usage: node scripts/generate-pdf.mjs <input.html> <output.pdf> [--format=letter|a4] [--max-pages=2] [--require-tika] [--tika-jar=path]',
     );
     process.exit(1);
   }
@@ -138,6 +154,10 @@ export async function generatePDF(args = process.argv.slice(2)) {
     console.error(
       `Invalid format "${format}". Use: ${validFormats.join(', ')}`,
     );
+    process.exit(1);
+  }
+  if (!Number.isInteger(maxPages) || maxPages < 1) {
+    console.error('Invalid max page count. Use a positive integer.');
     process.exit(1);
   }
 
@@ -174,22 +194,36 @@ export async function generatePDF(args = process.argv.slice(2)) {
   }
 
   const browser = await chromium.launch({ headless: true });
+  const tempOutputPath = join(
+    dirname(outputPath),
+    `.${basename(outputPath, '.pdf')}.${process.pid}.partial.pdf`,
+  );
   try {
-    const page = await browser.newPage();
+    const page = await browser.newPage({
+      viewport: {
+        // Match the printable box after the 0.6in PDF margins so DOM
+        // overflow checks use the same effective width as the final page.
+        width: format === 'letter' ? 701 : 679,
+        height: format === 'letter' ? 941 : 1007,
+      },
+    });
+    await page.emulateMedia({ media: 'print' });
 
-    // Set content with file base URL for any relative resources
+    // Fonts have already been rewritten to absolute file URLs.
     await page.setContent(html, {
       waitUntil: 'networkidle',
-      baseURL: `file://${dirname(inputPath)}/`,
     });
 
     // Wait for fonts to load
     await page.evaluate(() => document.fonts.ready);
+    const domPreflight = await inspectHtmlPage(page);
 
     // Generate PDF
     const pdfBuffer = await page.pdf({
       format: format,
       printBackground: true,
+      tagged: true,
+      outline: true,
       margin: {
         top: '0.6in',
         right: '0.6in',
@@ -199,21 +233,43 @@ export async function generatePDF(args = process.argv.slice(2)) {
       preferCSSPageSize: false,
     });
 
-    // Write PDF
-    const { writeFile } = await import('node:fs/promises');
-    await writeFile(outputPath, pdfBuffer);
-
-    // Count pages (approximate from PDF structure)
-    const pdfString = pdfBuffer.toString('latin1');
-    const pageCount = (pdfString.match(/\/Type\s*\/Page[^s]/g) || []).length;
+    // Validate a temporary file and publish only after every quality gate passes.
+    await writeFile(tempOutputPath, pdfBuffer);
+    const validation = await validatePdf({
+      pdfPath: tempOutputPath,
+      expectedFormat: format,
+      maxPages,
+      candidateName: domPreflight.candidateName,
+      email: domPreflight.email,
+      requiredHeadings: domPreflight.headings,
+      expectedText: domPreflight.bodyText,
+      domPreflight,
+      requireTagged: true,
+      requireOutline: true,
+      requireTika,
+      tikaJar,
+    });
+    if (!validation.valid) {
+      throw new Error(formatValidationReport(validation));
+    }
+    await rename(tempOutputPath, outputPath);
+    const pageCount = validation.metrics.pageCount;
 
     console.log(`✅ PDF generated: ${outputPath}`);
     console.log(`📊 Pages: ${pageCount}`);
     console.log(`📦 Size: ${(pdfBuffer.length / 1024).toFixed(1)} KB`);
+    console.log('🔎 Validation: PASS');
 
-    return { outputPath, pageCount, size: pdfBuffer.length };
+    return {
+      outputPath,
+      pageCount,
+      size: pdfBuffer.length,
+      validation,
+      domPreflight,
+    };
   } finally {
     await browser.close();
+    await unlink(tempOutputPath).catch(() => {});
   }
 }
 

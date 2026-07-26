@@ -10,12 +10,22 @@
  * 5. All rows have proper pipe-delimited format
  * 6. No pending TSVs in tracker-additions/ (only in merged/ or archived/)
  * 7. states.yml canonical IDs for cross-system consistency
+ * 8. Manifest-backed PDFs are valid and fresh
  *
  * Run: node scripts/verify-pipeline.mjs
  */
 
+import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
-import { join, dirname, resolve } from 'node:path';
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  join,
+  relative,
+  resolve,
+  sep,
+} from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
@@ -29,6 +39,7 @@ const APPS_FILE = existsSync(join(CAREER_OPS, 'data/applications.md'))
   : join(CAREER_OPS, 'applications.md');
 const ADDITIONS_DIR = join(CAREER_OPS, 'batch/tracker-additions');
 const REPORTS_DIR = join(CAREER_OPS, 'reports');
+const OUTPUT_DIR = join(CAREER_OPS, 'output');
 const _STATES_FILE = existsSync(join(CAREER_OPS, 'templates/states.yml'))
   ? join(CAREER_OPS, 'templates/states.yml')
   : join(CAREER_OPS, 'states.yml');
@@ -87,6 +98,185 @@ function warn(msg) {
 }
 function ok(msg) {
   console.log(`✅ ${msg}`);
+}
+
+function sha256File(path) {
+  return createHash('sha256').update(readFileSync(path)).digest('hex');
+}
+
+function sha256Text(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function normalizeIdentity(value) {
+  return String(value)
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+function identityKey(company, role) {
+  return `${normalizeIdentity(company)}::${normalizeIdentity(role)}`;
+}
+
+function hasPdfMarker(value) {
+  const normalized = String(value).replace(/\*\*/g, '').trim().toLowerCase();
+  return (
+    normalized !== '' &&
+    !['no', 'none', 'n/a', '-', '❌', 'false'].includes(normalized)
+  );
+}
+
+function linkedPdfPath(value) {
+  const match = String(value).match(/\]\((output\/[^)]+\.pdf)\)/i);
+  return match?.[1];
+}
+
+function resolveManifestArtifact(manifestPath, artifactPath) {
+  if (!artifactPath) throw new Error('artifact path missing');
+  if (!isAbsolute(artifactPath)) {
+    const absolute = resolve(CAREER_OPS, artifactPath);
+    const rel = relative(CAREER_OPS, absolute);
+    if (rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
+      throw new Error(`artifact escapes project root: ${artifactPath}`);
+    }
+    return absolute;
+  }
+
+  const absolute = resolve(artifactPath);
+  const rel = relative(dirname(manifestPath), absolute);
+  if (rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) {
+    throw new Error(
+      `absolute artifact is not beside manifest: ${artifactPath}`,
+    );
+  }
+  return absolute;
+}
+
+function manifestFreshnessIssues(record) {
+  const { manifest, path: manifestPath } = record;
+  const issues = [];
+  const checkHash = (label, path, expectedHash) => {
+    if (!path || !expectedHash) {
+      issues.push(`${label} path/hash missing`);
+      return;
+    }
+    try {
+      const absolute = resolveManifestArtifact(manifestPath, path);
+      if (!existsSync(absolute)) {
+        issues.push(`${label} missing: ${path}`);
+      } else if (sha256File(absolute) !== expectedHash) {
+        issues.push(`${label} changed: ${path}`);
+      }
+    } catch (cause) {
+      issues.push(`${label}: ${cause.message}`);
+    }
+  };
+
+  if (manifest.schemaVersion !== 1) {
+    issues.push(
+      `unsupported manifest schema version: ${manifest.schemaVersion}`,
+    );
+  }
+  if (!manifest.candidate?.name || !manifest.candidate?.email) {
+    issues.push('candidate identity missing');
+  }
+  if (
+    !manifest.job?.company ||
+    !manifest.job?.role ||
+    !manifest.job?.jdSha256
+  ) {
+    issues.push('job identity/JD hash missing');
+  }
+  if (!['letter', 'a4'].includes(manifest.output?.format)) {
+    issues.push('paper format missing or invalid');
+  }
+  if (
+    !Number.isInteger(manifest.output?.pageCount) ||
+    manifest.output.pageCount < 1
+  ) {
+    issues.push('page count missing or invalid');
+  }
+  if (
+    !Array.isArray(manifest.inputs?.sources) ||
+    manifest.inputs.sources.length === 0
+  ) {
+    issues.push('profile source hashes missing');
+  }
+
+  checkHash('PDF', manifest.output?.pdfPath, manifest.output?.pdfSha256);
+  checkHash(
+    'structured build',
+    manifest.inputs?.buildPath,
+    manifest.inputs?.buildSha256,
+  );
+  checkHash(
+    'template',
+    manifest.inputs?.templatePath,
+    manifest.inputs?.templateSha256,
+  );
+  checkHash(
+    'rendered HTML',
+    manifest.output?.htmlPath,
+    manifest.output?.htmlSha256,
+  );
+  const seenSources = new Set();
+  for (const source of manifest.inputs?.sources || []) {
+    if (!source.path || !source.sha256) {
+      issues.push('profile source path/hash missing');
+      continue;
+    }
+    if (seenSources.has(source.path)) {
+      issues.push(`duplicate profile source: ${source.path}`);
+      continue;
+    }
+    seenSources.add(source.path);
+    checkHash('source', source.path, source.sha256);
+  }
+
+  try {
+    const version = readFileSync(join(CAREER_OPS, 'VERSION'), 'utf8').trim();
+    if (manifest.pipeline?.version !== version) {
+      issues.push('pipeline version changed');
+    }
+    if (manifest.pipeline?.versionSha256 !== sha256Text(version)) {
+      issues.push('pipeline version hash changed');
+    }
+  } catch (cause) {
+    issues.push(`VERSION unavailable: ${cause.message}`);
+  }
+
+  try {
+    const buildPath = resolveManifestArtifact(
+      manifestPath,
+      manifest.inputs?.buildPath,
+    );
+    const build = JSON.parse(readFileSync(buildPath, 'utf8'));
+    if (manifest.job?.jdSha256 !== sha256Text(build.job?.jdText || '')) {
+      issues.push('JD hash changed');
+    }
+  } catch (cause) {
+    issues.push(`JD hash unavailable: ${cause.message}`);
+  }
+
+  return issues;
+}
+
+function loadPdfManifests() {
+  if (!existsSync(OUTPUT_DIR)) return [];
+  const records = [];
+  for (const file of readdirSync(OUTPUT_DIR)) {
+    if (!file.endsWith('.manifest.json')) continue;
+    const path = join(OUTPUT_DIR, file);
+    try {
+      const manifest = JSON.parse(readFileSync(path, 'utf8'));
+      records.push({ path, manifest });
+    } catch (cause) {
+      error(`Invalid PDF manifest ${file}: ${cause.message}`);
+    }
+  }
+  return records;
 }
 
 // --- Read applications.md ---
@@ -230,6 +420,60 @@ for (const e of entries) {
   }
 }
 if (boldScores === 0) ok('No bold in scores');
+
+// --- Check 8: PDF manifests and freshness ---
+const manifestRecords = loadPdfManifests();
+const manifestsByIdentity = new Map();
+const manifestsByPdf = new Map();
+for (const record of manifestRecords) {
+  const { manifest } = record;
+  if (manifest.job?.company && manifest.job?.role) {
+    const key = identityKey(manifest.job.company, manifest.job.role);
+    const existing = manifestsByIdentity.get(key);
+    if (
+      !existing ||
+      String(existing.manifest.generatedAt || '') <
+        String(manifest.generatedAt || '')
+    ) {
+      manifestsByIdentity.set(key, record);
+    }
+  }
+  if (manifest.output?.pdfPath) {
+    manifestsByPdf.set(manifest.output.pdfPath.replaceAll('\\', '/'), record);
+    manifestsByPdf.set(basename(manifest.output.pdfPath), record);
+  }
+}
+
+let checkedPdfManifests = 0;
+let legacyPdfs = 0;
+for (const entry of entries.filter((item) => hasPdfMarker(item.pdf))) {
+  const linkedPath = linkedPdfPath(entry.pdf);
+  const record = linkedPath
+    ? manifestsByPdf.get(linkedPath) || manifestsByPdf.get(basename(linkedPath))
+    : manifestsByIdentity.get(identityKey(entry.company, entry.role));
+  if (!record) {
+    warn(
+      `#${entry.num}: PDF is unverified legacy output (no matching manifest)`,
+    );
+    legacyPdfs++;
+    continue;
+  }
+
+  checkedPdfManifests++;
+  if (record.manifest.validation?.valid !== true) {
+    error(`#${entry.num}: PDF manifest validation is not valid`);
+    continue;
+  }
+  const issues = manifestFreshnessIssues(record);
+  if (issues.length > 0) {
+    error(`#${entry.num}: Stale PDF manifest: ${issues.join('; ')}`);
+  }
+}
+if (checkedPdfManifests > 0) {
+  ok(`${checkedPdfManifests} manifest-backed PDF(s) checked for freshness`);
+} else if (legacyPdfs === 0) {
+  ok('No tracker PDFs require manifest validation');
+}
 
 // --- Summary ---
 console.log(`\n${'='.repeat(50)}`);

@@ -82,13 +82,15 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 		if parsedNumber, err := strconv.Atoi(fields[0]); err == nil {
 			trackerNumber = parsedNumber
 		}
+		hasPDF, pdfPath := parsePDFCell(fields[6])
 		app := model.CareerApplication{
 			Number:  trackerNumber,
 			Date:    fields[1],
 			Company: fields[2],
 			Role:    fields[3],
 			Status:  fields[5],
-			HasPDF:  strings.Contains(fields[6], "\u2705"),
+			HasPDF:  hasPDF,
+			PDFPath: pdfPath,
 		}
 
 		// Parse score (field 4 = Score column)
@@ -108,6 +110,8 @@ func ParseApplications(careerOpsPath string) []model.CareerApplication {
 
 		apps = append(apps, app)
 	}
+
+	enrichPDFStatuses(careerOpsPath, apps)
 
 	// Enrich with job URLs using 5-tier strategy:
 	// 1. **URL:** field in report header (newest reports)
@@ -454,6 +458,14 @@ func ComputeMetrics(apps []model.CareerApplication) model.PipelineMetrics {
 		}
 		if app.HasPDF {
 			m.WithPDF++
+			switch app.PDFStatus {
+			case "fresh":
+				m.FreshPDF++
+			case "stale", "invalid", "missing":
+				m.StalePDF++
+			case "legacy":
+				m.LegacyPDF++
+			}
 		}
 		if status != "skip" && status != "rejected" && status != "discarded" {
 			m.Actionable++

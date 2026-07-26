@@ -24,6 +24,12 @@ const PROMPT_SOURCE = join(ROOT, 'batch', 'batch-prompt.md');
 const SCHEMA_SOURCE = join(ROOT, 'batch', 'worker-result.schema.json');
 const MERGE_SOURCE = join(ROOT, 'scripts', 'merge-tracker.mjs');
 const VERIFY_SOURCE = join(ROOT, 'scripts', 'verify-pipeline.mjs');
+const MOCK_PDF_VALIDATOR_SOURCE = join(
+  ROOT,
+  'batch',
+  'test-fixtures',
+  'mock-pdf-validator.mjs',
+);
 
 const MOCK_CODEX_SCRIPT = `#!/usr/bin/env bash
 set -euo pipefail
@@ -100,7 +106,7 @@ company_slug="example-ai"
 company_name="Example AI"
 role_name="Senior AI Engineer"
 report_path="reports/\${report_num}-\${company_slug}-\${date_value}.md"
-pdf_path="output/cv-candidate-\${company_slug}-\${date_value}.pdf"
+pdf_path="output/cv-jane-smith-\${company_slug}-\${date_value}.pdf"
 tracker_path="batch/tracker-additions/\${offer_id}.tsv"
 
 mkdir -p "$(dirname "$result_file")"
@@ -116,7 +122,10 @@ case "$mode" in
   completed)
     mkdir -p "$(dirname "$report_path")" "$(dirname "$tracker_path")" "$(dirname "$pdf_path")"
     printf '# Report %s\n\nFixture closeout report for offer %s.\n' "$report_num" "$offer_id" > "$report_path"
-    : > "$pdf_path"
+    printf '%%PDF-1.7\nfixture\n' > "$pdf_path"
+    cat > "\${pdf_path%.pdf}.manifest.json" <<EOF
+{"validation":{"valid":true}}
+EOF
     printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
       "$report_num_value" \
       "$date_value" \
@@ -220,6 +229,7 @@ function createSandbox({ existingReportNums = [] } = {}) {
     join(scriptsDir, 'verify-pipeline.mjs'),
     readFileSync(VERIFY_SOURCE, 'utf8'),
   );
+  copyFileSync(MOCK_PDF_VALIDATOR_SOURCE, join(scriptsDir, 'validate-pdf.mjs'));
   writeFile(join(binDir, 'codex'), MOCK_CODEX_SCRIPT);
   chmodSync(join(binDir, 'codex'), 0o755);
 

@@ -83,6 +83,7 @@ change behavior for every user of the repo.
 | Shared surface                           | Purpose                                                        | When to edit                                                                                               |
 | ---------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `modes/_shared.md`                       | Shared scoring rules, workflow constraints, and global prompts | Only when changing repo-wide defaults. Do not place personal negotiation, targeting, or proof points here. |
+| `templates/cv-build.schema.json`         | Shared structured CV and evidence contract                     | Only when changing the default PDF data contract for every user                                            |
 | `templates/cv-template.html`             | Shared ATS PDF layout and styling                              | Only when changing the default template for all generated PDFs                                             |
 | `templates/states.yml`                   | Canonical tracker statuses                                     | Only when intentionally changing the shared status model                                                   |
 | `scripts/normalize-statuses.mjs`         | Status alias normalization                                     | Update alongside `templates/states.yml` if shared statuses change                                          |
@@ -94,6 +95,9 @@ change behavior for every user of the repo.
   PDFs. If you want a one-off PDF variant for yourself, prefer keeping the
   underlying CV content in `profile/cv.md` and changing the template only when the
   repo default should change.
+- `templates/cv-build.schema.json` is generated from
+  `scripts/cv-build-core.mjs`. Change the source schema first, regenerate the
+  JSON schema, and run `npm run pdf:test`.
 - `templates/states.yml` is not a personalization file. If you add or rename
   a shared tracker state, also update `scripts/normalize-statuses.mjs` and any
   checked-in docs that name those states.
@@ -135,6 +139,14 @@ Do not store personal negotiation scripts in `modes/_shared.md`.
 Edit:
 
 - `templates/cv-template.html`
+- `scripts/cv-build-core.mjs` only if the structured contract or renderer must
+  change
+
+Then run:
+
+```bash
+npm run pdf:test
+```
 
 This is a shared system change, not a personal data change.
 

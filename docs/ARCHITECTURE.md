@@ -30,10 +30,35 @@ The repository is organized around a Codex-first agent contract, repo-owned scri
 ### Job evaluation pipeline
 
 - User input starts as a JD URL or JD text.
-- `scripts/` handles extraction, scoring, PDF generation, tracker validation, and update checks.
+- `scripts/` handles extraction, scoring, evidence-backed PDF generation,
+  tracker validation, and update checks.
 - Reports are written to `reports/`.
-- PDFs are written to `output/`.
+- PDFs and their canonical JSON/HTML/manifest sidecars are written to
+  `output/`.
 - Tracker data is merged into `data/applications.md`.
+
+### Deterministic PDF pipeline
+
+```text
+candidate sources + JD
+  -> requirement/evidence matrix
+  -> cv-build.json (Zod contract)
+  -> evidence and unsupported-term validation
+  -> deterministic semantic HTML
+  -> Playwright tagged/outlined PDF
+  -> qpdf + Poppler + PDF.js (+ Tika in CI) + DOM gate
+  -> atomic PDF publication + manifest
+  -> tracker/dashboard freshness status
+```
+
+- `scripts/cv-build-core.mjs` owns the schema, evidence checks, requirement
+  coverage, escaping, and deterministic HTML renderer.
+- `scripts/build-cv.mjs` owns artifact and manifest creation.
+- `scripts/generate-pdf.mjs` owns Chromium rendering and atomic publication.
+- `scripts/pdf-validation-core.mjs` and `scripts/validate-pdf.mjs` validate the
+  finished file, not merely the source HTML.
+- A manifest becomes stale when the structured build, JD, source files,
+  template, rendered HTML, pipeline version, or PDF changes.
 
 ### Batch processing
 
@@ -54,6 +79,8 @@ The repository is organized around a Codex-first agent contract, repo-owned scri
 - `dashboard/` contains the Go TUI for browsing the pipeline.
 - It reads the same tracker and report artifacts as the rest of the repo,
   including report-bearing partial outcomes.
+- It resolves PDF manifests and labels each tracker PDF as fresh, stale,
+  legacy/unverified, invalid, or missing.
 
 ### OpenAI account runtime
 
@@ -79,6 +106,8 @@ The repository is organized around a Codex-first agent contract, repo-owned scri
 | `scripts/normalize-statuses.mjs` | Normalize status aliases      |
 | `scripts/cv-sync-check.mjs`      | Validate setup consistency    |
 | `scripts/update-system.mjs`      | Check and apply repo updates  |
+| `scripts/build-cv.mjs`           | Build deterministic CV output |
+| `scripts/validate-pdf.mjs`       | Validate PDF and freshness    |
 
 ## Data Flow
 

@@ -27,4 +27,9 @@ Also show:
 - breakdown by status
 - average score
 - percentage with PDF generated
+- PDF freshness: validated/fresh, stale/invalid/missing, and legacy/unverified
 - percentage with report generated
+
+Run `node scripts/verify-pipeline.mjs` before reporting freshness. A tracker
+checkmark without a manifest is legacy/unverified, not proof that the current
+candidate sources still match the PDF.

@@ -17,7 +17,10 @@ exposed via `npm run <name>`. Repo-local shell helpers such as
 | `npm run normalize`          | `scripts/normalize-statuses.mjs`        | Fix non-canonical statuses                  |
 | `npm run dedup`              | `scripts/dedup-tracker.mjs`             | Remove duplicate tracker entries            |
 | `npm run merge`              | `scripts/merge-tracker.mjs`             | Merge batch TSVs into applications.md       |
-| `npm run pdf`                | `scripts/generate-pdf.mjs`              | Convert HTML to ATS-optimized PDF           |
+| `npm run cv:build`           | `scripts/build-cv.mjs`                  | Build and validate a tailored CV PDF        |
+| `npm run pdf`                | `scripts/generate-pdf.mjs`              | Low-level validated HTML-to-PDF renderer    |
+| `npm run pdf:validate`       | `scripts/validate-pdf.mjs`              | Validate a finished PDF and its manifest    |
+| `npm run pdf:test`           | `scripts/test-pdf-pipeline.mjs`         | Run PDF integration and visual regressions  |
 | `npm run latex`              | `scripts/generate-latex.mjs`            | Validate and compile an optional LaTeX CV   |
 | `npm run dashboard`          | `scripts/ux.sh`                         | Build and launch the Go dashboard           |
 | `npm run sync-check`         | `scripts/cv-sync-check.mjs`             | Validate CV/profile consistency             |
@@ -238,19 +241,65 @@ Processed TSVs are moved to `batch/tracker-additions/merged/`.
 
 ---
 
-## pdf
+## cv:build, pdf, and pdf:validate
 
-Renders an HTML file to a print-quality, ATS-parseable PDF via headless Chromium. Resolves font paths from `fonts/`, normalizes Unicode for ATS compatibility (em-dashes, smart quotes, zero-width characters), and reports page count and file size.
+`cv:build` is the default tailored-CV entry point. It validates a structured
+JSON document with Zod, checks every evidence excerpt against its source file,
+measures supported and unsupported JD requirements, renders semantic HTML
+deterministically, and generates a tagged PDF with an outline.
 
 ```bash
-npm run pdf -- input.html output.pdf
-npm run pdf -- input.html output.pdf --format=letter   # US letter
-npm run pdf -- input.html output.pdf --format=a4        # A4 (default)
+npm run cv:build -- /tmp/cv-build-jane-acme.json \
+  output/cv-jane-acme-2026-07-26.pdf --max-pages=2
 ```
 
-**Exit codes:** `0` PDF generated, `1` missing arguments or generation failure.
+The input contract is `templates/cv-build.schema.json`. A successful build
+writes four sibling artifacts:
 
-The ATS normalization regression is covered by `scripts/test-generate-pdf-normalization.mjs` with checked-in HTML fixtures under `scripts/test-fixtures/`. It runs as part of `node scripts/test-all.mjs --quick`.
+- `.pdf` -- the published CV
+- `.cv-build.json` -- canonical structured content and evidence references
+- `.html` -- exact final HTML used by Chromium
+- `.manifest.json` -- JD/source/template/version hashes, PDF SHA-256,
+  requirement coverage, page/format metadata, and validation results
+
+`pdf` is the lower-level renderer for an already-prepared HTML document:
+
+```bash
+npm run pdf -- input.html output.pdf --format=letter --max-pages=2
+npm run pdf -- input.html output.pdf --format=a4 --max-pages=2
+```
+
+It writes to a temporary partial file and publishes the output only if qpdf,
+PDF.js, Poppler, font embedding/Unicode, identity, heading order, token
+retention, tagging, outline, and DOM-overflow gates all pass.
+
+Validate an existing build and its freshness with:
+
+```bash
+npm run pdf:validate -- output/cv-jane-acme-2026-07-26.pdf \
+  --manifest=output/cv-jane-acme-2026-07-26.manifest.json
+```
+
+Useful validator options include `--pages`, `--max-pages`, `--format`,
+`--require-tika`, `--json`, and `--quiet`.
+
+Prerequisites:
+
+- Playwright Chromium
+- `qpdf`
+- Poppler (`pdfinfo`, `pdftotext`, `pdffonts`)
+- MuPDF (`mutool`) for visual regression snapshots
+- optional locally, required in quality CI: Java and an Apache Tika app JAR
+  exposed through `TIKA_APP_JAR`
+
+Run `npm run doctor` to check the local toolchain. `npm run pdf:test` covers
+Letter and A4, long URLs and company names, a missing phone, multilingual
+labels, two-page pressure, stale manifests, parser agreement, and MuPDF visual
+baselines. `scripts/test-generate-pdf-normalization.mjs` separately covers ATS
+Unicode normalization.
+
+**Exit codes:** `0` all required gates passed, `1` invalid input, stale
+manifest, missing prerequisite, or failed PDF validation.
 
 ---
 
@@ -258,7 +307,7 @@ The ATS normalization regression is covered by `scripts/test-generate-pdf-normal
 
 Validates a `.tex` CV against the repo's LaTeX guardrails, then compiles it
 with `pdflatex` when the local toolchain is available. This is the optional
-LaTeX / Overleaf path; the default ATS-first flow remains `npm run pdf`.
+LaTeX / Overleaf path; the default ATS-first flow remains `npm run cv:build`.
 
 ```bash
 npm run latex -- input.tex output.pdf

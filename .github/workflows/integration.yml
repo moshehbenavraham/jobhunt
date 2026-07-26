@@ -31,6 +31,11 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Install PDF validation tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qpdf poppler-utils mupdf-tools
+
       - name: Seed example user setup
         run: |
           cp profile/cv.example.md profile/cv.md

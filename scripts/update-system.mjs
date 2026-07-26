@@ -74,6 +74,7 @@ const SYSTEM_PATHS = [
   'AGENTS.md',
   'batch/batch-prompt.md',
   'batch/batch-runner.sh',
+  'batch/test-fixtures/mock-pdf-validator.mjs',
   'dashboard/',
   'templates/',
   'fonts/',
@@ -91,6 +92,8 @@ const SYSTEM_PATHS = [
   'LICENSE',
   '.github/',
   'package.json',
+  'package-lock.json',
+  'scripts/',
   'scripts/lib/openai-account-auth/',
   'scripts/openai-account-auth.mjs',
   'scripts/openai-agents-codex-smoke.mjs',
@@ -102,12 +105,17 @@ const SYSTEM_PATHS = [
   'scripts/ux.sh',
   'scripts/generate-latex.mjs',
   'scripts/test-generate-latex.mjs',
+  'scripts/test-fixtures/cv-build-letter.json',
+  'scripts/test-fixtures/pdf-visual-baselines.json',
+  'scripts/test-fixtures/pdf-snapshots/',
 ];
 
 const REMAPPED_SYSTEM_FILES = [
   { source: 'ats-core.mjs', dest: 'scripts/ats-core.mjs' },
   { source: 'analyze-patterns.mjs', dest: 'scripts/analyze-patterns.mjs' },
+  { source: 'build-cv.mjs', dest: 'scripts/build-cv.mjs' },
   { source: 'check-liveness.mjs', dest: 'scripts/check-liveness.mjs' },
+  { source: 'cv-build-core.mjs', dest: 'scripts/cv-build-core.mjs' },
   { source: 'cv-sync-check.mjs', dest: 'scripts/cv-sync-check.mjs' },
   { source: 'dedup-tracker.mjs', dest: 'scripts/dedup-tracker.mjs' },
   { source: 'doctor.mjs', dest: 'scripts/doctor.mjs' },
@@ -118,13 +126,23 @@ const REMAPPED_SYSTEM_FILES = [
   { source: 'liveness-core.mjs', dest: 'scripts/liveness-core.mjs' },
   { source: 'merge-tracker.mjs', dest: 'scripts/merge-tracker.mjs' },
   { source: 'normalize-statuses.mjs', dest: 'scripts/normalize-statuses.mjs' },
+  {
+    source: 'pdf-validation-core.mjs',
+    dest: 'scripts/pdf-validation-core.mjs',
+  },
   { source: 'scan.mjs', dest: 'scripts/scan.mjs' },
   { source: 'test-all.mjs', dest: 'scripts/test-all.mjs' },
+  { source: 'test-cv-build.mjs', dest: 'scripts/test-cv-build.mjs' },
   {
     source: 'test-generate-latex.mjs',
     dest: 'scripts/test-generate-latex.mjs',
   },
+  {
+    source: 'test-pdf-pipeline.mjs',
+    dest: 'scripts/test-pdf-pipeline.mjs',
+  },
   { source: 'update-system.mjs', dest: 'scripts/update-system.mjs' },
+  { source: 'validate-pdf.mjs', dest: 'scripts/validate-pdf.mjs' },
   { source: 'verify-pipeline.mjs', dest: 'scripts/verify-pipeline.mjs' },
 ];
 

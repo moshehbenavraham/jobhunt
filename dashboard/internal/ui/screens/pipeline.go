@@ -682,6 +682,15 @@ func (m PipelineModel) renderMetrics() string {
 		s := lipgloss.NewStyle().Foreground(m.theme.StatusColor(status))
 		parts = append(parts, s.Render(fmt.Sprintf("%s:%d", statusLabel(status), count)))
 	}
+	if m.metrics.WithPDF > 0 {
+		pdfMetrics := fmt.Sprintf(
+			"PDF ✓%d !%d ?%d",
+			m.metrics.FreshPDF,
+			m.metrics.StalePDF,
+			m.metrics.LegacyPDF,
+		)
+		parts = append(parts, lipgloss.NewStyle().Foreground(m.theme.Subtext).Render(pdfMetrics))
+	}
 
 	return shelf.Render(strings.Join(parts, "  "))
 }
@@ -818,7 +827,11 @@ func (m PipelineModel) renderAppLine(app model.CareerApplication, selected bool)
 	norm := data.NormalizeStatus(app.Status)
 	statusColor := m.theme.StatusColor(norm)
 	statusStyle := lipgloss.NewStyle().Foreground(statusColor).Width(statusW)
-	statusText := statusStyle.Render(statusLabel(norm))
+	statusValue := statusLabel(norm)
+	if marker := pdfStatusMarker(app.PDFStatus); marker != "" {
+		statusValue += " " + marker
+	}
+	statusText := statusStyle.Render(truncateRunes(statusValue, statusW))
 
 	content := fmt.Sprintf("%s %s %s %s %s %s %s",
 		gauge,
@@ -866,6 +879,15 @@ func (m PipelineModel) renderPreview() string {
 	dimStyle := lipgloss.NewStyle().Foreground(m.theme.Subtext)
 
 	wc := theme.ClassifyWidth(m.width)
+
+	if app.HasPDF {
+		pdfText := pdfStatusLabel(app.PDFStatus)
+		if app.PDFIssue != "" {
+			pdfText += " — " + app.PDFIssue
+		}
+		lines = append(lines, padStyle.Render(
+			labelStyle.Render("PDF: ")+valueStyle.Render(truncateRunes(pdfText, m.width-10))))
+	}
 
 	if summary, ok := m.reportCache[app.ReportPath]; ok {
 		if wc >= theme.WidthStandard && summary.archetype != "" {
@@ -1017,5 +1039,37 @@ func statusLabel(norm string) string {
 		return "Discarded"
 	default:
 		return norm
+	}
+}
+
+func pdfStatusMarker(status string) string {
+	switch status {
+	case "fresh":
+		return "P✓"
+	case "stale":
+		return "P!"
+	case "legacy":
+		return "P?"
+	case "invalid", "missing":
+		return "P×"
+	default:
+		return ""
+	}
+}
+
+func pdfStatusLabel(status string) string {
+	switch status {
+	case "fresh":
+		return "Fresh and validated"
+	case "stale":
+		return "Stale — regenerate"
+	case "legacy":
+		return "Legacy / unverified"
+	case "invalid":
+		return "Invalid"
+	case "missing":
+		return "Missing"
+	default:
+		return "Not generated"
 	}
 }

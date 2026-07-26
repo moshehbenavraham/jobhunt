@@ -150,6 +150,9 @@ Rules:
 - You may edit existing tracker rows to update status or notes.
 - Status values must come from `templates/states.yml`.
 - Every report must include `**URL:**` and `**Legitimacy:**` in the header.
+- Default tailored PDFs must be built with `scripts/build-cv.mjs`. Mark a
+  tracker PDF as present only when its sibling manifest exists, is fresh, and
+  has `validation.valid: true`.
 - After batch work or whenever pending TSVs exist, run:
 
   ```bash
@@ -176,5 +179,8 @@ Do not modify `modes/_shared.md` for user-specific customization.
 - `docs/ARCHITECTURE.md`
 - `docs/SCRIPTS.md`
 - `templates/states.yml`
+- `templates/cv-build.schema.json`
 - `templates/cv-template.html`
+- `scripts/build-cv.mjs`
+- `scripts/validate-pdf.mjs`
 - `batch/README.md`

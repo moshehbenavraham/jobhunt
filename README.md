@@ -51,7 +51,9 @@ The standard user-layer inputs are:
 - `npm run sync-check` - validate CV/profile consistency
 - `npm run verify` - check tracker integrity
 - `npm run merge` - merge batch tracker additions
-- `npm run pdf` - generate an ATS-friendly PDF
+- `npm run cv:build` - generate and validate an evidence-backed ATS PDF
+- `npm run pdf:validate` - validate a finished PDF and freshness manifest
+- `npm run pdf` - low-level validated HTML-to-PDF rendering
 - `npm run latex` - validate and compile an optional LaTeX / Overleaf CV
 - `npm run dashboard` - build and launch the Go dashboard
 - `npm run scan` - scan portals for roles
@@ -61,7 +63,7 @@ The standard user-layer inputs are:
 - `npm run coverage` - measure Node script and dashboard coverage
 - `npm run update:check` - check for updater changes
 
-`npm run pdf` remains the default ATS-first resume export. Use
+`npm run cv:build` is the default ATS-first resume export. Use
 `npm run latex` only when you explicitly want a LaTeX / Overleaf path and have
 `pdflatex` available locally, or when you want to hand off the generated `.tex`
 file to Overleaf.

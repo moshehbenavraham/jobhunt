@@ -232,6 +232,30 @@ if (pdfNormalization !== null) {
   fail('PDF ATS normalization regression test failed');
 }
 
+// -- 3e-1. STRUCTURED CV BUILD CONTRACT --------------------------
+
+console.log('\n3e-1. Structured CV build contract');
+
+const cvBuildContract = run('node', ['scripts/test-cv-build.mjs']);
+if (cvBuildContract !== null) {
+  pass('Structured CV build contract tests pass');
+} else {
+  fail('Structured CV build contract tests failed');
+}
+
+// -- 3e-2. FINISHED PDF AND VISUAL REGRESSIONS ------------------
+
+console.log('\n3e-2. Finished PDF and visual regressions');
+
+const finishedPdfPipeline = run('node', ['scripts/test-pdf-pipeline.mjs'], {
+  timeout: 120000,
+});
+if (finishedPdfPipeline !== null) {
+  pass('Finished PDF and visual regression tests pass');
+} else {
+  fail('Finished PDF and visual regression tests failed');
+}
+
 // -- 3f. Pattern analysis regressions ----------------------------
 
 console.log('\n3f. Pattern analysis regressions');
@@ -474,6 +498,39 @@ try {
         pass(`Updater keeps OpenAI auth target out of user data: ${path}`);
       } else {
         fail(`Updater misclassifies OpenAI auth target as user data: ${path}`);
+      }
+    }
+
+    const pdfSystemTargets = [
+      'package-lock.json',
+      'scripts/build-cv.mjs',
+      'scripts/cv-build-core.mjs',
+      'scripts/pdf-validation-core.mjs',
+      'scripts/validate-pdf.mjs',
+      'scripts/test-cv-build.mjs',
+      'scripts/test-pdf-pipeline.mjs',
+      'scripts/test-fixtures/cv-build-letter.json',
+      'scripts/test-fixtures/pdf-visual-baselines.json',
+      'scripts/test-fixtures/pdf-snapshots/letter-page-1.png',
+      'templates/cv-build.schema.json',
+      'templates/cv-template.html',
+    ];
+
+    for (const path of pdfSystemTargets) {
+      if (updaterHarness.isUpdateTargetPath(path)) {
+        pass(`Updater ships deterministic PDF system target: ${path}`);
+      } else {
+        fail(`Updater misses deterministic PDF system target: ${path}`);
+      }
+
+      if (!updaterHarness.isUserPath(path)) {
+        pass(
+          `Updater keeps deterministic PDF target out of user data: ${path}`,
+        );
+      } else {
+        fail(
+          `Updater misclassifies deterministic PDF target as user data: ${path}`,
+        );
       }
     }
   } finally {
@@ -730,6 +787,11 @@ const systemFiles = [
   'templates/cv-template.tex',
   'templates/states.yml',
   'templates/cv-template.html',
+  'templates/cv-build.schema.json',
+  'scripts/build-cv.mjs',
+  'scripts/cv-build-core.mjs',
+  'scripts/pdf-validation-core.mjs',
+  'scripts/validate-pdf.mjs',
 ];
 
 for (const f of systemFiles) {

@@ -132,12 +132,14 @@ func TestRenderAppLineIncludesDateColumn(t *testing.T) {
 	)
 
 	line := pm.renderAppLine(model.CareerApplication{
-		Number:  42,
-		Date:    "2026-04-13",
-		Company: "Anthropic",
-		Role:    "Forward Deployed Engineer",
-		Status:  "Applied",
-		Score:   4.5,
+		Number:    42,
+		Date:      "2026-04-13",
+		Company:   "Anthropic",
+		Role:      "Forward Deployed Engineer",
+		Status:    "Applied",
+		Score:     4.5,
+		HasPDF:    true,
+		PDFStatus: "stale",
 	}, false)
 
 	if !strings.Contains(line, "2026-04-13") {
@@ -145,6 +147,43 @@ func TestRenderAppLineIncludesDateColumn(t *testing.T) {
 	}
 	if !strings.Contains(line, "#42") {
 		t.Fatalf("expected rendered line to include tracker number marker, got %q", line)
+	}
+	if !strings.Contains(line, "P!") {
+		t.Fatalf("expected rendered line to flag stale PDF, got %q", line)
+	}
+}
+
+func TestPDFStatusRendering(t *testing.T) {
+	app := model.CareerApplication{
+		Company:   "Acme",
+		Role:      "AI Engineer",
+		Status:    "Evaluated",
+		Score:     4.5,
+		HasPDF:    true,
+		PDFStatus: "stale",
+		PDFIssue:  "profile/cv.md changed",
+	}
+	pm := NewPipelineModel(
+		theme.NewTheme("catppuccin-mocha"),
+		[]model.CareerApplication{app},
+		model.PipelineMetrics{
+			Total:     1,
+			WithPDF:   1,
+			FreshPDF:  0,
+			StalePDF:  1,
+			LegacyPDF: 0,
+		},
+		"..",
+		120,
+		40,
+	)
+
+	if preview := pm.renderPreview(); !strings.Contains(preview, "Stale") ||
+		!strings.Contains(preview, "profile/cv.md changed") {
+		t.Fatalf("expected stale PDF details in preview, got %q", preview)
+	}
+	if metrics := pm.renderMetrics(); !strings.Contains(metrics, "PDF ✓0 !1 ?0") {
+		t.Fatalf("expected PDF freshness metrics, got %q", metrics)
 	}
 }
 

@@ -1,0 +1,353 @@
+{
+  "schemaVersion": 1,
+  "candidate": {
+    "name": "Jane Smith",
+    "email": "jane@example.com",
+    "phone": "+1-555-0123",
+    "location": "San Francisco, CA | Authorized to work in the United States",
+    "linkedin": "https://www.linkedin.com/in/janesmith-with-an-intentionally-long-public-profile",
+    "portfolio": "https://janesmith.example.com/artificial-intelligence-portfolio-solutions-and-case-studies"
+  },
+  "job": {
+    "company": "Example International Artificial Intelligence Systems Corporation",
+    "role": "Senior Applied AI Engineer",
+    "location": "United States",
+    "language": "en",
+    "format": "letter",
+    "jdText": "Example Corporation needs a Senior Applied AI Engineer with end-to-end ML pipelines, fast prototyping, stakeholder management, observability, and Kubernetes.",
+    "requirements": [
+      {
+        "id": "ml-pipelines",
+        "text": "End-to-end ML pipelines",
+        "importance": "must-have",
+        "status": "supported",
+        "terms": ["ML pipelines"],
+        "evidenceIds": ["profile-ml"],
+        "includedSections": ["summary", "experience", "skills"]
+      },
+      {
+        "id": "fast-prototyping",
+        "text": "Fast prototyping",
+        "importance": "must-have",
+        "status": "supported",
+        "terms": ["fast prototyping"],
+        "evidenceIds": ["profile-fast"],
+        "includedSections": ["summary", "competencies", "experience"]
+      },
+      {
+        "id": "stakeholder-management",
+        "text": "Stakeholder management",
+        "importance": "must-have",
+        "status": "supported",
+        "terms": ["stakeholder management"],
+        "evidenceIds": ["cv-product"],
+        "includedSections": ["experience", "skills"]
+      },
+      {
+        "id": "kubernetes",
+        "text": "Kubernetes",
+        "importance": "must-have",
+        "status": "unsupported",
+        "terms": ["Kubernetes"],
+        "evidenceIds": [],
+        "includedSections": []
+      },
+      {
+        "id": "observability",
+        "text": "Observability",
+        "importance": "nice-to-have",
+        "status": "supported",
+        "terms": ["observability"],
+        "evidenceIds": ["cv-infra"],
+        "includedSections": ["skills"]
+      }
+    ]
+  },
+  "labels": {
+    "summary": "Professional Summary",
+    "competencies": "Core Competencies",
+    "experience": "Work Experience",
+    "projects": "Projects",
+    "education": "Education",
+    "certifications": "Certifications",
+    "skills": "Skills"
+  },
+  "summary": "Senior AI product builder with end-to-end ML pipelines, fast prototyping, and experience moving applied AI systems from idea to production. Built and sold a SaaS after 5 years and now focuses on measurable delivery at scale.",
+  "summaryEvidenceIds": ["profile-exit", "profile-ml", "profile-fast"],
+  "competencies": [
+    {
+      "label": "End-to-end ML pipelines",
+      "evidenceIds": ["profile-ml"]
+    },
+    {
+      "label": "Fast prototyping",
+      "evidenceIds": ["profile-fast"]
+    },
+    {
+      "label": "Cross-functional communication",
+      "evidenceIds": ["profile-cross"]
+    },
+    {
+      "label": "Applied AI delivery",
+      "evidenceIds": ["profile-exit"]
+    },
+    {
+      "label": "Production systems",
+      "evidenceIds": ["cv-systems"]
+    },
+    {
+      "label": "Impact measurement",
+      "evidenceIds": ["cv-impact"]
+    }
+  ],
+  "experience": [
+    {
+      "company": "Example AI Products",
+      "role": "Senior AI Engineer",
+      "period": "2021-Present",
+      "location": "Remote",
+      "bullets": [
+        {
+          "text": "Built end-to-end ML pipelines and moved ideas to production through fast prototyping cycles measured in 2 weeks.",
+          "evidenceIds": ["profile-ml", "profile-fast"]
+        },
+        {
+          "text": "Improved owned systems with stakeholder management across product, engineering, and operations.",
+          "evidenceIds": ["cv-systems", "cv-product"]
+        },
+        {
+          "text": "Focused delivery reviews on measurable impact instead of task lists.",
+          "evidenceIds": ["cv-impact"]
+        }
+      ]
+    },
+    {
+      "company": "Previous Applied Intelligence and Data Platforms Company",
+      "role": "Machine Learning Engineer",
+      "period": "2018-2021",
+      "location": "San Francisco, CA",
+      "bullets": [
+        {
+          "text": "Designed ML pipelines for production systems and documented implementation trade-offs.",
+          "evidenceIds": ["profile-ml", "cv-systems"]
+        },
+        {
+          "text": "Used cross-functional communication to align technical delivery with measurable outcomes.",
+          "evidenceIds": ["profile-cross", "cv-impact"]
+        },
+        {
+          "text": "Kept metrics real and defensible in technical and executive reporting.",
+          "evidenceIds": ["cv-metrics"]
+        }
+      ]
+    },
+    {
+      "company": "Example SaaS",
+      "role": "Founder and Product Builder",
+      "period": "2013-2018",
+      "bullets": [
+        {
+          "text": "Built and sold a SaaS after 5 years, then focused on applied AI at scale.",
+          "evidenceIds": ["profile-exit"]
+        },
+        {
+          "text": "Combined stakeholder management with product discovery and roadmap ownership.",
+          "evidenceIds": ["cv-product"]
+        }
+      ]
+    },
+    {
+      "company": "Earlier Systems Company",
+      "role": "Software Engineer",
+      "period": "2010-2013",
+      "bullets": [
+        {
+          "text": "Built, improved, and owned software systems with attention to reliability.",
+          "evidenceIds": ["cv-systems"]
+        },
+        {
+          "text": "Worked across functions only when it materially improved delivery.",
+          "evidenceIds": ["cv-cross-functional"]
+        }
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project Alpha",
+      "url": "https://janesmith.example.com/project-alpha",
+      "badge": "Applied AI",
+      "description": "Reduced inference latency 40% while packaging the work as a reusable applied AI system.",
+      "technologies": ["Python", "TypeScript", "Evaluation"],
+      "evidenceIds": ["profile-alpha"]
+    },
+    {
+      "name": "Open Source Tool",
+      "url": "https://github.com/example/open-source-tool",
+      "badge": "Developer tooling",
+      "description": "Published an open-source developer tool that earned 2K+ GitHub stars.",
+      "technologies": ["Python", "CI/CD", "Documentation"],
+      "evidenceIds": ["profile-open-source"]
+    },
+    {
+      "name": "Production Systems Portfolio",
+      "description": "Documented systems built, improved, and owned across applied AI delivery.",
+      "technologies": ["System design", "Reliability", "Delivery"],
+      "evidenceIds": ["cv-systems"]
+    },
+    {
+      "name": "Impact Measurement Playbook",
+      "description": "Created a project narrative that prioritizes impact over task lists.",
+      "technologies": ["Metrics", "Product communication"],
+      "evidenceIds": ["cv-impact"]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Degree",
+      "institution": "School",
+      "year": "Year",
+      "evidenceIds": ["cv-education"]
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certification",
+      "issuer": "Provider",
+      "year": "Year",
+      "evidenceIds": ["cv-certification"]
+    }
+  ],
+  "skills": [
+    {
+      "category": "Languages",
+      "items": ["Python", "TypeScript", "Go", "SQL"],
+      "evidenceIds": ["cv-languages"]
+    },
+    {
+      "category": "AI/ML",
+      "items": ["ML pipelines", "Models", "Evaluation", "Retrieval", "Agents"],
+      "evidenceIds": ["profile-ml", "cv-ai"]
+    },
+    {
+      "category": "Infrastructure",
+      "items": [
+        "Cloud",
+        "Containers",
+        "Databases",
+        "Queues",
+        "CI/CD",
+        "Observability"
+      ],
+      "evidenceIds": ["cv-infra"]
+    },
+    {
+      "category": "Product and Leadership",
+      "items": ["Discovery", "Roadmap", "Stakeholder management", "Mentoring"],
+      "evidenceIds": ["cv-product"]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "profile-exit",
+      "source": "config/profile.example.yml",
+      "locator": "narrative.exit_story",
+      "sourceText": "Built and sold my SaaS after 5 years. Now focused on applied AI at scale."
+    },
+    {
+      "id": "profile-ml",
+      "source": "config/profile.example.yml",
+      "locator": "narrative.superpowers",
+      "sourceText": "End-to-end ML pipelines"
+    },
+    {
+      "id": "profile-fast",
+      "source": "config/profile.example.yml",
+      "locator": "narrative.superpowers",
+      "sourceText": "Fast prototyping (idea to prod in 2 weeks)"
+    },
+    {
+      "id": "profile-cross",
+      "source": "config/profile.example.yml",
+      "locator": "narrative.superpowers",
+      "sourceText": "Cross-functional communication"
+    },
+    {
+      "id": "profile-alpha",
+      "source": "config/profile.example.yml",
+      "locator": "narrative.proof_points.Project Alpha",
+      "sourceText": "Reduced inference latency 40%"
+    },
+    {
+      "id": "profile-open-source",
+      "source": "config/profile.example.yml",
+      "locator": "narrative.proof_points.Open Source Tool",
+      "sourceText": "2K+ GitHub stars"
+    },
+    {
+      "id": "cv-systems",
+      "source": "profile/cv.example.md",
+      "locator": "Previous Company",
+      "sourceText": "Describe the systems you built, improved, or owned."
+    },
+    {
+      "id": "cv-impact",
+      "source": "profile/cv.example.md",
+      "locator": "Work Experience",
+      "sourceText": "Prefer impact over task lists."
+    },
+    {
+      "id": "cv-metrics",
+      "source": "profile/cv.example.md",
+      "locator": "Work Experience",
+      "sourceText": "Include metrics when they are real and defensible."
+    },
+    {
+      "id": "cv-cross-functional",
+      "source": "profile/cv.example.md",
+      "locator": "Previous Company",
+      "sourceText": "Show cross-functional work only when it materially mattered."
+    },
+    {
+      "id": "cv-education",
+      "source": "profile/cv.example.md",
+      "locator": "Education",
+      "sourceText": "Degree, School, Year"
+    },
+    {
+      "id": "cv-certification",
+      "source": "profile/cv.example.md",
+      "locator": "Education",
+      "sourceText": "Certification, Provider, Year"
+    },
+    {
+      "id": "cv-languages",
+      "source": "profile/cv.example.md",
+      "locator": "Skills",
+      "sourceText": "Languages: Python, TypeScript, Go, SQL"
+    },
+    {
+      "id": "cv-ai",
+      "source": "profile/cv.example.md",
+      "locator": "Skills",
+      "sourceText": "AI/ML: Models, frameworks, evaluation, prompting, retrieval, agents"
+    },
+    {
+      "id": "cv-infra",
+      "source": "profile/cv.example.md",
+      "locator": "Skills",
+      "sourceText": "Infra: Cloud, containers, databases, queues, CI/CD, observability"
+    },
+    {
+      "id": "cv-product",
+      "source": "profile/cv.example.md",
+      "locator": "Skills",
+      "sourceText": "Product/Leadership: Discovery, roadmap, stakeholder management, mentoring"
+    }
+  ],
+  "sourceFiles": [
+    "profile/cv.example.md",
+    "config/profile.example.yml",
+    "modes/_profile.template.md"
+  ]
+}

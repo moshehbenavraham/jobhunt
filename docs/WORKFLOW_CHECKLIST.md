@@ -337,7 +337,7 @@ This section is separate from the main checklist on purpose.
   `pdflatex` compilation, or an Overleaf handoff.
 - `L1a. When to use it`
   This is a side path off the normal PDF workflow, not a replacement for it.
-  The default ATS-first path remains `modes/pdf.md` and `npm run pdf`.
+  The default ATS-first path remains `modes/pdf.md` and `npm run cv:build`.
 - `L1b. What it does`
   It tailors the CV against a JD, fills `templates/cv-template.tex`, writes a
   `.tex` file to `output/`, and then validates and compiles it with

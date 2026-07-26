@@ -22,16 +22,34 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
       - name: Install dependencies
         run: npm ci
 
       - name: Install Chromium
         run: npx playwright install chromium
 
-      - name: Install shell tooling
+      - name: Install validation tooling
         run: |
           sudo apt-get update
-          sudo apt-get install -y shellcheck shfmt
+          sudo apt-get install -y shellcheck shfmt qpdf poppler-utils mupdf-tools
+
+      - name: Install Apache Tika
+        env:
+          TIKA_VERSION: 3.3.2
+        run: |
+          curl -fsSLo "$RUNNER_TEMP/tika-app.jar" \
+            "https://dlcdn.apache.org/tika/${TIKA_VERSION}/tika-app-${TIKA_VERSION}.jar"
+          curl -fsSLo "$RUNNER_TEMP/tika-app.jar.sha512" \
+            "https://downloads.apache.org/tika/${TIKA_VERSION}/tika-app-${TIKA_VERSION}.jar.sha512"
+          echo "$(cat "$RUNNER_TEMP/tika-app.jar.sha512")  $RUNNER_TEMP/tika-app.jar" | sha512sum --check -
+          echo "TIKA_APP_JAR=$RUNNER_TEMP/tika-app.jar" >> "$GITHUB_ENV"
+          echo "PDF_VALIDATION_REQUIRE_TIKA=1" >> "$GITHUB_ENV"
 
       - name: Lint
         run: npm run lint

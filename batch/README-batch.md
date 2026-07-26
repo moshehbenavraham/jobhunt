@@ -163,19 +163,22 @@ Every successful worker invocation must emit exactly one of these result types:
 
 | Worker status | Required semantics                                                                                                          |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `completed`   | Numeric score, legitimacy, report path, PDF path, tracker path, no warnings, `error: null`                                  |
+| `completed`   | Numeric score, legitimacy, report path, validated PDF + manifest, tracker path, no warnings, `error: null`                  |
 | `partial`     | Numeric score, legitimacy, report path, at least one warning, and either `pdf` or `tracker` set to `null`                   |
 | `failed`      | Semantic failure: `score`, `legitimacy`, `pdf`, and `tracker` are `null`; `error` is a non-empty string; `report` may exist |
 
 Infrastructure failures are not a worker status. They happen when the worker
 exits non-zero or does not leave a valid result artifact. The runner stores
 those rows as `failed` with an `error` message prefixed by `infrastructure:`.
+The runner independently executes `scripts/validate-pdf.mjs` against every
+non-null PDF. If validation or freshness fails, it quarantines the worker's TSV
+under `batch/logs/*.invalid-tracker.tsv` so closeout cannot merge it.
 
 ## State Semantics And Retry Behavior
 
 | Case                                                  | Stored status | Retry behavior                             | Operator expectation                                                                  |
 | ----------------------------------------------------- | ------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
-| Fully successful run                                  | `completed`   | Terminal                                   | Report, PDF, and tracker TSV all exist                                                |
+| Fully successful run                                  | `completed`   | Terminal                                   | Report, validated PDF/manifest, and tracker TSV all exist                             |
 | Main evaluation succeeded but PDF or tracker degraded | `partial`     | Terminal                                   | Report exists; inspect `warnings` and decide whether to repair artifacts manually     |
 | Semantic evaluation failure                           | `failed`      | Terminal                                   | Check the `semantic:` error summary in `batch-state.tsv` and the report if one exists |
 | Worker crash, bad JSON, or missing result artifact    | `failed`      | Retryable until `retries >= --max-retries` | Inspect the event log and rerun with `--retry-failed`                                 |

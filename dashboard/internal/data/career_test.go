@@ -1,6 +1,9 @@
 package data
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"math"
 	"os"
 	"path/filepath"
@@ -10,6 +13,11 @@ import (
 
 	"github.com/moshehbenavraham/jobhunt/dashboard/internal/model"
 )
+
+func testSHA256(value string) string {
+	sum := sha256.Sum256([]byte(value))
+	return hex.EncodeToString(sum[:])
+}
 
 func writeTestFile(t *testing.T, path, content string) {
 	t.Helper()
@@ -191,6 +199,98 @@ func TestParseApplicationsUsesTrackerNumberColumn(t *testing.T) {
 	}
 }
 
+func TestParseApplicationsEnrichesFreshAndStalePDFManifests(t *testing.T) {
+	root := t.TempDir()
+	version := "1.0.0"
+	source := "# Jane Smith CV\n"
+	jd := "Senior AI Engineer with production ML systems."
+	build := `{"job":{"jdText":"` + jd + `"}}` + "\n"
+	template := "<html><body>{{CONTENT}}</body></html>\n"
+	html := "<html><body>Jane Smith</body></html>\n"
+	pdf := "%PDF-1.7\nfixture\n"
+	pdfPath := "output/cv-jane-smith-acme-2026-04-01.pdf"
+	buildPath := "output/cv-jane-smith-acme-2026-04-01.cv-build.json"
+	htmlPath := "output/cv-jane-smith-acme-2026-04-01.html"
+
+	writeTestFile(t, filepath.Join(root, "VERSION"), version+"\n")
+	writeTestFile(t, filepath.Join(root, "profile", "cv.md"), source)
+	writeTestFile(t, filepath.Join(root, "templates", "cv-template.html"), template)
+	writeTestFile(t, filepath.Join(root, buildPath), build)
+	writeTestFile(t, filepath.Join(root, htmlPath), html)
+	writeTestFile(t, filepath.Join(root, pdfPath), pdf)
+	writeTestFile(
+		t,
+		filepath.Join(root, "data", "applications.md"),
+		strings.Join([]string{
+			"| # | Date | Company | Role | Score | Status | PDF | Report | Notes |",
+			"|---|------|---------|------|-------|--------|-----|--------|-------|",
+			"| 1 | 2026-04-01 | Acme | Senior AI Engineer | 4.5/5 | Evaluated | [PDF](" + pdfPath + ") | | note |",
+			"",
+		}, "\n"),
+	)
+	manifest := map[string]any{
+		"schemaVersion": 1,
+		"generatedAt":   "2026-04-01T00:00:00.000Z",
+		"pipeline": map[string]any{
+			"version":       version,
+			"versionSha256": testSHA256(version),
+		},
+		"candidate": map[string]any{
+			"name":  "Jane Smith",
+			"email": "jane@example.com",
+		},
+		"job": map[string]any{
+			"company":  "Acme",
+			"role":     "Senior AI Engineer",
+			"jdSha256": testSHA256(jd),
+		},
+		"inputs": map[string]any{
+			"buildPath":      buildPath,
+			"buildSha256":    testSHA256(build),
+			"templatePath":   "templates/cv-template.html",
+			"templateSha256": testSHA256(template),
+			"sources": []map[string]any{
+				{"path": "profile/cv.md", "sha256": testSHA256(source)},
+			},
+		},
+		"output": map[string]any{
+			"pdfPath":    pdfPath,
+			"pdfSha256":  testSHA256(pdf),
+			"htmlPath":   htmlPath,
+			"htmlSha256": testSHA256(html),
+			"format":     "letter",
+			"pageCount":  2,
+		},
+		"validation": map[string]any{"valid": true},
+	}
+	manifestBytes, err := json.Marshal(manifest)
+	if err != nil {
+		t.Fatalf("marshal manifest: %v", err)
+	}
+	writeTestFile(
+		t,
+		filepath.Join(root, "output", "cv-jane-smith-acme-2026-04-01.manifest.json"),
+		string(manifestBytes),
+	)
+
+	apps := ParseApplications(root)
+	if len(apps) != 1 || apps[0].PDFStatus != "fresh" {
+		t.Fatalf("expected fresh manifest-backed PDF, got %+v", apps)
+	}
+	if apps[0].PDFManifest == "" || apps[0].PDFPath != pdfPath {
+		t.Fatalf("expected PDF artifact paths, got %+v", apps[0])
+	}
+
+	writeTestFile(t, filepath.Join(root, "profile", "cv.md"), source+"changed\n")
+	apps = ParseApplications(root)
+	if len(apps) != 1 || apps[0].PDFStatus != "stale" {
+		t.Fatalf("expected stale PDF after source change, got %+v", apps)
+	}
+	if !strings.Contains(apps[0].PDFIssue, "source profile/cv.md changed") {
+		t.Fatalf("expected source freshness issue, got %q", apps[0].PDFIssue)
+	}
+}
+
 func TestBatchHelpersAndNormalization(t *testing.T) {
 	root := t.TempDir()
 
@@ -238,7 +338,7 @@ func TestBatchHelpersAndNormalization(t *testing.T) {
 
 func TestMetricsProgressAndStatusHelpers(t *testing.T) {
 	apps := []model.CareerApplication{
-		{Date: "2026-03-03", Status: "Evaluada", Score: 4.6, HasPDF: true},
+		{Date: "2026-03-03", Status: "Evaluada", Score: 4.6, HasPDF: true, PDFStatus: "stale"},
 		{Date: "2026-03-10", Status: "Applied", Score: 4.1},
 		{Date: "2026-03-17", Status: "Respondido", Score: 3.7},
 		{Date: "2026-03-24", Status: "Interview", Score: 3.2},
@@ -253,6 +353,9 @@ func TestMetricsProgressAndStatusHelpers(t *testing.T) {
 	}
 	if metrics.WithPDF != 1 {
 		t.Fatalf("expected 1 PDF, got %d", metrics.WithPDF)
+	}
+	if metrics.StalePDF != 1 {
+		t.Fatalf("expected 1 stale PDF, got %d", metrics.StalePDF)
 	}
 	if metrics.Actionable != 5 {
 		t.Fatalf("expected 5 actionable apps, got %d", metrics.Actionable)

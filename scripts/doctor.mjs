@@ -6,6 +6,7 @@
  */
 
 import { existsSync, mkdirSync, readdirSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -42,6 +43,72 @@ function checkDependencies() {
     pass: false,
     label: 'Dependencies not installed',
     fix: 'Run: npm install',
+  };
+}
+
+function commandAvailable(command, args = ['--version']) {
+  const result = spawnSync(command, args, {
+    encoding: 'utf8',
+    stdio: 'ignore',
+  });
+  return !result.error;
+}
+
+function checkPdfToolchain() {
+  const commands = [
+    ['qpdf', ['--version'], 'qpdf'],
+    ['pdfinfo', ['-v'], 'poppler-utils'],
+    ['pdftotext', ['-v'], 'poppler-utils'],
+    ['pdffonts', ['-v'], 'poppler-utils'],
+    ['mutool', ['--version'], 'mupdf-tools'],
+  ];
+  const missing = commands.filter(
+    ([command, args]) => !commandAvailable(command, args),
+  );
+  if (missing.length === 0) {
+    return {
+      pass: true,
+      label: 'PDF validation toolchain ready (qpdf, Poppler, MuPDF)',
+    };
+  }
+  return {
+    pass: false,
+    label: `PDF validation tools missing: ${missing
+      .map(([command]) => command)
+      .join(', ')}`,
+    fix: `Install: ${[...new Set(missing.map(([, , pkg]) => pkg))].join(' ')}`,
+  };
+}
+
+function checkTika() {
+  const tikaJar = process.env.TIKA_APP_JAR;
+  if (
+    tikaJar &&
+    existsSync(resolve(tikaJar)) &&
+    commandAvailable('java', ['-version'])
+  ) {
+    return {
+      kind: 'pass',
+      label: `Apache Tika parser configured (${resolve(tikaJar)})`,
+    };
+  }
+  if (process.env.PDF_VALIDATION_REQUIRE_TIKA === '1') {
+    return {
+      pass: false,
+      label: 'Apache Tika parser is required but not configured',
+      fix: [
+        'Install Java 17 or later',
+        'Set TIKA_APP_JAR to a tika-app JAR path',
+      ],
+    };
+  }
+  return {
+    kind: 'next',
+    label: 'Apache Tika cross-parser check is optional locally',
+    fix: [
+      'Install Java 17 or later and Apache Tika',
+      'Set TIKA_APP_JAR to the tika-app JAR path',
+    ],
   };
 }
 
@@ -232,6 +299,8 @@ async function main() {
     checkNodeVersion(),
     checkDependencies(),
     await checkPlaywright(),
+    checkPdfToolchain(),
+    checkTika(),
     checkCv(),
     checkProfile(),
     checkPortals(),

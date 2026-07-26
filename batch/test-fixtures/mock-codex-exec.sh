@@ -105,6 +105,22 @@ if [[ -n "$fixture_file" && "$write_result" == "true" ]]; then
   if [[ -n "$last_message_file" ]]; then
     cp "$fixture_file" "$last_message_file"
   fi
+  pdf_path="$(jq -r '.pdf // empty' "$fixture_file")"
+  if [[ -n "$pdf_path" ]]; then
+    mkdir -p "$(dirname "$pdf_path")"
+    printf '%%PDF-1.7\nfixture\n' > "$pdf_path"
+    printf '{"validation":{"valid":true}}\n' > "${pdf_path%.pdf}.manifest.json"
+  fi
+  report_path="$(jq -r '.report // empty' "$fixture_file")"
+  if [[ -n "$report_path" ]]; then
+    mkdir -p "$(dirname "$report_path")"
+    printf '# Fixture report\n' > "$report_path"
+  fi
+  tracker_path="$(jq -r '.tracker // empty' "$fixture_file")"
+  if [[ -n "$tracker_path" ]]; then
+    mkdir -p "$(dirname "$tracker_path")"
+    printf '1\t2026-04-15\tExample AI\tSenior AI Engineer\tEvaluated\t4.6/5\tYes\treport\tfixture\n' > "$tracker_path"
+  fi
 fi
 
 if [[ "$json_mode" == "true" ]]; then

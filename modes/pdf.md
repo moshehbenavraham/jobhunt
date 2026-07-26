@@ -5,29 +5,76 @@ This is the default CV generation mode. Only switch to `modes/latex.md` and
 
 ## Full pipeline
 
-1. Read `profile/cv.md` as a source of truth.
+1. Read the candidate sources of truth:
+   - `profile/cv.md` (legacy root `cv.md` during migration)
+   - `config/profile.yml`
+   - `modes/_profile.md`
+   - `profile/article-digest.md` when present
 2. Ask the user for the JD if it is not already in context (text or URL).
-3. Extract 15-20 JD keywords.
-4. Detect the JD language and match the CV language (English by default).
-5. Detect the company location and choose the page format:
+3. Extract every material JD requirement, not an arbitrary keyword count.
+   Classify each one as `must-have` or `nice-to-have`.
+4. Build a requirement-evidence matrix:
+   - `supported`: cite one or more exact evidence records from the source files
+   - `unsupported`: leave evidence and included sections empty and record it as
+     an explicit gap
+   - never include a term declared unsupported anywhere in the CV
+5. Detect the JD language and match the CV language (English by default).
+6. Detect the company location and choose the page format:
    - US/Canada -> `letter`
    - everywhere else -> `a4`
-6. Detect the role archetype and adapt the framing.
-7. Rewrite the Professional Summary using JD keywords plus the exit-story bridge.
-8. Select the 3-4 most relevant projects.
-9. Reorder experience bullets by JD relevance.
-10. Build a competency grid from the JD requirements (6-8 keyword phrases).
-11. Inject keywords naturally into real achievements. Never invent.
-12. Generate the full HTML from the template plus tailored content.
-13. Read the candidate name from `config/profile.yml`, normalize it to kebab-case lowercase, and use it as `{candidate}`.
-14. Write HTML to `/tmp/cv-{candidate}-{company}.html`.
-15. Run:
+7. Detect the role archetype and adapt the framing.
+8. Tailor the summary, competencies, experience, projects, education,
+   certifications, and skills. Every summary, bullet, competency, project,
+   education item, certification, and skill group must carry `evidenceIds`.
+9. Put the complete build contract in
+   `/tmp/cv-build-{candidate}-{company}.json`. Follow
+   `templates/cv-build.schema.json`; use
+   `scripts/test-fixtures/cv-build-letter.json` as a structural example only.
+10. Read the candidate name from `config/profile.yml`, normalize it to
+    kebab-case lowercase, and use it as `{candidate}`. Resolve the company and
+    role too; fallback words such as `candidate`, `unknown`, `todo`, or `tbd`
+    are forbidden in content and filenames.
+11. Run:
 
 ```bash
-node scripts/generate-pdf.mjs /tmp/cv-{candidate}-{company}.html output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --format={letter|a4}
+npm run cv:build -- \
+  /tmp/cv-build-{candidate}-{company}.json \
+  output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf \
+  --max-pages=2
 ```
 
-16. Report the PDF path, page count, and approximate keyword coverage.
+12. Treat a non-zero exit as a failed PDF build. Do not mark the tracker PDF
+    column `Yes` unless the sibling `.manifest.json` exists and says
+    `validation.valid: true`.
+13. Report:
+    - the PDF, final HTML, canonical `.cv-build.json`, and manifest paths
+    - exact page count and format
+    - measured must-have and nice-to-have coverage
+    - explicit unsupported gaps
+    - any validator warnings
+
+`scripts/build-cv.mjs` is the only default renderer. It validates the Zod
+contract and source evidence, renders HTML deterministically, creates a tagged
+PDF with an outline, and publishes the PDF only after the finished-file gate
+passes. `scripts/generate-pdf.mjs` remains the lower-level HTML renderer; do not
+use it directly for a normal tailored CV.
+
+## Finished-file quality gate
+
+The build must fail on any of these:
+
+- malformed PDF (`qpdf`)
+- wrong or excessive page count, or wrong Letter/A4 dimensions
+- encrypted, untagged, or outline-free output
+- missing fonts, unembedded fonts, or fonts without Unicode maps
+- candidate name, email, or required headings missing/out of order in
+  `pdftotext`
+- unresolved placeholders, replacement characters, or zero-width characters
+- less than 99% normalized HTML token retention
+- disagreement between Poppler and PDF.js (and Apache Tika when configured)
+- orphan section headings, dangling separators, or DOM horizontal overflow
+- unsupported JD terms included in the CV
+- stale or changed build, JD, source, template, HTML, version, or PDF hashes
 
 ## ATS rules
 
@@ -70,36 +117,18 @@ Legitimate reformulation examples:
 
 Never add skills the candidate does not actually have.
 
-## HTML template
+## Structured build and HTML template
 
-Use `cv-template.html`. Replace the `{{...}}` placeholders with tailored content:
-
-| Placeholder                  | Content                                       |
-| ---------------------------- | --------------------------------------------- |
-| `{{LANG}}`                   | `en` or `es`                                  |
-| `{{PAGE_WIDTH}}`             | `8.5in` or `210mm`                            |
-| `{{NAME}}`                   | from profile.yml                              |
-| `{{PHONE}}`                  | from profile.yml, only when non-empty         |
-| `{{EMAIL}}`                  | from profile.yml                              |
-| `{{LINKEDIN_URL}}`           | from profile.yml                              |
-| `{{LINKEDIN_DISPLAY}}`       | from profile.yml                              |
-| `{{PORTFOLIO_URL}}`          | from profile.yml                              |
-| `{{PORTFOLIO_DISPLAY}}`      | from profile.yml                              |
-| `{{LOCATION}}`               | from profile.yml                              |
-| `{{SECTION_SUMMARY}}`        | "Professional Summary" / localized equivalent |
-| `{{SUMMARY_TEXT}}`           | tailored summary                              |
-| `{{SECTION_COMPETENCIES}}`   | "Core Competencies" / localized equivalent    |
-| `{{COMPETENCIES}}`           | competency tags                               |
-| `{{SECTION_EXPERIENCE}}`     | "Work Experience" / localized equivalent      |
-| `{{EXPERIENCE}}`             | tailored experience HTML                      |
-| `{{SECTION_PROJECTS}}`       | "Projects" / localized equivalent             |
-| `{{PROJECTS}}`               | tailored projects HTML                        |
-| `{{SECTION_EDUCATION}}`      | "Education" / localized equivalent            |
-| `{{EDUCATION}}`              | education HTML                                |
-| `{{SECTION_CERTIFICATIONS}}` | "Certifications" / localized equivalent       |
-| `{{CERTIFICATIONS}}`         | certifications HTML                           |
-| `{{SECTION_SKILLS}}`         | "Skills" / localized equivalent               |
-| `{{SKILLS}}`                 | skills HTML                                   |
+- `templates/cv-build.schema.json` is the machine-readable input contract.
+- `scripts/cv-build-core.mjs` is the deterministic renderer and evidence /
+  requirement validator.
+- `templates/cv-template.html` owns shared semantic HTML and CSS only.
+- Do not manually interpolate template placeholders. The renderer escapes all
+  content, omits empty optional contact fields, shortens displayed URLs while
+  retaining full link targets, and fails on any unresolved token.
+- Keep source excerpts short but exact. A metric in a summary, experience
+  bullet, or project description must occur in one of that item's evidence
+  excerpts.
 
 ## Canva CV generation (optional)
 
@@ -178,4 +207,12 @@ It must report a PDF document. If it returns XML or HTML, re-export and retry.
 
 ## After generation
 
-If the role is already in the tracker, update the existing row so the PDF column changes from `No` to `Yes`.
+If the role is already in the tracker, update the existing row so the PDF
+column changes from `No` to `Yes` only after running:
+
+```bash
+npm run pdf:validate -- \
+  output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf \
+  --manifest=output/cv-{candidate}-{company}-{YYYY-MM-DD}.manifest.json \
+  --quiet
+```

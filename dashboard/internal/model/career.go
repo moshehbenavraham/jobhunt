@@ -10,6 +10,10 @@ type CareerApplication struct {
 	Score        float64
 	ScoreRaw     string
 	HasPDF       bool
+	PDFStatus    string // none, fresh, stale, legacy, invalid, or missing
+	PDFPath      string
+	PDFManifest  string
+	PDFIssue     string
 	ReportPath   string
 	ReportNumber string
 	Notes        string
@@ -28,6 +32,9 @@ type PipelineMetrics struct {
 	AvgScore   float64
 	TopScore   float64
 	WithPDF    int
+	FreshPDF   int
+	StalePDF   int
+	LegacyPDF  int
 	Actionable int
 }
 
@@ -48,10 +55,10 @@ type ProgressMetrics struct {
 	OfferRate     float64 // Offer / Applied
 
 	// Averages
-	AvgScore     float64
-	TopScore     float64
-	TotalOffers  int
-	ActiveApps int // not skip/rejected/discarded
+	AvgScore    float64
+	TopScore    float64
+	TotalOffers int
+	ActiveApps  int // not skip/rejected/discarded
 }
 
 // FunnelStage represents one stage of the application funnel.

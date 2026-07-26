@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{NAME}} — CV</title>
+    <title>{{DOCUMENT_TITLE}}</title>
     <style>
       @font-face {
         font-family: 'Space Grotesk';
@@ -94,11 +94,12 @@
       .contact-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px 14px;
+        gap: 6px 16px;
         font-family: 'DM Sans', sans-serif;
         font-size: 10.5px;
         line-height: 1.4;
         color: #555;
+        font-style: normal;
       }
 
       .contact-row a {
@@ -106,8 +107,9 @@
         text-decoration: none;
       }
 
-      .contact-row .separator {
-        color: #ccc;
+      .contact-item {
+        min-width: 0;
+        overflow-wrap: anywhere;
       }
 
       /* === SECTIONS === */
@@ -133,11 +135,6 @@
         font-size: 11px;
         line-height: 1.7;
         color: #2f2f2f;
-      }
-
-      /* Links must never break across lines */
-      a {
-        white-space: nowrap;
       }
 
       /* === CORE COMPETENCIES === */
@@ -185,6 +182,9 @@
       }
 
       .job-role {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px 10px;
         font-size: 11px;
         font-weight: 600;
         color: #333;
@@ -206,6 +206,8 @@
         line-height: 1.6;
         color: #333;
         margin-bottom: 4px;
+        orphans: 2;
+        widows: 2;
       }
 
       .job li strong {
@@ -347,68 +349,35 @@
         break-inside: avoid;
         page-break-inside: avoid;
       }
+
+      .section-title {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+
+      .section-title + .first-in-section {
+        break-before: avoid-page;
+        page-break-before: avoid;
+      }
+
+      p {
+        orphans: 2;
+        widows: 2;
+      }
     </style>
   </head>
   <body>
-    <div class="page">
+    <main class="page">
       <!-- HEADER -->
-      <div class="header avoid-break">
+      <header class="header avoid-break">
         <h1>{{NAME}}</h1>
         <div class="header-gradient"></div>
-        <div class="contact-row">
-          <span>{{PHONE}}</span>
-          <span class="separator">|</span>
-          <span>{{EMAIL}}</span>
-          <span class="separator">|</span>
-          <a href="{{LINKEDIN_URL}}">{{LINKEDIN_DISPLAY}}</a>
-          <span class="separator">|</span>
-          <a href="{{PORTFOLIO_URL}}">{{PORTFOLIO_DISPLAY}}</a>
-          <span class="separator">|</span>
-          <span>{{LOCATION}}</span>
-        </div>
-      </div>
+        <address class="contact-row">{{CONTACT_ITEMS}}</address>
+      </header>
 
-      <!-- PROFESSIONAL SUMMARY -->
-      <div class="section avoid-break">
-        <div class="section-title">{{SECTION_SUMMARY}}</div>
-        <div class="summary-text">{{SUMMARY_TEXT}}</div>
-      </div>
-
-      <!-- CORE COMPETENCIES -->
-      <div class="section">
-        <div class="section-title">{{SECTION_COMPETENCIES}}</div>
-        <div class="competencies-grid">{{COMPETENCIES}}</div>
-      </div>
-
-      <!-- WORK EXPERIENCE -->
-      <div class="section">
-        <div class="section-title">{{SECTION_EXPERIENCE}}</div>
-        {{EXPERIENCE}}
-      </div>
-
-      <!-- PROJECTS -->
-      <div class="section avoid-break">
-        <div class="section-title">{{SECTION_PROJECTS}}</div>
-        {{PROJECTS}}
-      </div>
-
-      <!-- EDUCATION -->
-      <div class="section avoid-break">
-        <div class="section-title">{{SECTION_EDUCATION}}</div>
-        {{EDUCATION}}
-      </div>
-
-      <!-- CERTIFICATIONS -->
-      <div class="section avoid-break">
-        <div class="section-title">{{SECTION_CERTIFICATIONS}}</div>
-        {{CERTIFICATIONS}}
-      </div>
-
-      <!-- SKILLS -->
-      <div class="section avoid-break">
-        <div class="section-title">{{SECTION_SKILLS}}</div>
-        {{SKILLS}}
-      </div>
-    </div>
+      {{SUMMARY_SECTION}} {{COMPETENCIES_SECTION}} {{EXPERIENCE_SECTION}}
+      {{PROJECTS_SECTION}} {{EDUCATION_SECTION}} {{CERTIFICATIONS_SECTION}}
+      {{SKILLS_SECTION}}
+    </main>
   </body>
 </html>

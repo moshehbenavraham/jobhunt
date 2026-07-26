@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import {
   chmodSync,
   copyFileSync,
+  existsSync,
   mkdtempSync,
   mkdirSync,
   readFileSync,
@@ -26,6 +27,12 @@ const MOCK_CODEX_SOURCE = join(
   'batch',
   'test-fixtures',
   'mock-codex-exec.sh',
+);
+const MOCK_PDF_VALIDATOR_SOURCE = join(
+  ROOT,
+  'batch',
+  'test-fixtures',
+  'mock-pdf-validator.mjs',
 );
 
 const COMPLETED_FIXTURE = join(
@@ -110,6 +117,7 @@ function createSandbox({ inputRows, stateRows = [] }) {
     readFileSync(SCHEMA_SOURCE, 'utf8'),
   );
   copyExecutable(MOCK_CODEX_SOURCE, join(binDir, 'codex'));
+  copyFileSync(MOCK_PDF_VALIDATOR_SOURCE, join(scriptsDir, 'validate-pdf.mjs'));
 
   writeFile(
     join(batchDir, 'batch-input.tsv'),
@@ -208,6 +216,8 @@ function runSingleOfferScenario({
   expectedRetries,
   expectedSummary,
   expectedStdoutFragment,
+  extraEnv = {},
+  expectQuarantinedTracker = false,
 }) {
   const sandboxRoot = createSandbox({ inputRows: [buildInputRow('1')] });
 
@@ -217,6 +227,7 @@ function runSingleOfferScenario({
         MOCK_CODEX_FIXTURE: fixturePath ?? '',
         MOCK_CODEX_EXIT_CODE: String(mockExitCode),
         MOCK_CODEX_WRITE_RESULT: mockWriteResult ? 'true' : 'false',
+        ...extraEnv,
       },
     });
 
@@ -262,6 +273,13 @@ function runSingleOfferScenario({
       result.stdout.includes(expectedStdoutFragment),
       `${name}: stdout did not include "${expectedStdoutFragment}"`,
     );
+    assert.equal(
+      existsSync(
+        join(sandboxRoot, 'batch', 'logs', '001-1.invalid-tracker.tsv'),
+      ),
+      expectQuarantinedTracker,
+      `${name}: unexpected tracker quarantine state`,
+    );
   } finally {
     rmSync(sandboxRoot, { recursive: true, force: true });
   }
@@ -278,6 +296,21 @@ runSingleOfferScenario({
     'Total: 1 | Completed: 1 | Partial: 0 | Failed: 0 | Retryable Failed: 0 | Skipped: 0 | Pending: 0',
   expectedStdoutFragment:
     'Completed (worker status: completed, score: 4.6, report: 001)',
+});
+
+runSingleOfferScenario({
+  name: 'invalid finished PDF is rejected before tracker merge',
+  fixturePath: COMPLETED_FIXTURE,
+  expectedStatus: 'failed',
+  expectedScore: '-',
+  expectedErrorPrefix: 'infrastructure: exit 1; Worker PDF failed',
+  expectedRetries: '1',
+  expectedSummary:
+    'Total: 1 | Completed: 0 | Partial: 0 | Failed: 0 | Retryable Failed: 1 | Skipped: 0 | Pending: 0',
+  expectedStdoutFragment:
+    'Quarantined tracker addition after PDF validation failure',
+  extraEnv: { MOCK_PDF_VALIDATOR_FAIL: '1' },
+  expectQuarantinedTracker: true,
 });
 
 runSingleOfferScenario({

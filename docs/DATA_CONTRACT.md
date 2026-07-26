@@ -21,7 +21,7 @@ These files contain your personal data, customizations, and work product. Update
 | `data/follow-ups.md`            | Your follow-up history                          |
 | `data/openai-account-auth.json` | Your stored OpenAI account credentials          |
 | `reports/*`                     | Your evaluation reports                         |
-| `output/*`                      | Your generated PDFs                             |
+| `output/*`                      | Your generated PDFs and JSON/HTML manifests     |
 | `jds/*`                         | Your saved job descriptions                     |
 
 ## System Layer (safe to auto-update)

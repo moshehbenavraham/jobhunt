@@ -28,6 +28,12 @@ const MOCK_CODEX_SOURCE = join(
   'test-fixtures',
   'mock-codex-exec.sh',
 );
+const MOCK_PDF_VALIDATOR_SOURCE = join(
+  ROOT,
+  'batch',
+  'test-fixtures',
+  'mock-pdf-validator.mjs',
+);
 
 const EXPECTED_RESULT_KEYS = [
   'company',
@@ -83,6 +89,7 @@ function createSandbox() {
     readFileSync(SCHEMA_SOURCE, 'utf8'),
   );
   copyExecutable(MOCK_CODEX_SOURCE, join(binDir, 'codex'));
+  copyFileSync(MOCK_PDF_VALIDATOR_SOURCE, join(scriptsDir, 'validate-pdf.mjs'));
 
   writeFile(
     join(batchDir, 'batch-input.tsv'),

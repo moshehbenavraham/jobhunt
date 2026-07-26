@@ -4,19 +4,35 @@ System-layer template files used by jobhunt scripts and modes. These files are a
 
 ## Files
 
-| File               | Used By                                                                                      | Purpose                                             |
-| ------------------ | -------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `cv-template.html` | `scripts/generate-pdf.mjs`                                                                   | HTML/CSS template for ATS-optimized CV PDFs         |
-| `cv-template.tex`  | `scripts/generate-latex.mjs`                                                                 | LaTeX / Overleaf template for ATS-optimized CV PDFs |
-| `states.yml`       | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases      |
+| File                   | Used By                                                                                      | Purpose                                              |
+| ---------------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| `cv-build.schema.json` | `scripts/build-cv.mjs`                                                                       | Structured CV, evidence, and JD requirement contract |
+| `cv-template.html`     | `scripts/cv-build-core.mjs`, `scripts/generate-pdf.mjs`                                      | Semantic HTML/CSS for ATS-optimized CV PDFs          |
+| `cv-template.tex`      | `scripts/generate-latex.mjs`                                                                 | LaTeX / Overleaf template for ATS-optimized CV PDFs  |
+| `states.yml`           | `scripts/verify-pipeline.mjs`, `scripts/normalize-statuses.mjs`, `scripts/merge-tracker.mjs` | Canonical application states and their aliases       |
+
+### cv-build.schema.json
+
+The machine-readable Zod-derived input contract for deterministic CV builds.
+It requires a complete requirement-evidence matrix and evidence references on
+all candidate claims. Generate or refresh it with:
+
+```bash
+npm run cv:build -- --write-schema=templates/cv-build.schema.json
+```
+
+See `scripts/test-fixtures/cv-build-letter.json` for a synthetic example.
 
 ### cv-template.html
 
-The HTML template rendered by Playwright into PDF. Uses placeholder tokens (`{{NAME}}`, `{{SUMMARY_TEXT}}`, `{{EXPERIENCE}}`, etc.) that the PDF pipeline fills at generation time.
+The semantic HTML template rendered by Playwright into PDF. The deterministic
+renderer fills its document, contact, and complete-section tokens. Do not
+manually interpolate it during a normal CV build.
 
 **Design:** Space Grotesk headings + DM Sans body, single-column ATS-safe layout, self-hosted fonts from `fonts/`.
 
-**Customization:** Edit this file to change colors, spacing, or section order. The placeholder tokens are documented in `batch/batch-prompt.md` under "Template placeholders."
+**Customization:** Edit this file to change colors, spacing, or section order.
+Keep the renderer tokens intact and run `npm run pdf:test` after any change.
 
 ### cv-template.tex
 

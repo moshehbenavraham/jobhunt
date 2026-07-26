@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import {
   existsSync,
@@ -32,6 +33,10 @@ function runScript(script, sandbox, args = []) {
     env: { ...process.env, JOBHUNT_ROOT: sandbox },
     encoding: 'utf8',
   });
+}
+
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex');
 }
 
 {
@@ -179,6 +184,98 @@ function runScript(script, sandbox, args = []) {
   const clean = runScript('verify-pipeline.mjs', sandbox);
   assert.equal(clean.status, 0, clean.stdout + clean.stderr);
   assert.match(clean.stdout, /Pipeline is clean|Pipeline OK with warnings/);
+
+  rmSync(sandbox, { recursive: true, force: true });
+}
+
+{
+  const sandbox = createSandbox('jobhunt-verify-pdf-manifest-');
+  const version = '1.0.0';
+  const source = '# Jane Smith CV\n';
+  const build = `${JSON.stringify({
+    job: { jdText: 'Senior AI Engineer with production ML systems.' },
+  })}\n`;
+  const template = '<html><body>{{CONTENT}}</body></html>\n';
+  const html = '<html><body>Jane Smith</body></html>\n';
+  const pdf = '%PDF-1.7\nfixture\n';
+  const pdfPath = 'output/cv-jane-smith-acme-2026-04-01.pdf';
+  const manifestPath = 'output/cv-jane-smith-acme-2026-04-01.manifest.json';
+  const buildPath = 'output/cv-jane-smith-acme-2026-04-01.cv-build.json';
+  const htmlPath = 'output/cv-jane-smith-acme-2026-04-01.html';
+
+  writeFile(join(sandbox, 'VERSION'), `${version}\n`);
+  writeFile(join(sandbox, 'profile', 'cv.md'), source);
+  writeFile(join(sandbox, 'templates', 'cv-template.html'), template);
+  writeFile(join(sandbox, buildPath), build);
+  writeFile(join(sandbox, htmlPath), html);
+  writeFile(join(sandbox, pdfPath), pdf);
+  writeFile(join(sandbox, 'reports', '001.md'), '# report\n');
+  writeFile(
+    join(sandbox, 'data', 'applications.md'),
+    [
+      '# Applications Tracker',
+      '',
+      '| #   | Date | Company | Role | Score | Status | PDF | Report | Notes |',
+      '| --- | ---- | ------- | ---- | ----- | ------ | --- | ------ | ----- |',
+      `| 1 | 2026-04-01 | Acme | Senior AI Engineer | 4.5/5 | Evaluated | [PDF](${pdfPath}) | [001](reports/001.md) | note |`,
+      '',
+    ].join('\n'),
+  );
+  writeFile(
+    join(sandbox, manifestPath),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        generatedAt: '2026-04-01T00:00:00.000Z',
+        pipeline: {
+          version,
+          versionSha256: sha256(version),
+        },
+        candidate: {
+          name: 'Jane Smith',
+          email: 'jane@example.com',
+        },
+        job: {
+          company: 'Acme',
+          role: 'Senior AI Engineer',
+          jdSha256: sha256('Senior AI Engineer with production ML systems.'),
+        },
+        inputs: {
+          buildPath,
+          buildSha256: sha256(build),
+          templatePath: 'templates/cv-template.html',
+          templateSha256: sha256(template),
+          sources: [
+            {
+              path: 'profile/cv.md',
+              sha256: sha256(source),
+            },
+          ],
+        },
+        output: {
+          pdfPath,
+          pdfSha256: sha256(pdf),
+          htmlPath,
+          htmlSha256: sha256(html),
+          format: 'letter',
+          pageCount: 2,
+        },
+        validation: { valid: true },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const fresh = runScript('verify-pipeline.mjs', sandbox);
+  assert.equal(fresh.status, 0, fresh.stdout + fresh.stderr);
+  assert.match(fresh.stdout, /1 manifest-backed PDF/);
+  assert.doesNotMatch(fresh.stdout, /Stale PDF manifest/);
+
+  writeFile(join(sandbox, 'profile', 'cv.md'), `${source}\nchanged\n`);
+  const stale = runScript('verify-pipeline.mjs', sandbox);
+  assert.equal(stale.status, 1, stale.stdout + stale.stderr);
+  assert.match(stale.stdout, /Stale PDF manifest: source changed/);
 
   rmSync(sandbox, { recursive: true, force: true });
 }
