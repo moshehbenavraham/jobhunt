@@ -23,10 +23,7 @@ const approvalResolutionBodySchema = z.object({
 });
 
 type ApprovalResolutionOutcome =
-  | 'already-approved'
-  | 'already-rejected'
-  | 'approved'
-  | 'rejected';
+  'already-approved' | 'already-rejected' | 'approved' | 'rejected';
 
 type ApprovalResolutionPayload = {
   generatedAt: string;

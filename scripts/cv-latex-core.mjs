@@ -78,14 +78,14 @@ function listSection(label, body) {
 function strictReplace(template, replacements) {
   const tokens = [
     ...new Set(
-      [...template.matchAll(/\{\{([A-Z0-9_]+)\}\}/g)].map(
-        (match) => match[1],
-      ),
+      [...template.matchAll(/\{\{([A-Z0-9_]+)\}\}/g)].map((match) => match[1]),
     ),
   ];
   const missing = tokens.filter((token) => !Object.hasOwn(replacements, token));
   if (missing.length > 0) {
-    throw new Error(`Missing LaTeX template replacements: ${missing.join(', ')}`);
+    throw new Error(
+      `Missing LaTeX template replacements: ${missing.join(', ')}`,
+    );
   }
   let output = template;
   for (const token of tokens) {
@@ -103,9 +103,7 @@ export function renderCvBuildLatex(build, template) {
   const contactLine = [build.candidate.location, build.candidate.phone]
     .filter(Boolean)
     .join(' | ');
-  const competencies = build.competencies
-    .map((item) => item.label)
-    .join(', ');
+  const competencies = build.competencies.map((item) => item.label).join(', ');
   const skills = build.skills
     .map(
       (group) =>
@@ -121,13 +119,9 @@ export function renderCvBuildLatex(build, template) {
     ),
     EMAIL_DISPLAY: escapeLatex(build.candidate.email),
     LINKEDIN_URL: safeLatexUrl(linkedin),
-    LINKEDIN_DISPLAY: escapeLatex(
-      build.candidate.linkedinDisplay || linkedin,
-    ),
+    LINKEDIN_DISPLAY: escapeLatex(build.candidate.linkedinDisplay || linkedin),
     GITHUB_URL: safeLatexUrl(portfolio),
-    GITHUB_DISPLAY: escapeLatex(
-      build.candidate.portfolioDisplay || portfolio,
-    ),
+    GITHUB_DISPLAY: escapeLatex(build.candidate.portfolioDisplay || portfolio),
     SUMMARY_SECTION: section(
       build.labels.summary,
       `\\small{${escapeLatex(build.summary)}}`,

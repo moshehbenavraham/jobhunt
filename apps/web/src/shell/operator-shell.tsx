@@ -1,5 +1,5 @@
-import { RouterProvider } from "react-router";
-import { router } from "../routes";
+import { RouterProvider } from 'react-router';
+import { router } from '../routes';
 
 /**
  * Legacy entry point retained for backwards compatibility. The shell chrome is
@@ -7,5 +7,5 @@ import { router } from "../routes";
  * New code should mount RouterProvider directly via main.tsx.
  */
 export function OperatorShell() {
-	return <RouterProvider router={router} />;
+  return <RouterProvider router={router} />;
 }

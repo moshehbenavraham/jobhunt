@@ -12,11 +12,7 @@ export type OnboardingRepairTarget = (typeof ONBOARDING_REPAIR_TARGETS)[number];
 export type OnboardingHealthStatus = 'degraded' | 'error' | 'ok';
 export type OnboardingOperationalStoreStatus = 'absent' | 'corrupt' | 'ready';
 export type OnboardingApiErrorStatus =
-  | 'bad-request'
-  | 'error'
-  | 'method-not-allowed'
-  | 'not-found'
-  | 'rate-limited';
+  'bad-request' | 'error' | 'method-not-allowed' | 'not-found' | 'rate-limited';
 
 export type OnboardingChecklistItem = {
   candidates: readonly string[];

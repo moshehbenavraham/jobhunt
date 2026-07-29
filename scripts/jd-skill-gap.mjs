@@ -16,6 +16,7 @@ const REQUIREMENT_HEADING =
   /^#{1,5}\s*(requirements?|qualifications?|what you(?:'|’)ll need|must[- ]haves?|preferred|nice[- ]to[- ]haves?|bonus)\b/i;
 const NICE_HEADING = /\b(?:preferred|nice[- ]to[- ]have|bonus)\b/i;
 const BULLET = /^\s*(?:[-*•]|\d+[.)])\s+(.+)$/;
+const LETTER_OR_NUMBER = /[\p{L}\p{N}]/u;
 const STOPWORDS = new Set(
   [
     'ability',
@@ -108,10 +109,73 @@ function mentioned(text, skill) {
   }
   return aliases.some((candidate) => {
     const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    return new RegExp(`(?<![\\p{L}\\p{N}])${escaped}(?![\\p{L}\\p{N}])`, 'iu').test(
-      text,
-    );
+    return new RegExp(
+      `(?<![\\p{L}\\p{N}])${escaped}(?![\\p{L}\\p{N}])`,
+      'iu',
+    ).test(text);
   });
+}
+
+function isAsciiUpper(value) {
+  const code = value?.charCodeAt(0) ?? 0;
+  return code >= 65 && code <= 90;
+}
+
+function isAsciiLetterOrNumber(value) {
+  const code = value?.charCodeAt(0) ?? 0;
+  return (
+    (code >= 48 && code <= 57) ||
+    (code >= 65 && code <= 90) ||
+    (code >= 97 && code <= 122)
+  );
+}
+
+function capitalizedSkillTokens(text) {
+  const characters = [...String(text)];
+  const tokens = [];
+  let index = 0;
+
+  while (index < characters.length) {
+    const previous = characters[index - 1];
+    if (
+      !isAsciiUpper(characters[index]) ||
+      (previous && LETTER_OR_NUMBER.test(previous))
+    ) {
+      index += 1;
+      continue;
+    }
+
+    const start = index;
+    index += 1;
+    while (isAsciiLetterOrNumber(characters[index])) index += 1;
+
+    while (index < characters.length) {
+      if (
+        characters[index] === '.' &&
+        isAsciiLetterOrNumber(characters[index + 1])
+      ) {
+        index += 2;
+        while (isAsciiLetterOrNumber(characters[index])) index += 1;
+        continue;
+      }
+      if (characters[index] === '+' || characters[index] === '#') {
+        while (characters[index] === '+' || characters[index] === '#') {
+          index += 1;
+        }
+        continue;
+      }
+      break;
+    }
+
+    if (
+      index === characters.length ||
+      !LETTER_OR_NUMBER.test(characters[index])
+    ) {
+      tokens.push(characters.slice(start, index).join(''));
+    }
+  }
+
+  return tokens;
 }
 
 function candidatesFromBullet(text) {
@@ -119,10 +183,8 @@ function candidatesFromBullet(text) {
   for (const phrase of MULTIWORD_SKILLS) {
     if (mentioned(text, phrase)) found.add(canonicalSkill(phrase));
   }
-  const tokenPattern =
-    /(?<![\p{L}\p{N}])([A-Z][A-Za-z0-9]*(?:[.+#][A-Za-z0-9+#]*)*|[A-Z]{2,})(?![\p{L}\p{N}])/gu;
-  for (const match of text.matchAll(tokenPattern)) {
-    const candidate = canonicalSkill(match[1]);
+  for (const token of capitalizedSkillTokens(text)) {
+    const candidate = canonicalSkill(token);
     if (
       candidate.length > 1 &&
       !STOPWORDS.has(candidate.toLowerCase()) &&

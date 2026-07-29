@@ -1,12 +1,7 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
-import {
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-} from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -78,7 +73,11 @@ const page = {
     closed = true;
   },
 };
-const browser = { async newPage() { return page; } };
+const browser = {
+  async newPage() {
+    return page;
+  },
+};
 const root = mkdtempSync(join(tmpdir(), 'jobhunt-archive-'));
 try {
   const result = await archivePosting({

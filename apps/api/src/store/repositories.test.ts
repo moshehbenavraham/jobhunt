@@ -12,12 +12,7 @@ function createSessionRecord(
     runnerId: string | null;
     sessionId: string;
     status:
-      | 'cancelled'
-      | 'completed'
-      | 'failed'
-      | 'pending'
-      | 'running'
-      | 'waiting';
+      'cancelled' | 'completed' | 'failed' | 'pending' | 'running' | 'waiting';
     updatedAt: string;
     workflow: string;
   }> = {},

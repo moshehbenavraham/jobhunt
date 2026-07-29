@@ -4,10 +4,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import {
-  publishArtifactSet,
-  resolveArtifactPath,
-} from './artifact-policy.mjs';
+import { publishArtifactSet, resolveArtifactPath } from './artifact-policy.mjs';
 import {
   canonicalizeCvBuild,
   parseAndValidateCvBuild,
@@ -140,11 +137,9 @@ export async function buildCvLatex({
     const stagedManifest = resolve(stage, basename(manifestPath));
     await writeFile(stagedTex, latex, { mode: 0o600 });
     await writeFile(stagedBuild, canonicalBuild, { mode: 0o600 });
-    await writeFile(
-      stagedManifest,
-      `${JSON.stringify(manifest, null, 2)}\n`,
-      { mode: 0o600 },
-    );
+    await writeFile(stagedManifest, `${JSON.stringify(manifest, null, 2)}\n`, {
+      mode: 0o600,
+    });
     await publishArtifactSet(
       new Map([
         [stagedTex, output.path],

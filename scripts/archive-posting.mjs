@@ -6,10 +6,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from 'playwright';
-import {
-  publishArtifactSet,
-  resolveArtifactPath,
-} from './artifact-policy.mjs';
+import { publishArtifactSet, resolveArtifactPath } from './artifact-policy.mjs';
 import {
   assertSafeUrl,
   installPlaywrightNetworkGuard,
@@ -309,7 +306,9 @@ Archives sequentially to jds/ with a sibling provenance/validation manifest.`);
     if (!existsSync(pipelinePath)) {
       throw new Error('data/pipeline.md does not exist');
     }
-    targets = extractPendingArchiveTargets(await readFile(pipelinePath, 'utf8'));
+    targets = extractPendingArchiveTargets(
+      await readFile(pipelinePath, 'utf8'),
+    );
   } else {
     targets = [
       { url: options.url, company: options.company, role: options.role },
@@ -320,7 +319,9 @@ Archives sequentially to jds/ with a sibling provenance/validation manifest.`);
       ...target,
       filename: archiveFilename({
         company:
-          target.company || companyFromPostingUrl(target.url) || 'unknown-company',
+          target.company ||
+          companyFromPostingUrl(target.url) ||
+          'unknown-company',
         role: target.role || 'job',
       }),
     }));
