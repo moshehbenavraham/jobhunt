@@ -52,7 +52,10 @@ export async function atomicWriteArtifact(
   }
 }
 
-export async function publishArtifactSet(stagedArtifacts, { force = false } = {}) {
+export async function publishArtifactSet(
+  stagedArtifacts,
+  { force = false } = {},
+) {
   const entries = [...stagedArtifacts.entries()];
   if (!force) {
     const existing = entries

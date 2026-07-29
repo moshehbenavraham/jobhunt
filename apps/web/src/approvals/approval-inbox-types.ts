@@ -30,11 +30,7 @@ export type ApprovalInboxStartupStatus =
   | 'runtime-error';
 
 export type ApprovalInboxApiErrorStatus =
-  | 'bad-request'
-  | 'error'
-  | 'method-not-allowed'
-  | 'not-found'
-  | 'rate-limited';
+  'bad-request' | 'error' | 'method-not-allowed' | 'not-found' | 'rate-limited';
 
 export type ApprovalInboxQueueItem = {
   action: string;

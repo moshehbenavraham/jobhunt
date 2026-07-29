@@ -2,12 +2,7 @@
 
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import {
-  mkdirSync,
-  mkdtempSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -21,6 +16,13 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SCRIPT = join(ROOT, 'scripts', 'verify-cv-facts.mjs');
 
 assert.match(stripCvMarkup('<p>p&lt;0.001 and &amp; evidence</p>'), /p<0\.001/);
+assert.equal(
+  stripCvMarkup(
+    '<script>Served 999 users.</script\t\n data-ignored><p>Served 2 users.</p>',
+  ),
+  'Served 2 users.',
+);
+assert.equal(stripCvMarkup('&amp;lt;script&amp;gt;'), '&lt;script&gt;');
 assert.deepEqual(
   extractCvFactClaims(
     'Improved 40 %, served 2,000+ users, reached $ 1.5M, and delivered 3x.',
@@ -58,7 +60,10 @@ const sandbox = mkdtempSync(join(tmpdir(), 'jobhunt-cv-facts-'));
 try {
   mkdirSync(join(sandbox, 'profile'));
   mkdirSync(join(sandbox, 'output'));
-  writeFileSync(join(sandbox, 'profile', 'cv.md'), 'Improved quality by 40%.\n');
+  writeFileSync(
+    join(sandbox, 'profile', 'cv.md'),
+    'Improved quality by 40%.\n',
+  );
   writeFileSync(join(sandbox, 'output', 'cv.md'), 'Improved quality by 99%.\n');
   const result = spawnSync(
     process.execPath,

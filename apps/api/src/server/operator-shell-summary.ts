@@ -20,10 +20,7 @@ const MAX_PREVIEW_LIMIT = 10;
 const MAX_COUNT_LIMIT = 100;
 
 export type OperatorShellActivityState =
-  | 'active'
-  | 'attention-required'
-  | 'idle'
-  | 'unavailable';
+  'active' | 'attention-required' | 'idle' | 'unavailable';
 
 export type OperatorShellApprovalSummary = {
   action: string;

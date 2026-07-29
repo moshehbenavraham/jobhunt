@@ -66,10 +66,7 @@ try {
     outputPath: 'optional.tex',
   });
   const optionalTex = readFileSync(optional.texPath, 'utf8');
-  assert.match(
-    optionalTex,
-    /jobhunt-optional-section-projects:\s*omitted/,
-  );
+  assert.match(optionalTex, /jobhunt-optional-section-projects:\s*omitted/);
   assert.equal(validateLatexContent(optionalTex).valid, true);
 
   await assert.rejects(

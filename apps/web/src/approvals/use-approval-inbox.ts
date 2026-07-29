@@ -24,11 +24,7 @@ import type {
 const POLL_INTERVAL_MS = 4_000;
 
 export type ApprovalInboxViewStatus =
-  | 'empty'
-  | 'error'
-  | 'loading'
-  | 'offline'
-  | ApprovalInboxStartupStatus;
+  'empty' | 'error' | 'loading' | 'offline' | ApprovalInboxStartupStatus;
 
 export type ApprovalInboxPendingAction =
   | {

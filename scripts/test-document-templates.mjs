@@ -68,10 +68,7 @@ try {
   );
 
   assert.equal(loadTemplateDefault({ root, kind: 'cv' }), 'compact');
-  assert.equal(
-    resolveDocumentTemplate({ root, kind: 'cv' }).name,
-    'compact',
-  );
+  assert.equal(resolveDocumentTemplate({ root, kind: 'cv' }).name, 'compact');
   assert.equal(
     resolveDocumentTemplate({ root, kind: 'cover-letter' }).name,
     'standard',
@@ -89,17 +86,12 @@ try {
     ['compact', 'standard'],
   );
   assert.equal(
-    validateDocumentTemplate(
-      join(root, 'templates', 'cv-template.html'),
-      'cv',
-    ).valid,
+    validateDocumentTemplate(join(root, 'templates', 'cv-template.html'), 'cv')
+      .valid,
     true,
   );
 
-  writeFileSync(
-    join(root, 'templates', 'cv-template.broken.html'),
-    '{{NAME}}',
-  );
+  writeFileSync(join(root, 'templates', 'cv-template.broken.html'), '{{NAME}}');
   assert.throws(
     () =>
       resolveDocumentTemplate({
