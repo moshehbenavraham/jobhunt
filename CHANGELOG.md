@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.0](https://github.com/moshehbenavraham/jobhunt/compare/jobhunt-v1.5.37...jobhunt-v1.6.0) (2026-07-29)
+
+
+### Features
+
+* add deterministic validated PDF pipeline ([5ef2bf8](https://github.com/moshehbenavraham/jobhunt/commit/5ef2bf89bc5fbc1bd636d5ed6464f2e75eb0701a))
+* port and harden upstream jobhunt features ([e745b5a](https://github.com/moshehbenavraham/jobhunt/commit/e745b5a6aa186a59f5e62f06df9ff01020a84911))
+
 ## [1.5.37](https://github.com/moshehbenavraham/jobhunt/compare/jobhunt-v1.5.36...jobhunt-v1.5.37) (2026-07-25)
 
 
