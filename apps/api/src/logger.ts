@@ -143,12 +143,6 @@ export function createJobhuntLogger(
       },
     },
     level: (options.level ?? process.env.LOG_LEVEL ?? 'info') as
-      | 'fatal'
-      | 'error'
-      | 'warn'
-      | 'info'
-      | 'debug'
-      | 'trace'
-      | 'silent',
+      'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace' | 'silent',
   });
 }

@@ -12,17 +12,136 @@ const DEFAULT_SOURCES = [
   'profile/article-digest.md',
   'config/profile.yml',
 ];
+const RAW_TEXT_ELEMENTS = new Set(['script', 'style']);
+const HTML_ENTITY = /&(?:nbsp|amp|lt|gt|quot|apos|#39|#160|#x0*a0);/gi;
+
+function readHtmlTag(text, start) {
+  let quote = '';
+  for (let index = start + 1; index < text.length; index += 1) {
+    const character = text[index];
+    if (quote) {
+      if (character === quote) quote = '';
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+    } else if (character === '>') {
+      return {
+        content: text.slice(start + 1, index),
+        end: index + 1,
+      };
+    }
+  }
+  return null;
+}
+
+function parseHtmlTag(content) {
+  let index = 0;
+  while (/\s/u.test(content[index] || '')) index += 1;
+  const closing = content[index] === '/';
+  if (closing) {
+    index += 1;
+    while (/\s/u.test(content[index] || '')) index += 1;
+  }
+  const start = index;
+  while (/[a-z0-9:-]/i.test(content[index] || '')) index += 1;
+  if (start === index) return null;
+  return {
+    closing,
+    name: content.slice(start, index).toLowerCase(),
+  };
+}
+
+function findRawTextElementEnd(text, start, name) {
+  const lowerText = text.toLowerCase();
+  const closingPrefix = `</${name}`;
+  let searchFrom = start;
+  while (searchFrom < text.length) {
+    const closingStart = lowerText.indexOf(closingPrefix, searchFrom);
+    if (closingStart < 0) return text.length;
+    const boundary = text[closingStart + closingPrefix.length];
+    if (
+      boundary === undefined ||
+      boundary === '>' ||
+      boundary === '/' ||
+      /\s/u.test(boundary)
+    ) {
+      return readHtmlTag(text, closingStart)?.end ?? text.length;
+    }
+    searchFrom = closingStart + closingPrefix.length;
+  }
+  return text.length;
+}
+
+function looksLikeHtmlTag(text, start) {
+  const next = text[start + 1];
+  if (next === '!' || next === '?') return true;
+  if (next === '/') return /[a-z]/i.test(text[start + 2] || '');
+  return /[a-z]/i.test(next || '');
+}
+
+function stripHtmlMarkup(text) {
+  let output = '';
+  let index = 0;
+  while (index < text.length) {
+    const tagStart = text.indexOf('<', index);
+    if (tagStart < 0) {
+      output += text.slice(index);
+      break;
+    }
+    output += text.slice(index, tagStart);
+    if (!looksLikeHtmlTag(text, tagStart)) {
+      output += '<';
+      index = tagStart + 1;
+      continue;
+    }
+    if (text.startsWith('<!--', tagStart)) {
+      const commentEnd = text.indexOf('-->', tagStart + 4);
+      output += ' ';
+      index = commentEnd < 0 ? text.length : commentEnd + 3;
+      continue;
+    }
+    const tag = readHtmlTag(text, tagStart);
+    if (!tag) {
+      output += text.slice(tagStart);
+      break;
+    }
+    const parsed = parseHtmlTag(tag.content);
+    output += ' ';
+    index = tag.end;
+    if (parsed && !parsed.closing && RAW_TEXT_ELEMENTS.has(parsed.name)) {
+      index = findRawTextElementEnd(text, tag.end, parsed.name);
+    }
+  }
+  return output;
+}
+
+function decodeHtmlEntity(entity) {
+  switch (entity.toLowerCase()) {
+    case '&nbsp;':
+    case '&#160;':
+    case '&#xa0;':
+      return ' ';
+    case '&amp;':
+      return '&';
+    case '&lt;':
+      return '<';
+    case '&gt;':
+      return '>';
+    case '&quot;':
+      return '"';
+    case '&apos;':
+    case '&#39;':
+      return "'";
+    default:
+      return entity;
+  }
+}
 
 export function stripCvMarkup(text) {
-  return String(text)
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, ' ')
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi, ' ')
-    .replace(/<\/?[a-z][^>\n]*>/gi, ' ')
+  return stripHtmlMarkup(String(text))
+    .replace(HTML_ENTITY, decodeHtmlEntity)
     .replace(/\\[a-zA-Z]+\*?(?:\[[^\]]*\])?(?:\{([^}]*)\})?/g, ' $1 ')
-    .replace(/&nbsp;|&#160;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -48,10 +167,7 @@ export function extractCvFactClaims(text) {
       'quantity',
       /\b\d[\d,.]*\+?\s*(?:users|customers|clients|employees|engineers|teams|companies|hours|days|weeks|months|years|minutes|seconds|requests|tokens|documents|workflows|pipelines|agents|interviews|applications|offers|reports|cvs|resumes|deployments|services|models|projects|countries|regions)\b/gi,
     ],
-    [
-      'statistic',
-      /\b(?:p|r|r²|rho|ρ)\s*(?:<|>|≤|≥|=)\s*0?\.\d+\b/giu,
-    ],
+    ['statistic', /\b(?:p|r|r²|rho|ρ)\s*(?:<|>|≤|≥|=)\s*0?\.\d+\b/giu],
   ];
   const claims = new Map();
   for (const [type, pattern] of definitions) {
@@ -71,7 +187,10 @@ function normalizeConfig(config = {}) {
     forbidden_phrases: config.forbidden_phrases ?? [],
   };
   for (const [key, value] of Object.entries(result)) {
-    if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
+    if (
+      !Array.isArray(value) ||
+      value.some((item) => typeof item !== 'string')
+    ) {
       throw new Error(`${key} must be an array of strings`);
     }
   }

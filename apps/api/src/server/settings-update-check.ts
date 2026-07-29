@@ -10,11 +10,7 @@ const DEFAULT_RETRY_BACKOFF_MS = 200;
 const DEFAULT_TIMEOUT_MS = 4_000;
 
 export type SettingsUpdateCheckState =
-  | 'dismissed'
-  | 'error'
-  | 'offline'
-  | 'up-to-date'
-  | 'update-available';
+  'dismissed' | 'error' | 'offline' | 'up-to-date' | 'update-available';
 
 export type SettingsUpdateCheckPayload = {
   changelogExcerpt: string | null;

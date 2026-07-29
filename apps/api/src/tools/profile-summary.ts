@@ -6,10 +6,7 @@ import type {
 import { ToolExecutionError } from './tool-errors.js';
 
 export type ProfileSummaryArchetypeFit =
-  | 'adjacent'
-  | 'primary'
-  | 'secondary'
-  | 'unknown';
+  'adjacent' | 'primary' | 'secondary' | 'unknown';
 export type ProfileSummaryRemotePolicy =
   | 'allowed_locations_only'
   | 'remote_only'

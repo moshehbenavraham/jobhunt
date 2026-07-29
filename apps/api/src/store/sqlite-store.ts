@@ -176,8 +176,7 @@ function readStoreSchemaState(database: DatabaseSync): {
   userVersion: number;
 } {
   const versionRow = database.prepare(`PRAGMA user_version;`).get() as
-    | { user_version?: number }
-    | undefined;
+    { user_version?: number } | undefined;
   const tableRows = database
     .prepare(
       `

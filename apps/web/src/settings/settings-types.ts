@@ -5,25 +5,13 @@ import type {
 } from '../boot/startup-types';
 
 export type SettingsApiErrorStatus =
-  | 'bad-request'
-  | 'error'
-  | 'method-not-allowed'
-  | 'not-found'
-  | 'rate-limited';
+  'bad-request' | 'error' | 'method-not-allowed' | 'not-found' | 'rate-limited';
 
 export type SettingsViewStatus =
-  | 'empty'
-  | 'error'
-  | 'loading'
-  | 'offline'
-  | StartupStatus;
+  'empty' | 'error' | 'loading' | 'offline' | StartupStatus;
 
 export type SettingsUpdateCheckState =
-  | 'dismissed'
-  | 'error'
-  | 'offline'
-  | 'up-to-date'
-  | 'update-available';
+  'dismissed' | 'error' | 'offline' | 'up-to-date' | 'update-available';
 
 export type SettingsCurrentSession = {
   id: string;
