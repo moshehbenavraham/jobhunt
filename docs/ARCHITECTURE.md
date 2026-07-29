@@ -162,7 +162,7 @@ candidate sources + JD + form trigger
 ### Reproducible container
 
 - `Dockerfile` pins Node 24.14.0 and Go 1.25.0 and installs the Chromium build
-  matching the locked Playwright 1.59.1 package plus the PDF validation tools.
+  matching the locked Playwright 1.62.0 package plus the PDF validation tools.
 - `.dockerignore` excludes every user-layer surface from image builds.
   `docker-compose.yml` bind-mounts the checkout so user data remains on the
   host and keeps Linux `node_modules` in a named volume.
