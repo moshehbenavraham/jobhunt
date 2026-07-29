@@ -1,8 +1,8 @@
-import { ScanReviewSurface } from "../scan/scan-review-surface";
-import { useShellCallbacks } from "../shell/shell-context";
+import { ScanReviewSurface } from '../scan/scan-review-surface';
+import { useShellCallbacks } from '../shell/shell-context';
 
 export function ScanPage() {
-	const { openChatConsole } = useShellCallbacks();
+  const { openChatConsole } = useShellCallbacks();
 
-	return <ScanReviewSurface onOpenChatConsole={openChatConsole} />;
+  return <ScanReviewSurface onOpenChatConsole={openChatConsole} />;
 }

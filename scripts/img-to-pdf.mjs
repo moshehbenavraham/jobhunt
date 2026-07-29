@@ -6,10 +6,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, dirname, extname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { chromium } from 'playwright';
-import {
-  publishArtifactSet,
-  resolveArtifactPath,
-} from './artifact-policy.mjs';
+import { publishArtifactSet, resolveArtifactPath } from './artifact-policy.mjs';
 import { pathIsInside } from './path-policy.mjs';
 import { validateGenericPdf } from './pdf-artifact-core.mjs';
 
@@ -23,9 +20,9 @@ const IMAGE_TYPES = {
   '.png': {
     mime: 'image/png',
     matches: (buffer) =>
-      buffer.subarray(0, 8).equals(
-        Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
-      ),
+      buffer
+        .subarray(0, 8)
+        .equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
   },
   '.jpg': {
     mime: 'image/jpeg',
@@ -166,7 +163,10 @@ export async function convertImageToPdfArtifact({
     await browser.close();
   }
 
-  const validation = await validatePdf(pdfBuffer, { exactPages: 1, maxPages: 1 });
+  const validation = await validatePdf(pdfBuffer, {
+    exactPages: 1,
+    maxPages: 1,
+  });
   if (!validation.valid) {
     throw new Error(
       `Image PDF validation failed: ${validation.checks
@@ -204,11 +204,9 @@ export async function convertImageToPdfArtifact({
       validation: { valid: true, checks: validation.checks },
     };
     await writeFile(stagedPdf, pdfBuffer, { mode: 0o600 });
-    await writeFile(
-      stagedManifest,
-      `${JSON.stringify(manifest, null, 2)}\n`,
-      { mode: 0o600 },
-    );
+    await writeFile(stagedManifest, `${JSON.stringify(manifest, null, 2)}\n`, {
+      mode: 0o600,
+    });
     await publishArtifactSet(
       new Map([
         [stagedPdf, output.path],

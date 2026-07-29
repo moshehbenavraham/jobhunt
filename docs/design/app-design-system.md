@@ -105,14 +105,14 @@ metrics.
 
 ## Fidelity ledger
 
-| Concept characteristic | Implementation owner |
-| --- | --- |
-| White/graphite/cobalt palette | `apps/web/src/styles/tokens.css` |
+| Concept characteristic         | Implementation owner                                      |
+| ------------------------------ | --------------------------------------------------------- |
+| White/graphite/cobalt palette  | `apps/web/src/styles/tokens.css`                          |
 | Three contiguous desktop zones | `apps/web/src/styles/layout.css`, `shell/root-layout.tsx` |
-| Editorial headings | `apps/web/src/styles/tokens.css` |
-| Compact primary navigation | `shell/navigation-rail.tsx`, `shell/shell-types.ts` |
-| Right context rail | `shell/evidence-rail.tsx`, `shell/root-layout.tsx` |
-| Bottom safety strip | `shell/status-strip.tsx` |
-| Open operational home sections | `shell/operator-home-surface.tsx` |
-| Ruled tracker list/detail | `tracker/*` |
-| Mobile bottom navigation | `shell/bottom-nav.tsx` |
+| Editorial headings             | `apps/web/src/styles/tokens.css`                          |
+| Compact primary navigation     | `shell/navigation-rail.tsx`, `shell/shell-types.ts`       |
+| Right context rail             | `shell/evidence-rail.tsx`, `shell/root-layout.tsx`        |
+| Bottom safety strip            | `shell/status-strip.tsx`                                  |
+| Open operational home sections | `shell/operator-home-surface.tsx`                         |
+| Ruled tracker list/detail      | `tracker/*`                                               |
+| Mobile bottom navigation       | `shell/bottom-nav.tsx`                                    |

@@ -22,11 +22,7 @@ import type {
 } from './pipeline-review-types';
 
 export type PipelineReviewViewStatus =
-  | 'empty'
-  | 'error'
-  | 'loading'
-  | 'offline'
-  | StartupStatus;
+  'empty' | 'error' | 'loading' | 'offline' | StartupStatus;
 
 export type PipelineReviewState = {
   data: PipelineReviewSummaryPayload | null;

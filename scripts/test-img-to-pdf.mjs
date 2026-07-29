@@ -1,19 +1,11 @@
 #!/usr/bin/env node
 
 import assert from 'node:assert/strict';
-import {
-  existsSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-} from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import {
-  convertImageToPdfArtifact,
-  detectImageType,
-} from './img-to-pdf.mjs';
+import { convertImageToPdfArtifact, detectImageType } from './img-to-pdf.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const INPUT = join(
@@ -25,10 +17,7 @@ const INPUT = join(
 );
 const png = readFileSync(INPUT);
 assert.equal(detectImageType(INPUT, png).mime, 'image/png');
-assert.throws(
-  () => detectImageType('renamed.jpg', png),
-  /bytes do not match/,
-);
+assert.throws(() => detectImageType('renamed.jpg', png), /bytes do not match/);
 assert.throws(
   () => detectImageType('active.svg', Buffer.from('<svg/>')),
   /Unsupported image type/,

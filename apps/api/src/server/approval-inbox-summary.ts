@@ -22,10 +22,7 @@ const DEFAULT_TIMELINE_LIMIT = 12;
 const MAX_PENDING_COUNT_LIMIT = 100;
 
 export type ApprovalInboxSelectionState =
-  | 'active'
-  | 'approved'
-  | 'missing'
-  | 'rejected';
+  'active' | 'approved' | 'missing' | 'rejected';
 
 export type ApprovalInboxInterruptedRunState =
   | 'blocked'

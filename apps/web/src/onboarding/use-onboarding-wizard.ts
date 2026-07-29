@@ -18,11 +18,7 @@ import type {
 import type { StartupStatus } from '../boot/startup-types';
 
 export type OnboardingWizardViewStatus =
-  | 'empty'
-  | 'error'
-  | 'loading'
-  | 'offline'
-  | StartupStatus;
+  'empty' | 'error' | 'loading' | 'offline' | StartupStatus;
 
 export type OnboardingPendingAction = {
   kind: 'repair';

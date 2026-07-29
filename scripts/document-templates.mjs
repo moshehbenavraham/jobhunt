@@ -108,17 +108,13 @@ function parseFilename(config, filename) {
   const match = filename.match(
     new RegExp(`^${escaped}(?:\\.([a-z0-9]+(?:-[a-z0-9]+)*))?\\.(html|tex)$`),
   );
-  return match
-    ? { name: match[1] || 'standard', format: match[2] }
-    : null;
+  return match ? { name: match[1] || 'standard', format: match[2] } : null;
 }
 
 function templateTokens(text) {
   return [
     ...new Set(
-      [...text.matchAll(/\{\{([A-Z][A-Z0-9_]*)\}\}/g)].map(
-        (match) => match[1],
-      ),
+      [...text.matchAll(/\{\{([A-Z][A-Z0-9_]*)\}\}/g)].map((match) => match[1]),
     ),
   ];
 }
@@ -164,7 +160,9 @@ export function loadTemplateDefault({
   try {
     document = yaml.load(readFileSync(absoluteProfile, 'utf8')) || {};
   } catch (error) {
-    throw new Error(`Invalid profile YAML for template selection: ${error.message}`);
+    throw new Error(
+      `Invalid profile YAML for template selection: ${error.message}`,
+    );
   }
   const value = profileValue(document, config.profilePaths);
   return value ? normalizeName(value) : null;
