@@ -9,11 +9,7 @@ const DEFAULT_JSON_BODY_LIMIT_BYTES = 64 * 1024;
 
 export type ApiRouteMethod = (typeof SUPPORTED_ROUTE_METHODS)[number];
 export type ApiErrorStatus =
-  | 'bad-request'
-  | 'error'
-  | 'method-not-allowed'
-  | 'not-found'
-  | 'rate-limited';
+  'bad-request' | 'error' | 'method-not-allowed' | 'not-found' | 'rate-limited';
 
 export type ApiErrorPayload = {
   error: {

@@ -21,7 +21,7 @@ import {
 const jd = `# Senior Engineer
 
 ## Requirements
-- Python, PostgreSQL, and C++ for production services
+- Python, PostgreSQL, C++, C#, and Node.js for production services
 - Experience with Kubernetes and distributed systems
 - Bachelor's degree required
 
@@ -37,9 +37,14 @@ Python, PostgreSQL, Docker, C++
 
 const requirements = extractJdRequirements(jd);
 assert.ok(requirements.some((item) => item.skill === 'C++'));
+assert.ok(requirements.some((item) => item.skill === 'C#'));
+assert.ok(requirements.some((item) => item.skill === 'Node.js'));
 assert.ok(requirements.some((item) => item.skill === 'distributed systems'));
 assert.ok(requirements.some((item) => item.skill === 'RAG'));
-assert.equal(requirements.some((item) => item.skill === 'Bachelor'), false);
+assert.equal(
+  requirements.some((item) => item.skill === 'Bachelor'),
+  false,
+);
 assert.equal(
   requirements.find((item) => item.skill === 'GCP').importance,
   'nice-to-have',

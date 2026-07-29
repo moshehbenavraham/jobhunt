@@ -28,12 +28,7 @@ export type OperationalStoreErrorCode =
   | 'operational-store-locked';
 
 export type RuntimeSessionStatus =
-  | 'cancelled'
-  | 'completed'
-  | 'failed'
-  | 'pending'
-  | 'running'
-  | 'waiting';
+  'cancelled' | 'completed' | 'failed' | 'pending' | 'running' | 'waiting';
 
 export type RuntimeSessionRecord = {
   activeJobId: string | null;

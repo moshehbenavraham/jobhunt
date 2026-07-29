@@ -1,19 +1,12 @@
 export type JsonValue =
-  | boolean
-  | null
-  | number
-  | string
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+  boolean | null | number | string | JsonValue[] | { [key: string]: JsonValue };
 
 export type WorkspaceOwner = 'app' | 'system' | 'unknown' | 'user';
 export type WorkspaceSurfaceKind = 'directory' | 'file';
 export type WorkspaceContentType = 'directory' | 'json' | 'text';
 export type WorkspaceSummaryExposure = 'internal' | 'startup';
 export type WorkspaceMissingBehavior =
-  | 'onboarding-required'
-  | 'optional'
-  | 'runtime-error';
+  'onboarding-required' | 'optional' | 'runtime-error';
 export const WORKSPACE_MUTATION_TARGETS = [
   'app-state',
   'artifacts',
@@ -143,8 +136,7 @@ export type WorkspaceMissingReadResult = {
 };
 
 export type WorkspaceReadResult =
-  | WorkspaceFoundReadResult
-  | WorkspaceMissingReadResult;
+  WorkspaceFoundReadResult | WorkspaceMissingReadResult;
 
 export type WorkspaceWriteResult = {
   bytesWritten: number;

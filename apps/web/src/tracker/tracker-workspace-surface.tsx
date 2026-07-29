@@ -1,255 +1,254 @@
-import type { CSSProperties } from "react";
-import { TrackerDetailPane } from "./tracker-detail-pane";
-import { TrackerFilterBar } from "./tracker-filter-bar";
-import { TrackerRowList } from "./tracker-row-list";
-import { trackerButton, trackerPanel, trackerStatCard } from "./tracker-styles";
-import { useTrackerWorkspace } from "./use-tracker-workspace";
+import type { CSSProperties } from 'react';
+import { TrackerDetailPane } from './tracker-detail-pane';
+import { TrackerFilterBar } from './tracker-filter-bar';
+import { TrackerRowList } from './tracker-row-list';
+import { trackerButton, trackerPanel, trackerStatCard } from './tracker-styles';
+import { useTrackerWorkspace } from './use-tracker-workspace';
 
 type TrackerWorkspaceSurfaceProps = {
-	onOpenReportViewer: (focus: { reportPath: string | null }) => void;
+  onOpenReportViewer: (focus: { reportPath: string | null }) => void;
 };
 
 const surfaceStyle: CSSProperties = {
-	display: "grid",
-	gap: "var(--jh-space-4)",
+  display: 'grid',
+  gap: 'var(--jh-space-4)',
 };
 
 function formatTimestamp(value: string | null): string {
-	if (!value) return "Not refreshed yet";
-	const date = new Date(value);
-	if (Number.isNaN(date.valueOf())) return value;
-	return date.toLocaleString();
+  if (!value) return 'Not refreshed yet';
+  const date = new Date(value);
+  if (Number.isNaN(date.valueOf())) return value;
+  return date.toLocaleString();
 }
 
 function getEmptyDescription(
-	status: ReturnType<typeof useTrackerWorkspace>["state"]["status"],
-	error: string | null,
+  status: ReturnType<typeof useTrackerWorkspace>['state']['status'],
+  error: string | null,
 ): string {
-	switch (status) {
-		case "loading":
-			return "Loading applications...";
-		case "offline":
-			return error ?? "The API is offline. Showing cached data.";
-		case "error":
-			return error ?? "Could not load applications.";
-		default:
-			return "No applications found yet.";
-	}
+  switch (status) {
+    case 'loading':
+      return 'Loading applications...';
+    case 'offline':
+      return error ?? 'The API is offline. Showing cached data.';
+    case 'error':
+      return error ?? 'Could not load applications.';
+    default:
+      return 'No applications found yet.';
+  }
 }
 
 export function TrackerWorkspaceSurface({
-	onOpenReportViewer,
+  onOpenReportViewer,
 }: TrackerWorkspaceSurfaceProps) {
-	const tracker = useTrackerWorkspace();
-	const payload = tracker.state.data;
+  const tracker = useTrackerWorkspace();
+  const payload = tracker.state.data;
 
-	const actionsDisabled =
-		tracker.state.pendingAction !== null ||
-		tracker.state.isRefreshing ||
-		tracker.state.status === "loading";
+  const actionsDisabled =
+    tracker.state.pendingAction !== null ||
+    tracker.state.isRefreshing ||
+    tracker.state.status === 'loading';
 
-	if (!payload) {
-		return (
-			<section aria-labelledby="tracker-title" style={surfaceStyle}>
-				<section style={trackerPanel}>
-					<header>
-						<h2
-							id="tracker-title"
-							style={{ marginBottom: "var(--jh-space-1)" }}
-						>
-							Tracker
-						</h2>
-					</header>
-					<section style={trackerStatCard}>
-						<p style={{ color: "var(--jh-color-text-secondary)", margin: 0 }}>
-							{getEmptyDescription(
-								tracker.state.status,
-								tracker.state.error?.message ?? null,
-							)}
-						</p>
-					</section>
-				</section>
-			</section>
-		);
-	}
+  if (!payload) {
+    return (
+      <section aria-labelledby="tracker-title" style={surfaceStyle}>
+        <section style={trackerPanel}>
+          <header>
+            <h2
+              id="tracker-title"
+              style={{ marginBottom: 'var(--jh-space-1)' }}
+            >
+              Tracker
+            </h2>
+          </header>
+          <section style={trackerStatCard}>
+            <p style={{ color: 'var(--jh-color-text-secondary)', margin: 0 }}>
+              {getEmptyDescription(
+                tracker.state.status,
+                tracker.state.error?.message ?? null,
+              )}
+            </p>
+          </section>
+        </section>
+      </section>
+    );
+  }
 
-	const selectedRow = payload.selectedDetail.row ?? null;
-	const focusedPendingAddition = payload.selectedDetail.pendingAddition ?? null;
-	const requestedReportNumber =
-		payload.selectedDetail.requestedReportNumber ?? null;
+  const selectedRow = payload.selectedDetail.row ?? null;
+  const focusedPendingAddition = payload.selectedDetail.pendingAddition ?? null;
+  const requestedReportNumber =
+    payload.selectedDetail.requestedReportNumber ?? null;
 
-	const visibleStart =
-		payload.rows.filteredCount === 0 ? 0 : payload.rows.offset + 1;
-	const visibleEnd = payload.rows.offset + payload.rows.items.length;
+  const visibleStart =
+    payload.rows.filteredCount === 0 ? 0 : payload.rows.offset + 1;
+  const visibleEnd = payload.rows.offset + payload.rows.items.length;
 
-	return (
-		<section aria-labelledby="tracker-title" style={surfaceStyle}>
-			<header
-				style={{
-					alignItems: "end",
-					display: "flex",
-					flexWrap: "wrap",
-					gap: "var(--jh-space-3)",
-					justifyContent: "space-between",
-				}}
-			>
-				<div>
-					<p
-						style={{
-							color: "var(--jh-color-accent)",
-							fontSize: "0.68rem",
-							letterSpacing: "0.09em",
-							textTransform: "uppercase",
-						}}
-					>
-						Application record
-					</p>
-					<h1
-						id="tracker-title"
-						style={{ fontSize: "2.35rem", marginTop: "0.3rem" }}
-					>
-						Tracker
-					</h1>
-					<p
-						style={{
-							color: "var(--jh-color-text-muted)",
-							marginTop: "0.45rem",
-						}}
-					>
-						{payload.message}
-					</p>
-				</div>
+  return (
+    <section aria-labelledby="tracker-title" style={surfaceStyle}>
+      <header
+        style={{
+          alignItems: 'end',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 'var(--jh-space-3)',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div>
+          <p
+            style={{
+              color: 'var(--jh-color-accent)',
+              fontSize: '0.68rem',
+              letterSpacing: '0.09em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Application record
+          </p>
+          <h1
+            id="tracker-title"
+            style={{ fontSize: '2.35rem', marginTop: '0.3rem' }}
+          >
+            Tracker
+          </h1>
+          <p
+            style={{
+              color: 'var(--jh-color-text-muted)',
+              marginTop: '0.45rem',
+            }}
+          >
+            {payload.message}
+          </p>
+        </div>
 
-				<div
-					style={{
-						display: "grid",
-						gap: "var(--jh-space-1)",
-						justifyItems: "end",
-					}}
-				>
-					<button
-						aria-label="Refresh tracker"
-						disabled={actionsDisabled}
-						onClick={() => tracker.refresh()}
-						style={{ ...trackerButton, opacity: actionsDisabled ? 0.7 : 1 }}
-						type="button"
-					>
-						{tracker.state.isRefreshing ? "Refreshing…" : "Refresh"}
-					</button>
-					<span
-						style={{
-							color: "var(--jh-color-text-muted)",
-							fontSize: "var(--jh-text-caption-size)",
-						}}
-					>
-						Updated {formatTimestamp(tracker.state.lastUpdatedAt)}
-					</span>
-				</div>
-			</header>
+        <div
+          style={{
+            display: 'grid',
+            gap: 'var(--jh-space-1)',
+            justifyItems: 'end',
+          }}
+        >
+          <button
+            aria-label="Refresh tracker"
+            disabled={actionsDisabled}
+            onClick={() => tracker.refresh()}
+            style={{ ...trackerButton, opacity: actionsDisabled ? 0.7 : 1 }}
+            type="button"
+          >
+            {tracker.state.isRefreshing ? 'Refreshing…' : 'Refresh'}
+          </button>
+          <span
+            style={{
+              color: 'var(--jh-color-text-muted)',
+              fontSize: 'var(--jh-text-caption-size)',
+            }}
+          >
+            Updated {formatTimestamp(tracker.state.lastUpdatedAt)}
+          </span>
+        </div>
+      </header>
 
-			<section
-				aria-label="Tracker summary"
-				style={{
-					borderBottom: "var(--jh-border-subtle)",
-					borderTop: "var(--jh-border-subtle)",
-					color: "var(--jh-color-text-secondary)",
-					display: "flex",
-					flexWrap: "wrap",
-					fontSize: "var(--jh-text-body-sm-size)",
-					gap: "0.4rem 1.2rem",
-					padding: "0.65rem 0",
-				}}
-			>
-				<span>
-					<strong style={{ color: "var(--jh-color-text-primary)" }}>
-						{visibleStart}-{visibleEnd}
-					</strong>{" "}
-					of {payload.rows.filteredCount} visible
-				</span>
-				<span>{payload.rows.totalCount} total</span>
-				{payload.pendingAdditions.count > 0 ? (
-					<span style={{ color: "var(--jh-color-amber)" }}>
-						{payload.pendingAdditions.count} staged
-					</span>
-				) : null}
-			</section>
+      <section
+        aria-label="Tracker summary"
+        style={{
+          borderBottom: 'var(--jh-border-subtle)',
+          borderTop: 'var(--jh-border-subtle)',
+          color: 'var(--jh-color-text-secondary)',
+          display: 'flex',
+          flexWrap: 'wrap',
+          fontSize: 'var(--jh-text-body-sm-size)',
+          gap: '0.4rem 1.2rem',
+          padding: '0.65rem 0',
+        }}
+      >
+        <span>
+          <strong style={{ color: 'var(--jh-color-text-primary)' }}>
+            {visibleStart}-{visibleEnd}
+          </strong>{' '}
+          of {payload.rows.filteredCount} visible
+        </span>
+        <span>{payload.rows.totalCount} total</span>
+        {payload.pendingAdditions.count > 0 ? (
+          <span style={{ color: 'var(--jh-color-amber)' }}>
+            {payload.pendingAdditions.count} staged
+          </span>
+        ) : null}
+      </section>
 
-			<section style={{ display: "contents" }}>
-				{(tracker.state.status === "offline" ||
-					tracker.state.status === "error") &&
-				tracker.state.error ? (
-					<section
-						style={{
-							background:
-								tracker.state.status === "offline"
-									? "var(--jh-color-status-blocked-bg)"
-									: "var(--jh-color-status-error-bg)",
-							border: `1px solid ${
-								tracker.state.status === "offline"
-									? "var(--jh-color-status-blocked-border)"
-									: "var(--jh-color-status-error-border)"
-							}`,
-							borderRadius: "var(--jh-radius-sm)",
-							padding: "var(--jh-space-3)",
-						}}
-					>
-						<p
-							style={{
-								fontWeight: 700,
-								marginBottom: "var(--jh-space-1)",
-								marginTop: 0,
-							}}
-						>
-							{tracker.state.status === "offline"
-								? "The API is offline. Showing cached data."
-								: "Could not load applications."}
-						</p>
-						<p style={{ margin: 0 }}>{tracker.state.error.message}</p>
-					</section>
-				) : null}
+      <section style={{ display: 'contents' }}>
+        {(tracker.state.status === 'offline' ||
+          tracker.state.status === 'error') &&
+        tracker.state.error ? (
+          <section
+            style={{
+              background:
+                tracker.state.status === 'offline'
+                  ? 'var(--jh-color-status-blocked-bg)'
+                  : 'var(--jh-color-status-error-bg)',
+              border: `1px solid ${
+                tracker.state.status === 'offline'
+                  ? 'var(--jh-color-status-blocked-border)'
+                  : 'var(--jh-color-status-error-border)'
+              }`,
+              borderRadius: 'var(--jh-radius-sm)',
+              padding: 'var(--jh-space-3)',
+            }}
+          >
+            <p
+              style={{
+                fontWeight: 700,
+                marginBottom: 'var(--jh-space-1)',
+                marginTop: 0,
+              }}
+            >
+              {tracker.state.status === 'offline'
+                ? 'The API is offline. Showing cached data.'
+                : 'Could not load applications.'}
+            </p>
+            <p style={{ margin: 0 }}>{tracker.state.error.message}</p>
+          </section>
+        ) : null}
+      </section>
 
-			</section>
+      <TrackerFilterBar
+        onSelectSearch={tracker.selectSearch}
+        onSelectSort={tracker.selectSort}
+        onSelectStatusFilter={tracker.selectStatusFilter}
+        search={tracker.state.focus.search}
+        sort={tracker.state.focus.sort}
+        status={tracker.state.focus.status}
+        statusOptions={payload.statusOptions}
+      />
 
-			<TrackerFilterBar
-				onSelectSearch={tracker.selectSearch}
-				onSelectSort={tracker.selectSort}
-				onSelectStatusFilter={tracker.selectStatusFilter}
-				search={tracker.state.focus.search}
-				sort={tracker.state.focus.sort}
-				status={tracker.state.focus.status}
-				statusOptions={payload.statusOptions}
-			/>
+      <div className="jh-tracker-detail-grid">
+        <TrackerRowList
+          filteredCount={payload.rows.filteredCount}
+          hasMore={payload.rows.hasMore}
+          items={payload.rows.items}
+          offset={tracker.state.focus.offset}
+          onGoToNextPage={tracker.goToNextPage}
+          onGoToPreviousPage={tracker.goToPreviousPage}
+          onSelectRow={tracker.selectRow}
+          status={tracker.state.status}
+        />
 
-			<div className="jh-tracker-detail-grid">
-				<TrackerRowList
-					filteredCount={payload.rows.filteredCount}
-					hasMore={payload.rows.hasMore}
-					items={payload.rows.items}
-					offset={tracker.state.focus.offset}
-					onGoToNextPage={tracker.goToNextPage}
-					onGoToPreviousPage={tracker.goToPreviousPage}
-					onSelectRow={tracker.selectRow}
-					status={tracker.state.status}
-				/>
-
-				<TrackerDetailPane
-					actionsDisabled={actionsDisabled}
-					focusedPendingAddition={focusedPendingAddition}
-					notice={tracker.state.notice}
-					onClearSelection={tracker.clearSelection}
-					onOpenReportViewer={onOpenReportViewer}
-					onRunAction={tracker.runAction}
-					pendingAction={tracker.state.pendingAction}
-					requestedReportNumber={requestedReportNumber}
-					selectedDetail={
-						payload.selectedDetail.message
-							? { message: payload.selectedDetail.message }
-							: null
-					}
-					selectedRow={selectedRow}
-					statusOptions={payload.statusOptions}
-				/>
-			</div>
-		</section>
-	);
+        <TrackerDetailPane
+          actionsDisabled={actionsDisabled}
+          focusedPendingAddition={focusedPendingAddition}
+          notice={tracker.state.notice}
+          onClearSelection={tracker.clearSelection}
+          onOpenReportViewer={onOpenReportViewer}
+          onRunAction={tracker.runAction}
+          pendingAction={tracker.state.pendingAction}
+          requestedReportNumber={requestedReportNumber}
+          selectedDetail={
+            payload.selectedDetail.message
+              ? { message: payload.selectedDetail.message }
+              : null
+          }
+          selectedRow={selectedRow}
+          statusOptions={payload.statusOptions}
+        />
+      </div>
+    </section>
+  );
 }

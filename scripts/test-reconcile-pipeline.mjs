@@ -119,12 +119,11 @@ const idempotent = await reconcilePipeline({ root });
 assert.equal(idempotent.changed, false);
 
 write(join(root, 'reports', '008-gamma.md'), '# gamma\n');
+const trackerBeforeGamma = readFileSync(trackerPath, 'utf8');
+const firstLineEnd = trackerBeforeGamma.indexOf('\n') + 1;
 write(
   trackerPath,
-  readFileSync(trackerPath, 'utf8').replace(
-    '\n',
-    '\n| Gamma | | Evaluated | 8 | ML Engineer | 2026-07-26 | [008](reports/008-gamma.md) | 4.6/5 | |',
-  ),
+  `${trackerBeforeGamma.slice(0, firstLineEnd)}| Gamma | | Evaluated | 8 | ML Engineer | 2026-07-26 | [008](reports/008-gamma.md) | 4.6/5 | |${trackerBeforeGamma.slice(firstLineEnd)}`,
 );
 write(
   join(root, 'batch', 'batch-state.tsv'),

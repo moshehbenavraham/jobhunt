@@ -326,11 +326,7 @@ try {
   const cjk = await buildCv({
     root: temporaryRoot,
     buildPath: cjkBuildPath,
-    pdfPath: join(
-      temporaryRoot,
-      'output',
-      'cv-li-ming-example-2026-07-26.pdf',
-    ),
+    pdfPath: join(temporaryRoot, 'output', 'cv-li-ming-example-2026-07-26.pdf'),
     templateName: 'cjk-minimal',
     maxPages: 2,
     requireTika,
