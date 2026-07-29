@@ -143,13 +143,13 @@
     "@openai/agents": "^0.13.5",
     "js-yaml": "^5.2.2",
     "pdfjs-dist": "5.1.91",
-    "playwright": "^1.59.1",
+    "playwright": "^1.62.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.2",
-    "c8": "^11.0.0",
-    "prettier": "^3.9.4"
+    "c8": "^12.0.0",
+    "prettier": "^3.9.6"
   },
   "overrides": {
     "@hono/node-server": "2.0.11"

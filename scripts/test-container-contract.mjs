@@ -18,7 +18,7 @@ const version = read('VERSION').trim();
 assert.match(dockerfile, /^FROM golang:1\.25\.0-bookworm AS go-toolchain$/m);
 assert.match(dockerfile, /^FROM node:24\.14\.0-bookworm-slim$/m);
 assert.match(goMod, /^go 1\.25\.0$/m);
-assert.equal(lock.packages['node_modules/playwright'].version, '1.59.1');
+assert.equal(lock.packages['node_modules/playwright'].version, '1.62.0');
 assert.match(dockerfile, /npx playwright install --with-deps chromium/);
 assert.match(dockerfile, /mupdf-tools/);
 assert.match(dockerfile, /poppler-utils/);
