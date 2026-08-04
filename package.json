@@ -142,7 +142,7 @@
   "dependencies": {
     "@openai/agents": "^0.13.5",
     "js-yaml": "^5.2.2",
-    "pdfjs-dist": "5.1.91",
+    "pdfjs-dist": "6.2.108",
     "playwright": "^1.62.0",
     "zod": "^4.4.3"
   },
