@@ -5,10 +5,6 @@ updates:
     schedule:
       interval: 'weekly'
     open-pull-requests-limit: 5
-    ignore:
-      # vitest 5 needs a dedicated migration PR; stay on 4.x until then
-      - dependency-name: 'vitest'
-        update-types: ['version-update:semver-major']
 
   - package-ecosystem: 'gomod'
     directory: '/dashboard'
