@@ -24,7 +24,7 @@ export async function validateGenericPdf(
     });
     const document = await task.promise;
     pages = document.numPages;
-    await document.destroy();
+    await task.destroy();
     add('pdfjs-parse', true, `${pages} page(s)`);
   } catch (error) {
     add('pdfjs-parse', false, error.message);
