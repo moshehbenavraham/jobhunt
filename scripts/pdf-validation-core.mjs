@@ -182,7 +182,7 @@ async function extractWithPdfJs(pdfBuffer) {
       page.cleanup();
     }
   } finally {
-    await document.destroy();
+    await task.destroy();
   }
   return {
     pageCount: pages.length,

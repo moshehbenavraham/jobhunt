@@ -137,12 +137,12 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13.0"
   },
   "dependencies": {
     "@openai/agents": "^0.13.5",
     "js-yaml": "^5.4.1",
-    "pdfjs-dist": "5.1.91",
+    "pdfjs-dist": "6.4.299",
     "playwright": "^1.62.0",
     "zod": "^4.4.3"
   },
