@@ -40,13 +40,14 @@ jobs:
           sudo apt-get install -y fonts-noto-cjk shellcheck shfmt qpdf poppler-utils mupdf-tools
 
       - name: Install Apache Tika
+        # archive.apache.org keeps every release; dlcdn/downloads drop old ones (404).
         env:
           TIKA_VERSION: 3.3.2
         run: |
           curl -fsSLo "$RUNNER_TEMP/tika-app.jar" \
-            "https://dlcdn.apache.org/tika/${TIKA_VERSION}/tika-app-${TIKA_VERSION}.jar"
+            "https://archive.apache.org/dist/tika/${TIKA_VERSION}/tika-app-${TIKA_VERSION}.jar"
           curl -fsSLo "$RUNNER_TEMP/tika-app.jar.sha512" \
-            "https://downloads.apache.org/tika/${TIKA_VERSION}/tika-app-${TIKA_VERSION}.jar.sha512"
+            "https://archive.apache.org/dist/tika/${TIKA_VERSION}/tika-app-${TIKA_VERSION}.jar.sha512"
           echo "$(cat "$RUNNER_TEMP/tika-app.jar.sha512")  $RUNNER_TEMP/tika-app.jar" | sha512sum --check -
           echo "TIKA_APP_JAR=$RUNNER_TEMP/tika-app.jar" >> "$GITHUB_ENV"
           echo "PDF_VALIDATION_REQUIRE_TIKA=1" >> "$GITHUB_ENV"
