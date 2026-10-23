@@ -30,8 +30,8 @@
     "validate:tools": "npm run check && npm run test:tools"
   },
   "devDependencies": {
-    "@types/node": "^26.1.2",
-    "tsx": "^4.21.0",
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "dependencies": {
