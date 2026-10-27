@@ -35,6 +35,6 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
-    "pino": "^10.1.0"
+    "pino": "^10.4.0"
   }
 }
