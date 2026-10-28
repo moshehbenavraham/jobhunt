@@ -140,7 +140,7 @@
     "node": ">=22.13.0"
   },
   "dependencies": {
-    "@openai/agents": "^0.20.0",
+    "@openai/agents": "^0.21.0",
     "js-yaml": "^5.5.0",
     "pdfjs-dist": "6.4.299",
     "playwright": "^1.64.1",
